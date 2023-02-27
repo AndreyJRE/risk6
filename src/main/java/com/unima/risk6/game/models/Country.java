@@ -1,7 +1,7 @@
-package com.unima.risk6.gui.models;
+package com.unima.risk6.game.models;
 
-import com.unima.risk6.gui.models.enums.CardSymbol;
-import com.unima.risk6.gui.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.CountryName;
+import java.util.Set;
 
 public class Country {
 
@@ -13,7 +13,7 @@ public class Country {
 
   private Integer troops;
 
-  
+  private Set<Country> adjacentCountries;
 
   public Country(CountryName name, int id, Card card) {
     ID = id;

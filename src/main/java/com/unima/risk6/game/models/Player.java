@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.models;
+package com.unima.risk6.game.models;
 
 import java.util.ArrayList;
 import java.util.Set;

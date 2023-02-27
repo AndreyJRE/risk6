@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.models.enums;
+package com.unima.risk6.game.models.enums;
 
 public enum CountryName {
   ALASKA, NORTH_WEST_TERRITORY, ALBERTA, CENTRAL_AMERICA, GREENLAND, ONTARIO, QUEBEC,

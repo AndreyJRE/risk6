@@ -1,6 +1,6 @@
-package com.unima.risk6.gui.models;
+package com.unima.risk6.game.models;
 
-import com.unima.risk6.gui.models.enums.CardSymbol;
+import com.unima.risk6.game.models.enums.CardSymbol;
 import javafx.scene.image.Image;
 
 public class Card {
