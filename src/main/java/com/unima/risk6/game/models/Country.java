@@ -5,9 +5,9 @@ import java.util.Set;
 
 public class Country {
 
-  private final int ID;
-  private final CountryName NAME;
-  private final Card CARD;
+  private final int id;
+  private final CountryName countryName;
+  private final Card card;
 
   private Player player;
 
@@ -15,21 +15,21 @@ public class Country {
 
   private Set<Country> adjacentCountries;
 
-  public Country(CountryName name, int id, Card card) {
-    ID = id;
-    NAME = name;
-    CARD = card;
+  public Country(CountryName countryName, int id, Card card) {
+    this.id = id;
+    this.countryName = countryName;
+    this.card = card;
   }
 
-  public int getID() {
-    return ID;
+  public int getId() {
+    return id;
   }
 
-  public CountryName getNAME() {
-    return NAME;
+  public CountryName getCountryName() {
+    return countryName;
   }
 
-  public Card getCARD() {
-    return CARD;
+  public Card getCard() {
+    return card;
   }
 }
