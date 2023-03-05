@@ -24,7 +24,7 @@ public class RisikoMain extends Application {
   public void init() throws Exception {
     //TODO (database start, etc.)
     //Dummy test
-    for(int i = 0; i < 100000; i++){
+    for (int i = 0; i < 100000; i++) {
       double progress = (100 * i) / 100000;
       notifyPreloader(new Preloader.ProgressNotification(progress));
     }

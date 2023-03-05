@@ -19,7 +19,8 @@ public class RiskPreloader extends Preloader {
 
   @Override
   public void init() throws Exception {
-    FXMLLoader fxmlLoader = new FXMLLoader(RiskPreloader.class.getResource("fxml/splashScreen.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        RiskPreloader.class.getResource("fxml/splashScreen.fxml"));
     scene = new Scene(fxmlLoader.load());
   }
 
@@ -34,16 +35,16 @@ public class RiskPreloader extends Preloader {
   }
 
   @Override
-  public void handleApplicationNotification(Preloader.PreloaderNotification info){
-    if (info instanceof ProgressNotification){
+  public void handleApplicationNotification(Preloader.PreloaderNotification info) {
+    if (info instanceof ProgressNotification) {
       SplashScreen.label.setText("Loading " + ((ProgressNotification) info).getProgress() + "%");
     }
   }
 
   @Override
-  public void handleStateChangeNotification(Preloader.StateChangeNotification info){
+  public void handleStateChangeNotification(Preloader.StateChangeNotification info) {
     StateChangeNotification.Type type = info.getType();
-    switch (type){
+    switch (type) {
 
       case BEFORE_START:
         System.out.println("BEFORE_START");

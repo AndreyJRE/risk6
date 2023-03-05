@@ -15,7 +15,7 @@ public class SplashScreen implements Initializable {
   public static Label label;
 
   @FXML
-  private void handlebuttonAction(ActionEvent event){
+  private void handlebuttonAction(ActionEvent event) {
 
   }
 
