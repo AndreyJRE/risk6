@@ -1,6 +1,8 @@
 package com.unima.risk6;
 
+import com.unima.risk6.gui.controllers.SplashScreen;
 import javafx.application.Application;
+import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -18,7 +20,18 @@ public class RisikoMain extends Application {
     stage.show();
   }
 
+  @Override
+  public void init() throws Exception {
+    //TODO (database start, etc.)
+    //Dummy test
+    for(int i = 0; i < 100000; i++){
+      double progress = (100 * i) / 100000;
+      notifyPreloader(new Preloader.ProgressNotification(progress));
+    }
+  }
+
   public static void main(String[] args) {
-    launch();
+    System.setProperty("javafx.preloader", RiskPreloader.class.getCanonicalName());
+    launch(args);
   }
 }
