@@ -1,4 +1,4 @@
-package com.unima.risk6.ai;
+package com.unima.risk6.game.ai;
 
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
@@ -10,7 +10,4 @@ import com.unima.risk6.game.logic.Reinforce;
  */
 public interface AiBot {
   void makeMove(GameState gameState);
-  void sendReinforce(Reinforce reinforce);
-  void sendAttack(Attack attack);
-  void sendFortify(Fortify fortify);
 }
