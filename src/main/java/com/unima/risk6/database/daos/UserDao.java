@@ -1,6 +1,8 @@
-package com.unima.risk6.database.dao;
+package com.unima.risk6.database.daos;
 
+import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
+import java.util.List;
 
 
 /**
@@ -10,4 +12,5 @@ import com.unima.risk6.database.models.User;
  */
 public interface UserDao extends Dao<User> {
 
+  List<GameStatistic> getAllStatisticsByUserId(Long id);
 }

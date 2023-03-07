@@ -1,4 +1,4 @@
-package com.unima.risk6.database.dao;
+package com.unima.risk6.database.daos;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,13 +10,13 @@ import java.util.Optional;
  */
 public interface Dao<T> {
 
-  Optional<T> get(long id);
+  Optional<T> get(Long id);
 
   List<T> getAll();
 
   void save(T t);
 
-  void update(T t, String[] params);
+  void update(T t);
 
-  void delete(T t);
+  void deleteById(Long id);
 }
