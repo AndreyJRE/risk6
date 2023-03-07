@@ -7,18 +7,16 @@ public class Country {
 
   private final int id;
   private final CountryName countryName;
-  private final Card card;
-
   private Player player;
-
+  private boolean hasPlayer;
   private Integer troops;
-
   private Set<Country> adjacentCountries;
 
-  public Country(CountryName countryName, int id, Card card) {
+  public Country(CountryName countryName, int id) {
     this.id = id;
     this.countryName = countryName;
-    this.card = card;
+    hasPlayer = false;
+
   }
 
   public int getId() {
@@ -29,7 +27,40 @@ public class Country {
     return countryName;
   }
 
-  public Card getCard() {
-    return card;
+
+  public void setPlayer(Player nPlayer) {
+    player = nPlayer;
+    hasPlayer = true;
+  }
+
+  public Player getPlayer() {
+    return player;
+  }
+
+  public boolean hasPlayer() {
+    return hasPlayer;
+  }
+
+  public void setTroops(int troopNumber) {
+    troops = troopNumber;
+  }
+  public Integer getTroops(){
+    return troops;
+  }
+
+  public void changeTroops(int diff) {
+    troops = troops + diff;
+  }
+
+
+
+  public void setAdjacentCountries(Set<Country> adjacentCountries) {
+    this.adjacentCountries = adjacentCountries;
+  }
+
+  public Set<Country> getAdjacentCountries() {
+    return adjacentCountries;
   }
 }
+
+
