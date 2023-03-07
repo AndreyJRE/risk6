@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Database creating and configuration
+ * Database creating and connection configuration
  *
  * @author astoyano
  */
@@ -20,6 +20,7 @@ public class AppDatabase {
 
   public AppDatabase(final String databasePath) {
     this.databasePath = databasePath;
+    init();
   }
 
   public void init() {
@@ -29,27 +30,38 @@ public class AppDatabase {
       if (!databaseFile.exists()) {
         databaseFile.createNewFile();
       }
+      Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getPath());
       createDatabase();
-    } catch (SQLException e) {
-      //TODO Error handling
-    } catch (IOException e) {
-      //TODO Error handling
+    } catch (SQLException | IOException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
     }
   }
 
   public void createDatabase() throws SQLException {
     creatUserTable();
+    creatGameStatisticTable();
   }
 
   public void creatUserTable() throws SQLException {
     Statement statement = conn.createStatement();
-    //TODO
     String createSql = """
-        CREATE TABLE IF NOT EXISTS user
+        CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT NOT NULL
+        ,password TEXT, active INTEGER, created_at TEXT, image_path TEXT)
         """;
     statement.execute(createSql);
   }
+
+  public void creatGameStatisticTable() throws SQLException {
+    Statement statement = conn.createStatement();
+    String createSql = """
+        CREATE TABLE IF NOT EXISTS game_statistic (id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL
+        ,troops_lost INTEGER, troops_gained INTEGER,game_won INTEGER,start_date TEXT
+        ,finish_date TEXT,FOREIGN KEY (user_id) REFERENCES user (id))
+        """;
+    statement.execute(createSql);
+  }
+
 
   public Connection getConnection() {
     return conn;

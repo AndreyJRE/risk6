@@ -1,7 +1,7 @@
 package com.unima.risk6.database.models;
 
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * A game statistic model from one game for database
@@ -14,15 +14,97 @@ public class GameStatistic {
 
   private User user;
 
-  private LocalDate startDate;
+  private LocalDateTime startDate;
 
-  private LocalDate finishDate;
+  private LocalDateTime finishDate;
 
-  private int armyLoses;
+  private int troopsLost;
 
-  private int armyWon;
+  private int troopsGained;
 
-  private boolean won;
+  private boolean gameWon;
+
+  public GameStatistic() {
+  }
+
+  public GameStatistic(Long id, User user, LocalDateTime startDate, LocalDateTime finishDate,
+      int troopsLost, int troopsGained, boolean gameWon) {
+    this.id = id;
+    this.user = user;
+    this.startDate = startDate;
+    this.finishDate = finishDate;
+    this.troopsLost = troopsLost;
+    this.troopsGained = troopsGained;
+    this.gameWon = gameWon;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public LocalDateTime getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(LocalDateTime startDate) {
+    this.startDate = startDate;
+  }
+
+  public LocalDateTime getFinishDate() {
+    return finishDate;
+  }
+
+  public void setFinishDate(LocalDateTime finishDate) {
+    this.finishDate = finishDate;
+  }
+
+  public int getTroopsLost() {
+    return troopsLost;
+  }
+
+  public void setTroopsLost(int troopsLost) {
+    this.troopsLost = troopsLost;
+  }
+
+  public int getTroopsGained() {
+    return troopsGained;
+  }
 
 
+  public void setTroopsGained(int troopsGained) {
+    this.troopsGained = troopsGained;
+  }
+
+  public boolean isGameWon() {
+    return gameWon;
+  }
+
+  public void setGameWon(boolean gameWon) {
+    this.gameWon = gameWon;
+  }
+
+  @Override
+  public String toString() {
+    return "GameStatistic{" +
+           "id=" + id +
+           ", user=" + user +
+           ", startDate=" + startDate +
+           ", finishDate=" + finishDate +
+           ", troopsLost=" + troopsLost +
+           ", troopsGained=" + troopsGained +
+           ", won=" + gameWon +
+           '}';
+  }
 }

@@ -1,7 +1,10 @@
 package com.unima.risk6.database.configurations;
 
 import com.unima.risk6.database.AppDatabase;
+import com.unima.risk6.database.models.GameStatistic;
+import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.repositories.UserRepository;
+import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.database.services.UserService;
 import java.sql.Connection;
 
@@ -13,7 +16,9 @@ import java.sql.Connection;
 public class DatabaseConfiguration {
 
   private static UserService userService;
+  private static GameStatisticService gameStatisticService;
   private static UserRepository userRepository;
+  private static GameStatisticRepository gameStatisticRepository;
   private static Connection databaseConnection;
   private static AppDatabase appDatabase;
 
@@ -23,19 +28,19 @@ public class DatabaseConfiguration {
     configureServices();
   }
 
-  public static void configureServices() {
+  private static void configureServices() {
     userService = new UserService(userRepository);
+    gameStatisticService = new GameStatisticService(gameStatisticRepository);
   }
 
-  public static void configureRepositories() {
+  private static void configureRepositories() {
     userRepository = new UserRepository(databaseConnection);
+    gameStatisticRepository = new GameStatisticRepository(databaseConnection, userRepository);
   }
 
-  public static void configureDatabaseConnection() {
-    //TODO
-    String databasePath = "";
+  private static void configureDatabaseConnection() {
+    String databasePath = "src/main/resources/com/unima/risk6/database/risk_database.db";
     appDatabase = new AppDatabase(databasePath);
-    appDatabase.init();
     databaseConnection = appDatabase.getConnection();
 
   }
@@ -54,5 +59,13 @@ public class DatabaseConfiguration {
 
   public static AppDatabase getAppDatabase() {
     return appDatabase;
+  }
+
+  public static GameStatisticService getGameStatisticService() {
+    return gameStatisticService;
+  }
+
+  public static GameStatisticRepository getGameStatisticRepository() {
+    return gameStatisticRepository;
   }
 }
