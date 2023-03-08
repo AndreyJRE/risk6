@@ -1,5 +1,5 @@
 package com.unima.risk6.game.logic;
 
-public class Fortify {
+public class Fortify extends Move {
 
 }
