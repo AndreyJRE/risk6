@@ -19,7 +19,7 @@
       <TextField fx:id="usernameField" promptText="Enter Username" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
       <PasswordField fx:id="passwordField" promptText="Enter Password" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
          <PasswordField fx:id="passwordField1" promptText="Enter Password again" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
-      <Button onAction="#handleLoginButton" prefHeight="21.0" prefWidth="261.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);" text="Create" />
+      <Button fx:id="loginButton" onAction="#handleLoginButton" prefHeight="21.0" prefWidth="261.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);" text="Create" />
       <Label onMouseClicked="#handleForgotPasswordClicked" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #BEBEBE; -fx-underline: true;" text="Forgot Password?" />
       <padding>
         <Insets left="15.0" right="15.0" />
