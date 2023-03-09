@@ -2,6 +2,7 @@ package com.unima.risk6.database.models;
 
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * A game statistic model from one game for database
@@ -106,5 +107,25 @@ public class GameStatistic {
            ", troopsGained=" + troopsGained +
            ", won=" + gameWon +
            '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    GameStatistic that = (GameStatistic) o;
+    return troopsLost == that.troopsLost && troopsGained == that.troopsGained
+           && gameWon == that.gameWon && id.equals(that.id) && user.equals(that.user)
+           && startDate.equals(that.startDate) && Objects.equals(finishDate,
+        that.finishDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, user, startDate, finishDate, troopsLost, troopsGained, gameWon);
   }
 }

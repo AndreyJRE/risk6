@@ -3,6 +3,7 @@ package com.unima.risk6.database.services;
 import com.unima.risk6.database.exceptions.NotFoundException;
 import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class GameStatisticService {
@@ -28,8 +29,9 @@ public class GameStatisticService {
     gameStatisticRepository.update(gameStatistic);
   }
 
-  public void saveGameStatistic(GameStatistic gameStatistic) {
-    gameStatisticRepository.save(gameStatistic);
+  public Long saveGameStatistic(GameStatistic gameStatistic) {
+    gameStatistic.setStartDate(LocalDateTime.now());
+    return gameStatisticRepository.save(gameStatistic);
   }
 
 }

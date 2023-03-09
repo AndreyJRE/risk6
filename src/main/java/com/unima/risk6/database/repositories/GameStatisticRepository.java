@@ -100,8 +100,8 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getInt(5) == 1;
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6));
-        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7));
+        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6),dtf);
+        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7),dtf);
         GameStatistic gameStatistic = new GameStatistic(gameId, user, startDate, finishDate,
             troopsLost, troopsGained, gameWon);
         statistics.add(gameStatistic);
@@ -114,16 +114,18 @@ public class GameStatisticRepository implements GameStatisticDao {
   }
 
   @Override
-  public void save(GameStatistic gameStatistic) {
+  public Long save(GameStatistic gameStatistic) {
     try {
       addGameStatisticStatement.setLong(1, gameStatistic.getUser().getId());
       addGameStatisticStatement.setString(2, LocalDateTime.now().format(dtf));
       addGameStatisticStatement.execute();
       ResultSet generatedKeys = addGameStatisticStatement.getGeneratedKeys();
+      Long id = null;
       if (generatedKeys.next()) {
-        Long id = generatedKeys.getLong(1);
+        id = generatedKeys.getLong(1);
         gameStatistic.setId(id);
       }
+      return id;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

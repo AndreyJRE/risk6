@@ -23,7 +23,7 @@ public class AppDatabase {
     init();
   }
 
-  public void init() {
+  private void init() {
     File databaseFile = new File(databasePath);
     conn = null;
     try {
@@ -38,25 +38,27 @@ public class AppDatabase {
     }
   }
 
-  public void createDatabase() throws SQLException {
+  private void createDatabase() throws SQLException {
     creatUserTable();
     creatGameStatisticTable();
   }
 
-  public void creatUserTable() throws SQLException {
+  private void creatUserTable() throws SQLException {
     Statement statement = conn.createStatement();
     String createSql = """
-        CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT NOT NULL
-        ,password TEXT, active INTEGER, created_at TEXT, image_path TEXT)
+        CREATE TABLE IF NOT EXISTS user (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+        , username TEXT NOT NULL UNIQUE, password TEXT, active INTEGER DEFAULT 1
+        ,created_at TEXT, image_path TEXT)
         """;
     statement.execute(createSql);
   }
 
-  public void creatGameStatisticTable() throws SQLException {
+  private void creatGameStatisticTable() throws SQLException {
     Statement statement = conn.createStatement();
     String createSql = """
-        CREATE TABLE IF NOT EXISTS game_statistic (id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL
-        ,troops_lost INTEGER, troops_gained INTEGER,game_won INTEGER,start_date TEXT
+        CREATE TABLE IF NOT EXISTS game_statistic (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+        ,user_id INTEGER NOT NULL,troops_lost INTEGER
+        ,troops_gained INTEGER,game_won INTEGER,start_date TEXT
         ,finish_date TEXT,FOREIGN KEY (user_id) REFERENCES user (id))
         """;
     statement.execute(createSql);
