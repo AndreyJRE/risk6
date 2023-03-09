@@ -1,6 +1,7 @@
 package com.unima.risk6;
 
-import com.unima.risk6.gui.controllers.SplashScreen;
+import com.unima.risk6.gui.controllers.SceneController;
+import com.unima.risk6.gui.controllers.enums.SceneName;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
@@ -13,10 +14,12 @@ public class RisikoMain extends Application {
 
   @Override
   public void start(Stage stage) throws IOException {
-    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/hello-view.fxml"));
-    Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/Log-In-View.fxml"));
+    SceneController sceneController = new SceneController(stage);
+    Scene scene = new Scene(fxmlLoader.load());
     stage.setTitle("Hello!");
-    stage.setScene(scene);
+    sceneController.addScene(SceneName.LOGIN_SCREEN, scene);
+    sceneController.activate(SceneName.LOGIN_SCREEN);
     stage.show();
   }
 

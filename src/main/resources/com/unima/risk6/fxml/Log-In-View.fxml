@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.LoginViewController">
+  <children>
+    <VBox alignment="CENTER" layoutX="155.0" layoutY="77.0" prefHeight="230.0" prefWidth="291.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);">
+      <Label style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;" text="Create new user!">
+            <font>
+               <Font name="BentonSans Bold" size="13.0" />
+            </font></Label>
+      <TextField fx:id="usernameField" promptText="Enter Username" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
+      <PasswordField fx:id="passwordField" promptText="Enter Password" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
+         <PasswordField fx:id="passwordField1" promptText="Enter Password again" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
+      <Button onAction="#handleLoginButton" prefHeight="21.0" prefWidth="261.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);" text="Create" />
+      <Label onMouseClicked="#handleForgotPasswordClicked" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 12px; -fx-text-fill: #BEBEBE; -fx-underline: true;" text="Forgot Password?" />
+      <padding>
+        <Insets left="15.0" right="15.0" />
+      </padding>
+    </VBox>
+  </children>
+</AnchorPane>
