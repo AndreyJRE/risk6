@@ -1,5 +1,6 @@
 package com.unima.risk6.game.models.enums;
 
-public class ContinentName {
+public enum ContinentName {
+  ASIA, AFRICA, AUSTRALIA, EUROPE, NORTH_AMERICA, SOUTH_AMERICA
 
 }

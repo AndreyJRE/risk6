@@ -1,35 +1,61 @@
 package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.CountryName;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Country {
-
-  private final int id;
   private final CountryName countryName;
-  private final Card card;
-
   private Player player;
-
+  private boolean hasPlayer;
   private Integer troops;
-
   private Set<Country> adjacentCountries;
 
-  public Country(CountryName countryName, int id, Card card) {
-    this.id = id;
+  public Country(CountryName countryName) {
+
     this.countryName = countryName;
-    this.card = card;
-  }
+    adjacentCountries = new HashSet<>();
+    hasPlayer = false;
 
-  public int getId() {
-    return id;
   }
-
   public CountryName getCountryName() {
     return countryName;
   }
 
-  public Card getCard() {
-    return card;
+
+  public void setPlayer(Player nPlayer) {
+    player = nPlayer;
+    hasPlayer = true;
+  }
+
+  public Player getPlayer() {
+    return player;
+  }
+
+  public boolean hasPlayer() {
+    return hasPlayer;
+  }
+
+  public void setTroops(int troopNumber) {
+    troops = troopNumber;
+  }
+  public Integer getTroops(){
+    return troops;
+  }
+
+  public void changeTroops(int diff) {
+    troops = troops + diff;
+  }
+
+
+
+  public void setAdjacentCountries(Set<Country> adjacentCountries) {
+    this.adjacentCountries = adjacentCountries;
+  }
+
+  public Set<Country> getAdjacentCountries() {
+    return adjacentCountries;
   }
 }
+
+
