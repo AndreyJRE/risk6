@@ -1,6 +1,13 @@
 module com.unima.risk6 {
   requires javafx.controls;
   requires javafx.fxml;
+  requires java.sql;
+  requires io.netty.codec;
+  requires io.netty.codec.http;
+  requires io.netty.transport;
+  requires io.netty.buffer;
+  requires io.netty.common;
+  requires io.netty.handler;
 
   opens com.unima.risk6 to javafx.fxml;
   exports com.unima.risk6;
