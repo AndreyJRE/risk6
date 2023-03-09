@@ -37,19 +37,22 @@ public class UserRepository implements UserDao {
 
   private PreparedStatement getAllStatisticsByUserIdStatement;
 
-  private final DateTimeFormatter dtf;
+  private final DateTimeFormatter localDateDtf;
+
+  private final DateTimeFormatter localDateTimeDtf;
 
   public UserRepository(Connection databaseConnection) {
     this.databaseConnection = databaseConnection;
-    dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    localDateDtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    localDateTimeDtf = DateTimeFormatter.ofPattern("");
     initStatements();
   }
 
   private void initStatements() {
     try {
       addUserStatement = this.databaseConnection.prepareStatement("""
-          INSERT INTO user (username, password, active, created_at, image_path)
-          VALUES (?,?,?,?,?)""", Statement.RETURN_GENERATED_KEYS);
+          INSERT INTO user (username, password, created_at, image_path)
+          VALUES (?,?,?,?)""", Statement.RETURN_GENERATED_KEYS);
       deleteUserStatement = this.databaseConnection.prepareStatement("""
           DELETE FROM user WHERE id=?""");
       updateUserStatement = this.databaseConnection.prepareStatement("""
@@ -76,7 +79,7 @@ public class UserRepository implements UserDao {
         String username = rs.getString(2);
         String password = rs.getString(3);
         boolean active = rs.getInt(4) == 1;
-        LocalDate createdAt = LocalDate.parse(rs.getString(5));
+        LocalDate createdAt = LocalDate.parse(rs.getString(5), localDateDtf);
         String imagePath = rs.getString(6);
         user = Optional.of(new User(id, username, password, imagePath, active,
             createdAt));
@@ -114,19 +117,20 @@ public class UserRepository implements UserDao {
   }
 
   @Override
-  public void save(User user) {
+  public Long save(User user) {
     try {
       addUserStatement.setString(1, user.getUsername());
       addUserStatement.setString(2, user.getPassword());
-      addUserStatement.setInt(3, 1);
-      addUserStatement.setString(4, user.getCreatedAt().format(dtf));
-      addUserStatement.setString(5, user.getImagePath());
+      addUserStatement.setString(3, user.getCreatedAt().format(localDateDtf));
+      addUserStatement.setString(4, user.getImagePath());
       addUserStatement.execute();
       ResultSet generatedKeys = addUserStatement.getGeneratedKeys();
+      Long id = null;
       if (generatedKeys.next()) {
-        Long id = generatedKeys.getLong(1);
+        id = generatedKeys.getLong(1);
         user.setId(id);
       }
+      return id;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

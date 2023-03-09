@@ -4,7 +4,14 @@ import com.unima.risk6.database.exceptions.NotFoundException;
 import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.UserRepository;
+import java.time.LocalDate;
 import java.util.List;
+
+/**
+ * User service for user repository
+ *
+ * @author
+ */
 
 public class UserService {
 
@@ -15,7 +22,7 @@ public class UserService {
   }
 
 
-  public User getUserById(Long userId) {
+  public User getUserById(Long userId){
     return userRepository.get(userId).orElseThrow(
         () -> new NotFoundException("User with id {" + userId + "} is not in the database"));
   }
@@ -24,9 +31,11 @@ public class UserService {
     return userRepository.getAll();
   }
 
-  public void saveUser(User user) {
+  public Long saveUser(User user) {
     //TODO Validate username and password, encryption for password is also needed
-    userRepository.save(user);
+    user.setCreatedAt(LocalDate.now());
+    user.setActive(true);
+    return userRepository.save(user);
   }
 
   public void deleteUserById(Long userId) {

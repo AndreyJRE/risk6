@@ -2,6 +2,7 @@ package com.unima.risk6.database.models;
 
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * User model for database
@@ -101,5 +102,24 @@ public class User {
            ", active=" + active +
            ", createdAt=" + createdAt +
            '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    User user = (User) o;
+    return active == user.active && id.equals(user.id) && username.equals(user.username)
+           && Objects.equals(password, user.password) && Objects.equals(imagePath,
+        user.imagePath) && createdAt.equals(user.createdAt);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, username, password, imagePath, active, createdAt);
   }
 }
