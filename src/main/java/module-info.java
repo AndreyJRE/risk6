@@ -1,6 +1,7 @@
 module com.unima.risk6 {
   requires javafx.controls;
   requires javafx.fxml;
+  requires java.sql;
 
   opens com.unima.risk6 to javafx.fxml;
   exports com.unima.risk6;

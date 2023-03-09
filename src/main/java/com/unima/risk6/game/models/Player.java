@@ -11,12 +11,12 @@ import java.util.Set;
 
 public class Player {
 
-  private ArrayList<Card> cards;
+  private Hand hand;
   private Set<Country> countries;
   private Set<Continent> continents;
 
   public Player() {
-    this.cards = new ArrayList<>();
+    this.hand = new Hand();
   }
 
   public Map<Country, List<Attack>> getAllValidAttacks() {
@@ -34,13 +34,27 @@ public class Player {
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
         if (!this.equals(adjacentCountry.getPlayer())) {
-          attackable.add(null); // TODO when Attack class is ready
+          switch(country.getTroops()) {
+            case 4:
+              attackable.add(new Attack(country, adjacentCountry,3 ));
+            case 3:
+              attackable.add(new Attack(country, adjacentCountry,2 ));
+            case 2:
+              attackable.add(new Attack(country, adjacentCountry,1 ));
+              break;
+            default:
+              break;
+
+          }
         }
       }
     }
     return attackable;
   }
 
+  public int numberOfCountries(){
+    return countries.size();
+  }
   public void sendReinforce(Reinforce reinforce) {
 
   }

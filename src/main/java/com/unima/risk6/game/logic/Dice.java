@@ -1,14 +1,19 @@
 package com.unima.risk6.game.logic;
 
+import java.util.Random;
+
 public class Dice {
 
+  private Random random;
 
-  public int rollDice(){
-    int i=(int)( Math.random()*6+1);
-    return 6;
+  public Dice() {
+    this.random = new Random();
   }
 
-
+  public int rollDice() {
+    int i = 1 + random.nextInt(6);
+    return i;
+  }
 
 
 }

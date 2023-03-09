@@ -7,15 +7,21 @@ import javafx.scene.image.Image;
 public class Card {
 
   private final CardSymbol cardSymbol;
-
   //private final Image cardImage;
-
   private final CountryName country;
+  private final boolean hasCountry;
 
-  public Card(CardSymbol cardSymbol, CountryName cardCountry) {//, Image cardImage) {
-    this.cardSymbol = cardSymbol;
-    //this.cardImage = cardImage;
+
+  public Card(CardSymbol pCardSymbol, CountryName cardCountry) {//, Image cardImage) {
+    this.cardSymbol = pCardSymbol;
     country = cardCountry;
+    this.hasCountry = true;
+  }
+
+  public Card(CardSymbol pCardSymbol) {
+    this.cardSymbol = pCardSymbol;
+    country= null;
+    this.hasCountry = false;
   }
 
   public CardSymbol getCardSymbol() {
@@ -25,10 +31,8 @@ public class Card {
   public CountryName getCountry() {
     return country;
   }
-/*
-  public Image getCardImage() {
-    return cardImage;
-  }
-  */
 
+  public boolean isHasCountry() {
+    return hasCountry;
+  }
 }
