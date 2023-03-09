@@ -7,12 +7,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 
-public class SplashScreen implements Initializable {
+public class SplashScreenController implements Initializable {
 
   @FXML
   private Label progress;
 
-  public static Label label;
 
   @FXML
   private void handlebuttonAction(ActionEvent event) {
@@ -21,6 +20,9 @@ public class SplashScreen implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    label = progress;
+  }
+
+  public Label getProgress() {
+    return progress;
   }
 }

@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="com.unima.risk6.gui.controllers.SplashScreen">
+  fx:controller="com.unima.risk6.gui.controllers.SplashScreenController">
   <children>
     <Pane prefHeight="402.5188849614524" prefWidth="700.0" style="-fx-background-color: #003c00;"
       AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"

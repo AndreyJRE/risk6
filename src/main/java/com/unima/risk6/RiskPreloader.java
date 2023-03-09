@@ -1,9 +1,8 @@
 package com.unima.risk6;
 
-import com.unima.risk6.gui.controllers.SplashScreen;
+import com.unima.risk6.gui.controllers.SplashScreenController;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -12,6 +11,8 @@ public class RiskPreloader extends Preloader {
 
   private Stage preloaderStage;
   private Scene scene;
+
+  private SplashScreenController splashScreenController;
 
   public RiskPreloader() {
 
@@ -22,6 +23,7 @@ public class RiskPreloader extends Preloader {
     FXMLLoader fxmlLoader = new FXMLLoader(
         RiskPreloader.class.getResource("fxml/splashScreen.fxml"));
     scene = new Scene(fxmlLoader.load());
+    splashScreenController = fxmlLoader.getController();
   }
 
   @Override
@@ -36,8 +38,8 @@ public class RiskPreloader extends Preloader {
 
   @Override
   public void handleApplicationNotification(Preloader.PreloaderNotification info) {
-    if (info instanceof ProgressNotification) {
-      SplashScreen.label.setText("Loading " + ((ProgressNotification) info).getProgress() + "%");
+    if (info instanceof ProgressNotification i) {
+      splashScreenController.getProgress().setText("Loading " + (i.getProgress() + "%"));
     }
   }
 
