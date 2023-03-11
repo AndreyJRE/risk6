@@ -22,7 +22,7 @@ public class UserService {
   }
 
 
-  public User getUserById(Long userId){
+  public User getUserById(Long userId) {
     return userRepository.get(userId).orElseThrow(
         () -> new NotFoundException("User with id {" + userId + "} is not in the database"));
   }
@@ -49,6 +49,12 @@ public class UserService {
 
   public List<GameStatistic> getAllStatisticsByUserId(Long userId) {
     return userRepository.getAllStatisticsByUserId(userId);
+  }
+
+  public User getUserByUsername(String username) {
+    return userRepository.getUserByUsername(username)
+        .orElseThrow(() -> new NotFoundException(
+            "User with username {" + username + "is not in the database"));
   }
 
 

@@ -37,6 +37,8 @@ public class UserRepository implements UserDao {
 
   private PreparedStatement getAllStatisticsByUserIdStatement;
 
+  private PreparedStatement getUserByUsernameStatement;
+
   private final DateTimeFormatter localDateDtf;
 
   private final DateTimeFormatter localDateTimeDtf;
@@ -63,6 +65,9 @@ public class UserRepository implements UserDao {
           SELECT * FROM user""");
       getAllStatisticsByUserIdStatement = this.databaseConnection.prepareStatement("""
           SELECT * FROM game_statistic WHERE user_id=?""");
+      getUserByUsernameStatement = this.databaseConnection.prepareStatement("""
+          SELECT id,password,image_path,active,created_at FROM user WHERE username = ?
+          """);
     } catch (SQLException e) {
       throw new RuntimeException(e);
 
@@ -189,5 +194,27 @@ public class UserRepository implements UserDao {
     }
 
 
+  }
+
+  @Override
+  public Optional<User> getUserByUsername(String username) {
+    try {
+      getUserByUsernameStatement.setString(1, username);
+      ResultSet rs = getUserByUsernameStatement.executeQuery();
+      Optional<User> user = Optional.empty();
+      if (rs.next()) {
+        Long id = rs.getLong(1);
+        String password = rs.getString(2);
+        String imagePath = rs.getString(3);
+        boolean active = rs.getInt(4) == 1;
+        LocalDate createdAt = LocalDate.parse(rs.getString(5), localDateDtf);
+        user = Optional.of(new User(id, username, password, imagePath, active,
+            createdAt));
+      }
+      rs.close();
+      return user;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
