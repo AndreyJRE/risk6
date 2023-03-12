@@ -11,7 +11,6 @@ public class RiskPreloader extends Preloader {
 
   private Stage preloaderStage;
   private Scene scene;
-
   private SplashScreenController splashScreenController;
 
   public RiskPreloader() {

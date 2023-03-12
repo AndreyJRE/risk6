@@ -27,5 +27,9 @@ public class SceneController {
     stage.setScene(scenes.get(name));
   }
 
+  public void close() {
+    stage.close();
+  }
+
 }
 
