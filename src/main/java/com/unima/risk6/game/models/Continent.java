@@ -9,10 +9,10 @@ public class Continent {
   private ContinentName continentName;
   private int bonusTroops;
 
-  public Continent(Set<Country> inCountries, ContinentName pContinentName, int bonus) {
-    countries = inCountries;
-    continentName = pContinentName;
-    bonusTroops = bonus;
+  public Continent(Set<Country> countries, ContinentName continentName, int bonusTroops) {
+    this.countries = countries;
+    this.continentName = continentName;
+    this.bonusTroops = bonusTroops;
 
 
   }

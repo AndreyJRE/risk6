@@ -34,15 +34,16 @@ public class Player {
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
         if (!this.equals(adjacentCountry.getPlayer())) {
-          switch(country.getTroops()) {
-            case 4:
-              attackable.add(new Attack(country, adjacentCountry,3 ));
-            case 3:
-              attackable.add(new Attack(country, adjacentCountry,2 ));
-            case 2:
-              attackable.add(new Attack(country, adjacentCountry,1 ));
+          switch (country.getTroops()) {
+            //Should add 3 valid Attacks when the country has more than 3 troops.
+            case 1:
               break;
             default:
+              attackable.add(new Attack(country, adjacentCountry, 3));
+            case 3:
+              attackable.add(new Attack(country, adjacentCountry, 2));
+            case 2:
+              attackable.add(new Attack(country, adjacentCountry, 1));
               break;
 
           }
@@ -52,9 +53,13 @@ public class Player {
     return attackable;
   }
 
-  public int numberOfCountries(){
+  public void drawCard(Card drawnCard){
+    this.hand.addCard(drawnCard);
+  }
+  public int numberOfCountries() {
     return countries.size();
   }
+
   public void sendReinforce(Reinforce reinforce) {
 
   }
@@ -65,5 +70,9 @@ public class Player {
 
   public void sendFortify(Fortify fortify) {
 
+  }
+
+  public Hand getHand() {
+    return hand;
   }
 }

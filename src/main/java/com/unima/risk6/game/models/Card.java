@@ -12,15 +12,15 @@ public class Card {
   private final boolean hasCountry;
 
 
-  public Card(CardSymbol pCardSymbol, CountryName cardCountry) {//, Image cardImage) {
-    this.cardSymbol = pCardSymbol;
-    country = cardCountry;
+  public Card(CardSymbol cardSymbol, CountryName country) {//, Image cardImage) {
+    this.cardSymbol = cardSymbol;
+    this.country = country;
     this.hasCountry = true;
   }
 
-  public Card(CardSymbol pCardSymbol) {
-    this.cardSymbol = pCardSymbol;
-    country= null;
+  public Card(CardSymbol cardSymbol) {
+    this.cardSymbol = cardSymbol;
+    this.country= null;
     this.hasCountry = false;
   }
 
