@@ -19,38 +19,51 @@ public class Player {
     this.hand = new Hand();
   }
 
-  public Map<Country, List<Attack>> getAllValidAttacks() {
-    Map<Country, List<Attack>> countriesAttackable = new HashMap<>();
+  public Map<Country, List<Country>> getAllAttackableCountryPairs() {
+    Map<Country, List<Country>> countriesAttackable = new HashMap<>();
     for (Country country : countries) {
-      List<Attack> attackable = getValidAttackFromCountry(country);
+      List<Country> attackable = getValidAttackFromCountry(country);
       countriesAttackable.put(country, attackable);
     }
     return countriesAttackable;
   }
 
-  public List<Attack> getValidAttackFromCountry(Country country) {
+  public List<Country> getValidAttackFromCountry(Country country) {
     // TODO
-    List<Attack> attackable = new ArrayList<>();
+    List<Country> attackable = new ArrayList<>();
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
         if (!this.equals(adjacentCountry.getPlayer())) {
-          switch (country.getTroops()) {
-            //Should add 3 valid Attacks when the country has more than 3 troops.
-            case 1:
-              break;
-            default:
-              attackable.add(new Attack(country, adjacentCountry, 3));
-            case 3:
-              attackable.add(new Attack(country, adjacentCountry, 2));
-            case 2:
-              attackable.add(new Attack(country, adjacentCountry, 1));
-              break;
-
-          }
+          attackable.add(country);
+//          switch(country.getTroops()) {
+//            case 4:
+//              attackable.add(new Attack(country, adjacentCountry,3 ));
+//            case 3:
+//              attackable.add(new Attack(country, adjacentCountry,2 ));
+//            case 2:
+//              attackable.add(new Attack(country, adjacentCountry,1 ));
+//              break;
+//            default:
+//              break;
+//          }
+          // should go in Attack class!
         }
       }
     }
     return attackable;
+  }
+
+  public Map<Country, List<Country>> getAllValidFortifies() {
+    Map<Country, List<Country>> countriesFortifiable = new HashMap<>();
+    for (Country country : countries) {
+      List<Country> fortifiable = getValidFortifiesFromCountry(country);
+      countriesFortifiable.put(country, fortifiable);
+    }
+    return countriesFortifiable;
+  }
+  public List<Country> getValidFortifiesFromCountry(Country country) {
+    // TODO: checks if more than 1 troop and if there is a path to countries
+    return null;
   }
 
   public void drawCard(Card drawnCard){
@@ -58,6 +71,10 @@ public class Player {
   }
   public int numberOfCountries() {
     return countries.size();
+  }
+
+  public Set<Country> getCountries() {
+    return countries;
   }
 
   public void sendReinforce(Reinforce reinforce) {
