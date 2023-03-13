@@ -1,10 +1,8 @@
 package com.unima.risk6.game.logic;
 
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class Attack extends Move {
 
@@ -12,20 +10,20 @@ public class Attack extends Move {
   private Country toDefend;
   private int aLosses;
   private int dLosses;
-  private ArrayList<Integer> aDice;
-  private ArrayList<Integer> dDice;
+  private ArrayList<Integer> attackDice;
+  private ArrayList<Integer> defendDice;
   private int troopNumber;
   private Dice dice;
 
-  public Attack(Country attacking, Country defending, int attackingTroops) {
-    this.toAttack = attacking;
-    this.toDefend = defending;
-    this.troopNumber = attackingTroops;
-    this.aDice = new ArrayList<>();
-    this.dDice = new ArrayList<>();
+  public Attack(Country toAttack, Country toDefend, int troopNumber) {
+    this.toAttack = toAttack;
+    this.toDefend = toDefend;
+    this.troopNumber = troopNumber;
+    this.attackDice = new ArrayList<Integer>();
+    this.defendDice = new ArrayList<Integer>();
+    this.dice = new Dice();
     aLosses = 0;
     dLosses = 0;
-    calculateLosses();
   }
 
 
@@ -33,19 +31,19 @@ public class Attack extends Move {
 
     switch (troopNumber) {
       case 1:
-        aDice.add(dice.rollDice());
-        dDice.add(dice.rollDice());
+        attackDice.add(dice.rollDice());
+        defendDice.add(dice.rollDice());
         sortDicelist();
         compareDice(0);
         break;
 
       case 2:
         for (int i = 0; i < 2; i++) {
-          aDice.add(dice.rollDice());
+          attackDice.add(dice.rollDice());
         }
-        dDice.add(dice.rollDice());
+        defendDice.add(dice.rollDice());
         if (toDefend.getTroops() > 1) {
-          dDice.add(dice.rollDice());
+          defendDice.add(dice.rollDice());
         }
         sortDicelist();
         if (toDefend.getTroops() > 1) {
@@ -60,11 +58,11 @@ public class Attack extends Move {
       case 3:
 
         for (int i = 0; i < 3; i++) {
-          aDice.add(dice.rollDice());
+          attackDice.add(dice.rollDice());
         }
-        dDice.add(dice.rollDice());
+        defendDice.add(dice.rollDice());
         if (toDefend.getTroops() > 1) {
-          dDice.add(dice.rollDice());
+          defendDice.add(dice.rollDice());
         }
         sortDicelist();
 
@@ -82,7 +80,7 @@ public class Attack extends Move {
 
 
   public void compareDice(int n) {
-    if (aDice.get(n) > dDice.get(n)) {
+    if (attackDice.get(n) > defendDice.get(n)) {
       dLosses++;
     } else {
       aLosses++;
@@ -90,16 +88,16 @@ public class Attack extends Move {
   }
 
   public void sortDicelist() {
-    Collections.sort(dDice, (x, y) -> y - x);
-    Collections.sort(aDice, (x, y) -> y - x);
+    Collections.sort(defendDice, (x, y) -> y - x);
+    Collections.sort(attackDice, (x, y) -> y - x);
   }
 
-  public ArrayList<Integer> getaDice() {
-    return aDice;
+  public ArrayList<Integer> getAttackDice() {
+    return attackDice;
   }
 
   public ArrayList<Integer> getdDice() {
-    return dDice;
+    return defendDice;
   }
 
 

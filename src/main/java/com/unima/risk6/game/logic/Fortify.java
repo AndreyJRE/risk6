@@ -8,11 +8,10 @@ public class Fortify extends Move {
   public Country incoming;
   public int troopsToMove;
 
-  public Fortify(Country pOutgoing, Country pIncoming, int pTroopsToMove) {
-    outgoing = pOutgoing;
-    incoming = pIncoming;
-    troopsToMove = pTroopsToMove;
-
+  public Fortify(Country outgoing, Country incoming, int troopsToMove) {
+    this.outgoing = outgoing;
+    this.incoming = incoming;
+    this.troopsToMove = troopsToMove;
   }
 
   public Country getOutgoing() {
