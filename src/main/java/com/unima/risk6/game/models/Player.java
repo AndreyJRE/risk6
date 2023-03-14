@@ -1,10 +1,12 @@
 package com.unima.risk6.game.models;
 
+import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +16,19 @@ public class Player {
   private Hand hand;
   private Set<Country> countries;
   private Set<Continent> continents;
+  private String user;
 
   public Player() {
     this.hand = new Hand();
+    countries = new HashSet<>();
+    continents = new HashSet<>();
+  }
+
+  public Player(String user) {
+    this.hand = new Hand();
+    countries = new HashSet<>();
+    continents = new HashSet<>();
+    this.user = user;
   }
 
   public Map<Country, List<Country>> getAllAttackableCountryPairs() {
@@ -61,14 +73,16 @@ public class Player {
     }
     return countriesFortifiable;
   }
+
   public List<Country> getValidFortifiesFromCountry(Country country) {
     // TODO: checks if more than 1 troop and if there is a path to countries
     return null;
   }
 
-  public void drawCard(Card drawnCard){
+  public void drawCard(Card drawnCard) {
     this.hand.addCard(drawnCard);
   }
+
   public int numberOfCountries() {
     return countries.size();
   }

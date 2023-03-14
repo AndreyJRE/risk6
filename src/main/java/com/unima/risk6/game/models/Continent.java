@@ -9,11 +9,8 @@ public class Continent {
   private ContinentName continentName;
   private int bonusTroops;
 
-  public Continent(Set<Country> countries, ContinentName continentName, int bonusTroops) {
-    this.countries = countries;
+  public Continent(ContinentName continentName) {
     this.continentName = continentName;
-    this.bonusTroops = bonusTroops;
-
 
   }
 
@@ -27,5 +24,21 @@ public class Continent {
 
   public int getBonusTroops() {
     return bonusTroops;
+  }
+
+  public void setCountries(Set<Country> countries) {
+    this.countries = countries;
+  }
+
+  public void setBonusTroops(int bonusTroops) {
+    this.bonusTroops = bonusTroops;
+  }
+
+  @Override
+  public String toString() {
+    return "Continent{" +
+           ", continentName=" + continentName +
+           ", bonusTroops=" + bonusTroops +
+           '}';
   }
 }
