@@ -8,13 +8,14 @@ module com.unima.risk6 {
   requires io.netty.buffer;
   requires io.netty.common;
   requires io.netty.handler;
+  requires com.google.gson;
 
+  exports com.unima.risk6.game.models.enums;
+  opens com.unima.risk6.game.json.jsonObjects to com.google.gson;
   opens com.unima.risk6 to javafx.fxml;
   exports com.unima.risk6;
   exports com.unima.risk6.gui.controllers;
   opens com.unima.risk6.gui.controllers to javafx.fxml;
-//  exports com.unima.risk6.game;
-//  opens com.unima.risk6.game to javafx.fxml;
   exports com.unima.risk6.game.models;
   opens com.unima.risk6.game.models to javafx.fxml;
   exports com.unima.risk6.game.logic;
