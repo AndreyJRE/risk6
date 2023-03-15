@@ -25,6 +25,12 @@ public class SceneController {
 
   public void activate(SceneName name) {
     stage.setScene(scenes.get(name));
+    /*if (fullScreen) {
+      stage.setFullScreenExitHint("");
+      stage.setFullScreen(true);
+    } else {
+      stage.setFullScreen(false);
+    }*/
   }
 
   public void close() {
