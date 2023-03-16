@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class LogInScreen implements Initializable {
+public class LogInScreen {
 
   private UserService userService;
   private List<User> users;
@@ -33,6 +33,8 @@ public class LogInScreen implements Initializable {
 
   public LogInScreen(Stage stage) {
     this.stage = stage;
+    this.userService = DatabaseConfiguration.getUserService();
+    System.out.println(userService);// Initialize userService
     this.users = userService.getAllUsers();
     showLoginScreen();
   }
@@ -106,11 +108,5 @@ public class LogInScreen implements Initializable {
 
     Scene scene = new Scene(passwordEntryBox, 800, 600);
     stage.setScene(scene);
-  }
-
-  @Override
-  public void initialize(URL url, ResourceBundle resourceBundle) {
-    userService = DatabaseConfiguration.getUserService();
-
   }
 }

@@ -1,6 +1,7 @@
 package com.unima.risk6;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.gui.scenes.LogInScreen;
 import com.unima.risk6.gui.scenes.SceneConfiguration;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
@@ -15,13 +16,18 @@ public class RisikoMain extends Application {
 
   @Override
   public void start(Stage stage) throws IOException {
+    /**
     FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/CreateAccount.fxml"));
     SceneConfiguration.startSceneControllerConfiguration(stage);
     SceneController sceneController = SceneConfiguration.getSceneController();
     Scene scene = new Scene(fxmlLoader.load());
+     */
+    LogInScreen loginScreen = new LogInScreen(stage); // Create instance of the LogInScreen
     stage.setTitle("RISK");
+    /**
     sceneController.addScene(SceneName.LOGIN_SCREEN, scene);
     sceneController.activate(SceneName.LOGIN_SCREEN);
+    */
     stage.show();
   }
 
