@@ -1,6 +1,5 @@
 package com.unima.risk6.network.client;
 
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -20,64 +19,58 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
-
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 
 public final class GameClient {
 
-    static final String URL = System.getProperty("url", "ws://127.0.0.1:8080/game");
+  static final String URL = System.getProperty("url", "ws://127.0.0.1:8080/game");
 
-    public static void main(String[] args) throws Exception {
-        URI uri = new URI(URL);
-        final int port = 8080;
+  public static void main(String[] args) throws Exception {
+    URI uri = new URI(URL);
+    final int port = 8080;
 
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            final GameClientHandler handler =
-                    new GameClientHandler(
-                            WebSocketClientHandshakerFactory.newHandshaker(
-                                    uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
+    EventLoopGroup group = new NioEventLoopGroup();
+    try {
+      final GameClientHandler handler = new GameClientHandler(
+          WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, true,
+              new DefaultHttpHeaders()));
 
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) {
-                            ChannelPipeline p = ch.pipeline();
-                            p.addLast(
-                                    new HttpClientCodec(),
-                                    new HttpObjectAggregator(8192),
-                                    WebSocketClientCompressionHandler.INSTANCE,
-                                    handler);
-                        }
-                    });
-
-            Channel ch = b.connect(uri.getHost(), port).sync().channel();
-            handler.handshakeFuture().sync();
-
-            BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-            while (true) {
-                String msg = console.readLine();
-                if (msg == null) {
-                    break;
-                } else if ("bye".equalsIgnoreCase(msg)) {
-                    ch.writeAndFlush(new CloseWebSocketFrame());
-                    ch.closeFuture().sync();
-                    break;
-                } else if ("ping".equalsIgnoreCase(msg)) {
-                    WebSocketFrame frame = new PingWebSocketFrame(Unpooled.wrappedBuffer(new byte[] { 8, 1, 8, 1 }));
-                    ch.writeAndFlush(frame);
-                } else {
-                    WebSocketFrame frame = new TextWebSocketFrame(msg);
-                    ch.writeAndFlush(frame);
-                }
+      Bootstrap b = new Bootstrap();
+      b.group(group).channel(NioSocketChannel.class)
+          .handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) {
+              ChannelPipeline p = ch.pipeline();
+              p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192),
+                  WebSocketClientCompressionHandler.INSTANCE, handler);
             }
-        } finally {
-            group.shutdownGracefully();
+          });
+
+      Channel ch = b.connect(uri.getHost(), port).sync().channel();
+      handler.handshakeFuture().sync();
+
+      BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+      while (true) {
+        String msg = console.readLine();
+        if (msg == null) {
+          break;
+        } else if ("bye".equalsIgnoreCase(msg)) {
+          ch.writeAndFlush(new CloseWebSocketFrame());
+          ch.closeFuture().sync();
+          break;
+        } else if ("ping".equalsIgnoreCase(msg)) {
+          WebSocketFrame frame = new PingWebSocketFrame(
+              Unpooled.wrappedBuffer(new byte[]{8, 1, 8, 1}));
+          ch.writeAndFlush(frame);
+        } else {
+          WebSocketFrame frame = new TextWebSocketFrame(msg);
+          ch.writeAndFlush(frame);
         }
+      }
+    } finally {
+      group.shutdownGracefully();
     }
+  }
 }
