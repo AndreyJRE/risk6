@@ -8,6 +8,8 @@ module com.unima.risk6 {
   requires io.netty.buffer;
   requires io.netty.common;
   requires io.netty.handler;
+  requires java.desktop;
+  requires org.xerial.sqlitejdbc;
   requires com.google.gson;
 
   exports com.unima.risk6.game.models.enums;

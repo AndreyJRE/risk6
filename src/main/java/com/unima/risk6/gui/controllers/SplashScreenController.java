@@ -12,12 +12,6 @@ public class SplashScreenController implements Initializable {
   @FXML
   private Label progress;
 
-
-  @FXML
-  private void handlebuttonAction(ActionEvent event) {
-
-  }
-
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
   }
