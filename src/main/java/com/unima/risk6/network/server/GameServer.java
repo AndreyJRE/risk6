@@ -13,27 +13,27 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 public final class GameServer {
 
-    static final int PORT = 8080;
-    static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+  static final int PORT = 8080;
+  static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new GameServerInitializer(channels));
+    EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    EventLoopGroup workerGroup = new NioEventLoopGroup();
+    try {
+      ServerBootstrap b = new ServerBootstrap();
+      b.group(bossGroup, workerGroup)
+          .channel(NioServerSocketChannel.class)
+          .handler(new LoggingHandler(LogLevel.INFO))
+          .childHandler(new GameServerInitializer(channels));
 
-            Channel ch = b.bind(PORT).sync().channel();
+      Channel ch = b.bind(PORT).sync().channel();
 
-            ch.closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
+      ch.closeFuture().sync();
+    } finally {
+      bossGroup.shutdownGracefully();
+      workerGroup.shutdownGracefully();
     }
+  }
 
 }
