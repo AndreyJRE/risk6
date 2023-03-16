@@ -1,30 +1,32 @@
 package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.CountryName;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Country {
+
   private final CountryName countryName;
   private Player player;
   private boolean hasPlayer;
   private Integer troops;
   private Set<Country> adjacentCountries;
+  private Continent continent;
 
   public Country(CountryName countryName) {
-
     this.countryName = countryName;
-    adjacentCountries = new HashSet<>();
-    hasPlayer = false;
+    this.hasPlayer = false;
+    this.troops = 0;
+    this.player = null;
 
   }
+
   public CountryName getCountryName() {
     return countryName;
   }
 
 
-  public void setPlayer(Player nPlayer) {
-    player = nPlayer;
+  public void setPlayer(Player player) {
+    this.player = player;
     hasPlayer = true;
   }
 
@@ -39,7 +41,8 @@ public class Country {
   public void setTroops(int troopNumber) {
     troops = troopNumber;
   }
-  public Integer getTroops(){
+
+  public Integer getTroops() {
     return troops;
   }
 
@@ -48,13 +51,32 @@ public class Country {
   }
 
 
-
   public void setAdjacentCountries(Set<Country> adjacentCountries) {
     this.adjacentCountries = adjacentCountries;
   }
 
   public Set<Country> getAdjacentCountries() {
     return adjacentCountries;
+  }
+
+  public void setContinent(Continent continent) {
+    this.continent = continent;
+  }
+
+  public Continent getContinent() {
+    return continent;
+  }
+
+  @Override
+  public String toString() {
+    return "Country{" +
+        "countryName=" + countryName +
+        ", player=" + player +
+        ", hasPlayer=" + hasPlayer +
+        ", troops=" + troops +
+        ", adjacentCountries=" + adjacentCountries +
+        ", continent=" + continent +
+        '}';
   }
 }
 

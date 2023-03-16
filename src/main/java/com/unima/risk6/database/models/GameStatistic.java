@@ -28,6 +28,11 @@ public class GameStatistic {
   public GameStatistic() {
   }
 
+  public GameStatistic(User user, LocalDateTime startDate) {
+    this.user = user;
+    this.startDate = startDate;
+  }
+
   public GameStatistic(Long id, User user, LocalDateTime startDate, LocalDateTime finishDate,
       int troopsLost, int troopsGained, boolean gameWon) {
     this.id = id;
@@ -98,15 +103,9 @@ public class GameStatistic {
 
   @Override
   public String toString() {
-    return "GameStatistic{" +
-           "id=" + id +
-           ", user=" + user +
-           ", startDate=" + startDate +
-           ", finishDate=" + finishDate +
-           ", troopsLost=" + troopsLost +
-           ", troopsGained=" + troopsGained +
-           ", won=" + gameWon +
-           '}';
+    return "GameStatistic{id=" + id + ", user=" + user + ", startDate=" + startDate
+           + ", finishDate=" + finishDate + ", troopsLost=" + troopsLost + ", troopsGained="
+           + troopsGained + ", won=" + gameWon + '}';
   }
 
   @Override

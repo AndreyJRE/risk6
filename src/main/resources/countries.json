@@ -1,0 +1,413 @@
+[
+  {
+    "countryName": "ALASKA",
+    "adjacentCountries": [
+      "ALBERTA",
+      "NORTH_WEST_TERRITORY",
+      "KAMCHATKA"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "NORTH_WEST_TERRITORY",
+    "adjacentCountries": [
+      "ALASKA",
+      "GREENLAND",
+      "ONTARIO",
+      "ALBERTA"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "ALBERTA",
+    "adjacentCountries": [
+      "ALASKA",
+      "NORTH_WEST_TERRITORY",
+      "ONTARIO",
+      "WESTERN_UNITED_STATES"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "WESTERN_UNITED_STATES",
+    "adjacentCountries": [
+      "ALBERTA",
+      "ONTARIO",
+      "EASTERN_UNITED_STATES",
+      "CENTRAL_AMERICA"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "CENTRAL_AMERICA",
+    "adjacentCountries": [
+      "WESTERN_UNITED_STATES",
+      "VENEZUELA",
+      "EASTERN_UNITED_STATES"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "GREENLAND",
+    "adjacentCountries": [
+      "NORTH_WEST_TERRITORY",
+      "ONTARIO",
+      "QUEBEC",
+      "ICELAND"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "ONTARIO",
+    "adjacentCountries": [
+      "NORTH_WEST_TERRITORY",
+      "GREENLAND",
+      "QUEBEC",
+      "EASTERN_UNITED_STATES",
+      "WESTERN_UNITED_STATES",
+      "ALBERTA"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "QUEBEC",
+    "adjacentCountries": [
+      "ONTARIO",
+      "GREENLAND",
+      "EASTERN_UNITED_STATES"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "EASTERN_UNITED_STATES",
+    "adjacentCountries": [
+      "WESTERN_UNITED_STATES",
+      "ONTARIO",
+      "QUEBEC",
+      "CENTRAL_AMERICA"
+    ],
+    "continent": "NORTH_AMERICA"
+  },
+  {
+    "countryName": "VENEZUELA",
+    "adjacentCountries": [
+      "CENTRAL_AMERICA",
+      "BRAZIL",
+      "PERU"
+    ],
+    "continent": "SOUTH_AMERICA"
+  },
+  {
+    "countryName": "PERU",
+    "adjacentCountries": [
+      "VENEZUELA",
+      "BRAZIL",
+      "ARGENTINA"
+    ],
+    "continent": "SOUTH_AMERICA"
+  },
+  {
+    "countryName": "BRAZIL",
+    "adjacentCountries": [
+      "PERU",
+      "VENEZUELA",
+      "NORTH_AFRICA",
+      "ARGENTINA"
+    ],
+    "continent": "SOUTH_AMERICA"
+  },
+  {
+    "countryName": "ARGENTINA",
+    "adjacentCountries": [
+      "PERU",
+      "BRAZIL"
+    ],
+    "continent": "SOUTH_AMERICA"
+  },
+  {
+    "countryName": "ICELAND",
+    "adjacentCountries": [
+      "GREENLAND",
+      "GREAT_BRITAIN"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "GREAT_BRITAIN",
+    "adjacentCountries": [
+      "ICELAND",
+      "NORTHERN_EUROPE",
+      "WESTERN_EUROPE"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "NORTHERN_EUROPE",
+    "adjacentCountries": [
+      "SCANDINAVIA",
+      "GREAT_BRITAIN",
+      "UKRAINE",
+      "SOUTHERN_EUROPE",
+      "WESTERN_EUROPE"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "SCANDINAVIA",
+    "adjacentCountries": [
+      "NORTHERN_EUROPE",
+      "UKRAINE"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "SOUTHERN_EUROPE",
+    "adjacentCountries": [
+      "WESTERN_EUROPE",
+      "NORTHERN_EUROPE",
+      "UKRAINE",
+      "EGYPT",
+      "NORTH_AFRICA"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "UKRAINE",
+    "adjacentCountries": [
+      "SCANDINAVIA",
+      "URAL",
+      "AFGHANISTAN",
+      "MIDDLE_EAST",
+      "SOUTHERN_EUROPE",
+      "NORTHERN_EUROPE"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "WESTERN_EUROPE",
+    "adjacentCountries": [
+      "GREAT_BRITAIN",
+      "NORTHERN_EUROPE",
+      "SOUTHERN_EUROPE",
+      "NORTH_AFRICA"
+    ],
+    "continent": "EUROPE"
+  },
+  {
+    "countryName": "CONGO",
+    "adjacentCountries": [
+      "NORTH_AFRICA",
+      "EGYPT",
+      "EAST_AFRICA",
+      "SOUTH_AFRICA"
+    ],
+    "continent": "AFRICA"
+  },
+  {
+    "countryName": "EAST_AFRICA",
+    "adjacentCountries": [
+      "EGYPT",
+      "MADAGASCAR",
+      "SOUTH_AFRICA",
+      "CONGO"
+    ],
+    "continent": "AFRICA"
+  },
+  {
+    "countryName": "EGYPT",
+    "adjacentCountries": [
+      "SOUTHERN_EUROPE",
+      "MIDDLE_EAST",
+      "EAST_AFRICA",
+      "CONGO",
+      "NORTH_AFRICA"
+    ],
+    "continent": "AFRICA"
+  },
+  {
+    "countryName": "MADAGASCAR",
+    "adjacentCountries": [
+      "EAST_AFRICA",
+      "SOUTH_AFRICA"
+    ],
+    "continent": "AFRICA"
+  },
+  {
+    "countryName": "NORTH_AFRICA",
+    "adjacentCountries": [
+      "WESTERN_EUROPE",
+      "SOUTHERN_EUROPE",
+      "EGYPT",
+      "CONGO",
+      "BRAZIL"
+    ],
+    "continent": "AFRICA"
+  },
+  {
+    "countryName": "SOUTH_AFRICA",
+    "adjacentCountries": [
+      "CONGO",
+      "EAST_AFRICA",
+      "MADAGASCAR"
+    ],
+    "continent": "AFRICA"
+  },
+  {
+    "countryName": "AFGHANISTAN",
+    "adjacentCountries": [
+      "UKRAINE",
+      "URAL",
+      "SIBERIA",
+      "CHINA",
+      "INDIA",
+      "MIDDLE_EAST"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "CHINA",
+    "adjacentCountries": [
+      "AFGHANISTAN",
+      "SIBERIA",
+      "MONGOLIA",
+      "SIAM",
+      "INDIA"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "INDIA",
+    "adjacentCountries": [
+      "MIDDLE_EAST",
+      "AFGHANISTAN",
+      "CHINA",
+      "SIAM"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "IRKUTSK",
+    "adjacentCountries": [
+      "SIBERIA",
+      "YAKUTSK",
+      "KAMCHATKA",
+      "MONGOLIA"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "JAPAN",
+    "adjacentCountries": [
+      "JAPAN",
+      "KAMCHATKA",
+      "MONGOLIA"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "KAMCHATKA",
+    "adjacentCountries": [
+      "YAKUTSK",
+      "ALASKA",
+      "JAPAN",
+      "MONGOLIA",
+      "IRKUTSK"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "MIDDLE_EAST",
+    "adjacentCountries": [
+      "UKRAINE",
+      "AFGHANISTAN",
+      "INDIA",
+      "EGYPT"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "MONGOLIA",
+    "adjacentCountries": [
+      "SIBERIA",
+      "IRKUTSK",
+      "KAMCHATKA",
+      "JAPAN",
+      "CHINA"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "SIAM",
+    "adjacentCountries": [
+      "INDIA",
+      "CHINA",
+      "INDONESIA"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "SIBERIA",
+    "adjacentCountries": [
+      "URAL",
+      "YAKUTSK",
+      "IRKUTSK",
+      "MONGOLIA",
+      "CHINA",
+      "AFGHANISTAN"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "URAL",
+    "adjacentCountries": [
+      "UKRAINE",
+      "SIBERIA",
+      "AFGHANISTAN"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "YAKUTSK",
+    "adjacentCountries": [
+      "SIBERIA",
+      "KAMCHATKA",
+      "IRKUTSK"
+    ],
+    "continent": "ASIA"
+  },
+  {
+    "countryName": "EASTERN_AUSTRALIA",
+    "adjacentCountries": [
+      "NEW_GUINEA",
+      "WESTERN_AUSTRALIA"
+    ],
+    "continent": "AUSTRALIA"
+  },
+  {
+    "countryName": "INDONESIA",
+    "adjacentCountries": [
+      "SIAM",
+      "NEW GUINEA",
+      "WESTERN_AUSTRALIA"
+    ],
+    "continent": "AUSTRALIA"
+  },
+  {
+    "countryName": "NEW_GUINEA",
+    "adjacentCountries": [
+      "INDONESIA",
+      "EASTERN AUSTRALIA",
+      "WESTERN_AUSTRALIA"
+    ],
+    "continent": "AUSTRALIA"
+  },
+  {
+    "countryName": "WESTERN_AUSTRALIA",
+    "adjacentCountries": [
+      "INDONESIA",
+      "NEW GUINEA",
+      "EASTERN AUSTRALIA"
+    ],
+    "continent": "AUSTRALIA"
+  }
+]

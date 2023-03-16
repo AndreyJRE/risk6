@@ -1,8 +1,8 @@
 package com.unima.risk6.game.models;
 
-import com.unima.risk6.game.models.enums.CardSymbol;
-import com.unima.risk6.game.models.enums.CountryName;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Hand {
 
@@ -20,8 +20,8 @@ public class Hand {
 
   }
 
-  public void selectCards(int i) {
-    if (selectedCards.size() < 3) {
+  public void selectCard(int i) {
+    if (selectedCards.size() < 3 && !selectedCards.contains(cards.get(i))) {
       selectedCards.add(cards.get(i));
     }
   }
@@ -52,6 +52,8 @@ public class Hand {
         case WILDCARD:
           wildCards++;
           break;
+        default:
+          break;
       }
     }
 
@@ -68,14 +70,30 @@ public class Hand {
   }
 
   public boolean mustExchange() {
-    if (cards.size() == 5) {
+    if (cards.size() > 4) {
       return true;
     }
     return false;
   }
 
+  public Set<Country> hasCountryBonus(Set<Country> countries) {
+    HashSet<Country> bonusCountries = new HashSet<Country>();
+    countries.forEach((country) -> {
+          selectedCards.forEach((card) -> {
+                if (card.getCountry().equals(country.getCountryName())) {
+                  countries.add(country);
+                }
+              }
+          );
+        }
+    );
+    return bonusCountries;
+  }
+
   public void exchangeCards() {
-    selectedCards.forEach((n) -> cards.remove(n));
+    if (isExchangable()) {
+      selectedCards.forEach((n) -> cards.remove(n));
+    }
   }
 
 
