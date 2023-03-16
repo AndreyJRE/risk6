@@ -22,6 +22,11 @@ public class Fortify extends Move {
     return incoming;
   }
 
+  /**
+   * @return Returns how many troops the Player wants to move from the origin country to country to
+   * fortify
+   * @author Weng Phung
+   */
   public int getTroopsToMove() {
     return troopsToMove;
   }
