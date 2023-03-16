@@ -1,9 +1,7 @@
 package com.unima.risk6.game.ai;
 
 import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.GameState;
-import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
@@ -73,7 +71,7 @@ public class EasyBot extends Player implements AiBot {
     int availableTroops = toAttack[0].getTroops();
     int attackingTroops = rng.nextInt(1, Math.min(4, availableTroops)); // exclusive bound
     Attack moveToMake = new Attack(toAttack[0], toAttack[1], attackingTroops);
-    this.sendAttack(moveToMake);
+    this.sendAttack(toAttack[0], toAttack[1], attackingTroops);
     return moveToMake;
   }
 
@@ -90,7 +88,7 @@ public class EasyBot extends Player implements AiBot {
     Map<Country, List<Country>> decisions = this.getAllValidFortifies();
     Country[] toFortify = this.getRandomCountryPair(decisions);
     int troopsToMove = rng.nextInt(1, toFortify[0].getTroops());
-    this.sendFortify(new Fortify(toFortify[0], toFortify[1], troopsToMove));
+    this.sendFortify(toFortify[0], toFortify[1], troopsToMove);
   }
 
   /**
@@ -100,10 +98,10 @@ public class EasyBot extends Player implements AiBot {
    * @author eameri
    */
   public void createAllReinforcements() {
-    while (this.getReinforcementTroops() > 0) {
-      int troopsSent = rng.nextInt(1, this.getReinforcementTroops());
+    while (this.getDeployableTroops() > 0) {
+      int troopsSent = rng.nextInt(1, this.getDeployableTroops());
       this.createReinforce(troopsSent);
-      this.setReinforcementTroops(this.getReinforcementTroops() - troopsSent);
+      this.setDeployableTroops(this.getDeployableTroops() - troopsSent);
     }
   }
 
@@ -115,7 +113,7 @@ public class EasyBot extends Player implements AiBot {
    */
   public void createReinforce(int troops) {
     Country toReinforce = getRandomCountryFromSet(this.getCountries());
-    this.sendReinforce(new Reinforce(toReinforce, troops));
+    this.sendReinforce(toReinforce, troops);
   }
 
   /**
@@ -162,8 +160,8 @@ public class EasyBot extends Player implements AiBot {
    */
   public boolean attackAgain(Attack attack) {
     int troopsUsed = Math.min(2, attack.getTroopNumber());
-    int troopsLost = attack.getaLosses();
-    int troopsAvailable = attack.getToAttack().getTroops(); // contains number after attack
+    int troopsLost = attack.getAttackerLosses();
+    int troopsAvailable = attack.getAttackingCountry().getTroops(); // contains number after attack
     return troopsLost < troopsUsed && troopsAvailable > 1 && !attack.battleWon();
   }
 }
