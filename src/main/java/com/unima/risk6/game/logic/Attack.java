@@ -164,4 +164,7 @@ public class Attack extends Move {
   public int getTroopNumber() {
     return troopNumber;
   }
+  public boolean battleWon() {
+    return true; // TEMP METHOD
+  }
 }
