@@ -37,8 +37,8 @@ public class Continent {
   @Override
   public String toString() {
     return "Continent{" +
-           ", continentName=" + continentName +
-           ", bonusTroops=" + bonusTroops +
-           '}';
+        ", continentName=" + continentName +
+        ", bonusTroops=" + bonusTroops +
+        '}';
   }
 }

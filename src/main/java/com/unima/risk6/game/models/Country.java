@@ -25,8 +25,8 @@ public class Country {
   }
 
 
-  public void setPlayer(Player nPlayer) {
-    player = nPlayer;
+  public void setPlayer(Player player) {
+    this.player = player;
     hasPlayer = true;
   }
 
@@ -70,13 +70,13 @@ public class Country {
   @Override
   public String toString() {
     return "Country{" +
-           "countryName=" + countryName +
-           ", player=" + player +
-           ", hasPlayer=" + hasPlayer +
-           ", troops=" + troops +
-           ", adjacentCountries=" + adjacentCountries +
-           ", continent=" + continent +
-           '}';
+        "countryName=" + countryName +
+        ", player=" + player +
+        ", hasPlayer=" + hasPlayer +
+        ", troops=" + troops +
+        ", adjacentCountries=" + adjacentCountries +
+        ", continent=" + continent +
+        '}';
   }
 }
 

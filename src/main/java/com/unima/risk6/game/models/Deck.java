@@ -1,9 +1,9 @@
 package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.CardSymbol;
+import com.unima.risk6.game.models.enums.CountryName;
 import java.util.ArrayList;
 import java.util.Collections;
-import com.unima.risk6.game.models.enums.CountryName;
 import java.util.List;
 
 public class Deck {
