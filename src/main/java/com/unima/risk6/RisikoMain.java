@@ -1,14 +1,12 @@
 package com.unima.risk6;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.gui.SceneConfiguration;
+import com.unima.risk6.gui.scenes.SceneConfiguration;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import javafx.application.Application;
-import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart.Data;
 import javafx.stage.Stage;
 
 import java.io.IOException;

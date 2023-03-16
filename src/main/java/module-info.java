@@ -8,6 +8,7 @@ module com.unima.risk6 {
   requires io.netty.buffer;
   requires io.netty.common;
   requires io.netty.handler;
+  requires java.desktop;
 
   opens com.unima.risk6 to javafx.fxml;
   exports com.unima.risk6;

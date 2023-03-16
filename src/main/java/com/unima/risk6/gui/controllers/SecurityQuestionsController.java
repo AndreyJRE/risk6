@@ -1,7 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.RisikoMain;
-import com.unima.risk6.gui.SceneConfiguration;
+import com.unima.risk6.gui.scenes.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import java.io.IOException;
 import javafx.animation.PauseTransition;
@@ -11,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class SecurityQuestionsController {

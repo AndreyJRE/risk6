@@ -3,8 +3,9 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.gui.SceneConfiguration;
+import com.unima.risk6.gui.scenes.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +20,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class CreateAccountController implements Initializable {
@@ -65,6 +65,9 @@ public class CreateAccountController implements Initializable {
 
     if (isValidCredentials(username)) {
       //TODO: Connection to database (Write new user)
+      User user = new User(username, password,
+          "src/main/resources/Pictures/");
+      userService.saveUser(user);
       FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/SecurityQuestions"
           + ".fxml"));
       Scene scene = null;
@@ -77,13 +80,18 @@ public class CreateAccountController implements Initializable {
       sceneController.addScene(SceneName.SECURITY_QUESTIONS_SCREEN, scene);
       sceneController.activate(SceneName.SECURITY_QUESTIONS_SCREEN);
     } else {
-      System.out.println("Invalid credentials. Please try again.");
+      passwordMismatchLabel.setText("Username already exists!");
     }
   }
 
   private boolean isValidCredentials(String username) {
     //TODO: Überprüfen, ob user schon besteht -> Database Connection
-    return username.equals("admin");
+    try{
+      User user = userService.getUserByUsername(username);
+      return false;
+    } catch (Exception e){
+      return true;
+    }
   }
 
   @FXML

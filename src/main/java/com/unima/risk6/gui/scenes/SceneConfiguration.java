@@ -1,4 +1,4 @@
-package com.unima.risk6.gui;
+package com.unima.risk6.gui.scenes;
 
 import com.unima.risk6.gui.controllers.SceneController;
 import javafx.stage.Stage;
