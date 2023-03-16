@@ -18,9 +18,10 @@ public class Player {
   private Set<Continent> continents;
   private String user;
   private GamePhase currentPhase;
-  private int deployableTroops;
-  private int initialTroops;
 
+  private int deployableTroops;
+
+  private int initialTroops;
   public Player() {
     this.hand = new Hand();
     countries = new HashSet<>();
@@ -38,7 +39,9 @@ public class Player {
     Map<Country, List<Country>> countriesAttackable = new HashMap<>();
     for (Country country : countries) {
       List<Country> attackable = getValidAttackFromCountry(country);
-      countriesAttackable.put(country, attackable);
+      if (attackable.size() > 0) {
+        countriesAttackable.put(country, attackable);
+      }
     }
     return countriesAttackable;
   }
@@ -129,6 +132,7 @@ public class Player {
   }
 
   //TODO expand with CLAIMPHASE
+
   public GamePhase nextPhase() {
     switch (currentPhase) {
       case REINFORCEMENTPHASE:
@@ -157,7 +161,6 @@ public class Player {
     }
 
   }
-
   public int getDeployableTroops() {
     return deployableTroops;
   }
@@ -173,6 +176,7 @@ public class Player {
   }
 
   //TODO have to implement which Continent is fully Occupied by Player
+
   public void updateContinents(Set<Continent> continents) {
     continents.forEach((n) -> {
       if (countries.containsAll(n.getCountries())) {
@@ -181,7 +185,6 @@ public class Player {
     });
 
   }
-
   public Reinforce sendReinforce(Country reinforcedCountry, int troopNumber) {
     return new Reinforce(reinforcedCountry, troopNumber);
   }
@@ -225,6 +228,10 @@ public class Player {
 
   public int getInitialTroops() {
     return initialTroops;
+  }
+
+  public void setDeployableTroops(int deployableTroops) {
+    this.deployableTroops = deployableTroops;
   }
 }
 
