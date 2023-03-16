@@ -4,6 +4,7 @@ import com.unima.risk6.database.daos.UserDao;
 import com.unima.risk6.database.exceptions.NotFoundException;
 import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,10 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.sql.Connection;
 
 /**
- * Implementation of user dao
+ * A repository for performing CRUD operations on User objects in a database. Implements the UserDao
+ * interface. This class provides methods for adding, updating, deleting, and retrieving users from
+ * a database, as well as retrieving game statistics associated with a user. It uses prepared
+ * statements to execute SQL queries on a database connection provided during instantiation.
  *
  * @author astoyano
  */
@@ -43,13 +46,25 @@ public class UserRepository implements UserDao {
 
   private final DateTimeFormatter localDateTimeDtf;
 
+  /**
+   * Constructs a new UserRepository with the provided database connection.
+   *
+   * @param databaseConnection a Connection object representing the database connection
+   */
   public UserRepository(Connection databaseConnection) {
     this.databaseConnection = databaseConnection;
     localDateDtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    localDateTimeDtf = DateTimeFormatter.ofPattern("");
+    localDateTimeDtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     initStatements();
   }
 
+  /**
+   * Initializes prepared statements for this repository. Creates prepared statements for adding,
+   * deleting, updating, and retrieving users from the database, as well as retrieving game
+   * statistics associated with a user.
+   *
+   * @throws RuntimeException if there is a problem initializing the statements
+   */
   private void initStatements() {
     try {
       addUserStatement = this.databaseConnection.prepareStatement("""
@@ -74,6 +89,13 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Retrieves a User object with the specified ID from the database.
+   *
+   * @param id a Long representing the ID of the user to retrieve
+   * @return an Optional containing the User object if found, or an empty Optional otherwise
+   * @throws RuntimeException if there is a problem executing the query
+   */
   @Override
   public Optional<User> get(Long id) {
     try {
@@ -98,6 +120,12 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Retrieves a list of all User objects in the database.
+   *
+   * @return a List of User objects
+   * @throws RuntimeException if there is a problem executing the query
+   */
   @Override
   public List<User> getAll() {
     try {
@@ -121,6 +149,13 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Adds a User object to the database.
+   *
+   * @param user a User object to add to the database
+   * @return the ID of the newly added User object, or null if the add operation failed
+   * @throws RuntimeException if there is a problem executing the query
+   */
   @Override
   public Long save(User user) {
     try {
@@ -141,6 +176,12 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Updates a User object in the database.
+   *
+   * @param user a User object to update in the database
+   * @throws RuntimeException if there is a problem executing the query
+   */
   @Override
   public void update(User user) {
     try {
@@ -155,6 +196,12 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Deletes a User object with the specified ID from the database.
+   *
+   * @param id a Long representing the ID of the user to delete
+   * @throws RuntimeException if there is a problem executing the query
+   */
   @Override
   public void deleteById(Long id) {
     try {
@@ -165,6 +212,16 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Retrieves a list of all GameStatistic objects associated with a User object with the specified
+   * ID.
+   *
+   * @param id a Long representing the ID of the user whose game statistics to retrieve
+   * @return a List of GameStatistic objects associated with the user, or an empty List if none are
+   * found
+   * @throws RuntimeException  if there is a problem executing the query
+   * @throws NotFoundException if the specified user ID is not found in the database
+   */
   @Override
   public List<GameStatistic> getAllStatisticsByUserId(Long id) {
     try {
@@ -180,8 +237,8 @@ public class UserRepository implements UserDao {
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getInt(5) == 1;
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6));
-        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7));
+        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), localDateTimeDtf);
+        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7), localDateTimeDtf);
 
         GameStatistic gameStatistic = new GameStatistic(statisticId, user, startDate, finishDate,
             troopsLost, troopsGained, gameWon);
