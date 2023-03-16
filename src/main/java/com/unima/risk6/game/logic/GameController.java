@@ -37,8 +37,10 @@ public class GameController {
   public void nextPlayer() {
     Player lastPlayer = players.poll();
     lastPlayer.nextPhase();
-    players.peek().nextPhase();
-    players.peek().updateContinents(gameState.getContinents());
+    Player nextPlayer = players.peek();
+    gameState.setCurrentPlayer(nextPlayer);
+    nextPlayer.nextPhase();
+    nextPlayer.updateContinents(gameState.getContinents());
     gameState.setCurrentPhase(GamePhase.REINFORCEMENTPHASE);
     players.add(lastPlayer);
 
