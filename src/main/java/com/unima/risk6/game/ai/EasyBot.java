@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * The Easy difficulty bot
+ * The easy difficulty bot, which makes all of it's moves randomly
  *
  * @author eameri
  */
@@ -71,7 +71,7 @@ public class EasyBot extends Player implements AiBot {
    */
   public Attack createAttack(Country[] toAttack) {
     int availableTroops = toAttack[0].getTroops();
-    int attackingTroops = rng.nextInt(1, Math.min(4, availableTroops));
+    int attackingTroops = rng.nextInt(1, Math.min(4, availableTroops)); // exclusive bound
     Attack moveToMake = new Attack(toAttack[0], toAttack[1], attackingTroops);
     this.sendAttack(moveToMake);
     return moveToMake;
@@ -161,7 +161,7 @@ public class EasyBot extends Player implements AiBot {
    * @author eameri
    */
   public boolean attackAgain(Attack attack) {
-    int troopsUsed = attack.getTroopNumber();
+    int troopsUsed = Math.min(2, attack.getTroopNumber());
     int troopsLost = attack.getaLosses();
     int troopsAvailable = attack.getToAttack().getTroops(); // contains number after attack
     return troopsLost < troopsUsed && troopsAvailable > 1 && !attack.battleWon();
