@@ -1,17 +1,15 @@
 package com.unima.risk6.database.services;
 
+import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.exceptions.NotFoundException;
+import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-/**
- * User service for user repository
- *
- * @author
- */
 
 public class UserService {
 
@@ -32,7 +30,18 @@ public class UserService {
   }
 
   public Long saveUser(User user) {
-    //TODO Validate username and password, encryption for password is also needed
+    if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
+        || user.getPassword().isEmpty()) {
+      throw new IllegalArgumentException("Username and password must not be empty");
+    }
+    // Check if the username is unique
+    Optional<User> existingUser = userRepository.getUserByUsername(user.getUsername());
+    if (existingUser.isPresent()) {
+      throw new UsernameNotUniqueException("Username is already taken");
+    }
+    // Encrypt password
+    String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
+    user.setPassword(encryptedPassword);
     user.setCreatedAt(LocalDate.now());
     user.setActive(true);
     return userRepository.save(user);
@@ -43,7 +52,16 @@ public class UserService {
   }
 
   public void updateUser(User user) {
-    //TODO Validate username and password, encryption for password is also needed
+    if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
+        || user.getPassword().isEmpty()) {
+      throw new IllegalArgumentException("Username and password must not be empty");
+    }
+    User userDatabase = getUserById(user.getId());
+    if (!userDatabase.getPassword().equals(user.getPassword())) {
+      String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
+      user.setPassword(encryptedPassword);
+    }
+
     userRepository.update(user);
   }
 
@@ -54,7 +72,7 @@ public class UserService {
   public User getUserByUsername(String username) {
     return userRepository.getUserByUsername(username)
         .orElseThrow(() -> new NotFoundException(
-            "User with username {" + username + "is not in the database"));
+            "User with username {" + username + "} is not in the database"));
   }
 
 
