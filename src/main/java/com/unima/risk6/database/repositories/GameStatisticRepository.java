@@ -41,8 +41,7 @@ public class GameStatisticRepository implements GameStatisticDao {
    * Constructs a new instance of the GameStatisticRepository.
    *
    * @param databaseConnection the connection to the database
-   * @param userRepository     the {@link UserRepository} used to retrieve user data from the
-   *                           database
+   * @param userRepository     the UserRepository used to retrieve user data from the database
    */
 
 
@@ -187,6 +186,12 @@ public class GameStatisticRepository implements GameStatisticDao {
     }
   }
 
+  /**
+   * This method should stay empty, because it is not allowed to delete own statistic. But it must
+   * be overriden.
+   *
+   * @param id The id of game statistic to delete
+   */
   @Override
   public void deleteById(Long id) {
 
