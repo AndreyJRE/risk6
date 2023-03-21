@@ -94,7 +94,8 @@ public class LogInScreen {
       if (enteredPassword.equals(user.getPassword())) {
         // Proceed to the next scene (game) that is created with FXML
         try {
-          FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/CreateAccount.fxml"));
+          FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
+              + ".fxml"));
           Parent root = fxmlLoader.load();
           Scene nextScene = new Scene(root, 800, 600);
           stage.setScene(nextScene);
@@ -103,6 +104,7 @@ public class LogInScreen {
         }
       } else {
         // TODO: Show an error message (incorrect password)
+        System.out.println("Wrong password!");
       }
     });
 

@@ -62,13 +62,11 @@ public class CreateAccountController implements Initializable {
 
     pause = new PauseTransition(Duration.millis(500));
 
-
-    if (isValidCredentials(username)) {
-      //TODO: Connection to database (Write new user)
+  if (isValidCredentials(username)) {
       User user = new User(username, password,
-          "src/main/resources/Pictures/");
+          "src/main/resources/Pictures/AdobeStock_259394679.png");
       userService.saveUser(user);
-      FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/SecurityQuestions"
+      FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
           + ".fxml"));
       Scene scene = null;
       try {
@@ -77,15 +75,15 @@ public class CreateAccountController implements Initializable {
         throw new RuntimeException(e);
       }
       SceneController sceneController = SceneConfiguration.getSceneController();
-      sceneController.addScene(SceneName.SECURITY_QUESTIONS_SCREEN, scene);
-      sceneController.activate(SceneName.SECURITY_QUESTIONS_SCREEN);
+      sceneController.addScene(SceneName.TITLE_SCREEN, scene);
+      sceneController.activate(SceneName.TITLE_SCREEN);
     } else {
       passwordMismatchLabel.setText("Username already exists!");
     }
   }
 
   private boolean isValidCredentials(String username) {
-    //TODO: Überprüfen, ob user schon besteht -> Database Connection
+    //Überprüfen, ob user schon besteht -> Database Connection
     try{
       User user = userService.getUserByUsername(username);
       return false;
