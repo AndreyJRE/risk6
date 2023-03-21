@@ -12,6 +12,8 @@ import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -27,10 +29,10 @@ public class RisikoMain extends Application {
 
     this.userService = DatabaseConfiguration.getUserService();
     this.users = userService.getAllUsers();
+    SceneConfiguration.startSceneControllerConfiguration(stage);
     SceneController sceneController = SceneConfiguration.getSceneController();
     if(users.isEmpty()){
       FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/CreateAccount.fxml"));
-      SceneConfiguration.startSceneControllerConfiguration(stage);
       Scene scene = new Scene(fxmlLoader.load());
       sceneController.addScene(SceneName.LOGIN_SCREEN, scene);
       sceneController.activate(SceneName.LOGIN_SCREEN);
