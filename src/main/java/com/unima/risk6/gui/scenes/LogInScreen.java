@@ -34,7 +34,6 @@ public class LogInScreen {
   public LogInScreen(Stage stage) {
     this.stage = stage;
     this.userService = DatabaseConfiguration.getUserService();
-    System.out.println(userService);// Initialize userService
     this.users = userService.getAllUsers();
     showLoginScreen();
   }

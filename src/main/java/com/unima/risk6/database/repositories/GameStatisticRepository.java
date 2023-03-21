@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementation of Game Statistic Dao
+ * Repository class for accessing and managing GameStatistic objects in the database. Implements the
+ * interface.
  *
  * @author astoyano
  */
@@ -36,6 +37,14 @@ public class GameStatisticRepository implements GameStatisticDao {
 
   private final DateTimeFormatter dtf;
 
+  /**
+   * Constructs a new instance of the GameStatisticRepository.
+   *
+   * @param databaseConnection the connection to the database
+   * @param userRepository     the UserRepository used to retrieve user data from the database
+   */
+
+
   public GameStatisticRepository(Connection databaseConnection, UserRepository userRepository) {
     this.databaseConnection = databaseConnection;
     this.userRepository = userRepository;
@@ -43,6 +52,9 @@ public class GameStatisticRepository implements GameStatisticDao {
     initStatements();
   }
 
+  /**
+   * Initializes the prepared statements used by this repository.
+   */
   private void initStatements() {
     try {
       addGameStatisticStatement = this.databaseConnection.prepareStatement("""
@@ -60,7 +72,14 @@ public class GameStatisticRepository implements GameStatisticDao {
     }
   }
 
-
+  /**
+   * Retrieves a GameStatistic object from the database by its ID.
+   *
+   * @param id the ID of the game statistic to retrieve
+   * @return an Optional containing the retrieved GameStatistic object, or empty if it was not found
+   * @throws NotFoundException if the user associated with the game statistic is not found in the
+   *                           database
+   */
   @Override
   public Optional<GameStatistic> get(Long id) {
     try {
@@ -87,6 +106,15 @@ public class GameStatisticRepository implements GameStatisticDao {
     }
   }
 
+  /**
+   * Retrieves a list of all GameStatistic objects in the database.
+   *
+   * @return a list of GameStatistic objects
+   * @throws NotFoundException if the user associated with a game statistic is not found in the
+   *                           database
+   */
+
+
   @Override
   public List<GameStatistic> getAll() {
     try {
@@ -100,8 +128,8 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getInt(5) == 1;
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6),dtf);
-        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7),dtf);
+        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), dtf);
+        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7), dtf);
         GameStatistic gameStatistic = new GameStatistic(gameId, user, startDate, finishDate,
             troopsLost, troopsGained, gameWon);
         statistics.add(gameStatistic);
@@ -112,6 +140,13 @@ public class GameStatisticRepository implements GameStatisticDao {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Saves a  GameStatistic object to the database.
+   *
+   * @param gameStatistic the game statistic to save
+   * @return the ID of the saved game statistic
+   */
 
   @Override
   public Long save(GameStatistic gameStatistic) {
@@ -131,6 +166,11 @@ public class GameStatisticRepository implements GameStatisticDao {
     }
   }
 
+  /**
+   * Updates a GameStatistic object in the database.
+   *
+   * @param gameStatistic the game statistic to update
+   */
   @Override
   public void update(GameStatistic gameStatistic) {
     try {
@@ -146,6 +186,12 @@ public class GameStatisticRepository implements GameStatisticDao {
     }
   }
 
+  /**
+   * This method should stay empty, because it is not allowed to delete own statistic. But it must
+   * be overriden.
+   *
+   * @param id The id of game statistic to delete
+   */
   @Override
   public void deleteById(Long id) {
 
