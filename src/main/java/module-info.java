@@ -13,7 +13,7 @@ module com.unima.risk6 {
   requires com.google.gson;
 
   exports com.unima.risk6.game.models.enums;
-  opens com.unima.risk6.game.json.jsonObjects to com.google.gson;
+  opens com.unima.risk6.json.jsonObjects to com.google.gson;
   opens com.unima.risk6 to javafx.fxml;
   exports com.unima.risk6;
   exports com.unima.risk6.gui.controllers;

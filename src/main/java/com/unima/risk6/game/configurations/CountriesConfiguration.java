@@ -1,7 +1,7 @@
 package com.unima.risk6.game.configurations;
 
-import com.unima.risk6.game.json.JsonParser;
-import com.unima.risk6.game.json.jsonObjects.CountryJsonObject;
+import com.unima.risk6.json.JsonParser;
+import com.unima.risk6.json.jsonObjects.CountryJsonObject;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import java.io.File;
@@ -35,7 +35,7 @@ public class CountriesConfiguration {
    */
   public CountriesConfiguration(String jsonCountriesFilePath) {
     File countriesJsonFile = new File(jsonCountriesFilePath);
-    this.countryJsonObjects = JsonParser.parseJsonFile(countriesJsonFile);
+    this.countryJsonObjects = JsonParser.parseJsonFile(countriesJsonFile,CountryJsonObject[].class);
     countries = new HashSet<>();
     continents = new HashSet<>();
   }

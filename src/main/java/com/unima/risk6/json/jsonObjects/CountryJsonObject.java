@@ -1,4 +1,4 @@
-package com.unima.risk6.game.json.jsonObjects;
+package com.unima.risk6.json.jsonObjects;
 
 import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
