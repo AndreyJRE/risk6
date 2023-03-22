@@ -210,12 +210,12 @@ public class GameStatisticRepository implements GameStatisticDao {
       getAllStatisticsByUserIdStatement.setLong(1, id);
       ResultSet rs = getAllStatisticsByUserIdStatement.executeQuery();
       List<GameStatistic> statistics = new ArrayList<>();
+      User user = userRepository.get(id).orElseThrow(() -> new NotFoundException(
+          "User with id {" + id + "} is not in "
+          + "the "
+          + "database"));
       while (rs.next()) {
         Long statisticId = rs.getLong(1);
-        User user = userRepository.get(id).orElseThrow(() -> new NotFoundException(
-            "User with id {" + id + "} is not in "
-            + "the "
-            + "database"));
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getInt(5) == 1;
