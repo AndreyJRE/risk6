@@ -57,7 +57,7 @@ public class DatabaseConfiguration {
    * database path and establishes a connection to the database.
    */
   private static void configureDatabaseConnection() {
-    String databasePath = "src/main/resources/com/unima/risk6/database/risk_database.db";
+    String databasePath = "dbFiles/risk_database.db";
     appDatabase = new AppDatabase(databasePath);
     databaseConnection = appDatabase.getConnection();
 
