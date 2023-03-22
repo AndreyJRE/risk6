@@ -3,31 +3,71 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17"
-  xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="com.unima.risk6.gui.controllers.TitleScreenController">
+<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.TitleScreenController">
   <children>
-    <VBox alignment="CENTER" layoutX="140.0" layoutY="55.0" prefHeight="290.0" prefWidth="319.0"
-      spacing="15.0"
-      style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);">
-      <Label alignment="CENTER" prefHeight="86.0" prefWidth="122.0"
-        style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
-        text="RISK">
-        <font>
-          <Font size="20.0"/>
-        </font>
-      </Label>
-      <Button fx:id="startGameButton" onAction="#handleStartGame" mnemonicParsing="false"
-        prefHeight="25.0" prefWidth="434.0" text="Start Game"/>
-      <Button fx:id="quitGameButton" onAction="#handleQuitGame" mnemonicParsing="false"
-        prefHeight="25.0" prefWidth="403.0" text="Quit"/>
-      <padding>
-        <Insets left="15.0" right="15.0"/>
-      </padding>
+    <ImageView fitHeight="720.0" fitWidth="1080.0" opacity="0.39" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <image>
+        <Image url="@../../../../Pictures/AdobeStock_570236571.png" />
+      </image>
+    </ImageView>
+
+    <VBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <HBox alignment="CENTER">
+            <children>
+            <VBox alignment="CENTER" prefHeight="295.0" prefWidth="640.0" spacing="16.0" style="-fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);">
+               <Label fx:id="titleLabel" alignment="CENTER" text="RISK" textFill="WHITE">
+                 <font>
+                   <Font name="72 Bold Italic" size="96.0" />
+                 </font>
+               </Label>
+                  <Label />
+              <Button fx:id="singlePlayerButton" mnemonicParsing="false" onAction="#handleSinglePlayer" prefHeight="40.0" prefWidth="640.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Singe Player">
+                <font>
+                  <Font size="25.0" />
+                </font>
+              </Button>
+                  <Button fx:id="multiPlayerButton" mnemonicParsing="false" onAction="#handleMultiPlayer" prefHeight="40.0" prefWidth="640.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Multiplayer">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Button>
+                  <Label alignment="CENTER" prefHeight="0.0" prefWidth="72.0">
+                     <font>
+                        <Font name="BentonSans Bold" size="1.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Button fx:id="optionsButton" mnemonicParsing="false" onAction="#handleOptions" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;" text="Options">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Button>
+                        <Label alignment="CENTER" graphicTextGap="10.0" prefHeight="0.0" prefWidth="72.0" text="....">
+                           <font>
+                              <Font name="BentonSans Bold" size="1.0" />
+                           </font>
+                        </Label>
+                    <Button fx:id="quitButton" mnemonicParsing="false" onAction="#handleQuitGame" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Quit">
+                      <font>
+                        <Font size="25.0" />
+                      </font>
+                    </Button>
+                     </children>
+                  </HBox>
+                  <padding>
+                     <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                  </padding>
+            </VBox>
+            </children>
+         </HBox>
     </VBox>
   </children>
 </AnchorPane>
