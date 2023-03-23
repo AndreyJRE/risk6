@@ -120,12 +120,13 @@ public class UserRepository implements UserDao {
     try {
       ResultSet rs = getUsersStatement.executeQuery();
       List<User> users = new ArrayList<>();
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
       while (rs.next()) {
         Long userId = rs.getLong(1);
         String username = rs.getString(2);
         String password = rs.getString(3);
         boolean active = rs.getInt(4) == 1;
-        LocalDate createdAt = LocalDate.parse(rs.getString(5));
+        LocalDate createdAt = LocalDate.parse(rs.getString(5), formatter);
         String imagePath = rs.getString(6);
         User user = new User(userId, username, password, imagePath, active, createdAt);
         users.add(user);
