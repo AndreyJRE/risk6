@@ -5,13 +5,8 @@ import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.gui.controllers.SceneController;
-import com.unima.risk6.gui.controllers.enums.SceneName;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -66,7 +61,7 @@ public class LogInScreen {
     int row = 0;
 
     for (User user : users) {
-      ImageView userImage = new ImageView(new Image(getClass().getResource("/Pictures" +
+      ImageView userImage = new ImageView(new Image(getClass().getResource("/pictures" +
           "/747376.png").toString()));
       userImage.setFitHeight(100);
       userImage.setFitWidth(100);
@@ -123,7 +118,7 @@ public class LogInScreen {
 
 
   private void showSelectedUser(User user) {
-    ImageView selectedUserImage = new ImageView(new Image(getClass().getResource("/Pictures"
+    ImageView selectedUserImage = new ImageView(new Image(getClass().getResource("/pictures"
         + "/747376.png").toString()));
     selectedUserImage.setFitHeight(200);
     selectedUserImage.setFitWidth(200);

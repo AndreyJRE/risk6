@@ -14,7 +14,7 @@
   <children>
     <ImageView fitHeight="720.0" fitWidth="1080.0" opacity="0.39" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <image>
-        <Image url="@../../../../Pictures/AdobeStock_570236571.png" />
+        <Image url="@../../../../pictures/AdobeStock_570236571.png" />
       </image>
     </ImageView>
 
