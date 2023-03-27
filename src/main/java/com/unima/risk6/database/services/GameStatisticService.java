@@ -25,6 +25,11 @@ public class GameStatisticService {
     return gameStatisticRepository.getAll();
   }
 
+  public List<GameStatistic> getAllStatisticsByUserId(Long userId) {
+    return gameStatisticRepository.getAllStatisticsByUserId(userId);
+  }
+
+
   public void updateGameStatisticAfterGame(GameStatistic gameStatistic) {
     gameStatisticRepository.update(gameStatistic);
   }

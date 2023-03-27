@@ -1,6 +1,8 @@
-package com.unima.risk6.game.ai;
+package com.unima.risk6.game.ai.bots;
 
+import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.logic.GameState;
+import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import java.util.List;
@@ -57,6 +59,8 @@ public class MediumBot extends Player implements AiBot {
     }
     return null;
   }
+
+
 
   private double getWinningProbability(Country attacker, Country defender) {
     return 0; // will later get value from winning probability matrix
