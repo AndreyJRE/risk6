@@ -49,10 +49,10 @@ public class RisikoMain extends Application {
     Platform.runLater(() -> DatabaseConfiguration.startDatabaseConfiguration());
 
     // updating of progress bar -> currently disabled for UI testing
-    for (int i = 0; i < 100000; i++) {
-      double progress = (100 * i) / 100000;
-      notifyPreloader(new Preloader.ProgressNotification(progress));
-    }
+//    for (int i = 0; i < 100000; i++) {
+//      double progress = (100 * i) / 100000;
+//      notifyPreloader(new Preloader.ProgressNotification(progress));
+//    }
   }
 
   public static void main(String[] args) {

@@ -37,5 +37,8 @@ public class SceneController {
     stage.close();
   }
 
+  public Stage getStage() {
+    return stage;
+  }
 }
 

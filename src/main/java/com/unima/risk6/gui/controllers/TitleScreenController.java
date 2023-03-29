@@ -1,19 +1,37 @@
 package com.unima.risk6.gui.controllers;
 
+import com.unima.risk6.RisikoMain;
+import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.configurations.CountriesConfiguration;
+import com.unima.risk6.game.models.Country;
+import com.unima.risk6.gui.configurations.CountriesUIConfiguration;
+import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SceneConfiguration;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.stage.Stage;
+
 public class TitleScreenController implements Initializable {
+
+  private static final String COUNTRIES_JSON_PATH = "src/main/resources/countriesUI.json";
 
   @FXML
   private AnchorPane root;
@@ -56,11 +74,6 @@ public class TitleScreenController implements Initializable {
     multiPlayerButton.setStyle(buttonStyle);
     optionsButton.setStyle(buttonStyle);
     quitButton.setStyle(buttonStyle);
-    root.setPrefHeight(SceneConfiguration.getHeight());
-    root.setPrefWidth(SceneConfiguration.getWidth());
-    System.out.println(SceneConfiguration.getHeight());
-    backgroundImageView.fitWidthProperty().bind(root.widthProperty());
-    backgroundImageView.fitHeightProperty().bind(root.heightProperty());
   }
 
   // Define the event handler for the single player button
@@ -68,7 +81,20 @@ public class TitleScreenController implements Initializable {
   private void handleSinglePlayer() {
     // TODO: Implement the single player game
     System.out.println("Single player game started");
+    SceneController sceneController = SceneConfiguration.getSceneController();
+
+    Pane pane = new Pane();
+    CountriesUIConfiguration countriesUIConfiguration =
+        new CountriesUIConfiguration(COUNTRIES_JSON_PATH);
+    countriesUIConfiguration.configureCountries();
+
+    Scene gameScene = new GameScene(pane, 1080, 720,
+        countriesUIConfiguration.getCountriesUIs());
+
+    sceneController.addScene(SceneName.GAME_SCREEN, gameScene);
+    sceneController.activate(SceneName.GAME_SCREEN);
   }
+
 
   // Define the event handler for the multi player button
   @FXML
