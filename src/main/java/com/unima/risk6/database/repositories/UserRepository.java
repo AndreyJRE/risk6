@@ -1,8 +1,6 @@
 package com.unima.risk6.database.repositories;
 
 import com.unima.risk6.database.daos.UserDao;
-import com.unima.risk6.database.exceptions.NotFoundException;
-import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +35,9 @@ public class UserRepository implements UserDao {
 
   private PreparedStatement getUsersStatement;
 
-  private PreparedStatement getAllStatisticsByUserIdStatement;
-
   private PreparedStatement getUserByUsernameStatement;
 
   private final DateTimeFormatter localDateDtf;
-
-  private final DateTimeFormatter localDateTimeDtf;
 
   /**
    * Constructs a new UserRepository with the provided database connection.
@@ -54,7 +47,6 @@ public class UserRepository implements UserDao {
   public UserRepository(Connection databaseConnection) {
     this.databaseConnection = databaseConnection;
     localDateDtf = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    localDateTimeDtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     initStatements();
   }
 
@@ -78,11 +70,8 @@ public class UserRepository implements UserDao {
           SELECT * FROM user WHERE id=?""");
       getUsersStatement = this.databaseConnection.prepareStatement("""
           SELECT * FROM user""");
-      getAllStatisticsByUserIdStatement = this.databaseConnection.prepareStatement("""
-          SELECT * FROM game_statistic WHERE user_id=?""");
       getUserByUsernameStatement = this.databaseConnection.prepareStatement("""
-          SELECT id,password,image_path,active,created_at FROM user WHERE username = ?
-          """);
+          SELECT id,password,image_path,active,created_at FROM user WHERE username = ?""");
     } catch (SQLException e) {
       throw new RuntimeException(e);
 
@@ -213,46 +202,6 @@ public class UserRepository implements UserDao {
     }
   }
 
-  /**
-   * Retrieves a list of all GameStatistic objects associated with a User object with the specified
-   * ID.
-   *
-   * @param id a Long representing the ID of the user whose game statistics to retrieve
-   * @return a List of GameStatistic objects associated with the user, or an empty List if none are
-   * found
-   * @throws RuntimeException  if there is a problem executing the query
-   * @throws NotFoundException if the specified user ID is not found in the database
-   */
-  @Override
-  public List<GameStatistic> getAllStatisticsByUserId(Long id) {
-    try {
-      getAllStatisticsByUserIdStatement.setLong(1, id);
-      ResultSet rs = getAllStatisticsByUserIdStatement.executeQuery();
-      List<GameStatistic> statistics = new ArrayList<>();
-      while (rs.next()) {
-        Long statisticId = rs.getLong(1);
-        User user = get(id).orElseThrow(() -> new NotFoundException(
-            "User with id {" + id + "} is not in "
-            + "the "
-            + "database"));
-        int troopsLost = rs.getInt(3);
-        int troopsGained = rs.getInt(4);
-        boolean gameWon = rs.getInt(5) == 1;
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), localDateTimeDtf);
-        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7), localDateTimeDtf);
-
-        GameStatistic gameStatistic = new GameStatistic(statisticId, user, startDate, finishDate,
-            troopsLost, troopsGained, gameWon);
-        statistics.add(gameStatistic);
-      }
-      rs.close();
-      return statistics;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-
-
-  }
 
   @Override
   public Optional<User> getUserByUsername(String username) {

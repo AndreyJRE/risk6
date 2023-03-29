@@ -32,6 +32,7 @@ public class LogInScreen {
   private Stage stage;
 
   public LogInScreen(Stage stage) {
+    //TODO Change to extend scene, remove stage from here, because we have scenecontroller for it
     this.stage = stage;
     this.userService = DatabaseConfiguration.getUserService();
     this.users = userService.getAllUsers();

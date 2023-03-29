@@ -74,7 +74,6 @@ class UserServiceTest {
     user.setUsername("AndreyStoyanov");
     userService.updateUser(user);
     User databaseUser = userService.getUserById(userId);
-    System.out.println(databaseUser);
     assertEquals(databaseUser, user);
   }
 

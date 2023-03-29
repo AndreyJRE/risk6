@@ -1,7 +1,8 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.gui.scenes.SceneConfiguration;
-
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -12,13 +13,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 public class TitleScreenController implements Initializable {
 
   @FXML
-  private AnchorPane anchorPane;
+  private AnchorPane root;
 
   @FXML
   private ImageView backgroundImageView;
@@ -58,6 +56,11 @@ public class TitleScreenController implements Initializable {
     multiPlayerButton.setStyle(buttonStyle);
     optionsButton.setStyle(buttonStyle);
     quitButton.setStyle(buttonStyle);
+    root.setPrefHeight(SceneConfiguration.getHeight());
+    root.setPrefWidth(SceneConfiguration.getWidth());
+    System.out.println(SceneConfiguration.getHeight());
+    backgroundImageView.fitWidthProperty().bind(root.widthProperty());
+    backgroundImageView.fitHeightProperty().bind(root.heightProperty());
   }
 
   // Define the event handler for the single player button

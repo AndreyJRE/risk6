@@ -3,7 +3,6 @@ package com.unima.risk6.database.services;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.exceptions.NotFoundException;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
-import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.UserRepository;
 import java.time.LocalDate;
@@ -30,6 +29,7 @@ public class UserService {
   }
 
   public Long saveUser(User user) {
+    //TODO Check also if password and username valid are, like number of letters (RegEx)
     if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
         || user.getPassword().isEmpty()) {
       throw new IllegalArgumentException("Username and password must not be empty");
@@ -48,10 +48,16 @@ public class UserService {
   }
 
   public void deleteUserById(Long userId) {
+    Optional<User> databaseUser = userRepository.get(userId);
+    if (databaseUser.isEmpty()) {
+      throw new NotFoundException("User with id {" + userId + "} is not in the database");
+    }
     userRepository.deleteById(userId);
   }
 
   public void updateUser(User user) {
+    //TODO Check if username is new, then check for unique and update
+    //TODO Check also if password and username valid are, like number of letters (RegEx)
     if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
         || user.getPassword().isEmpty()) {
       throw new IllegalArgumentException("Username and password must not be empty");
@@ -65,9 +71,6 @@ public class UserService {
     userRepository.update(user);
   }
 
-  public List<GameStatistic> getAllStatisticsByUserId(Long userId) {
-    return userRepository.getAllStatisticsByUserId(userId);
-  }
 
   public User getUserByUsername(String username) {
     return userRepository.getUserByUsername(username)

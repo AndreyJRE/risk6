@@ -1,8 +1,6 @@
 package com.unima.risk6.database;
 
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -24,16 +22,12 @@ public class AppDatabase {
   }
 
   private void init() {
-    File databaseFile = new File(databasePath);
     conn = null;
     try {
-      if (!databaseFile.exists()) {
-        databaseFile.createNewFile();
-      }
       Class.forName("org.sqlite.JDBC");
-      conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getPath());
+      conn = DriverManager.getConnection("jdbc:sqlite:" + databasePath);
       createDatabase();
-    } catch (SQLException | IOException | ClassNotFoundException e) {
+    } catch (SQLException | ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
   }
