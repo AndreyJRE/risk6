@@ -4,7 +4,10 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.gui.scenes.CountryUI;
 import com.unima.risk6.json.JsonParser;
 import com.unima.risk6.json.jsonObjects.CountryUIJsonObject;
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,9 +18,13 @@ public class CountriesUIConfiguration {
   private final Set<CountryUI> countriesUIs;
 
   public CountriesUIConfiguration(String jsonCountriesFilePath) {
-    File countriesJsonFile = new File(jsonCountriesFilePath);
-    this.countryUIJsonObjects = JsonParser.parseJsonFile(countriesJsonFile,
-        CountryUIJsonObject[].class);
+    InputStream inputStream = getClass().getResourceAsStream(jsonCountriesFilePath);
+    try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+      this.countryUIJsonObjects = JsonParser.parseJsonFile(reader,
+          CountryUIJsonObject[].class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     countriesUIs = new HashSet<>();
   }
 
