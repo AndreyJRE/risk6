@@ -12,7 +12,7 @@ public class Continent {
 
   private Set<Country> countries;
   private final ContinentName continentName;
-  private int bonusTroops;
+  private final int bonusTroops;
 
   /**
    * Creates a new continent with the specified name.
@@ -21,6 +21,7 @@ public class Continent {
    */
   public Continent(ContinentName continentName) {
     this.continentName = continentName;
+    this.bonusTroops = continentName.getBonusTroops();
 
   }
 
@@ -65,14 +66,11 @@ public class Continent {
    *
    * @param bonusTroops the bonus troops to set
    */
-  public void setBonusTroops(int bonusTroops) {
-    this.bonusTroops = bonusTroops;
-  }
 
   /**
    * Returns a String representation of this continent.
    *
-   * @return  Returns a String representation of this continent
+   * @return Returns a String representation of this continent
    */
   @Override
   public String toString() {
