@@ -3,7 +3,6 @@ package com.unima.risk6.game.logic;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
@@ -20,12 +19,12 @@ public class GameController {
 
   public GameController(GameState gameState) {
     this.gameState = gameState;
-    players= gameState.getActivePlayers();
-    countries=gameState.getCountries();
+    players = gameState.getActivePlayers();
+    countries = gameState.getCountries();
   }
 
   public void nextPhase() {
-   //TODO Mach so, dass das geht.
+    //TODO Mach so, dass das geht.
 
   }
 
@@ -49,7 +48,7 @@ public class GameController {
 
     players.remove(loser);
 
-    if(!loser.getHand().getCards().isEmpty()) {
+    if (!loser.getHand().getCards().isEmpty()) {
       //the Cards of the Players who lost get transferred to the Player who conquered them
       //gameState.getCurrentPlayer().getHand().receiveCards(loser.getHand().getCards());
     }
