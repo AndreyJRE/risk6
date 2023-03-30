@@ -3,11 +3,11 @@ package com.unima.risk6;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.gui.scenes.LogInScreen;
-import java.io.IOException;
-import com.unima.risk6.gui.scenes.SceneConfiguration;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.LogInScreen;
+import com.unima.risk6.gui.scenes.SceneConfiguration;
+import java.io.IOException;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -15,8 +15,6 @@ import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class RisikoMain extends Application {
 
@@ -29,6 +27,8 @@ public class RisikoMain extends Application {
 
     this.userService = DatabaseConfiguration.getUserService();
     this.users = userService.getAllUsers();
+    stage.setWidth(1080);
+    stage.setHeight(720);
     SceneConfiguration.startSceneControllerConfiguration(stage);
     SceneController sceneController = SceneConfiguration.getSceneController();
     if(users.isEmpty()){
@@ -49,10 +49,10 @@ public class RisikoMain extends Application {
     Platform.runLater(() -> DatabaseConfiguration.startDatabaseConfiguration());
 
     // updating of progress bar -> currently disabled for UI testing
-    for (int i = 0; i < 100000; i++) {
-      double progress = (100 * i) / 100000;
-      notifyPreloader(new Preloader.ProgressNotification(progress));
-    }
+//    for (int i = 0; i < 100000; i++) {
+//      double progress = (100 * i) / 100000;
+//      notifyPreloader(new Preloader.ProgressNotification(progress));
+//    }
   }
 
   public static void main(String[] args) {
