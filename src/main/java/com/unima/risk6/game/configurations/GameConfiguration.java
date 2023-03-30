@@ -18,7 +18,7 @@ public class GameConfiguration {
 
   private static GameState gameState;
 
-  private static final String COUNTRIES_JSON_PATH = "/src/main/resources/countries.json";
+  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countries.json";
 
 
   /**
