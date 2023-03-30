@@ -29,41 +29,10 @@ public class Player {
   }
   /*
   //TODO Move to PlayerController
-  public Map<Country, List<Country>> getAllAttackableCountryPairs() {
-    Map<Country, List<Country>> countriesAttackable = new HashMap<>();
-    for (Country country : countries) {
-      List<Country> attackable = getValidAttackFromCountry(country);
-      if (attackable.size() > 0) {
-        countriesAttackable.put(country, attackable);
-      }
-    }
-    return countriesAttackable;
-  }
+
 
   //TODO Move to PlayerController
 
-  public List<Country> getValidAttackFromCountry(Country country) {
-    // TODO
-    List<Country> attackable = new ArrayList<>();
-    if (country.getTroops() >= 2) {
-      for (Country adjacentCountry : country.getAdjacentCountries()) {
-        if (!this.equals(adjacentCountry.getPlayer())) {
-          attackable.add(country);
-        }
-      }
-    }
-    return attackable;
-  }
-
-  //TODO move to PlayerController
-  public Map<Country, List<Country>> getAllValidFortifies() {
-    Map<Country, List<Country>> countriesFortifiable = new HashMap<>();
-    for (Country country : countries) {
-      List<Country> fortifiable = getValidFortifiesFromCountry(country);
-      countriesFortifiable.put(country, fortifiable);
-    }
-    return countriesFortifiable;
-  }
 
 
    */
