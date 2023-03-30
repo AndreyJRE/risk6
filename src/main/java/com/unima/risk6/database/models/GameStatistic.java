@@ -23,6 +23,10 @@ public class GameStatistic {
 
   private int troopsGained;
 
+  private int countriesWon;
+
+  private int countriesLost;
+
   private boolean gameWon;
 
   public GameStatistic() {
@@ -34,7 +38,7 @@ public class GameStatistic {
   }
 
   public GameStatistic(Long id, User user, LocalDateTime startDate, LocalDateTime finishDate,
-      int troopsLost, int troopsGained, boolean gameWon) {
+      int troopsLost, int troopsGained, boolean gameWon, int countriesWon, int countriesLost) {
     this.id = id;
     this.user = user;
     this.startDate = startDate;
@@ -42,6 +46,8 @@ public class GameStatistic {
     this.troopsLost = troopsLost;
     this.troopsGained = troopsGained;
     this.gameWon = gameWon;
+    this.countriesWon = countriesWon;
+    this.countriesLost = countriesLost;
   }
 
   public Long getId() {
@@ -101,11 +107,28 @@ public class GameStatistic {
     this.gameWon = gameWon;
   }
 
+  public int getCountriesWon() {
+    return countriesWon;
+  }
+
+  public void setCountriesWon(int countriesWon) {
+    this.countriesWon = countriesWon;
+  }
+
+  public int getCountriesLost() {
+    return countriesLost;
+  }
+
+  public void setCountriesLost(int countriesLost) {
+    this.countriesLost = countriesLost;
+  }
+
   @Override
   public String toString() {
-    return "GameStatistic{id=" + id + ", user=" + user + ", startDate=" + startDate
+    return "GameStatistic{" + "id=" + id + ", user=" + user + ", startDate=" + startDate
            + ", finishDate=" + finishDate + ", troopsLost=" + troopsLost + ", troopsGained="
-           + troopsGained + ", won=" + gameWon + '}';
+           + troopsGained + ", countriesWon=" + countriesWon + ", countriesLost=" + countriesLost
+           + ", gameWon=" + gameWon + '}';
   }
 
   @Override
