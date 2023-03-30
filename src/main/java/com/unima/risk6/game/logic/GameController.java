@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.Set;
 
+//TODO mach das kompatibel zu controller
 public class GameController {
 
   private GameState gameState;
@@ -19,72 +20,81 @@ public class GameController {
 
   public GameController(GameState gameState) {
     this.gameState = gameState;
+    players= gameState.getActivePlayers();
+    countries=gameState.getCountries();
   }
-  //TODO IMPLEMENT ROUNDBASED TURN CONTROL
 
-
-  //TODO EXPAND with CLAIMPHASE
   public void nextPhase() {
-    if (gameState.getCurrentPlayer().getPhase().equals(GamePhase.FORTIFYPHASE)) {
-      this.nextPlayer();
-    } else {
-      gameState.setCurrentPhase(gameState.getCurrentPlayer().nextPhase());
+   //TODO Mach so, dass das geht.
 
-    }
   }
 
-  //TODO EXPAND with CLAIMPHASE
   public void nextPlayer() {
+    /*
+
+
     Player lastPlayer = players.poll();
     lastPlayer.nextPhase();
     Player nextPlayer = players.peek();
     gameState.setCurrentPlayer(nextPlayer);
-    nextPlayer.nextPhase();
-    nextPlayer.updateContinents(gameState.getContinents());
-    gameState.setCurrentPhase(GamePhase.REINFORCEMENTPHASE);
+    gameState.setCurrentPhase(nextPlayer.nextPhase());
     players.add(lastPlayer);
+    }
+     */
 
   }
 
-  public ArrayList<Player> removeLostPlayers() {
+  public void removeLostPlayer(Player loser) {
     Queue<Player> players = gameState.getActivePlayers();
-    ArrayList<Player> lostPlayers = new ArrayList<Player>();
-    players.forEach(n -> {
-          if (n.getCountries().size() == 0) {
-            players.remove(n);
-            lostPlayers.add(n);
-          }
-        }
 
-    );
-    return lostPlayers;
+    players.remove(loser);
+
+    if(!loser.getHand().getCards().isEmpty()) {
+      //the Cards of the Players who lost get transferred to the Player who conquered them
+      //gameState.getCurrentPlayer().getHand().receiveCards(loser.getHand().getCards());
+    }
   }
 
   public void processAttack(Attack attack) {
-    attack.calculateLosses();
+
     Country attackingCountry = attack.getAttackingCountry();
-    attackingCountry.changeTroops(-attack.getAttackerLosses());
     Country defendingCountry = attack.getDefendingCountry();
+    Player attacker = attackingCountry.getPlayer();
+    Player defender = defendingCountry.getPlayer();
+
+    attack.calculateLosses();
+    addLastMove(attack);
+    attackingCountry.changeTroops(-attack.getAttackerLosses());
     defendingCountry.changeTroops(-attack.getDefenderLosses());
     if (defendingCountry.getTroops() == 0) {
-      Player player = attackingCountry.getPlayer();
-      defendingCountry.setPlayer(player);
-      player.addCountry(defendingCountry);
+
+      defendingCountry.setPlayer(attacker);
+      attacker.addCountry(defendingCountry);
+      defender.removeCountry(defendingCountry);
+
       //Forced Fortify after attack and takeover
-      processFortify(
-          new Fortify(attackingCountry, defendingCountry, attack.getTroopNumber()));
-      //TODO ADDITIONAL MOVEMENT, if the Player chooses to do so
+      Fortify forcedFortify = new Fortify(attackingCountry, defendingCountry,
+          attack.getTroopNumber());
+      addLastMove(forcedFortify);
+      processFortify(forcedFortify);
+
+    }
+    if (defender.getNumberOfCountries() == 0) {
+      removeLostPlayer(defender);
     }
 
   }
 
   public void processFortify(Fortify fortify) {
+    addLastMove(fortify);
     fortify.getIncoming().changeTroops(fortify.getTroopsToMove());
     fortify.getOutgoing().changeTroops(-fortify.getTroopsToMove());
+
 
   }
 
   public void processReinforce(Reinforce reinforce) {
+    addLastMove(reinforce);
     if (gameState.getCurrentPhase().equals(GamePhase.CLAIMPHASE)) {
       reinforce.getCountry().setPlayer(gameState.getCurrentPlayer());
       gameState.getCurrentPlayer().addCountry(reinforce.getCountry());
@@ -95,5 +105,43 @@ public class GameController {
     }
   }
 
+  public void addLastMove(Move move) {
+    this.gameState.getLastMoves().add(move);
+  }
+/*
+  public GamePhase nextPhase() {
 
+    switch (player.getCurrentPhase()) {
+      case REINFORCEMENTPHASE:
+        if (player.getDeployableTroops() == 0) {
+          player.setPhase(ATTACKPHASE);
+          return ATTACKPHASE;
+        } else {
+          return REINFORCEMENTPHASE;
+          //TODO exception or error which should be given to UI
+        }
+
+      case ATTACKPHASE:
+        player.setPhase(FORTIFYPHASE);
+        break;
+      case FORTIFYPHASE, CLAIMPHASE:
+        player.setPhase(NOTACTIVE);
+        break;
+      case NOTACTIVE:
+        if (player.getInitialTroops() > 0) {
+          player.setPhase(CLAIMPHASE);
+        } else {
+          player.setPhase(REINFORCEMENTPHASE);
+        }
+        break;
+
+      default:
+        break;
+    }
+    return player.getCurrentPhase();
+  }
+
+
+
+ */
 }
