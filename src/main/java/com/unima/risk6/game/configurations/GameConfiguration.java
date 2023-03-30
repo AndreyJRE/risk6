@@ -18,7 +18,7 @@ public class GameConfiguration {
 
   private static GameState gameState;
 
-  private static final String COUNTRIES_JSON_PATH = "src/main/resources/countries.json";
+  private static final String COUNTRIES_JSON_PATH = "/src/main/resources/countries.json";
 
 
   /**
@@ -28,7 +28,7 @@ public class GameConfiguration {
    * @param users List of usernames from users
    * @param bots  List of different bots
    */
-  public static void configureGame(List<String> users, List<AiBot> bots) {
+  public static GameState configureGame(List<String> users, List<AiBot> bots) {
     CountriesConfiguration countriesConfiguration = new CountriesConfiguration(COUNTRIES_JSON_PATH);
     countriesConfiguration.configureCountriesAndContinents();
     Set<Country> countries = countriesConfiguration.getCountries();
@@ -36,7 +36,8 @@ public class GameConfiguration {
     PlayersConfiguration playersConfiguration = new PlayersConfiguration(users, bots);
     playersConfiguration.configure();
     Queue<Player> players = playersConfiguration.getPlayers();
-    gameState = new GameState(countries, continents, players);
+    GameState game = new GameState(countries, continents, players);
+    return game;
 
 
   }
@@ -50,4 +51,7 @@ public class GameConfiguration {
     return gameState;
   }
 
+  public static void setGameState(GameState gameState) {
+    GameConfiguration.gameState = gameState;
+  }
 }
