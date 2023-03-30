@@ -4,7 +4,10 @@ import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.json.JsonParser;
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A class containing static methods and attributes relating to probabilities and the calculations
@@ -17,8 +20,15 @@ public class Probabilities {
 
   private static Integer[][] winProbability;
 
-  public static void initProbabilities(File file) { // put in big config file later maybe
-    winProbability = JsonParser.parseJsonFile(file, Integer[][].class);
+  public static void initProbabilities(String probabilityFilePath) { // put in big config file later
+    // maybe
+    InputStream inputStream = Probabilities.class.getResourceAsStream(probabilityFilePath);
+    try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+      winProbability = JsonParser.parseJsonFile(reader, Integer[][].class);
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
+
   }
 
   /**
