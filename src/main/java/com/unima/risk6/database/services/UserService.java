@@ -56,13 +56,19 @@ public class UserService {
   }
 
   public void updateUser(User user) {
-    //TODO Check if username is new, then check for unique and update
     //TODO Check also if password and username valid are, like number of letters (RegEx)
     if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
         || user.getPassword().isEmpty()) {
       throw new IllegalArgumentException("Username and password must not be empty");
     }
     User userDatabase = getUserById(user.getId());
+    if (!userDatabase.getUsername().equals(user.getUsername())) {
+      Optional<User> userWithUsername = userRepository.getUserByUsername(user.getUsername());
+      if (userWithUsername.isPresent()) {
+        throw new UsernameNotUniqueException(
+            "This username{" + user.getUsername() + "} is already used");
+      }
+    }
     if (!userDatabase.getPassword().equals(user.getPassword())) {
       String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
       user.setPassword(encryptedPassword);

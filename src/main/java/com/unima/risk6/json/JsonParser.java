@@ -2,9 +2,7 @@ package com.unima.risk6.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 
 /**
  * Implementation of parser to wrapper class for json file
@@ -22,15 +20,10 @@ public class JsonParser {
    * @return an object of type T, created from the parsed JSON file
    * @throws RuntimeException if the specified JSON file is not found
    */
-  public static <T> T parseJsonFile(File jsonFile, Class<T> clazz) {
+  public static <T> T parseJsonFile(InputStreamReader jsonFile, Class<T> clazz) {
     Gson gson = new GsonBuilder().create();
-    try {
-      T countryJsonObjects = gson.fromJson(new FileReader(jsonFile),
-          clazz);
-      return countryJsonObjects;
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
-    }
+    return gson.fromJson(jsonFile,
+        clazz);
   }
 
 }
