@@ -1,5 +1,9 @@
-package com.unima.risk6.game.logic;
+package com.unima.risk6.game.logic.controllers;
 
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.GameState;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;

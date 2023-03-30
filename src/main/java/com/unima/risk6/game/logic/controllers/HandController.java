@@ -1,4 +1,4 @@
-package com.unima.risk6.game.logic;
+package com.unima.risk6.game.logic.controllers;
 
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;

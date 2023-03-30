@@ -1,4 +1,4 @@
-package com.unima.risk6.game.logic;
+package com.unima.risk6.game.logic.controllers;
 
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Deck;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class DeckController {
+
   private Deck deck;
 
   public DeckController(Deck deck) {
