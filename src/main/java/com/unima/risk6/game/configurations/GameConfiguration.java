@@ -5,6 +5,7 @@ import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -20,6 +21,7 @@ public class GameConfiguration {
 
   private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countries.json";
 
+  private static final List<GameStateObserver> observers = new ArrayList<>();
 
   /**
    * Configures the game by initializing the countries, continents, players and creating a GameState
@@ -36,10 +38,7 @@ public class GameConfiguration {
     PlayersConfiguration playersConfiguration = new PlayersConfiguration(users, bots);
     playersConfiguration.configure();
     Queue<Player> players = playersConfiguration.getPlayers();
-    GameState game = new GameState(countries, continents, players);
-    return game;
-
-
+    return new GameState(countries, continents, players);
   }
 
   /**
@@ -53,5 +52,20 @@ public class GameConfiguration {
 
   public static void setGameState(GameState gameState) {
     GameConfiguration.gameState = gameState;
+    notifyObservers();
+  }
+
+  public static void addObserver(GameStateObserver observer) {
+    observers.add(observer);
+  }
+
+  public static void removeObserver(GameStateObserver observer) {
+    observers.remove(observer);
+  }
+
+  private static void notifyObservers() {
+    for (GameStateObserver observer : observers) {
+      observer.update(gameState);
+    }
   }
 }
