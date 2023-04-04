@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="risk_database" uuid="79e19eb4-719f-4236-887c-f3f55e49c879">
+    <data-source source="LOCAL" name="risk_database.db" uuid="79e19eb4-719f-4236-887c-f3f55e49c879">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/src/main/resources/com/unima/risk6/database/risk_database.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/dbFiles/risk_database.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
       <libraries>
         <library>

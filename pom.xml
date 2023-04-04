@@ -55,14 +55,12 @@
       <artifactId>netty-all</artifactId>
       <version>4.1.89.Final</version>
     </dependency>
-
     <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
     </dependency>
-
 
 
   </dependencies>
@@ -87,7 +85,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>com.unima.risk6/com.unima.risk6.RisikoMain
+              <mainClass>com.unima.risk6/com.unima.risk6.Launcher
               </mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
@@ -95,6 +93,30 @@
               <noManPages>true</noManPages>
               <stripDebug>true</stripDebug>
               <noHeaderFiles>true</noHeaderFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>project-classifier</shadedClassifierName>
+              <outputFile>shade\${project.artifactId}.jar</outputFile>
+              <transformers>
+                <transformer implementation=
+                  "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.unima.risk6.Launcher</mainClass>
+                </transformer>
+              </transformers>
             </configuration>
           </execution>
         </executions>

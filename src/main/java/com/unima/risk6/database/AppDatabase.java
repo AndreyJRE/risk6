@@ -1,8 +1,6 @@
 package com.unima.risk6.database;
 
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -24,16 +22,12 @@ public class AppDatabase {
   }
 
   private void init() {
-    File databaseFile = new File(databasePath);
     conn = null;
     try {
-      if (!databaseFile.exists()) {
-        databaseFile.createNewFile();
-      }
       Class.forName("org.sqlite.JDBC");
-      conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFile.getPath());
+      conn = DriverManager.getConnection("jdbc:sqlite:" + databasePath);
       createDatabase();
-    } catch (SQLException | IOException | ClassNotFoundException e) {
+    } catch (SQLException | ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
   }
@@ -48,8 +42,7 @@ public class AppDatabase {
     String createSql = """
         CREATE TABLE IF NOT EXISTS user (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
         , username TEXT NOT NULL UNIQUE, password TEXT, active INTEGER DEFAULT 1
-        ,created_at TEXT, image_path TEXT)
-        """;
+        ,created_at TEXT, image_path TEXT)""";
     statement.execute(createSql);
   }
 
@@ -57,10 +50,9 @@ public class AppDatabase {
     Statement statement = conn.createStatement();
     String createSql = """
         CREATE TABLE IF NOT EXISTS game_statistic (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
-        ,user_id INTEGER NOT NULL,troops_lost INTEGER
-        ,troops_gained INTEGER,game_won INTEGER,start_date TEXT
-        ,finish_date TEXT,FOREIGN KEY (user_id) REFERENCES user (id))
-        """;
+        ,user_id INTEGER NOT NULL,troops_lost INTEGER,troops_gained INTEGER
+        ,game_won INTEGER,start_date TEXT,finish_date TEXT,countries_won INTEGER
+        ,countries_lost INTEGER,FOREIGN KEY (user_id) REFERENCES user (id))""";
     statement.execute(createSql);
   }
 

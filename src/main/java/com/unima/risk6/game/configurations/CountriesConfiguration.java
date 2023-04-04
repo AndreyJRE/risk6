@@ -1,10 +1,13 @@
 package com.unima.risk6.game.configurations;
 
-import com.unima.risk6.json.JsonParser;
-import com.unima.risk6.json.jsonObjects.CountryJsonObject;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
-import java.io.File;
+import com.unima.risk6.json.JsonParser;
+import com.unima.risk6.json.jsonObjects.CountryJsonObject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,8 +37,13 @@ public class CountriesConfiguration {
    * @param jsonCountriesFilePath
    */
   public CountriesConfiguration(String jsonCountriesFilePath) {
-    File countriesJsonFile = new File(jsonCountriesFilePath);
-    this.countryJsonObjects = JsonParser.parseJsonFile(countriesJsonFile,CountryJsonObject[].class);
+    InputStream inputStream = getClass().getResourceAsStream(jsonCountriesFilePath);
+    try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+      this.countryJsonObjects = JsonParser.parseJsonFile(reader, CountryJsonObject[].class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     countries = new HashSet<>();
     continents = new HashSet<>();
   }
