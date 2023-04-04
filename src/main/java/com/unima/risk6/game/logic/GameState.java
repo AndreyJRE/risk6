@@ -24,6 +24,7 @@ public class GameState {
   private Dice dice;
   private int numberOfHandIns;
   private GamePhase currentPhase;
+  private ArrayList<Move> lastMoves;
 
   /**
    * Constructs a new game state with the given countries, continents, and players.
@@ -40,6 +41,11 @@ public class GameState {
     this.activePlayers = activePlayers;
     this.dice = new Dice();
     this.numberOfHandIns = 0;
+    this.lastMoves = new ArrayList<>();
+    this.currentPhase = GamePhase.CLAIMPHASE;
+    this.currentPlayer = activePlayers.peek();
+
+
   }
 
   /**
@@ -134,5 +140,13 @@ public class GameState {
    */
   public void setCurrentPlayer(Player currentPlayer) {
     this.currentPlayer = currentPlayer;
+  }
+
+  public ArrayList<Move> getLastMoves() {
+    return lastMoves;
+  }
+
+  public ArrayList<Player> getLostPlayers() {
+    return lostPlayers;
   }
 }
