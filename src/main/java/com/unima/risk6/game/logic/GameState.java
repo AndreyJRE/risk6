@@ -1,5 +1,6 @@
 package com.unima.risk6.game.logic;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
@@ -80,6 +81,7 @@ public class GameState {
    *
    * @return the queue of active players
    */
+
   public Queue<Player> getActivePlayers() {
     return activePlayers;
   }
@@ -134,5 +136,20 @@ public class GameState {
    */
   public void setCurrentPlayer(Player currentPlayer) {
     this.currentPlayer = currentPlayer;
+  }
+
+  /**
+   * Returns the dice
+   *
+   * @return the dice
+   */
+  public Dice getDice() {return dice;}
+  /**
+   * Returns the LostPlayers List
+   *
+   * @return the lostPlayers
+   */
+  public ArrayList<Player> getLostPlayers() {
+    return lostPlayers;
   }
 }

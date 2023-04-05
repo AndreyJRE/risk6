@@ -233,5 +233,9 @@ public class Player {
   public void setDeployableTroops(int deployableTroops) {
     this.deployableTroops = deployableTroops;
   }
+
+  public String getUser() {
+    return user;
+  }
 }
 

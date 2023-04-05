@@ -96,5 +96,19 @@ public class Hand {
     }
   }
 
+  public ArrayList<Card> getCards() {
+    return cards;
+  }
 
+  public void setCards(ArrayList<Card> cards) {
+    this.cards = cards;
+  }
+
+  public ArrayList<Card> getSelectedCards() {
+    return selectedCards;
+  }
+
+  public void setSelectedCards(ArrayList<Card> selectedCards) {
+    this.selectedCards = selectedCards;
+  }
 }
