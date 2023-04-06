@@ -6,6 +6,7 @@ import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import java.io.IOException;
+import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -22,8 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
-import java.util.List;
 
 public class LogInScreen {
 
@@ -47,7 +46,8 @@ public class LogInScreen {
     createButton.setPrefWidth(470);
     createButton.setPrefHeight(40);
     createButton.setAlignment(Pos.CENTER);
-    createButton.setStyle("-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    createButton.setStyle(
+        "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     createButton.setFont(new Font(18));
 
     // add an event handler for the button

@@ -9,14 +9,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 
-public class CountryUI extends SVGPath {
+public class CountryUi extends SVGPath {
 
   private Country country;
 
   private Glow glowEffect;
 
 
-  public CountryUI(Country country, String SVGPath) {
+  public CountryUi(Country country, String SVGPath) {
     super();
     this.country = country;
     this.setContent(SVGPath);

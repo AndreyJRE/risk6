@@ -2,9 +2,17 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.gui.configurations.CountriesUIConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.ActivePlayerUi;
 import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.scenes.PlayerUi;
 import com.unima.risk6.gui.scenes.SceneConfiguration;
+import com.unima.risk6.gui.scenes.TimeUi;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -77,8 +85,21 @@ public class TitleScreenController implements Initializable {
         new CountriesUIConfiguration(COUNTRIES_JSON_PATH);
     countriesUIConfiguration.configureCountries();
 
-    Scene gameScene = new GameScene(pane, 1080, 720,
-        countriesUIConfiguration.getCountriesUIs());
+    //dummy initialisation of Players with dummyvalue
+    ArrayList<PlayerUi> PlayerUis = new ArrayList<PlayerUi>();
+    int amountOfPlayers = 4;
+    for (int i = 0; i < 4; i++) {
+      PlayerUis.add(new PlayerUi(35,
+          35, 100, 45));
+    }
+
+    Scene gameScene = new GameScene(
+        1080,
+        720,
+        countriesUIConfiguration.getCountriesUIs(),
+        new ActivePlayerUi(40,
+            40, 280, 50),
+        PlayerUis, new TimeUi(40, 40));
 
     sceneController.addScene(SceneName.GAME_SCREEN, gameScene);
     sceneController.activate(SceneName.GAME_SCREEN);
