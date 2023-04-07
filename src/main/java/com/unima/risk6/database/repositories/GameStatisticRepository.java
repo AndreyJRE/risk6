@@ -99,7 +99,7 @@ public class GameStatisticRepository implements GameStatisticDao {
             new NotFoundException("User with id {" + userId + "} is not in the database"));
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
-        boolean gameWon = rs.getInt(5) == 1;
+        boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6));
         LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7));
         int countriesWon = rs.getInt(8);
@@ -136,7 +136,7 @@ public class GameStatisticRepository implements GameStatisticDao {
             new NotFoundException("User with id {" + userId + "} is not in the database"));
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
-        boolean gameWon = rs.getInt(5) == 1;
+        boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), dtf);
         LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7), dtf);
         int countriesWon = rs.getInt(8);
@@ -187,7 +187,7 @@ public class GameStatisticRepository implements GameStatisticDao {
     try {
       updateGameStatisticStatement.setString(1
           , gameStatistic.getFinishDate().format(dtf));
-      updateGameStatisticStatement.setInt(2, gameStatistic.isGameWon() ? 1 : 0);
+      updateGameStatisticStatement.setBoolean(2, gameStatistic.isGameWon());
       updateGameStatisticStatement.setInt(3, gameStatistic.getTroopsGained());
       updateGameStatisticStatement.setInt(4, gameStatistic.getTroopsLost());
       updateGameStatisticStatement.setLong(5, gameStatistic.getId());
@@ -217,14 +217,12 @@ public class GameStatisticRepository implements GameStatisticDao {
       ResultSet rs = getAllStatisticsByUserIdStatement.executeQuery();
       List<GameStatistic> statistics = new ArrayList<>();
       User user = userRepository.get(id).orElseThrow(() -> new NotFoundException(
-          "User with id {" + id + "} is not in "
-          + "the "
-          + "database"));
+          "User with id {" + id + "} is not in the database"));
       while (rs.next()) {
         Long statisticId = rs.getLong(1);
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
-        boolean gameWon = rs.getInt(5) == 1;
+        boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6)
             , localDateTimeDtf);
         LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7)
@@ -253,6 +251,11 @@ public class GameStatisticRepository implements GameStatisticDao {
   @Override
   public void deleteById(Long id) {
 
+  }
+
+  @Override
+  public List<GameStatistic> getAllStatisticsByGameWon(boolean gameWon) {
+    return getAll().stream().filter(gameStatistic -> gameStatistic.isGameWon() == gameWon).toList();
   }
 
 

@@ -39,4 +39,8 @@ public class GameStatisticService {
     return gameStatisticRepository.save(gameStatistic);
   }
 
+  public List<GameStatistic> getAllStatisticsByGameWon(boolean gameWon) {
+    return gameStatisticRepository.getAllStatisticsByGameWon(gameWon);
+  }
+
 }

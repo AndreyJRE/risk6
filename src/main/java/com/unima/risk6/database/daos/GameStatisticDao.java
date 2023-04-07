@@ -20,4 +20,6 @@ public interface GameStatisticDao extends Dao<GameStatistic> {
    */
 
   List<GameStatistic> getAllStatisticsByUserId(Long id);
+
+  List<GameStatistic> getAllStatisticsByGameWon(boolean gameWon);
 }
