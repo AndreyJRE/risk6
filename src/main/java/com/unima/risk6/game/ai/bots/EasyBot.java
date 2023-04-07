@@ -74,9 +74,8 @@ public class EasyBot extends Player implements AiBot {
   public Attack createAttack(Country[] toAttack) {
     int availableTroops = toAttack[0].getTroops();
     int attackingTroops = rng.nextInt(1, Math.min(4, availableTroops)); // exclusive bound
-    Attack moveToMake = new Attack(toAttack[0], toAttack[1], attackingTroops);
+    return new Attack(toAttack[0], toAttack[1], attackingTroops);
     //this.sendAttack(toAttack[0], toAttack[1], attackingTroops);
-    return moveToMake;
   }
 
   /**
