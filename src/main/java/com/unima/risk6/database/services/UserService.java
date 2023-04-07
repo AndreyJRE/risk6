@@ -103,4 +103,8 @@ public class UserService {
     return password.matches(PASSWORD_REGEX);
   }
 
+  public List<User> getUsersByActive(boolean active) {
+    return userRepository.getAllUsersByActive(active);
+  }
+
 }
