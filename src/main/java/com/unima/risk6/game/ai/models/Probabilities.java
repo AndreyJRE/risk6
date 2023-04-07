@@ -5,6 +5,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.json.JsonParser;
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * A class containing static methods and attributes relating to probabilities and the calculations
@@ -16,9 +17,13 @@ import java.io.File;
 public class Probabilities {
 
   private static Integer[][] winProbability;
+  private static String[] borderCountries;
 
   public static void initProbabilities(File file) { // put in big config file later maybe
     winProbability = JsonParser.parseJsonFile(file, Integer[][].class);
+    borderCountries = new String[] {"ALASKA", "BRAZIL", "CENTRAL_AMERICA", "GREENLAND",
+        "ICELAND", "INDONESIA", "KAMCHATKA", "MIDDLE_EAST", "NORTH_AFRICA", "SIAM",
+        "SOUTHERN_EUROPE", "VENEZUELA", "WESTERN_EUROPE"};
   }
 
   /**
@@ -34,21 +39,22 @@ public class Probabilities {
   }
 
   /**
-   * Calculate the percentage of countries in a continent owned by a specific player
-   *
+   * Calculate the percentage of Troops owned by a specific player in a continent
    * @param player    The player which is being tested
    * @param continent The continent to be tested
-   * @return The percentage of countries of a continent which belong to the player
+   * @return The percentage of troops in the continent which belong to the player
    * @author eameri
    */
-  public static double relativePower(Player player, Continent continent) {
-    double countriesOwned = 0.0;
+  public static double relativeTroopContinentPower(Player player, Continent continent) {
+    double troopsOwned = 0.0;
+    double troopsTotal = 0.0;
     for (Country country : continent.getCountries()) {
       if (player.equals(country.getPlayer())) {
-        countriesOwned++;
+        troopsOwned += country.getTroops();
       }
+      troopsTotal += country.getTroops();
     }
-    return countriesOwned / continent.getCountries().size();
+    return troopsOwned / troopsTotal;
   }
 
 
@@ -56,5 +62,9 @@ public class Probabilities {
     int attackerIndex = Math.min(attackerTotal - 1, 19);
     int defenderIndex = Math.min(defenderTotal - 1, 19);
     return winProbability[attackerIndex][defenderIndex];
+  }
+
+  public boolean isBorderCountry(Country country) {
+    return Arrays.stream(borderCountries).anyMatch(country.getCountryName()::equals);
   }
 }
