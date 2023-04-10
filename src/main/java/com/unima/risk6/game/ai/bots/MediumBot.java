@@ -96,7 +96,7 @@ public class MediumBot extends Player implements AiBot {
     this.continentsCopy.sort((continent1, continent2) -> {
       double power1 = Probabilities.relativeTroopContinentPower(this, continent1);
       double power2 = Probabilities.relativeTroopContinentPower(this, continent2);
-      return (int) ((power1 - power2) * 100);
+      return (int) ((power2 - power1) * 100);
     });
   }
 
@@ -133,7 +133,7 @@ public class MediumBot extends Player implements AiBot {
     countriesByLowestReinforce.sort((country1, country2) -> {
       int country1Count = ownedCountryDiffs.get(country1);
       int country2Count = ownedCountryDiffs.get(country2);
-      return country2Count - country1Count;
+      return country1Count - country2Count;
     });
   }
 
@@ -271,12 +271,44 @@ public class MediumBot extends Player implements AiBot {
     unsortedPairs.sort((pair1, pair2) -> {
       int probPair1 = getWinningProbability(pair1.get(0), pair1.get(1));
       int probPair2 = getWinningProbability(pair2.get(0), pair2.get(1));
-      return probPair1 - probPair2;
+      return probPair2 - probPair1;
     });
   }
 
   private void createFortify() {
+    // find the weakest country (in terms of diff) and attempt to balance out both the new country
+    // and the fortifier country
+    sortContinentsByHighestRelativePower();
+    Map<Country, Integer> allOwnedCountryDiffs = new HashMap<>();
+    for (Continent continent : continentsCopy) {
+      allOwnedCountryDiffs.putAll(getCountryTroopDiffsByContinent(continent));
+    }
+    List<Country> countriesByHighestDiff = new ArrayList<>(allOwnedCountryDiffs.keySet());
+    countriesByHighestDiff.sort((country1, country2) -> {
+      int country1Count = allOwnedCountryDiffs.get(country1);
+      int country2Count = allOwnedCountryDiffs.get(country2);
+      return country2Count - country1Count;
+    });
+
+    // find good neighbour
+    for (Country country : countriesByHighestDiff) {
+      Country bestAdj = null;
+      for (Country adj : country.getAdjacentCountries()) {
+        if (this.equals(adj.getPlayer()) && adj.getTroops() >= country.getTroops()
+            && allOwnedCountryDiffs.get(adj) < 0) {
+          if (bestAdj == null || adj.getTroops() > bestAdj.getTroops()
+              || allOwnedCountryDiffs.get(adj) < allOwnedCountryDiffs.get(bestAdj)) {
+            bestAdj = adj;
+          }
+        }
+      }
+      if (bestAdj != null) {
+        this.playerController.sendFortify(bestAdj, country, 0);
+        break;
+      }
+    }
   }
+
 
   /**
    * Gets the probability of a country winning an entire battle against another country
