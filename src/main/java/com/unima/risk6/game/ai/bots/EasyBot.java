@@ -28,13 +28,10 @@ public class EasyBot extends Player implements AiBot {
   }
 
   /**
-   * makes a series of moves depending on which phase the game is in
-   *
-   * @param gameState the current state of the game
-   * @author eameri
+   * A method for a bot to make moves for all 3 phases of the game
    */
   @Override
-  public void makeMove(GameState gameState) { // later: separate based off of round
+  public void makeMove() { // later: separate based off of round
     if (this.numberOfCountries() == 0) { // unable to make a move if bot is out of the game.
       return;
     }
@@ -43,6 +40,19 @@ public class EasyBot extends Player implements AiBot {
     //this.nextPhase();
     this.createFortify();
     //this.nextPhase();
+
+  }
+
+  /**
+   * A method for a bot to claim a single country during the CLAIM PHASE Game State.
+   * The EasyBot picks its country to claim randomly.
+   */
+  @Override
+  public void claimCountry() {
+    List<Country> unclaimed = this.playerController.getGameState().getCountries().stream()
+        .filter(country -> !country.hasPlayer()).toList();
+    // should we use reinforce for claim phase?
+    this.playerController.sendReinforce(unclaimed.get(rng.nextInt(unclaimed.size())),1);
   }
 
   /**
