@@ -18,6 +18,11 @@ public class PlayerController {
 
   private Player player;
   private HandController handController;
+
+  public GameState getGameState() {
+    return gameState;
+  }
+
   private GameState gameState;
 
 
