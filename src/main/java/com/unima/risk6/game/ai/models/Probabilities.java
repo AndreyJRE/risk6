@@ -6,7 +6,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.json.JsonParser;
-import java.io.File;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 /**
@@ -24,11 +24,13 @@ public class Probabilities {
   /**
    * Initialize the Probabilities class by setting the classes static winProbability and
    * borderCountries attributes
-   * @param file The json file containing the 20x20 Win-Probability Matrix
+   *
+   * @param fileReader An InputStreamReader pointing to the json file containing the 20x20
+   *                   Win-Probability Matrix
    */
-  public static void initProbabilities(File file) {
-    winProbability = JsonParser.parseJsonFile(file, Integer[][].class);
-    borderCountries = new CountryName[] {CountryName.ALASKA, CountryName.BRAZIL,
+  public static void init(InputStreamReader fileReader) {
+    winProbability = JsonParser.parseJsonFile(fileReader, Integer[][].class);
+    borderCountries = new CountryName[]{CountryName.ALASKA, CountryName.BRAZIL,
         CountryName.CENTRAL_AMERICA, CountryName.GREENLAND, CountryName.ICELAND,
         CountryName.INDONESIA, CountryName.KAMCHATKA, CountryName.MIDDLE_EAST,
         CountryName.NORTH_AFRICA, CountryName.SIAM, CountryName.SOUTHERN_EUROPE,
@@ -37,6 +39,7 @@ public class Probabilities {
 
   /**
    * Calculate the percentage of Troops owned by a specific player in a continent
+   *
    * @param player    The player which is being tested
    * @param continent The continent to be tested
    * @return The percentage of troops in the continent which belong to the player
@@ -59,6 +62,7 @@ public class Probabilities {
    * Gets the probability of a country winning a battle against another country based off of their
    * amount of troops ("Calculations are done in python, data wrangling in pandas", for more
    * information on the source of the data see: ...)
+   *
    * @param attackerTotal The total amount of troops the attacking country has
    * @param defenderTotal The total amount of troops the defending country has
    * @return the probability of the attacker winning an entire battle (rounded, given as an integer)
@@ -71,6 +75,7 @@ public class Probabilities {
 
   /**
    * Checks if the given country is a bordering country of a continent
+   *
    * @param country The country to be checked
    * @return A boolean value expressing if the country can be attacked from another continent
    */
