@@ -54,26 +54,45 @@ public class MediumBot extends Player implements AiBot {
    * @author eameri
    */
   private void createAllReinforcements() {
-    sortContinentsByRelativePower();
-    // reinforce in a way to defend
+    sortContinentsByHighestRelativePower();
+    // reinforce defensively
     for (Continent continent : this.continentsCopy) {
       // if country owned, only reinforce border
       if (this.getDeployableTroops() > 0) {
-        if (Probabilities.relativeTroopContinentPower(this, continent) == 1.0) {
-          reinforceBorder(continent);
-        } else {
+        // this would happen anyway!
+//        if (Probabilities.relativeTroopContinentPower(this, continent) == 1.0) {
+//          reinforceContinentBorder(continent);
+//        } else {
           makeContinentDefendable(continent);
-        }
+//        }
       }
     }
-    // if still able to reinforce, reinforce border countries
+
+    for (Continent continent : this.continentsCopy) {
+      if (this.getDeployableTroops() > 0
+          && Probabilities.relativeTroopContinentPower(this, continent) != 1.0) {
+        aggressiveReinforce(continent);
+      }
+    }
+
+  }
+
+  private void aggressiveReinforce(Continent continent) {
+    // find country with highest diff, reinforce it even more
+    Map<Country, Integer> ownedCountryDiffs = getCountryTroopDiffsByContinent(continent);
+    List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountryDiffs.keySet());
+    sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
+    // now the country earliest in list is the one with the highest chance of winning
+    // order works, need to invert values to make them positive
+    ownedCountryDiffs.replaceAll((country, diff) -> -diff);
+    reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }
 
   /**
    * Sorts the local list of continents in a descending manner based off of how much total control
    * the bot has over a continent
    */
-  private void sortContinentsByRelativePower() {
+  private void sortContinentsByHighestRelativePower() {
     this.continentsCopy.sort((continent1, continent2) -> {
       double power1 = Probabilities.relativeTroopContinentPower(this, continent1);
       double power2 = Probabilities.relativeTroopContinentPower(this, continent2);
@@ -89,40 +108,52 @@ public class MediumBot extends Player implements AiBot {
    * @param continent The continent to be reinforced
    */
   private void makeContinentDefendable(Continent continent) {
-    Map<Country, Integer> ownedCountries = new HashMap<>();
     // calculate how much to reinforce each country
-    for (Country country : continent.getCountries()) {
-      if (this.equals(country.getPlayer())) {
-        ownedCountries.put(country, 0);
-        for (Country adj : country.getAdjacentCountries()) {
-          if (!this.equals(adj.getPlayer())) {
-            ownedCountries.put(country,
-                Math.max(calculateTroopWeakness(country, adj), ownedCountries.get(country)));
-          }
-        }
-      }
-    }
+    Map<Country, Integer> ownedCountryDiffs = getCountryTroopDiffsByContinent(continent);
+    List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountryDiffs.keySet());
+    sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
+    reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
+  }
 
-    List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountries.keySet());
-    countriesByLowestReinforce.sort((country1, country2) -> {
-      int country1Count = ownedCountries.get(country1);
-      int country2Count = ownedCountries.get(country2);
-      return country2Count - country1Count;
-    });
-
-    // IMPORTANT: See how player-controller methods work and if changeDeployableTroops
-    // changes the variable relevant to reinforce phase
+  private void reinforceSortedCountryList(Map<Country, Integer> ownedCountryDiffs,
+      List<Country> countriesByLowestReinforce) {
     for (Country country : countriesByLowestReinforce) {
-      if (this.getDeployableTroops() > 0) {
-        int amountDeployed = Math.min(this.getDeployableTroops(), ownedCountries.get(country));
+      if (this.getDeployableTroops() > 0 && ownedCountryDiffs.get(country) > 0) {
+        int amountDeployed = Math.min(this.getDeployableTroops(), ownedCountryDiffs.get(country));
         this.playerController.sendReinforce(country, amountDeployed);
         this.playerController.changeDeployableTroops(-amountDeployed);
+      } else {
+        break;
       }
     }
   }
 
-  private void sortByLowestTroopDiff(List<Country> countryList) {
+  private static void sortCountriesByLowestDiffs(Map<Country, Integer> ownedCountryDiffs,
+      List<Country> countriesByLowestReinforce) {
+    countriesByLowestReinforce.sort((country1, country2) -> {
+      int country1Count = ownedCountryDiffs.get(country1);
+      int country2Count = ownedCountryDiffs.get(country2);
+      return country2Count - country1Count;
+    });
+  }
 
+  private Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
+    Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
+    for (Country country : continent.getCountries()) {
+      if (this.equals(country.getPlayer())) {
+        ownedCountryDiffs.put(country, Integer.MIN_VALUE);
+        for (Country adj : country.getAdjacentCountries()) {
+          if (!this.equals(adj.getPlayer())) {
+            ownedCountryDiffs.put(country,
+                Math.max(calculateTroopWeakness(country, adj), ownedCountryDiffs.get(country)));
+          }
+        }
+        if (ownedCountryDiffs.get(country) == Integer.MIN_VALUE) {
+          ownedCountryDiffs.remove(country);
+        }
+      }
+    }
+    return ownedCountryDiffs;
   }
 
   /**
@@ -132,26 +163,27 @@ public class MediumBot extends Player implements AiBot {
    *
    * @param continent The continent whose border is to be reinforced
    */
-  public void reinforceBorder(Continent continent) {
-    for (Country country : continent.getCountries()) {
-      if (Probabilities.isBorderCountry(country)) {
-        int diff = 0;
-        for (Country adj : country.getAdjacentCountries()) {
-          if (!this.equals(adj.getPlayer())) {
-            diff = Math.max(calculateTroopWeakness(country, adj), diff);
-          }
-        }
-        if (diff > 0) {
-          this.playerController.sendReinforce(country, diff);
-        }
-      }
-    }
-  }
+//  public void reinforceContinentBorder(Continent continent) {
+//    for (Country country : continent.getCountries()) {
+//      if (Probabilities.isBorderCountry(country)) {
+//        int diff = 0;
+//        for (Country adj : country.getAdjacentCountries()) {
+//          if (!this.equals(adj.getPlayer())) {
+//            diff = Math.max(calculateTroopWeakness(country, adj), diff);
+//          }
+//        }
+//        if (diff > 0) {
+//          this.playerController.sendReinforce(country, diff);
+//        }
+//      }
+//    }
+//  }
 
   /**
    * Calculates how many troops the country is lacking compared to an adjacent country
+   *
    * @param country The country being tested
-   * @param adj One adjacent country
+   * @param adj     One adjacent country
    * @return The amount of troops country needs to have the same amount as adj
    */
   private int calculateTroopWeakness(Country country, Country adj) {
@@ -159,10 +191,9 @@ public class MediumBot extends Player implements AiBot {
   }
 
   private void createAllAttacks() {
-    // decide which continents should be attacked/ defended
-    // rate best win probability
-    // attack those
+
   }
+
 
   /**
    * Rates a list of possible Attacks by win probability
@@ -181,6 +212,7 @@ public class MediumBot extends Player implements AiBot {
   /**
    * From a map of attacks built as "Attacking Country" : "List of attackable countries", extract
    * all pairs of (attacking, defending) countries.
+   *
    * @param allAttacks The map containing all attack moves to be extract
    * @return A list of pairs of countries built as (attacking, defending)
    */
@@ -200,6 +232,7 @@ public class MediumBot extends Player implements AiBot {
   /**
    * Sorts a List of Pairs of Countries descending by the probability of the attacking country
    * (first entry) winning a battle against the defending country (second entry)
+   *
    * @param unsortedPairs The general unsorted list of possible attack moves
    */
   private void sortAttacksByProbability(List<List<Country>> unsortedPairs) {
@@ -215,6 +248,7 @@ public class MediumBot extends Player implements AiBot {
 
   /**
    * Gets the probability of a country winning an entire battle against another country
+   *
    * @param attacker The country initiating the battle
    * @param defender The country which is to defend in the battle
    * @return The probability of the attacking country winning the entire battle
