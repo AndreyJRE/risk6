@@ -36,18 +36,6 @@ public class Probabilities {
   }
 
   /**
-   * Decide if a specific (bordering) country should be reinforced, depending on the situation in
-   * the surrounding continents
-   *
-   * @param country The country to be reinforced
-   * @return If it is worth it to reinforce this country or not
-   */
-  public static boolean shouldReinforceBorder(Country country) {
-    //
-    return false;
-  }
-
-  /**
    * Calculate the percentage of Troops owned by a specific player in a continent
    * @param player    The player which is being tested
    * @param continent The continent to be tested

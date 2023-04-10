@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Random;
 
 /**
  * The medium difficulty bot, which makes only the best move in each round without analyzing
@@ -24,12 +22,9 @@ public class MediumBot extends Player implements AiBot {
 
   private final PlayerController playerController;
   private final List<Continent> continentsCopy;
-  private final Random rng;
-  private PriorityQueue<Country> weightedCountries;
 
 
   public MediumBot(GameState gameState) {
-    rng = new Random();
     playerController = new PlayerController(this, gameState);
     continentsCopy = new ArrayList<>();
     continentsCopy.addAll(gameState.getContinents());
@@ -59,12 +54,9 @@ public class MediumBot extends Player implements AiBot {
     for (Continent continent : this.continentsCopy) {
       // if country owned, only reinforce border
       if (this.getDeployableTroops() > 0) {
-        // this would happen anyway!
-//        if (Probabilities.relativeTroopContinentPower(this, continent) == 1.0) {
-//          reinforceContinentBorder(continent);
-//        } else {
         makeContinentDefendable(continent);
-//        }
+      } else {
+        break;
       }
     }
 
@@ -72,25 +64,33 @@ public class MediumBot extends Player implements AiBot {
       if (this.getDeployableTroops() > 0
           && Probabilities.relativeTroopContinentPower(this, continent) != 1.0) {
         aggressiveReinforce(continent);
+      } else {
+        break;
       }
     }
 
   }
 
+  /**
+   * Aggressive reinforcement - finds the strongest country on the continent and reinforces it as
+   * much as possible. This would make the country be the best choice for an attack move in the next
+   * phase
+   *
+   * @param continent The continent on which the reinforce move is being made
+   */
   private void aggressiveReinforce(Continent continent) {
-    // find country with highest diff, reinforce it even more
     Map<Country, Integer> ownedCountryDiffs = getCountryTroopDiffsByContinent(continent);
     List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountryDiffs.keySet());
     sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
-    // now the country earliest in list is the one with the highest chance of winning
+    // now the country earliest in list is the one with the highest chance of winning.
     // order works, need to invert values to make them positive
     ownedCountryDiffs.replaceAll((country, diff) -> -diff);
     reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }
 
   /**
-   * Sorts the local list of continents in a descending manner based off of how much total control
-   * the bot has over a continent
+   * Sorts the local list of continents in a descending manner based off of how much total control/
+   * presence the bot has over a continent
    */
   private void sortContinentsByHighestRelativePower() {
     this.continentsCopy.sort((continent1, continent2) -> {
@@ -108,16 +108,25 @@ public class MediumBot extends Player implements AiBot {
    * @param continent The continent to be reinforced
    */
   private void makeContinentDefendable(Continent continent) {
-    // calculate how much to reinforce each country
     Map<Country, Integer> ownedCountryDiffs = getCountryTroopDiffsByContinent(continent);
     List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountryDiffs.keySet());
     sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
     reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }
 
+  /**
+   * Reinforces countries in the given order by the highest of either the amount of troops that can
+   * be deployed or the amount of troops needed to even out the country in comparison to its
+   * neighbours
+   *
+   * @param ownedCountryDiffs A mapping of each country to the amount of troops it needs to be
+   *                          reinforced with
+   * @param sortedCountryList A sorted list of countries, in the order that the reinforce should be
+   *                          performed
+   */
   private void reinforceSortedCountryList(Map<Country, Integer> ownedCountryDiffs,
-      List<Country> countriesByLowestReinforce) {
-    for (Country country : countriesByLowestReinforce) {
+      List<Country> sortedCountryList) {
+    for (Country country : sortedCountryList) {
       if (this.getDeployableTroops() > 0 && ownedCountryDiffs.get(country) > 0) {
         int amountDeployed = Math.min(this.getDeployableTroops(), ownedCountryDiffs.get(country));
         this.playerController.sendReinforce(country, amountDeployed);
@@ -128,15 +137,31 @@ public class MediumBot extends Player implements AiBot {
     }
   }
 
+  /**
+   * Sorts a list of countries in an ascending manner based off of the amount of troops defined by
+   * the mapping given to the method
+   *
+   * @param ownedCountryDiffs A mapping of countries to the amount of troops needed to even out the
+   *                          troop number with that of the strongest neighbouring enemy
+   * @param listToSort        The list of countries which is to be sorted
+   */
   private static void sortCountriesByLowestDiffs(Map<Country, Integer> ownedCountryDiffs,
-      List<Country> countriesByLowestReinforce) {
-    countriesByLowestReinforce.sort((country1, country2) -> {
+      List<Country> listToSort) {
+    listToSort.sort((country1, country2) -> {
       int country1Count = ownedCountryDiffs.get(country1);
       int country2Count = ownedCountryDiffs.get(country2);
       return country1Count - country2Count;
     });
   }
 
+  /**
+   * Creates a mapping of countries from a continent to the amount of additional troops needed in
+   * order to balance out their strength with that of their strongest enemy country
+   *
+   * @param continent The continent whose countries are being tested
+   * @return A map of countries to the additionally necessary amount of troops. Countries without an
+   * enemy adjacent country are not included in this map
+   */
   private Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
     Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
     for (Country country : continent.getCountries()) {
@@ -157,30 +182,8 @@ public class MediumBot extends Player implements AiBot {
   }
 
   /**
-   * Reinforces only the borders of a continent, by matching the amount of troops on the bordering
-   * countries with that of the strongest adjacent country. Only used by the bot when it has full
-   * control over a continent
-   *
-   * @param continent The continent whose border is to be reinforced
-   */
-//  public void reinforceContinentBorder(Continent continent) {
-//    for (Country country : continent.getCountries()) {
-//      if (Probabilities.isBorderCountry(country)) {
-//        int diff = 0;
-//        for (Country adj : country.getAdjacentCountries()) {
-//          if (!this.equals(adj.getPlayer())) {
-//            diff = Math.max(calculateTroopWeakness(country, adj), diff);
-//          }
-//        }
-//        if (diff > 0) {
-//          this.playerController.sendReinforce(country, diff);
-//        }
-//      }
-//    }
-//  }
-
-  /**
-   * Calculates how many troops the country is lacking compared to an adjacent country
+   * Calculates how many additional troops an adjacent country has in comparison to the current
+   * country
    *
    * @param country The country being tested
    * @param adj     One adjacent country
@@ -190,16 +193,23 @@ public class MediumBot extends Player implements AiBot {
     return adj.getTroops() - country.getTroops();
   }
 
+  /**
+   * In order of strongest continents, makes the strongest attack moves which have high chances of
+   * victory
+   */
   private void createAllAttacks() {
-    // for strongest continents
-    // rate all possible attacks
-    // make strongest attack move
     sortContinentsByHighestRelativePower();
     for (Continent continent : continentsCopy) {
       makeBestAttackInContinent(continent);
     }
   }
 
+  /**
+   * Grabs all possible attack moves in the current continent, and performs only those which have a
+   * high probability of victory until one side loses.
+   *
+   * @param continent The continent in which attacks will be performed.
+   */
   private void makeBestAttackInContinent(Continent continent) {
     Map<Country, List<Country>> allPossibleAttacks = new HashMap<>();
     for (Country country : continent.getCountries()) {
@@ -219,10 +229,12 @@ public class MediumBot extends Player implements AiBot {
         // how to check if country defeated?
         // temp solution: attack isn't done until owner of either attacker or defender country
         // changes
-        while (this.equals(attacker.getContinent()) && !this.equals(defender.getPlayer())) {
+        while (this.equals(attacker.getPlayer()) && !this.equals(defender.getPlayer())) {
           this.playerController.sendAttack(attacker, defender,
               Math.min(3, attacker.getTroops() - 1));
         }
+      } else {
+        break;
       }
     }
   }
@@ -245,7 +257,7 @@ public class MediumBot extends Player implements AiBot {
    * From a map of attacks built as "Attacking Country" : "List of attackable countries", extract
    * all pairs of (attacking, defending) countries.
    *
-   * @param allAttacks The map containing all attack moves to be extract
+   * @param allAttacks The map containing all attack moves to be extracted
    * @return A list of pairs of countries built as (attacking, defending)
    */
   private List<List<Country>> extractAttackPairs(Map<Country, List<Country>> allAttacks) {
@@ -262,7 +274,7 @@ public class MediumBot extends Player implements AiBot {
   }
 
   /**
-   * Sorts a List of Pairs of Countries descending by the probability of the attacking country
+   * Sorts a list of pairs of countries descending by the probability of the attacking country
    * (first entry) winning a battle against the defending country (second entry)
    *
    * @param unsortedPairs The general unsorted list of possible attack moves
@@ -275,9 +287,11 @@ public class MediumBot extends Player implements AiBot {
     });
   }
 
+  /**
+   * From the weakest countries, only fortifies the weakest one which would also result in the
+   * lowest loss of strength in surrounding territories
+   */
   private void createFortify() {
-    // find the weakest country (in terms of diff) and attempt to balance out both the new country
-    // and the fortifier country
     sortContinentsByHighestRelativePower();
     Map<Country, Integer> allOwnedCountryDiffs = new HashMap<>();
     for (Continent continent : continentsCopy) {
@@ -290,7 +304,6 @@ public class MediumBot extends Player implements AiBot {
       return country2Count - country1Count;
     });
 
-    // find good neighbour
     for (Country country : countriesByHighestDiff) {
       Country bestAdj = null;
       for (Country adj : country.getAdjacentCountries()) {
@@ -303,7 +316,9 @@ public class MediumBot extends Player implements AiBot {
         }
       }
       if (bestAdj != null) {
-        this.playerController.sendFortify(bestAdj, country, 0);
+        this.playerController.sendFortify(bestAdj, country,
+            Math.min((bestAdj.getTroops() + country.getTroops()) / 2,
+                -allOwnedCountryDiffs.get(bestAdj)));
         break;
       }
     }
