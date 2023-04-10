@@ -63,7 +63,7 @@ public class MediumBot extends Player implements AiBot {
 //        if (Probabilities.relativeTroopContinentPower(this, continent) == 1.0) {
 //          reinforceContinentBorder(continent);
 //        } else {
-          makeContinentDefendable(continent);
+        makeContinentDefendable(continent);
 //        }
       }
     }
@@ -191,9 +191,41 @@ public class MediumBot extends Player implements AiBot {
   }
 
   private void createAllAttacks() {
-
+    // for strongest continents
+    // rate all possible attacks
+    // make strongest attack move
+    sortContinentsByHighestRelativePower();
+    for (Continent continent : continentsCopy) {
+      makeBestAttackInContinent(continent);
+    }
   }
 
+  private void makeBestAttackInContinent(Continent continent) {
+    Map<Country, List<Country>> allPossibleAttacks = new HashMap<>();
+    for (Country country : continent.getCountries()) {
+      if (this.equals(country.getPlayer())) {
+        List<Country> attacksFromHere = this.playerController.getValidAttackFromCountry(country);
+        if (attacksFromHere.size() > 0) {
+          allPossibleAttacks.put(country, attacksFromHere);
+        }
+      }
+    }
+    List<List<Country>> bestAttacks = rateAttacks(allPossibleAttacks);
+
+    for (List<Country> attackPair : bestAttacks) {
+      Country attacker = attackPair.get(0);
+      Country defender = attackPair.get(1);
+      if (this.getWinningProbability(attacker, defender) > 70) {
+        // how to check if country defeated?
+        // temp solution: attack isn't done until owner of either attacker or defender country
+        // changes
+        while (this.equals(attacker.getContinent()) && !this.equals(defender.getPlayer())) {
+          this.playerController.sendAttack(attacker, defender,
+              Math.min(3, attacker.getTroops() - 1));
+        }
+      }
+    }
+  }
 
   /**
    * Rates a list of possible Attacks by win probability
