@@ -7,6 +7,7 @@ import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +31,11 @@ public class MediumBot extends Player implements AiBot {
     continentsCopy.addAll(gameState.getContinents());
   }
 
+  /**
+   * A method for a bot to make moves for all 3 phases of the game
+   */
   @Override
-  public void makeMove(GameState gameState) {
+  public void makeMove() {
     if (this.numberOfCountries() == 0) { // unable to make a move if bot is out of the game.
       return;
     }
@@ -40,6 +44,54 @@ public class MediumBot extends Player implements AiBot {
 //    this.nextPhase(); // use player-controller later?
     this.createFortify();
 //    this.nextPhase();
+  }
+
+  /**
+   * A method for a bot to claim a single country during the CLAIM PHASE Game State. The MediumBot
+   * attempts to claim countries based off of a ranking of continents.
+   */
+  @Override
+  public void claimCountry() {
+    Map<ContinentName, Continent> continentMap = new HashMap<>();
+    this.playerController.getGameState().getContinents()
+        .forEach(cont -> continentMap.put(cont.getContinentName(), cont));
+
+    for (Country australia : continentMap.get(ContinentName.AUSTRALIA).getCountries()) {
+      if (!australia.hasPlayer()) {
+        this.playerController.sendReinforce(australia, 1);
+        return;
+      }
+    }
+    for (Country southAmerica : continentMap.get(ContinentName.SOUTH_AMERICA).getCountries()) {
+      if (!southAmerica.hasPlayer()) {
+        this.playerController.sendReinforce(southAmerica, 1);
+        return;
+      }
+    }
+    for (Country northAmerica : continentMap.get(ContinentName.NORTH_AMERICA).getCountries()) {
+      if (!northAmerica.hasPlayer()) {
+        this.playerController.sendReinforce(northAmerica, 1);
+        return;
+      }
+    }
+    for (Country africa : continentMap.get(ContinentName.AFRICA).getCountries()) {
+      if (!africa.hasPlayer()) {
+        this.playerController.sendReinforce(africa, 1);
+        return;
+      }
+    }
+    for (Country europe : continentMap.get(ContinentName.EUROPE).getCountries()) {
+      if (!europe.hasPlayer()) {
+        this.playerController.sendReinforce(europe, 1);
+        return;
+      }
+    }
+    for (Country asia : continentMap.get(ContinentName.ASIA).getCountries()) {
+      if (!asia.hasPlayer()) {
+        this.playerController.sendReinforce(asia, 1);
+        return;
+      }
+    }
   }
 
   /**
