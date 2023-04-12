@@ -122,8 +122,6 @@ public class GameStatisticRepository implements GameStatisticDao {
    * @throws NotFoundException if the user associated with a game statistic is not found in the
    *                           database
    */
-
-
   @Override
   public List<GameStatistic> getAll() {
     try {
@@ -250,9 +248,18 @@ public class GameStatisticRepository implements GameStatisticDao {
    */
   @Override
   public void deleteById(Long id) {
-
+    // do nothing
   }
 
+  /**
+   * Retrieves a list of all GameStatistic objects in the database that have the specified gameWon
+   * value.
+   *
+   * @param gameWon a boolean representing the gameWon value of the game statistics to retrieve from
+   *                the database (true for won, false for lost)
+   * @return a List of GameStatistic objects with the specified gameWon value, or an empty List if
+   * none are found in the database with the specified gameWon value
+   */
   @Override
   public List<GameStatistic> getAllStatisticsByGameWon(boolean gameWon) {
     return getAll().stream().filter(gameStatistic -> gameStatistic.isGameWon() == gameWon).toList();
