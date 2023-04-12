@@ -1,5 +1,6 @@
 package com.unima.risk6.game.logic.controllers;
 
+import com.unima.risk6.game.ai.models.MovePair;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.GameState;
@@ -9,9 +10,7 @@ import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class PlayerController {
@@ -97,22 +96,22 @@ public class PlayerController {
 
   }
 
-  public List<Country> getValidFortifiesFromCountry(Country country) {
-    List<Country> fortifiable = new ArrayList<Country>();
-    country.getAdjacentCountries().forEach((n) -> {
-      if (n.getPlayer().equals(player)) {
-        fortifiable.add(n);
+  public List<MovePair> getValidFortifiesFromCountry(Country country) {
+    List<MovePair> fortifiable = new ArrayList<>();
+    country.getAdjacentCountries().forEach((adj) -> {
+      if (adj.getPlayer().equals(player)) {
+        fortifiable.add(new MovePair(country, adj));
       }
     });
     return fortifiable;
   }
 
-  public List<Country> getValidAttackFromCountry(Country country) {
-    List<Country> attackable = new ArrayList<>();
+  public List<MovePair> getValidAttacksFromCountry(Country country) {
+    List<MovePair> attackable = new ArrayList<>();
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
-        if (!this.equals(adjacentCountry.getPlayer())) {
-          attackable.add(country);
+        if (!this.player.equals(adjacentCountry.getPlayer())) {
+          attackable.add(new MovePair(country, adjacentCountry));
         }
       }
     }
@@ -120,26 +119,27 @@ public class PlayerController {
   }
 
 
-  public Map<Country, List<Country>> getAllValidFortifies() {
-    Map<Country, List<Country>> countriesFortifiable = new HashMap<>();
+  public List<MovePair> getAllValidFortifies() {
+    List<MovePair> countriesFortifiable = new ArrayList<>();
     for (Country country : this.player.getCountries()) {
-      List<Country> fortifiable = getValidFortifiesFromCountry(country);
-      countriesFortifiable.put(country, fortifiable);
+      List<MovePair> fortifiable = getValidFortifiesFromCountry(country);
+      if (fortifiable.size() > 0) {
+        countriesFortifiable.addAll(fortifiable);
+      }
     }
     return countriesFortifiable;
   }
 
-  public Map<Country, List<Country>> getAllAttackableCountryPairs() {
-    Map<Country, List<Country>> countriesAttackable = new HashMap<>();
-    for (Country country : this.player.getCountries()) {
-      List<Country> attackable = getValidAttackFromCountry(country);
+  public List<MovePair> getAllAttackableCountryPairs(Continent continent) {
+    List<MovePair> countriesAttackable = new ArrayList<>();
+    for (Country country : continent.getCountries()) {
+      List<MovePair> attackable = getValidAttacksFromCountry(country);
       if (attackable.size() > 0) {
-        countriesAttackable.put(country, attackable);
+        countriesAttackable.addAll(attackable);
       }
     }
     return countriesAttackable;
   }
-
 
 
   //TODO überlegen, ob das gebraucht wird, oder ob man von ui auf hand instant zugreift
