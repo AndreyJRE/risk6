@@ -2,6 +2,7 @@ package com.unima.risk6.database.services;
 
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.exceptions.NotFoundException;
+import com.unima.risk6.database.exceptions.NotValidPasswordException;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.UserRepository;
@@ -13,6 +14,16 @@ import java.util.Optional;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final static String PASSWORD_EXCEPTION_MESSAGE = """
+      Password should contain:
+      at least one uppercase letter (A-Z)
+      at least one lowercase letter (a-z)
+      at least one digit (0-9)
+      at least one special character (#?!@$%^&*-)
+      and has a minimum length of 8 characters""";
+
+  private static final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?="
+      + ".*?[#?!@$%^&*-]).{8,}$";
 
   public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
@@ -29,7 +40,6 @@ public class UserService {
   }
 
   public Long saveUser(User user) {
-    //TODO Check also if password and username valid are, like number of letters (RegEx)
     if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
         || user.getPassword().isEmpty()) {
       throw new IllegalArgumentException("Username and password must not be empty");
@@ -38,6 +48,9 @@ public class UserService {
     Optional<User> existingUser = userRepository.getUserByUsername(user.getUsername());
     if (existingUser.isPresent()) {
       throw new UsernameNotUniqueException("Username is already taken");
+    }
+    if (!isPasswordValid(user.getPassword())) {
+      throw new NotValidPasswordException(PASSWORD_EXCEPTION_MESSAGE);
     }
     // Encrypt password
     String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
@@ -56,7 +69,6 @@ public class UserService {
   }
 
   public void updateUser(User user) {
-    //TODO Check also if password and username valid are, like number of letters (RegEx)
     if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
         || user.getPassword().isEmpty()) {
       throw new IllegalArgumentException("Username and password must not be empty");
@@ -70,6 +82,9 @@ public class UserService {
       }
     }
     if (!userDatabase.getPassword().equals(user.getPassword())) {
+      if (!isPasswordValid(user.getPassword())) {
+        throw new NotValidPasswordException(PASSWORD_EXCEPTION_MESSAGE);
+      }
       String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
       user.setPassword(encryptedPassword);
     }
@@ -84,5 +99,12 @@ public class UserService {
             "User with username {" + username + "} is not in the database"));
   }
 
+  public boolean isPasswordValid(String password) {
+    return password.matches(PASSWORD_REGEX);
+  }
+
+  public List<User> getUsersByActive(boolean active) {
+    return userRepository.getAllUsersByActive(active);
+  }
 
 }

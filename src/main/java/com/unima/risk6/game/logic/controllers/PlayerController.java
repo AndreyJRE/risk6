@@ -18,6 +18,11 @@ public class PlayerController {
 
   private Player player;
   private HandController handController;
+
+  public GameState getGameState() {
+    return gameState;
+  }
+
   private GameState gameState;
 
 
@@ -117,7 +122,7 @@ public class PlayerController {
 
   public Map<Country, List<Country>> getAllValidFortifies() {
     Map<Country, List<Country>> countriesFortifiable = new HashMap<>();
-    for (Country country : countriesFortifiable.keySet()) {
+    for (Country country : this.player.getCountries()) {
       List<Country> fortifiable = getValidFortifiesFromCountry(country);
       countriesFortifiable.put(country, fortifiable);
     }
@@ -126,7 +131,7 @@ public class PlayerController {
 
   public Map<Country, List<Country>> getAllAttackableCountryPairs() {
     Map<Country, List<Country>> countriesAttackable = new HashMap<>();
-    for (Country country : countriesAttackable.keySet()) {
+    for (Country country : this.player.getCountries()) {
       List<Country> attackable = getValidAttackFromCountry(country);
       if (attackable.size() > 0) {
         countriesAttackable.put(country, attackable);

@@ -1,6 +1,7 @@
 package com.unima.risk6.database.daos;
 
 import com.unima.risk6.database.models.User;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -12,4 +13,6 @@ import java.util.Optional;
 public interface UserDao extends Dao<User> {
 
   Optional<User> getUserByUsername(String username);
+
+  List<User> getAllUsersByActive(boolean active);
 }

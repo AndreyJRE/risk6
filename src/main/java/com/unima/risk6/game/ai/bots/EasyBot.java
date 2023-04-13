@@ -28,13 +28,10 @@ public class EasyBot extends Player implements AiBot {
   }
 
   /**
-   * makes a series of moves depending on which phase the game is in
-   *
-   * @param gameState the current state of the game
-   * @author eameri
+   * A method for a bot to make moves for all 3 phases of the game
    */
   @Override
-  public void makeMove(GameState gameState) { // later: separate based off of round
+  public void makeMove() { // later: separate based off of round
     if (this.numberOfCountries() == 0) { // unable to make a move if bot is out of the game.
       return;
     }
@@ -43,6 +40,19 @@ public class EasyBot extends Player implements AiBot {
     //this.nextPhase();
     this.createFortify();
     //this.nextPhase();
+
+  }
+
+  /**
+   * A method for a bot to claim a single country during the CLAIM PHASE Game State.
+   * The EasyBot picks its country to claim randomly.
+   */
+  @Override
+  public void claimCountry() {
+    List<Country> unclaimed = this.playerController.getGameState().getCountries().stream()
+        .filter(country -> !country.hasPlayer()).toList();
+    // should we use reinforce for claim phase?
+    this.playerController.sendReinforce(unclaimed.get(rng.nextInt(unclaimed.size())),1);
   }
 
   /**
@@ -56,9 +66,9 @@ public class EasyBot extends Player implements AiBot {
     double attackProbability = 0.8;
     while (rng.nextDouble() < attackProbability) {
       Country[] toAttack = this.getRandomCountryPair(decisions);
-      Attack attack = createAttack(toAttack);
+      Attack attack = createAndSendAttack(toAttack);
       while (attackAgain(attack)) {
-        attack = createAttack(toAttack);
+        attack = createAndSendAttack(toAttack);
       }
       attackProbability *= 0.6;
     }
@@ -71,12 +81,10 @@ public class EasyBot extends Player implements AiBot {
    * @return the attack object which was sent
    * @author eameri
    */
-  public Attack createAttack(Country[] toAttack) {
+  public Attack createAndSendAttack(Country[] toAttack) {
     int availableTroops = toAttack[0].getTroops();
     int attackingTroops = rng.nextInt(1, Math.min(4, availableTroops)); // exclusive bound
-    Attack moveToMake = new Attack(toAttack[0], toAttack[1], attackingTroops);
-    //this.sendAttack(toAttack[0], toAttack[1], attackingTroops);
-    return moveToMake;
+    return this.playerController.sendAttack(toAttack[0], toAttack[1], attackingTroops);
   }
 
   /**
@@ -89,10 +97,10 @@ public class EasyBot extends Player implements AiBot {
     if (rng.nextDouble() < 0.25) {
       return;
     }
-    Map<Country, List<Country>> decisions = playerController.getAllValidFortifies();
+    Map<Country, List<Country>> decisions = this.playerController.getAllValidFortifies();
     Country[] toFortify = this.getRandomCountryPair(decisions);
     int troopsToMove = rng.nextInt(1, toFortify[0].getTroops());
-    //this.sendFortify(toFortify[0], toFortify[1], troopsToMove);
+    this.playerController.sendFortify(toFortify[0], toFortify[1], troopsToMove);
   }
 
   /**
@@ -105,7 +113,7 @@ public class EasyBot extends Player implements AiBot {
     while (this.getDeployableTroops() > 0) {
       int troopsSent = rng.nextInt(1, this.getDeployableTroops());
       this.createReinforce(troopsSent);
-      this.setDeployableTroops(this.getDeployableTroops() - troopsSent);
+      this.playerController.changeDeployableTroops(-troopsSent);
     }
   }
 
@@ -117,7 +125,7 @@ public class EasyBot extends Player implements AiBot {
    */
   public void createReinforce(int troops) {
     Country toReinforce = getRandomCountryFromSet(this.getCountries());
-    //this.sendReinforce(toReinforce, troops);
+    this.playerController.sendReinforce(toReinforce, troops);
   }
 
   /**

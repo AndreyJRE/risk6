@@ -94,7 +94,7 @@ public class UserRepository implements UserDao {
       if (rs.next()) {
         String username = rs.getString(2);
         String password = rs.getString(3);
-        boolean active = rs.getInt(4) == 1;
+        boolean active = rs.getBoolean(4);
         LocalDate createdAt = LocalDate.parse(rs.getString(5), localDateDtf);
         String imagePath = rs.getString(6);
         user = Optional.of(new User(id, username, password, imagePath, active,
@@ -125,7 +125,7 @@ public class UserRepository implements UserDao {
         Long userId = rs.getLong(1);
         String username = rs.getString(2);
         String password = rs.getString(3);
-        boolean active = rs.getInt(4) == 1;
+        boolean active = rs.getBoolean(4);
         LocalDate createdAt = LocalDate.parse(rs.getString(5), formatter);
         String imagePath = rs.getString(6);
         User user = new User(userId, username, password, imagePath, active, createdAt);
@@ -175,7 +175,7 @@ public class UserRepository implements UserDao {
   @Override
   public void update(User user) {
     try {
-      updateUserStatement.setInt(1, user.isActive() ? 1 : 0);
+      updateUserStatement.setBoolean(1, user.isActive());
       updateUserStatement.setString(2, user.getImagePath());
       updateUserStatement.setString(3, user.getUsername());
       updateUserStatement.setString(4, user.getPassword());
@@ -213,7 +213,7 @@ public class UserRepository implements UserDao {
         Long id = rs.getLong(1);
         String password = rs.getString(2);
         String imagePath = rs.getString(3);
-        boolean active = rs.getInt(4) == 1;
+        boolean active = rs.getBoolean(4);
         LocalDate createdAt = LocalDate.parse(rs.getString(5), localDateDtf);
         user = Optional.of(new User(id, username, password, imagePath, active,
             createdAt));
@@ -223,5 +223,10 @@ public class UserRepository implements UserDao {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public List<User> getAllUsersByActive(boolean active) {
+    return getAll().stream().filter(x -> x.isActive() == active).toList();
   }
 }
