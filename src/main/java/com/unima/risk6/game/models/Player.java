@@ -12,12 +12,14 @@ public class Player {
   private boolean isActive;
   private int deployableTroops;
   private int initialTroops;
+  private final Statistic statistic;
 
 
   public Player() {
     this.hand = new Hand();
     countries = new HashSet<>();
     continents = new HashSet<>();
+    this.statistic = new Statistic();
   }
 
   public Player(String user) {
@@ -25,6 +27,7 @@ public class Player {
     countries = new HashSet<>();
     continents = new HashSet<>();
     this.user = user;
+    this.statistic = new Statistic();
 
   }
   /*
