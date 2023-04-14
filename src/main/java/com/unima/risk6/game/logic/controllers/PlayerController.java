@@ -1,6 +1,8 @@
 package com.unima.risk6.game.logic.controllers;
 
 import com.unima.risk6.game.ai.models.MovePair;
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.GameState;
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class PlayerController {
+public class PlayerController implements GameStateObserver {
 
   private Player player;
   private HandController handController;
@@ -29,6 +31,7 @@ public class PlayerController {
 
     this.player = player;
     this.gameState = gameState;
+    GameConfiguration.addObserver(this);
   }
 
   public Reinforce sendReinforce(Country reinforcedCountry, int troopNumber) {
@@ -153,6 +156,11 @@ public class PlayerController {
 
   public void drawCard(Card drawnCard) {
     handController.drawCard();
+  }
+
+  @Override
+  public void update(GameState gameState) {
+    this.gameState = gameState;
   }
 
 /*
