@@ -62,7 +62,7 @@ public class LogInScreen {
     createButton.setOnAction(event -> handleCreateButton());
 
     GridPane usersGridPane = new GridPane();
-    usersGridPane.setHgap(10);
+    usersGridPane.setHgap(30);
     usersGridPane.setVgap(10);
     usersGridPane.setAlignment(Pos.CENTER);
 
@@ -119,7 +119,11 @@ public class LogInScreen {
     // add the button to the scene
     //usersGridPane.add(createButton, 0, row + 1, 5, 1);
 
-    VBox box = new VBox(riskImage, usersGridPane, createButton);
+    Label selectUser = new Label("Select User Profile");
+    selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+
+    VBox box = new VBox(selectUser, usersGridPane, createButton);
     box.setAlignment(Pos.CENTER);
     box.setSpacing(100);
 
@@ -173,33 +177,34 @@ public class LogInScreen {
     PasswordField passwordField = new PasswordField();
     passwordField.setPromptText("Enter password");
     passwordField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
+    passwordField.setPrefWidth(470);
+
+    Button loginButton = new Button("Log in!");
+
+    loginButton.setPrefWidth(470);
+    loginButton.setPrefHeight(40);
+    loginButton.setAlignment(Pos.CENTER);
+    loginButton.setStyle(
+        "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    loginButton.setFont(new Font(18));
 
     Label welcomeBack = new Label("Welcome Back!");
-    welcomeBack.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+    welcomeBack.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
 
-    VBox passwordEntryBox = new VBox(welcomeBack, userStackPane, selectedUserName, passwordField);
+
+    VBox passwordEntryBox = new VBox(userStackPane, selectedUserName, passwordField,
+        loginButton);
     passwordEntryBox.setAlignment(Pos.CENTER);
     passwordEntryBox.setSpacing(20);
 
-    passwordField.setOnAction(e -> {
-      String enteredPassword = passwordField.getText();
-      if (PasswordEncryption.validatePassword(enteredPassword, user.getPassword())) {
-        // Proceed to the next scene (game) that is created with FXML
-        try {
-          FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
-              + ".fxml"));
-          Parent root = fxmlLoader.load();
-          Scene nextScene = new Scene(root, 1080, 720);
-          stage.setScene(nextScene);
-        } catch (IOException ex) {
-          throw new RuntimeException(ex);
-        }
-      } else {
-        // TODO: Show an error message (incorrect password)
-        System.out.println("Wrong password!");
-      }
-    });
-    // Create a minimalistic back button using a Path with a larger arrow
+
+    passwordField.setOnAction(e ->
+      passwordValidation(user, passwordField));
+
+    loginButton.setOnAction(e -> passwordValidation(user, passwordField));
+
+
     Path arrow = new Path();
     arrow.getElements().add(new MoveTo(10, 15));
     arrow.getElements().add(new LineTo(30, 0));
@@ -213,9 +218,18 @@ public class LogInScreen {
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(e -> showLoginScreen());
 
+    StackPane n = new StackPane();
+
+
+    HBox hbox = new HBox(passwordEntryBox);
+    hbox.setAlignment(Pos.CENTER);
+
+    VBox vBox = new VBox(welcomeBack, hbox);
+    vBox.setAlignment(Pos.CENTER);
+    vBox.setSpacing(50);
+
     // Create a BorderPane to hold the backButton and passwordEntryBox
     BorderPane root = new BorderPane();
-
     // Set backButton to the left side of the BorderPane
     root.setLeft(backButton);
 
@@ -223,9 +237,29 @@ public class LogInScreen {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
 
     // Add passwordEntryBox to the center of the BorderPane
-    root.setCenter(passwordEntryBox);
+    root.setCenter(vBox);
+
 
     Scene scene = new Scene(root, 1080, 720);
     stage.setScene(scene);
+  }
+
+  private void passwordValidation(User user, PasswordField passwordField) {
+    String enteredPassword = passwordField.getText();
+    if (PasswordEncryption.validatePassword(enteredPassword, user.getPassword())) {
+      // Proceed to the next scene (game) that is created with FXML
+      try {
+        FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
+            + ".fxml"));
+        Parent root = fxmlLoader.load();
+        Scene nextScene = new Scene(root, 1080, 720);
+        stage.setScene(nextScene);
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+    } else {
+      // TODO: Show an error message (incorrect password)
+      System.out.println("Wrong password!");
+    }
   }
 }
