@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.scenes;
+package com.unima.risk6.gui.uiModels;
 
 import com.unima.risk6.game.models.Deck;
 import javafx.scene.layout.Pane;

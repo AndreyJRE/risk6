@@ -1,50 +1,15 @@
 package com.unima.risk6.gui.scenes;
 
-import com.unima.risk6.RisikoMain;
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.configurations.PasswordEncryption;
-import com.unima.risk6.database.models.User;
-import com.unima.risk6.database.services.UserService;
-import java.io.IOException;
-import java.util.List;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
+import com.unima.risk6.gui.controllers.LoginSceneController;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.text.Font;
-import javafx.stage.Stage;
 
-public class LogInScreen {
+public class LogInScene extends Scene implements InitializableScene {
 
-  private UserService userService;
-  private List<User> users;
-  private Stage stage;
+  public LoginSceneController loginSceneController;
 
-  public LogInScreen(Stage stage) {
-    //TODO Change to extend scene, remove stage from here, because we have scenecontroller for it
-    this.stage = stage;
-    this.userService = DatabaseConfiguration.getUserService();
-    this.users = userService.getAllUsers();
-    showLoginScreen();
+  public LogInScene() {
+    super(new VBox());
   }
 
   private void showLoginScreen() {

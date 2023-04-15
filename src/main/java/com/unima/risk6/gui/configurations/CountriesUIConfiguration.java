@@ -1,7 +1,7 @@
 package com.unima.risk6.gui.configurations;
 
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.gui.scenes.CountryUi;
+import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.json.JsonParser;
 import com.unima.risk6.json.jsonObjects.CountryUIJsonObject;
 import java.io.IOException;

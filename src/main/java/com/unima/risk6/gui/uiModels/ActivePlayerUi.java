@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.scenes;
+package com.unima.risk6.gui.uiModels;
 
 import javafx.geometry.Pos;
 import javafx.scene.Group;

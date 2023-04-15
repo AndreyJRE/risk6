@@ -1,11 +1,14 @@
 package com.unima.risk6.gui.scenes;
 
+import com.unima.risk6.gui.uiModels.ActivePlayerUi;
+import com.unima.risk6.gui.uiModels.CountryUi;
+import com.unima.risk6.gui.uiModels.PlayerUi;
+import com.unima.risk6.gui.uiModels.TimeUi;
 import java.util.ArrayList;
 import java.util.Set;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -30,7 +33,7 @@ public class GameScene extends Scene {
 
   private ArrayList<PlayerUi> PlayerUis;
 
-  private TimeUi TimeUi;
+  private com.unima.risk6.gui.uiModels.TimeUi TimeUi;
 
 
   public GameScene(
