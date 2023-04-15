@@ -1,5 +1,6 @@
 package com.unima.risk6.game.logic;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
@@ -24,7 +25,6 @@ public class GameState {
   private Dice dice;
   private int numberOfHandIns;
   private GamePhase currentPhase;
-  private ArrayList<Move> lastMoves;
 
   /**
    * Constructs a new game state with the given countries, continents, and players.
@@ -41,11 +41,6 @@ public class GameState {
     this.activePlayers = activePlayers;
     this.dice = new Dice();
     this.numberOfHandIns = 0;
-    this.lastMoves = new ArrayList<>();
-    this.currentPhase = GamePhase.CLAIMPHASE;
-    this.currentPlayer = activePlayers.peek();
-
-
   }
 
   /**
@@ -86,6 +81,7 @@ public class GameState {
    *
    * @return the queue of active players
    */
+
   public Queue<Player> getActivePlayers() {
     return activePlayers;
   }
@@ -142,10 +138,17 @@ public class GameState {
     this.currentPlayer = currentPlayer;
   }
 
-  public ArrayList<Move> getLastMoves() {
-    return lastMoves;
-  }
-
+  /**
+   * Returns the dice
+   *
+   * @return the dice
+   */
+  public Dice getDice() {return dice;}
+  /**
+   * Returns the LostPlayers List
+   *
+   * @return the lostPlayers
+   */
   public ArrayList<Player> getLostPlayers() {
     return lostPlayers;
   }
