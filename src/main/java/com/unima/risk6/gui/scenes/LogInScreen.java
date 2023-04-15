@@ -18,6 +18,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -48,15 +49,20 @@ public class LogInScreen {
 
   private void showLoginScreen() {
     // create a new button
-    Button createButton = new Button("Create new user");
+    Button createButton = new Button("New Account needed?");
 
     // set the button's properties
-    createButton.setPrefWidth(470);
-    createButton.setPrefHeight(40);
     createButton.setAlignment(Pos.CENTER);
-    createButton.setStyle(
-        "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
-    createButton.setFont(new Font(18));
+    createButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #000000; "
+        + "-fx-font-style: italic; -fx-font-size: 24; -fx-underline: false");
+
+// Hinzufügen von Hover-Style für Textfarbe und Unterstreichung
+    createButton.setOnMouseEntered(e -> createButton.setStyle("-fx-background-color: transparent;"
+        + " -fx-text-fill: #0000FF; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
+        + "24"));
+    createButton.setOnMouseExited(e -> createButton.setStyle("-fx-background-color: transparent; "
+        + "-fx-text-fill: #000000; -fx-underline: false; -fx-font-style: italic;  -fx-font-size: "
+        + "24"));
 
     // add an event handler for the button
     createButton.setOnAction(event -> handleCreateButton());
@@ -99,12 +105,15 @@ public class LogInScreen {
 
       Label userName = new Label(user.getUsername());
       userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
-          + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+          + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
+          + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
+          + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
       userName.setOnMouseClicked(e -> showSelectedUser(user));
 
 
       VBox userBox = new VBox(userStackPane, userName);
       userBox.setAlignment(Pos.CENTER);
+      userBox.setSpacing(-10);
 
       usersGridPane.add(userBox, column, row);
 
@@ -147,7 +156,7 @@ public class LogInScreen {
   }
 
 
-  private void showSelectedUser(User user) {
+  public void showSelectedUser(User user) {
 
     ImageView userImage = new ImageView(new Image(getClass().getResource("/pictures"
         + "/747376.png").toString()));
@@ -172,14 +181,14 @@ public class LogInScreen {
 
 
     Label selectedUserName = new Label(user.getUsername());
-    selectedUserName.setStyle("-fx-font-size: 24");
+    selectedUserName.setStyle("-fx-font-size: 40");
 
     PasswordField passwordField = new PasswordField();
     passwordField.setPromptText("Enter password");
-    passwordField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
+    passwordField.setStyle("-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");
     passwordField.setPrefWidth(470);
 
-    Button loginButton = new Button("Log in!");
+    Button loginButton = new Button("Log in with password!");
 
     loginButton.setPrefWidth(470);
     loginButton.setPrefHeight(40);
