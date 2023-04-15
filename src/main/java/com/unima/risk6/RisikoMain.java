@@ -3,6 +3,7 @@ package com.unima.risk6;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.controllers.LoginSceneController;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LogInScene;
