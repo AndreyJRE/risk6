@@ -1,5 +1,7 @@
 package com.unima.risk6.game.logic.controllers;
 
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.GameState;
@@ -13,7 +15,7 @@ import java.util.Queue;
 import java.util.Set;
 
 //TODO mach das kompatibel zu controller
-public class GameController {
+public class GameController implements GameStateObserver {
 
   private GameState gameState;
 
@@ -26,6 +28,7 @@ public class GameController {
     this.gameState = gameState;
     players = gameState.getActivePlayers();
     countries = gameState.getCountries();
+    GameConfiguration.addObserver(this);
   }
 
   public void nextPhase() {
@@ -111,6 +114,11 @@ public class GameController {
 
   public void addLastMove(Move move) {
     this.gameState.getLastMoves().add(move);
+  }
+
+  @Override
+  public void update(GameState gameState) {
+    this.gameState = gameState;
   }
 /*
   public GamePhase nextPhase() {
