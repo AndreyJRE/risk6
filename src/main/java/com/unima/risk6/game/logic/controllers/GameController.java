@@ -1,18 +1,21 @@
 package com.unima.risk6.game.logic.controllers;
 
+import static com.unima.risk6.game.models.enums.GamePhase.ATTACKPHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.CLAIMPHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.FORTIFYPHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.NOTACTIVE;
+import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENTPHASE;
+
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.GameStateObserver;
-import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
-import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.HashMap;
 import java.util.Queue;
-import java.util.Set;
 
 //TODO mach das kompatibel zu controller
 public class GameController implements GameStateObserver {
@@ -58,7 +61,7 @@ public class GameController implements GameStateObserver {
 
     if (!loser.getHand().getCards().isEmpty()) {
       //the Cards of the Players who lost get transferred to the Player who conquered them
-      //gameState.getCurrentPlayer().getHand().receiveCards(loser.getHand().getCards());
+      takeOverCardFromLostPlayer(loser);
     }
   }
 
@@ -102,7 +105,7 @@ public class GameController implements GameStateObserver {
 
   public void processReinforce(Reinforce reinforce) {
     addLastMove(reinforce);
-    if (gameState.getCurrentPhase().equals(GamePhase.CLAIMPHASE)) {
+    if (gameState.getCurrentPlayer().getCurrentPhase().equals(CLAIMPHASE)) {
       reinforce.getCountry().setPlayer(gameState.getCurrentPlayer());
       gameState.getCurrentPlayer().addCountry(reinforce.getCountry());
       reinforce.getCountry().setTroops(1);

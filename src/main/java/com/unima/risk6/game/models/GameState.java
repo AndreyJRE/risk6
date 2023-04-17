@@ -1,9 +1,6 @@
-package com.unima.risk6.game.logic;
+package com.unima.risk6.game.models;
 
-import com.unima.risk6.game.models.Continent;
-import com.unima.risk6.game.models.Country;
-import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.game.logic.Move;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Set;
@@ -16,15 +13,14 @@ import java.util.Set;
  */
 public class GameState {
 
-  private Queue<Player> activePlayers;
-  private ArrayList<Player> lostPlayers;
-  private Set<Country> countries;
-  private Set<Continent> continents;
+  private final Queue<Player> activePlayers;
+  private final ArrayList<Player> lostPlayers;
+  private final Set<Country> countries;
+  private final Set<Continent> continents;
   private Player currentPlayer;
-  private Dice dice;
   private int numberOfHandIns;
-  private GamePhase currentPhase;
-  private ArrayList<Move> lastMoves;
+  private final ArrayList<Move> lastMoves;
+  private final Deck deck;
 
   /**
    * Constructs a new game state with the given countries, continents, and players.
@@ -39,11 +35,11 @@ public class GameState {
     this.countries = countries;
     this.continents = continents;
     this.activePlayers = activePlayers;
-    this.dice = new Dice();
     this.numberOfHandIns = 0;
     this.lastMoves = new ArrayList<>();
-    this.currentPhase = GamePhase.CLAIMPHASE;
     this.currentPlayer = activePlayers.peek();
+    this.lostPlayers = new ArrayList<>();
+    this.deck = new Deck();
 
 
   }
@@ -57,20 +53,6 @@ public class GameState {
     return countries;
   }
 
-  public void setPlayerTurn() {
-
-  }
-
-  /**
-   * Advances the game to the next turn.
-   */
-  public void nextTurn() {
-    currentPlayer = activePlayers.poll();
-  }
-
-  public void endTurn() {
-
-  }
 
   /**
    * Returns the current player.
@@ -107,24 +89,6 @@ public class GameState {
   }
 
   /**
-   * Returns the current game phase.
-   *
-   * @return the current game phase
-   */
-  public GamePhase getCurrentPhase() {
-    return currentPhase;
-  }
-
-  /**
-   * Sets the current game phase.
-   *
-   * @param currentPhase the current game phase
-   */
-  public void setCurrentPhase(GamePhase currentPhase) {
-    this.currentPhase = currentPhase;
-  }
-
-  /**
    * Returns the set of continents in the game.
    *
    * @return the set of continents in the game
@@ -149,4 +113,9 @@ public class GameState {
   public ArrayList<Player> getLostPlayers() {
     return lostPlayers;
   }
+
+  public Deck getDeck() {
+    return deck;
+  }
 }
+

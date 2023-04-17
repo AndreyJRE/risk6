@@ -4,6 +4,7 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Deck;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class DeckController {
 
@@ -18,12 +19,8 @@ public class DeckController {
 
   }
 
-  public Card drawCard() {
-    ArrayList<Card> deckCards = deck.getDeckCards();
-    Card drawnCard = deckCards.get(0);
-    deckCards.remove(0);
-    return drawnCard;
-
+  public boolean isEmpty() {
+    return deck.getDeckCards().isEmpty();
   }
 
 }

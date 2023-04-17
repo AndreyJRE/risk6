@@ -1,15 +1,16 @@
 package com.unima.risk6.game.logic.controllers;
 
+import static com.unima.risk6.game.models.enums.GamePhase.NOTACTIVE;
+
 import com.unima.risk6.game.ai.models.MovePair;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.logic.Reinforce;
-import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,39 +162,6 @@ public class PlayerController implements GameStateObserver {
   @Override
   public void update(GameState gameState) {
     this.gameState = gameState;
-  }
-
-/*
-  public GamePhase nextPhase() {
-
-    switch (player.getCurrentPhase()) {
-      case REINFORCEMENTPHASE:
-        if (player.getDeployableTroops() == 0) {
-          player.setPhase(ATTACKPHASE);
-          return ATTACKPHASE;
-        } else {
-          return REINFORCEMENTPHASE;
-          //TODO exception or error which should be given to UI
-        }
-
-      case ATTACKPHASE:
-        player.setPhase(FORTIFYPHASE);
-        break;
-      case FORTIFYPHASE, CLAIMPHASE:
-        player.setPhase(NOTACTIVE);
-        break;
-      case NOTACTIVE:
-        if (player.getInitialTroops() > 0) {
-          player.setPhase(CLAIMPHASE);
-        } else {
-          player.setPhase(REINFORCEMENTPHASE);
-        }
-        break;
-
-      default:
-        break;
-    }
-    return player.getCurrentPhase();
   }
 
  */

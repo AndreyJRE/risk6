@@ -2,11 +2,12 @@ package com.unima.risk6.game.logic.controllers;
 
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.enums.CardSymbol;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class HandController {
@@ -23,10 +24,6 @@ public class HandController {
 
   }
 
-
-  public void drawCard() {
-    cards.add(deckController.drawCard());
-  }
 
   public void selectCard(int i) {
     if (selectedCards.size() < 3 && !selectedCards.contains(cards.get(i))) {
@@ -97,5 +94,26 @@ public class HandController {
       return true;
     }
     return false;
+  }
+
+  public Card drawCard() {
+    return deck.getDeckCards().remove(0);
+
+  }
+
+  public void setDeck(Deck deck) {
+    this.deck = deck;
+  }
+
+  public void setHand(Hand hand) {
+    this.hand = hand;
+  }
+
+  public Deck getDeck() {
+    return deck;
+  }
+
+  public Hand getHand() {
+    return hand;
   }
 }
