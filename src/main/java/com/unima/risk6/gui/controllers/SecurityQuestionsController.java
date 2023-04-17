@@ -1,7 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.RisikoMain;
-import com.unima.risk6.gui.scenes.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import java.io.IOException;
 import javafx.animation.PauseTransition;
@@ -114,7 +114,7 @@ public class SecurityQuestionsController {
       throw new RuntimeException(e);
     }
     SceneController sceneController = SceneConfiguration.getSceneController();
-    sceneController.addScene(SceneName.TITLE_SCREEN, scene);
-    sceneController.activate(SceneName.TITLE_SCREEN);
+    sceneController.addScene(SceneName.TITLE, scene);
+    sceneController.activate(SceneName.TITLE);
   }
 }

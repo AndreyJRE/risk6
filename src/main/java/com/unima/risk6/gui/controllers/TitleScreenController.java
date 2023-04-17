@@ -2,10 +2,15 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.gui.configurations.CountriesUIConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.scenes.SceneConfiguration;
+import com.unima.risk6.gui.uiModels.PlayerUi;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.uiModels.TimeUi;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -56,7 +61,10 @@ public class TitleScreenController implements Initializable {
   public void initialize(URL url, ResourceBundle resourceBundle) {
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
-
+    root.setPrefHeight(SceneConfiguration.getHeight());
+    root.setPrefWidth(SceneConfiguration.getWidth());
+    backgroundImageView.fitWidthProperty().bind(root.widthProperty());
+    backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     // Set the style of the buttons
     String buttonStyle = "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;";
     singlePlayerButton.setStyle(buttonStyle);
@@ -77,11 +85,24 @@ public class TitleScreenController implements Initializable {
         new CountriesUIConfiguration(COUNTRIES_JSON_PATH);
     countriesUIConfiguration.configureCountries();
 
-    Scene gameScene = new GameScene(pane, 1080, 720,
-        countriesUIConfiguration.getCountriesUIs());
+    //dummy initialisation of Players with dummyvalue
+    ArrayList<PlayerUi> PlayerUis = new ArrayList<PlayerUi>();
+    int amountOfPlayers = 4;
+    for (int i = 0; i < 4; i++) {
+      PlayerUis.add(new PlayerUi(35,
+          35, 100, 45));
+    }
 
-    sceneController.addScene(SceneName.GAME_SCREEN, gameScene);
-    sceneController.activate(SceneName.GAME_SCREEN);
+    Scene gameScene = new GameScene(
+        1080,
+        720,
+        countriesUIConfiguration.getCountriesUIs(),
+        new ActivePlayerUi(40,
+            40, 280, 50),
+        PlayerUis, new TimeUi(40, 40));
+
+    sceneController.addScene(SceneName.GAME, gameScene);
+    sceneController.activate(SceneName.GAME);
   }
 
 

@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.scenes;
+package com.unima.risk6.gui.configurations;
 
 import com.unima.risk6.gui.controllers.SceneController;
 import javafx.beans.value.ChangeListener;

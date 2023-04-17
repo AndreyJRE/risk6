@@ -1,6 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.InitializableScene;
 import java.util.HashMap;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -24,13 +25,11 @@ public class SceneController {
   }
 
   public void activate(SceneName name) {
-    stage.setScene(scenes.get(name));
-    /*if (fullScreen) {
-      stage.setFullScreenExitHint("");
-      stage.setFullScreen(true);
-    } else {
-      stage.setFullScreen(false);
-    }*/
+    Scene scene = scenes.get(name);
+    if(scene instanceof InitializableScene scene1){
+      scene1.init();
+    }
+    stage.setScene(scene);
   }
 
   public void close() {
@@ -39,6 +38,10 @@ public class SceneController {
 
   public Stage getStage() {
     return stage;
+  }
+
+  public Scene getSceneBySceneName(SceneName sceneName){
+    return scenes.get(sceneName);
   }
 }
 

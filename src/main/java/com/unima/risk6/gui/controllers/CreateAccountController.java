@@ -3,10 +3,12 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.exceptions.NotValidPasswordException;
+import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class CreateAccountController implements Initializable {
+
   private UserService userService;
   @FXML
   private VBox root;
@@ -55,43 +58,44 @@ public class CreateAccountController implements Initializable {
 
     // Change the style of the button to simulate a press
     loginButton.setStyle(
-        "-fx-background-color: linear-gradient(#FFA07A, #FFDAB9); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+        "-fx-background-color: linear-gradient(#FFA07A, #FFDAB9); "
+            + "-fx-text-fill: #FFFFFF; -fx-background-radius: 20;"
+            + " -fx-border-radius: 20; -fx-effect:"
+            + " dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     // Change it back after 200 milliseconds
     PauseTransition pause = new PauseTransition(Duration.millis(200));
-    pause.setOnFinished(e -> loginButton.setStyle("-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);"));
+    pause.setOnFinished(e -> loginButton.setStyle("-fx-background-color:"
+        + " linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF;"
+        + " -fx-background-radius: 20;"
+        + " -fx-border-radius: 20;"
+        + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);"));
     pause.play();
 
     pause = new PauseTransition(Duration.millis(500));
-  //TODO Use try catch without if valid, save user method throws 2 exceptions, watch in user service
-  if (isValidCredentials(username)) {
-      User user = new User(username, password,
-          "src/main/resources/Pictures/AdobeStock_259394679.png");
+    User user = new User(username, password,
+        "src/main/resources/Pictures/AdobeStock_259394679.png");
+    try {
       userService.saveUser(user);
       FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
           + ".fxml"));
       Scene scene = null;
-      try {
+
         scene = new Scene(fxmlLoader.load());
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+
       SceneController sceneController = SceneConfiguration.getSceneController();
-      sceneController.addScene(SceneName.TITLE_SCREEN, scene);
-      sceneController.activate(SceneName.TITLE_SCREEN);
-    } else {
-      passwordMismatchLabel.setText("Username already exists!");
+      sceneController.addScene(SceneName.TITLE, scene);
+      sceneController.activate(SceneName.TITLE);
+    } catch (IllegalArgumentException illegalArgumentException) {
+
+    } catch (UsernameNotUniqueException usernameNotUniqueException) {
+      System.out.println(usernameNotUniqueException.getMessage());
+    } catch (NotValidPasswordException notValidPasswordException) {
+      System.out.println(notValidPasswordException.getMessage());
+    }catch (IOException ioException){
+      throw new RuntimeException(ioException);
     }
   }
 
-  private boolean isValidCredentials(String username) {
-    //Überprüfen, ob user schon besteht -> Database Connection
-    try{
-      User user = userService.getUserByUsername(username);
-      return false;
-    } catch (Exception e){
-      return true;
-    }
-  }
 
   @FXML
   private void handleMouseEntered(MouseEvent event) {

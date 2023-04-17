@@ -1,7 +1,7 @@
 package com.unima.risk6.gui.configurations;
 
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.gui.scenes.CountryUI;
+import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.json.JsonParser;
 import com.unima.risk6.json.jsonObjects.CountryUIJsonObject;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public class CountriesUIConfiguration {
 
   private final CountryUIJsonObject[] countryUIJsonObjects;
 
-  private final Set<CountryUI> countriesUIs;
+  private final Set<CountryUi> countriesUIs;
 
   public CountriesUIConfiguration(String jsonCountriesFilePath) {
     InputStream inputStream = getClass().getResourceAsStream(jsonCountriesFilePath);
@@ -32,11 +32,11 @@ public class CountriesUIConfiguration {
 
     for (CountryUIJsonObject countryUIJson : countryUIJsonObjects) {
       Country country = new Country(countryUIJson.getCountryName());
-      countriesUIs.add(new CountryUI(country, countryUIJson.getPath()));
+      countriesUIs.add(new CountryUi(country, countryUIJson.getPath()));
     }
   }
 
-  public Set<CountryUI> getCountriesUIs() {
+  public Set<CountryUi> getCountriesUIs() {
     return countriesUIs;
   }
 
