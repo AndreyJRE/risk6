@@ -29,14 +29,38 @@ public class GameStatistic {
 
   private boolean gameWon;
 
+  /**
+   * Default constructor.
+   */
   public GameStatistic() {
   }
 
+  /**
+   * Constructor for a game statistic. This constructor is used when a game is started. The finish
+   * date and game won are not known yet.
+   *
+   * @param user      The user that is playing the game.
+   * @param startDate The date and time the game was started.
+   */
   public GameStatistic(User user, LocalDateTime startDate) {
     this.user = user;
     this.startDate = startDate;
   }
 
+  /**
+   * Constructor for a game statistic. This constructor is used when a game is finished. The finish
+   * date and game won are known.
+   *
+   * @param id            The ID of the game statistic.
+   * @param user          The user that is playing the game.
+   * @param startDate     The date and time the game was started.
+   * @param finishDate    The date and time the game was finished.
+   * @param troopsLost    The number of troops lost during the game.
+   * @param troopsGained  The number of troops gained during the game.
+   * @param gameWon       Whether the game was won or not.
+   * @param countriesWon  The number of countries won during the game.
+   * @param countriesLost The number of countries lost during the game.
+   */
   public GameStatistic(Long id, User user, LocalDateTime startDate, LocalDateTime finishDate,
       int troopsLost, int troopsGained, boolean gameWon, int countriesWon, int countriesLost) {
     this.id = id;
@@ -126,9 +150,9 @@ public class GameStatistic {
   @Override
   public String toString() {
     return "GameStatistic{" + "id=" + id + ", user=" + user + ", startDate=" + startDate
-           + ", finishDate=" + finishDate + ", troopsLost=" + troopsLost + ", troopsGained="
-           + troopsGained + ", countriesWon=" + countriesWon + ", countriesLost=" + countriesLost
-           + ", gameWon=" + gameWon + '}';
+        + ", finishDate=" + finishDate + ", troopsLost=" + troopsLost + ", troopsGained="
+        + troopsGained + ", countriesWon=" + countriesWon + ", countriesLost=" + countriesLost
+        + ", gameWon=" + gameWon + '}';
   }
 
   @Override
@@ -141,8 +165,8 @@ public class GameStatistic {
     }
     GameStatistic that = (GameStatistic) o;
     return troopsLost == that.troopsLost && troopsGained == that.troopsGained
-           && gameWon == that.gameWon && id.equals(that.id) && user.equals(that.user)
-           && startDate.equals(that.startDate) && Objects.equals(finishDate,
+        && gameWon == that.gameWon && id.equals(that.id) && user.equals(that.user)
+        && startDate.equals(that.startDate) && Objects.equals(finishDate,
         that.finishDate);
   }
 

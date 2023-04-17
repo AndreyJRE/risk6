@@ -202,7 +202,14 @@ public class UserRepository implements UserDao {
     }
   }
 
-
+  /**
+   * Retrieves a User object with the specified username from the database. If the user is not
+   * found, an empty Optional is returned.
+   *
+   * @param username a String representing the username of the user to retrieve
+   * @return an Optional containing the User object if found, or an empty Optional otherwise
+   * @throws RuntimeException if there is a problem executing the query
+   */
   @Override
   public Optional<User> getUserByUsername(String username) {
     try {
@@ -225,6 +232,12 @@ public class UserRepository implements UserDao {
     }
   }
 
+  /**
+   * Retrieves a list of all User objects in the database that have the specified active status.
+   *
+   * @param active a boolean representing the active status of the users to retrieve
+   * @return a List of User objects with the specified active status
+   */
   @Override
   public List<User> getAllUsersByActive(boolean active) {
     return getAll().stream().filter(x -> x.isActive() == active).toList();

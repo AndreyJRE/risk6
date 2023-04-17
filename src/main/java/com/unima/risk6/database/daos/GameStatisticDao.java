@@ -21,5 +21,12 @@ public interface GameStatisticDao extends Dao<GameStatistic> {
 
   List<GameStatistic> getAllStatisticsByUserId(Long id);
 
+  /**
+   * Retrieves a list of all GameStatistic objects associated with a game won status (true or
+   * false).
+   *
+   * @param gameWon The game won status to retrieve game statistics for.
+   * @return A list of GameStatistic objects associated with the specified game won status.
+   */
   List<GameStatistic> getAllStatisticsByGameWon(boolean gameWon);
 }
