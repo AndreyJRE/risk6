@@ -64,6 +64,7 @@ public class PlayersConfiguration {
     for (AiBot aiBot : bots) {
       Player player = (Player) aiBot;
       players.add(player);
+
     }
   }
 
