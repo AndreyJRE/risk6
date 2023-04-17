@@ -19,7 +19,7 @@ import java.util.Set;
 public class PlayerController implements GameStateObserver {
 
   private Player player;
-  private HandController handController;
+  private final HandController handController;
 
   public GameState getGameState() {
     return gameState;
@@ -28,10 +28,9 @@ public class PlayerController implements GameStateObserver {
   private GameState gameState;
 
 
-  public PlayerController(Player player, GameState gameState) {
-
-    this.player = player;
+  public PlayerController(GameState gameState) {
     this.gameState = gameState;
+    this.handController = new HandController();
     GameConfiguration.addObserver(this);
   }
 
@@ -48,17 +47,11 @@ public class PlayerController implements GameStateObserver {
     return new Fortify(outgoing, incoming, troopNumber);
   }
 
-  //TODO ELIYA Klau das zurück
-  public void calculateDeployableTroops(int deployableTroops) {
-    this.calculateDeployableTroops();
-  }
-
   public void changeDeployableTroops(int diff) {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
 
   public void handInCards(int numberOfHandIn) {
-//TODO handController
     if (handController.isExchangable()) {
       Set<Country> countries = player.getCountries();
       if (!handController.hasCountryBonus(countries).isEmpty()) {
@@ -77,10 +70,16 @@ public class PlayerController implements GameStateObserver {
 
   }
 
+  public void addCountry(Country countryToAdd) {
+    player.getCountries().add(countryToAdd);
+    countryToAdd.setPlayer(player);
+  }
+
+
   public void calculateDeployableTroops() {
     updateContinents(gameState.getContinents());
     player.setDeployableTroops(3);
-    int n = player.getNumberOfCountries();
+    int n = getNumberOfCountries();
     if (n > 8) {
       n = n - 9;
       player.setDeployableTroops(Math.floorDiv(n, 3));
@@ -145,25 +144,28 @@ public class PlayerController implements GameStateObserver {
     return countriesAttackable;
   }
 
-
-  //TODO überlegen, ob das gebraucht wird, oder ob man von ui auf hand instant zugreift
-  public void selectCard(int i) {
-    handController.selectCard(i);
+  public void removeCountry(Country countryToRemove) {
+    player.getCountries().remove(countryToRemove);
   }
 
-  public void deselectCard(int i) {
-    handController.deselectCards(i);
-  }
-
-  public void drawCard(Card drawnCard) {
-    handController.drawCard();
-  }
 
   @Override
   public void update(GameState gameState) {
     this.gameState = gameState;
   }
 
- */
 
+  public void setPlayer(Player player) {
+    this.player = player;
+    this.handController.setHand(player.getHand());
+    this.handController.setDeck(gameState.getDeck());
+  }
+
+  public int getNumberOfCountries() {
+    return player.getCountries().size();
+  }
+
+  public boolean isActive() {
+    return !player.getCurrentPhase().equals(NOTACTIVE);
+  }
 }

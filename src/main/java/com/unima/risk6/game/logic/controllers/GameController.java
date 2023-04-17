@@ -23,49 +23,38 @@ public class GameController implements GameStateObserver {
   private GameState gameState;
 
   private boolean hasConquered;
-  private Queue<Player> players;
-  private Set<Country> countries;
   private HashMap<Player, Integer> initialTroops;
+  private final Queue<Player> players;
 
   public GameController(GameState gameState) {
     this.gameState = gameState;
-    players = gameState.getActivePlayers();
-    countries = gameState.getCountries();
+    this.players = gameState.getActivePlayers();
     GameConfiguration.addObserver(this);
   }
 
-  public void nextPhase() {
-    //TODO Mach so, dass das geht.
-
-  }
-
   public void nextPlayer() {
-    /*
-
-
     Player lastPlayer = players.poll();
-    lastPlayer.nextPhase();
     Player nextPlayer = players.peek();
     gameState.setCurrentPlayer(nextPlayer);
-    gameState.setCurrentPhase(nextPlayer.nextPhase());
+    nextPhase();
     players.add(lastPlayer);
-    }
-     */
-
   }
 
   public void removeLostPlayer(Player loser) {
-    Queue<Player> players = gameState.getActivePlayers();
-
     players.remove(loser);
-
     if (!loser.getHand().getCards().isEmpty()) {
       //the Cards of the Players who lost get transferred to the Player who conquered them
       takeOverCardFromLostPlayer(loser);
     }
   }
 
-  public void processAttack(Attack attack) {
+  public void takeOverCardFromLostPlayer(Player lostPlayer) {
+    gameState.getCurrentPlayer().getHand()
+        .getCards()
+        .addAll(lostPlayer.getHand().getCards());
+  }
+  //TODO Server must process it in another class with player controller
+ /* public void processAttack(Attack attack) {
 
     Country attackingCountry = attack.getAttackingCountry();
     Country defendingCountry = attack.getDefendingCountry();
@@ -93,7 +82,7 @@ public class GameController implements GameStateObserver {
       removeLostPlayer(defender);
     }
 
-  }
+  } */
 
   public void processFortify(Fortify fortify) {
     addLastMove(fortify);
@@ -107,7 +96,8 @@ public class GameController implements GameStateObserver {
     addLastMove(reinforce);
     if (gameState.getCurrentPlayer().getCurrentPhase().equals(CLAIMPHASE)) {
       reinforce.getCountry().setPlayer(gameState.getCurrentPlayer());
-      gameState.getCurrentPlayer().addCountry(reinforce.getCountry());
+      //TODO Player controller by server use
+      //gameState.getCurrentPlayer().addCountry(reinforce.getCountry());
       reinforce.getCountry().setTroops(1);
 
     } else {
@@ -123,40 +113,35 @@ public class GameController implements GameStateObserver {
   public void update(GameState gameState) {
     this.gameState = gameState;
   }
-/*
-  public GamePhase nextPhase() {
 
+  //TODO Reinforcephase Automation in Process Reinforce
+  public GamePhase nextPhase() {
+    Player player = gameState.getCurrentPlayer();
     switch (player.getCurrentPhase()) {
-      case REINFORCEMENTPHASE:
+      case REINFORCEMENTPHASE -> {
         if (player.getDeployableTroops() == 0) {
-          player.setPhase(ATTACKPHASE);
+          player.setCurrentPhase(ATTACKPHASE);
           return ATTACKPHASE;
         } else {
           return REINFORCEMENTPHASE;
           //TODO exception or error which should be given to UI
         }
-
-      case ATTACKPHASE:
-        player.setPhase(FORTIFYPHASE);
-        break;
-      case FORTIFYPHASE, CLAIMPHASE:
-        player.setPhase(NOTACTIVE);
-        break;
-      case NOTACTIVE:
+      }
+      case ATTACKPHASE -> player.setCurrentPhase(FORTIFYPHASE);
+      case FORTIFYPHASE, CLAIMPHASE -> {
+        player.setCurrentPhase(NOTACTIVE);
+        nextPlayer();
+      }
+      case NOTACTIVE -> {
         if (player.getInitialTroops() > 0) {
-          player.setPhase(CLAIMPHASE);
+          player.setCurrentPhase(CLAIMPHASE);
         } else {
-          player.setPhase(REINFORCEMENTPHASE);
+          player.setCurrentPhase(REINFORCEMENTPHASE);
         }
-        break;
-
-      default:
-        break;
+      }
+      default -> {
+      }
     }
     return player.getCurrentPhase();
   }
-
-
-
- */
 }
