@@ -28,7 +28,8 @@ public class MediumBot extends Player implements AiBot {
 
 
   public MediumBot(GameState gameState) {
-    playerController = new PlayerController(this, gameState);
+    playerController = new PlayerController(gameState);
+    playerController.setPlayer(this);
     continentsCopy = new ArrayList<>();
     continentsCopy.addAll(gameState.getContinents());
   }
@@ -38,7 +39,8 @@ public class MediumBot extends Player implements AiBot {
    */
   @Override
   public void makeMove() {
-    if (this.numberOfCountries() == 0) { // unable to make a move if bot is out of the game.
+    // unable to make a move if bot is out of the game.
+    if (this.playerController.getNumberOfCountries() == 0) {
       return;
     }
     this.createAllReinforcements();
