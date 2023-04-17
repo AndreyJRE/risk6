@@ -1,5 +1,6 @@
 package com.unima.risk6.game.models;
 
+import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -97,5 +98,6 @@ public class Player {
   public void setActive(boolean active) {
     isActive = active;
   }
+
 }
 

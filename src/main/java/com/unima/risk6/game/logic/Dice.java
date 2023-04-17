@@ -3,7 +3,7 @@ package com.unima.risk6.game.logic;
 import java.util.Random;
 
 /**
- * Represents a dice used in the game of Risk.
+ * Represents a die used in the game of Risk.
  *
  * @author wphung
  */
