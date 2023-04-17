@@ -17,8 +17,8 @@ public class Attack extends Move {
   private final Country defendingCountry;
   private int attackerLosses;
   private int defenderLosses;
-  private ArrayList<Integer> attackDiceResult;
-  private ArrayList<Integer> defendDiceResult;
+  private final ArrayList<Integer> attackDiceResult;
+  private final ArrayList<Integer> defendDiceResult;
   private final int troopNumber;
 
 
@@ -34,8 +34,8 @@ public class Attack extends Move {
     this.attackingCountry = attackingCountry;
     this.defendingCountry = defendingCountry;
     this.troopNumber = troopNumber;
-    this.attackDiceResult = new ArrayList<Integer>();
-    this.defendDiceResult = new ArrayList<Integer>();
+    this.attackDiceResult = new ArrayList<>();
+    this.defendDiceResult = new ArrayList<>();
     attackerLosses = 0;
     defenderLosses = 0;
   }
@@ -46,14 +46,13 @@ public class Attack extends Move {
   public void calculateLosses() {
 
     switch (troopNumber) {
-      case 1:
+      case 1 -> {
         attackDiceResult.add(Dice.rollDice());
         defendDiceResult.add(Dice.rollDice());
         sortDicelist();
         compareDice(0);
-        break;
-
-      case 2:
+      }
+      case 2 -> {
         for (int i = 0; i < 2; i++) {
           attackDiceResult.add(Dice.rollDice());
         }
@@ -69,10 +68,8 @@ public class Attack extends Move {
         } else {
           compareDice(0);
         }
-
-        break;
-      case 3:
-
+      }
+      case 3 -> {
         for (int i = 0; i < 3; i++) {
           attackDiceResult.add(Dice.rollDice());
         }
@@ -81,7 +78,6 @@ public class Attack extends Move {
           defendDiceResult.add(Dice.rollDice());
         }
         sortDicelist();
-
         if (defendingCountry.getTroops() > 1) {
           for (int i = 0; i < 2; i++) {
             compareDice(i);
@@ -89,9 +85,9 @@ public class Attack extends Move {
         } else {
           compareDice(0);
         }
-        break;
-      default:
-        break;
+      }
+      default -> {
+      }
     }
 
   }
