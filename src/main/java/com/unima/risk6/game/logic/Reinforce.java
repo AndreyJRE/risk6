@@ -22,11 +22,11 @@ public class Reinforce extends Move {
     this.toAdd = toAdd;
     this.country = country;
   }
+
   /**
    * Returns the country being reinforced.
    *
    * @return the country being reinforced
-   *
    */
   public Country getCountry() {
     return country;

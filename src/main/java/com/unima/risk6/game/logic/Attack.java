@@ -97,7 +97,9 @@ public class Attack extends Move {
   }
 
   /**
-   * Compares the dice roll results for the attacker and defender and increments the appropriate loss counter.
+   * Compares the dice roll results for the attacker and defender and increments the appropriate
+   * loss counter.
+   *
    * @param n the index of the dice roll to compare
    */
   public void compareDice(int n) {
@@ -107,6 +109,7 @@ public class Attack extends Move {
       attackerLosses++;
     }
   }
+
   /**
    * Sorts the dice roll lists in descending order.
    */
@@ -114,15 +117,19 @@ public class Attack extends Move {
     Collections.sort(defendDiceResult, (x, y) -> y - x);
     Collections.sort(attackDiceResult, (x, y) -> y - x);
   }
+
   /**
    * Returns the list of dice rolls for the attacker.
+   *
    * @return the list of dice rolls for the attacker
    */
   public ArrayList<Integer> getAttackDiceResult() {
     return attackDiceResult;
   }
+
   /**
    * Returns the list of dice rolls for the defender.
+   *
    * @return the list of dice rolls for the defender
    */
   public ArrayList<Integer> getDefendDiceResult() {
@@ -131,39 +138,49 @@ public class Attack extends Move {
 
   /**
    * Returns the attacking country involved in the attack.
+   *
    * @return the attacking country involved in the attack
    */
   public Country getAttackingCountry() {
     return attackingCountry;
   }
+
   /**
    * Returns the defending country being attacked.
+   *
    * @return the defending country being attacked
    */
   public Country getDefendingCountry() {
     return defendingCountry;
   }
+
   /**
    * Returns the number of troops lost by the attacker in the attack.
+   *
    * @return the number of troops lost by the attacker in the attack
    */
   public int getAttackerLosses() {
     return attackerLosses;
   }
+
   /**
    * Returns the number of troops lost by the defender in the attack.
+   *
    * @return the number of troops lost by the defender in the attack
    */
   public int getDefenderLosses() {
     return defenderLosses;
   }
+
   /**
    * Returns the number of troops involved in the attack.
+   *
    * @return the number of troops involved in the attack
    */
   public int getTroopNumber() {
     return troopNumber;
   }
+
   public boolean battleWon() {
     return true; // TEMP METHOD
   }
