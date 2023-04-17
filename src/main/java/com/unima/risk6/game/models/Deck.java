@@ -12,7 +12,9 @@ public class Deck {
   }
 
 
-    public ArrayList<Card> getDeckCards() {
-      return deckCards;
-    }
+  public ArrayList<Card> getDeckCards() {
+    return deckCards;
   }
+
+
+}

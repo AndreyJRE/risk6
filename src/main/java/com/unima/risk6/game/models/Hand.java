@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class Hand {
 
-  private ArrayList<Card> cards;
-  private ArrayList<Card> selectedCards;
+  private final ArrayList<Card> cards;
+  private final ArrayList<Card> selectedCards;
 
 
   public Hand() {
-    cards = new ArrayList<Card>();
-    selectedCards = new ArrayList<Card>();
+    cards = new ArrayList<>();
+    selectedCards = new ArrayList<>();
   }
 
   public ArrayList<Card> getCards() {
