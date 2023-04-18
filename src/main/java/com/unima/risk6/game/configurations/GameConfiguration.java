@@ -1,9 +1,9 @@
 package com.unima.risk6.game.configurations;
 
 import com.unima.risk6.game.ai.AiBot;
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;

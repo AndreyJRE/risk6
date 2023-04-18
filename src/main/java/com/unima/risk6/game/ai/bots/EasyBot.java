@@ -3,10 +3,10 @@ package com.unima.risk6.game.ai.bots;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.MovePair;
 import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,8 @@ public class EasyBot extends Player implements AiBot {
 
   public EasyBot(GameState gameState) {
     rng = new Random();
-    playerController = new PlayerController(this, gameState);
+    playerController = new PlayerController(gameState);
+    playerController.setPlayer(this);
   }
 
   /**
@@ -33,7 +34,8 @@ public class EasyBot extends Player implements AiBot {
    */
   @Override
   public void makeMove() { // later: separate based off of round
-    if (this.numberOfCountries() == 0) { // unable to make a move if bot is out of the game.
+    if (this.playerController.getNumberOfCountries()
+        == 0) { // unable to make a move if bot is out of the game.
       return;
     }
     this.createAllReinforcements();
@@ -143,7 +145,7 @@ public class EasyBot extends Player implements AiBot {
    * @author eameri
    */
   public Country getRandomCountryFromSet(Set<Country> countrySet) {
-    int stopIndex = rng.nextInt(this.numberOfCountries());
+    int stopIndex = rng.nextInt(this.playerController.getNumberOfCountries());
     int counter = 0;
     for (Country country : countrySet) {
       if (counter == stopIndex) {

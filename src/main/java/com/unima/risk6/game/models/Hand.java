@@ -4,28 +4,21 @@ import java.util.ArrayList;
 
 public class Hand {
 
-  private ArrayList<Card> cards;
-  private ArrayList<Card> selectedCards;
+  private final ArrayList<Card> cards;
+  private final ArrayList<Card> selectedCards;
 
 
   public Hand() {
-    ArrayList<Card> cards = new ArrayList<Card>();
-    ArrayList<Card> selectedCards = new ArrayList<Card>();
+    cards = new ArrayList<>();
+    selectedCards = new ArrayList<>();
   }
 
   public ArrayList<Card> getCards() {
     return cards;
   }
 
-  public void setCards(ArrayList<Card> cards) {
-    this.cards = cards;
-  }
-
   public ArrayList<Card> getSelectedCards() {
     return selectedCards;
   }
 
-  public void setSelectedCards(ArrayList<Card> selectedCards) {
-    this.selectedCards = selectedCards;
-  }
 }

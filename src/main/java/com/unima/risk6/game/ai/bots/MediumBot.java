@@ -3,10 +3,10 @@ package com.unima.risk6.game.ai.bots;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.MovePair;
 import com.unima.risk6.game.ai.models.Probabilities;
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
@@ -28,7 +28,8 @@ public class MediumBot extends Player implements AiBot {
 
 
   public MediumBot(GameState gameState) {
-    playerController = new PlayerController(this, gameState);
+    playerController = new PlayerController(gameState);
+    playerController.setPlayer(this);
     continentsCopy = new ArrayList<>();
     continentsCopy.addAll(gameState.getContinents());
   }
@@ -38,7 +39,8 @@ public class MediumBot extends Player implements AiBot {
    */
   @Override
   public void makeMove() {
-    if (this.numberOfCountries() == 0) { // unable to make a move if bot is out of the game.
+    // unable to make a move if bot is out of the game.
+    if (this.playerController.getNumberOfCountries() == 0) {
       return;
     }
     this.createAllReinforcements();

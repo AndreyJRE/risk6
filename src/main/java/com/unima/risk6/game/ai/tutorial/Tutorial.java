@@ -1,8 +1,8 @@
 package com.unima.risk6.game.ai.tutorial;
 
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.Queue;
 import java.util.Set;

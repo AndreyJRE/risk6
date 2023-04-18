@@ -75,8 +75,8 @@ public class Country {
         ", player=" + player +
         ", hasPlayer=" + hasPlayer +
         ", troops=" + troops +
-        ", adjacentCountries=" + adjacentCountries +
-        ", continent=" + continent +
+      //  ", adjacentCountries=" + adjacentCountries. +
+        ", continent=" + continent.getContinentName() +
         '}';
   }
 }

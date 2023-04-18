@@ -1,25 +1,27 @@
 package com.unima.risk6.game.models;
 
+import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Player {
 
-  private Hand hand;
-  private Set<Country> countries;
-  private Set<Continent> continents;
-  private String user;
-  private boolean isActive;
+  private final Hand hand;
+  private final Set<Country> countries;
+  private final Set<Continent> continents;
+  private final String user;
   private int deployableTroops;
   private int initialTroops;
   private final Statistic statistic;
-
+  private GamePhase currentPhase;
 
   public Player() {
     this.hand = new Hand();
     countries = new HashSet<>();
     continents = new HashSet<>();
+    this.user = null;
     this.statistic = new Statistic();
+    this.currentPhase = GamePhase.NOTACTIVE;
   }
 
   public Player(String user) {
@@ -28,42 +30,18 @@ public class Player {
     continents = new HashSet<>();
     this.user = user;
     this.statistic = new Statistic();
+    this.currentPhase = GamePhase.NOTACTIVE;
+
 
   }
-  /*
-  //TODO Move to PlayerController
-
-
-  //TODO Move to PlayerController
-
-
-
-   */
 
   public Set<Continent> getContinents() {
     return continents;
   }
 
 
-  public int numberOfCountries() {
-    return countries.size();
-  }
-
   public Set<Country> getCountries() {
     return countries;
-  }
-
-  public void addCountry(Country countryToAdd) {
-    countries.add(countryToAdd);
-    countryToAdd.setPlayer(this);
-  }
-
-  public void removeCountry(Country countryToRemove) {
-    countries.remove(countryToRemove);
-  }
-
-  public int getNumberOfCountries() {
-    return countries.size();
   }
 
   public Hand getHand() {
@@ -90,12 +68,17 @@ public class Player {
     return user;
   }
 
-  public boolean isActive() {
-    return isActive;
+  public Statistic getStatistic() {
+    return statistic;
   }
 
-  public void setActive(boolean active) {
-    isActive = active;
+  public GamePhase getCurrentPhase() {
+    return currentPhase;
   }
+
+  public void setCurrentPhase(GamePhase currentPhase) {
+    this.currentPhase = currentPhase;
+  }
+
 }
 
