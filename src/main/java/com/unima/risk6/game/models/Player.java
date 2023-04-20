@@ -21,7 +21,7 @@ public class Player {
     continents = new HashSet<>();
     this.user = null;
     this.statistic = new Statistic();
-    this.currentPhase = GamePhase.NOTACTIVE;
+    this.currentPhase = GamePhase.ORDER_PHASE;
   }
 
   public Player(String user) {
@@ -30,7 +30,7 @@ public class Player {
     continents = new HashSet<>();
     this.user = user;
     this.statistic = new Statistic();
-    this.currentPhase = GamePhase.NOTACTIVE;
+    this.currentPhase = GamePhase.ORDER_PHASE;
 
 
   }

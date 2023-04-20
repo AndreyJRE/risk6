@@ -1,21 +1,27 @@
 package com.unima.risk6.game.logic.controllers;
 
-import static com.unima.risk6.game.models.enums.GamePhase.ATTACKPHASE;
-import static com.unima.risk6.game.models.enums.GamePhase.CLAIMPHASE;
-import static com.unima.risk6.game.models.enums.GamePhase.FORTIFYPHASE;
-import static com.unima.risk6.game.models.enums.GamePhase.NOTACTIVE;
-import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENTPHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.CLAIM_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
+import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.Card;
+import com.unima.risk6.game.models.Continent;
+import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 //TODO mach das kompatibel zu controller
 public class GameController implements GameStateObserver {
@@ -33,11 +39,15 @@ public class GameController implements GameStateObserver {
   }
 
   public void nextPlayer() {
+    if (hasConquered) {
+      drawCard();
+    }
     Player lastPlayer = players.poll();
     Player nextPlayer = players.peek();
     gameState.setCurrentPlayer(nextPlayer);
     nextPhase();
     players.add(lastPlayer);
+    hasConquered = false;
   }
 
   public void removeLostPlayer(Player loser) {
@@ -66,7 +76,7 @@ public class GameController implements GameStateObserver {
     attackingCountry.changeTroops(-attack.getAttackerLosses());
     defendingCountry.changeTroops(-attack.getDefenderLosses());
     if (defendingCountry.getTroops() == 0) {
-
+      hasConquered=true;
       defendingCountry.setPlayer(attacker);
       attacker.addCountry(defendingCountry);
       defender.removeCountry(defendingCountry);
@@ -84,6 +94,23 @@ public class GameController implements GameStateObserver {
 
   } */
 
+  public Queue<Player> setPlayerOrder(HashMap<Player, Integer> diceRolls) {
+
+    Set<Entry<Player, Integer>> entrySet = diceRolls.entrySet();
+    Queue<Player> order = new ConcurrentLinkedQueue<>();
+    for (int i = 6; i >= 1; i--) {
+
+      for (Entry<Player, Integer> entry : entrySet) {
+        if (entry.getValue().equals(i)) {
+          order.add(entry.getKey());
+        }
+      }
+    }
+    return order;
+
+
+  }
+
   public void processFortify(Fortify fortify) {
     addLastMove(fortify);
     fortify.getIncoming().changeTroops(fortify.getTroopsToMove());
@@ -94,7 +121,7 @@ public class GameController implements GameStateObserver {
 
   public void processReinforce(Reinforce reinforce) {
     addLastMove(reinforce);
-    if (gameState.getCurrentPlayer().getCurrentPhase().equals(CLAIMPHASE)) {
+    if (gameState.getCurrentPlayer().getCurrentPhase().equals(CLAIM_PHASE)) {
       reinforce.getCountry().setPlayer(gameState.getCurrentPlayer());
       //TODO Player controller by server use
       //gameState.getCurrentPlayer().addCountry(reinforce.getCountry());
@@ -105,6 +132,7 @@ public class GameController implements GameStateObserver {
     }
   }
 
+
   public void addLastMove(Move move) {
     this.gameState.getLastMoves().add(move);
   }
@@ -114,29 +142,29 @@ public class GameController implements GameStateObserver {
     this.gameState = gameState;
   }
 
-  //TODO Reinforcephase Automation in Process Reinforce
+  //TODO Reinforcephase Automation in Process Reinforce IN SERVER
   public GamePhase nextPhase() {
     Player player = gameState.getCurrentPlayer();
     switch (player.getCurrentPhase()) {
-      case REINFORCEMENTPHASE -> {
+      case REINFORCEMENT_PHASE -> {
         if (player.getDeployableTroops() == 0) {
-          player.setCurrentPhase(ATTACKPHASE);
-          return ATTACKPHASE;
+          player.setCurrentPhase(ATTACK_PHASE);
+          return ATTACK_PHASE;
         } else {
-          return REINFORCEMENTPHASE;
+          return REINFORCEMENT_PHASE;
           //TODO exception or error which should be given to UI
         }
       }
-      case ATTACKPHASE -> player.setCurrentPhase(FORTIFYPHASE);
-      case FORTIFYPHASE, CLAIMPHASE -> {
-        player.setCurrentPhase(NOTACTIVE);
+      case ATTACK_PHASE -> player.setCurrentPhase(FORTIFY_PHASE);
+      case FORTIFY_PHASE, CLAIM_PHASE -> {
+        player.setCurrentPhase(NOT_ACTIVE);
         nextPlayer();
       }
-      case NOTACTIVE -> {
+      case NOT_ACTIVE -> {
         if (player.getInitialTroops() > 0) {
-          player.setCurrentPhase(CLAIMPHASE);
+          player.setCurrentPhase(CLAIM_PHASE);
         } else {
-          player.setCurrentPhase(REINFORCEMENTPHASE);
+          player.setCurrentPhase(REINFORCEMENT_PHASE);
         }
       }
       default -> {
@@ -144,4 +172,34 @@ public class GameController implements GameStateObserver {
     }
     return player.getCurrentPhase();
   }
+
+  public void drawCard() {
+    Card drawnCard = gameState.getDeck().getDeckCards().remove(0);
+    gameState.getCurrentPlayer().getHand().getCards().add(drawnCard);
+  }
+
+
+  public void calculateDeployableTroops() {
+    Player currentPlayer = gameState.getCurrentPlayer();
+    this.updateContinentsOfCurrentPlayer(gameState.getContinents());
+    currentPlayer.setDeployableTroops(3);
+    int n = currentPlayer.getCountries().size();
+    if (n > 8) {
+      n = n - 9;
+      currentPlayer.setDeployableTroops(Math.floorDiv(n, 3));
+    }
+    currentPlayer.getContinents().forEach((x) -> currentPlayer.setDeployableTroops(
+        currentPlayer.getDeployableTroops() + x.getBonusTroops()));
+  }
+
+  public void updateContinentsOfCurrentPlayer(Set<Continent> continents) {
+    continents.forEach((n) -> {
+      Set<Country> countries = gameState.getCurrentPlayer().getCountries();
+      if (countries.containsAll(n.getCountries())) {
+        gameState.getCurrentPlayer().getContinents().add(n);
+      }
+    });
+
+  }
+
 }

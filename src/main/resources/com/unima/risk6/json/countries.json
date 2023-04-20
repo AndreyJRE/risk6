@@ -128,7 +128,8 @@
     "countryName": "ICELAND",
     "adjacentCountries": [
       "GREENLAND",
-      "GREAT_BRITAIN"
+      "GREAT_BRITAIN",
+      "SCANDINAVIA"
     ],
     "continent": "EUROPE"
   },
@@ -137,7 +138,8 @@
     "adjacentCountries": [
       "ICELAND",
       "NORTHERN_EUROPE",
-      "WESTERN_EUROPE"
+      "WESTERN_EUROPE",
+      "SCANDINAVIA"
     ],
     "continent": "EUROPE"
   },
@@ -156,7 +158,9 @@
     "countryName": "SCANDINAVIA",
     "adjacentCountries": [
       "NORTHERN_EUROPE",
-      "UKRAINE"
+      "UKRAINE",
+      "GREAT_BRITAIN",
+      "ICELAND"
     ],
     "continent": "EUROPE"
   },
@@ -167,7 +171,8 @@
       "NORTHERN_EUROPE",
       "UKRAINE",
       "EGYPT",
-      "NORTH_AFRICA"
+      "NORTH_AFRICA",
+      "MIDDLE_EAST"
     ],
     "continent": "EUROPE"
   },
@@ -197,7 +202,6 @@
     "countryName": "CONGO",
     "adjacentCountries": [
       "NORTH_AFRICA",
-      "EGYPT",
       "EAST_AFRICA",
       "SOUTH_AFRICA"
     ],
@@ -209,7 +213,9 @@
       "EGYPT",
       "MADAGASCAR",
       "SOUTH_AFRICA",
-      "CONGO"
+      "CONGO",
+      "NORTH_AFRICA",
+      "MIDDLE_EAST"
     ],
     "continent": "AFRICA"
   },
@@ -219,7 +225,6 @@
       "SOUTHERN_EUROPE",
       "MIDDLE_EAST",
       "EAST_AFRICA",
-      "CONGO",
       "NORTH_AFRICA"
     ],
     "continent": "AFRICA"
@@ -237,6 +242,7 @@
     "adjacentCountries": [
       "WESTERN_EUROPE",
       "SOUTHERN_EUROPE",
+      "EAST_AFRICA",
       "EGYPT",
       "CONGO",
       "BRAZIL"
@@ -257,7 +263,6 @@
     "adjacentCountries": [
       "UKRAINE",
       "URAL",
-      "SIBERIA",
       "CHINA",
       "INDIA",
       "MIDDLE_EAST"
@@ -271,6 +276,7 @@
       "SIBERIA",
       "MONGOLIA",
       "SIAM",
+      "URAL",
       "INDIA"
     ],
     "continent": "ASIA"
@@ -298,7 +304,6 @@
   {
     "countryName": "JAPAN",
     "adjacentCountries": [
-      "JAPAN",
       "KAMCHATKA",
       "MONGOLIA"
     ],
@@ -321,7 +326,9 @@
       "UKRAINE",
       "AFGHANISTAN",
       "INDIA",
-      "EGYPT"
+      "EGYPT",
+      "SOUTHERN_EUROPE",
+      "EAST_AFRICA"
     ],
     "continent": "ASIA"
   },
@@ -352,8 +359,7 @@
       "YAKUTSK",
       "IRKUTSK",
       "MONGOLIA",
-      "CHINA",
-      "AFGHANISTAN"
+      "CHINA"
     ],
     "continent": "ASIA"
   },
@@ -362,7 +368,8 @@
     "adjacentCountries": [
       "UKRAINE",
       "SIBERIA",
-      "AFGHANISTAN"
+      "AFGHANISTAN",
+      "CHINA"
     ],
     "continent": "ASIA"
   },
@@ -387,7 +394,7 @@
     "countryName": "INDONESIA",
     "adjacentCountries": [
       "SIAM",
-      "NEW GUINEA",
+      "NEW_GUINEA",
       "WESTERN_AUSTRALIA"
     ],
     "continent": "AUSTRALIA"
@@ -396,7 +403,7 @@
     "countryName": "NEW_GUINEA",
     "adjacentCountries": [
       "INDONESIA",
-      "EASTERN AUSTRALIA",
+      "EASTERN_AUSTRALIA",
       "WESTERN_AUSTRALIA"
     ],
     "continent": "AUSTRALIA"
@@ -405,8 +412,8 @@
     "countryName": "WESTERN_AUSTRALIA",
     "adjacentCountries": [
       "INDONESIA",
-      "NEW GUINEA",
-      "EASTERN AUSTRALIA"
+      "NEW_GUINEA",
+      "EASTERN_AUSTRALIA"
     ],
     "continent": "AUSTRALIA"
   }

@@ -1,37 +1,26 @@
 package com.unima.risk6.game.logic.controllers;
 
-import static com.unima.risk6.game.models.enums.GamePhase.NOTACTIVE;
+import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 
 import com.unima.risk6.game.ai.models.MovePair;
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class PlayerController implements GameStateObserver {
+public class PlayerController {
 
   private Player player;
   private final HandController handController;
 
-  public GameState getGameState() {
-    return gameState;
-  }
 
-  private GameState gameState;
-
-
-  public PlayerController(GameState gameState) {
-    this.gameState = gameState;
+  public PlayerController() {
     this.handController = new HandController();
-    GameConfiguration.addObserver(this);
   }
 
   public Reinforce sendReinforce(Country reinforcedCountry, int troopNumber) {
@@ -75,29 +64,8 @@ public class PlayerController implements GameStateObserver {
     countryToAdd.setPlayer(player);
   }
 
-
-  public void calculateDeployableTroops() {
-    updateContinents(gameState.getContinents());
-    player.setDeployableTroops(3);
-    int n = getNumberOfCountries();
-    if (n > 8) {
-      n = n - 9;
-      player.setDeployableTroops(Math.floorDiv(n, 3));
-    }
-    player.getContinents().forEach((x) -> this.changeDeployableTroops(x.getBonusTroops()));
-  }
-
   //TODO have to implement which Continent is fully Occupied by Player
 
-  public void updateContinents(Set<Continent> continents) {
-    continents.forEach((n) -> {
-      Set<Country> countries = player.getCountries();
-      if (countries.containsAll(n.getCountries())) {
-        player.getContinents().add(n);
-      }
-    });
-
-  }
 
   public List<MovePair> getValidFortifiesFromCountry(Country country) {
     List<MovePair> fortifiable = new ArrayList<>();
@@ -149,16 +117,10 @@ public class PlayerController implements GameStateObserver {
   }
 
 
-  @Override
-  public void update(GameState gameState) {
-    this.gameState = gameState;
-  }
-
-
   public void setPlayer(Player player) {
     this.player = player;
     this.handController.setHand(player.getHand());
-    this.handController.setDeck(gameState.getDeck());
+
   }
 
   public int getNumberOfCountries() {
@@ -166,6 +128,6 @@ public class PlayerController implements GameStateObserver {
   }
 
   public boolean isActive() {
-    return !player.getCurrentPhase().equals(NOTACTIVE);
+    return !player.getCurrentPhase().equals(NOT_ACTIVE);
   }
 }
