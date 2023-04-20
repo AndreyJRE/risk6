@@ -6,7 +6,6 @@ import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The medium difficulty bot, which makes only the best move in each round without analyzing
@@ -27,11 +27,10 @@ public class MediumBot extends Player implements AiBot {
   private final List<Continent> continentsCopy;
 
 
-  public MediumBot(GameState gameState) {
-    playerController = new PlayerController(gameState);
+  public MediumBot() {
+    playerController = new PlayerController();
     playerController.setPlayer(this);
     continentsCopy = new ArrayList<>();
-    continentsCopy.addAll(gameState.getContinents());
   }
 
   /**
@@ -58,8 +57,7 @@ public class MediumBot extends Player implements AiBot {
   public void claimCountry() {
     // TODO: check percentage of control and focus on taking over strongest continent
     Map<ContinentName, Continent> continentMap = new HashMap<>();
-    this.playerController.getGameState().getContinents()
-        .forEach(cont -> continentMap.put(cont.getContinentName(), cont));
+    this.continentsCopy.forEach(cont -> continentMap.put(cont.getContinentName(), cont));
 
     for (Country australia : continentMap.get(ContinentName.AUSTRALIA).getCountries()) {
       if (!australia.hasPlayer()) {
@@ -337,5 +335,9 @@ public class MediumBot extends Player implements AiBot {
     int attackerCount = attacker.getTroops();
     int defenderCount = defender.getTroops();
     return Probabilities.getWinProbability(attackerCount, defenderCount);
+  }
+
+  public void setContinentsCopy(Set<Continent> continents) {
+    this.continentsCopy.addAll(continents);
   }
 }

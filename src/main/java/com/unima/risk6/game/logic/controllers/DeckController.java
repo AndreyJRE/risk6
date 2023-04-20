@@ -43,7 +43,6 @@ public class DeckController {
 
   public void shuffleDeck() {
     Collections.shuffle(deck.getDeckCards());
-
   }
 
   public boolean isEmpty() {

@@ -2,7 +2,6 @@ package com.unima.risk6.game.logic.controllers;
 
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.enums.CardSymbol;
 import java.util.HashMap;
@@ -13,7 +12,6 @@ import java.util.Set;
 public class HandController {
 
   private Hand hand;
-  private Deck deck;
   private final List<Card> selectedCards;
   private final List<Card> cards;
 
@@ -79,22 +77,11 @@ public class HandController {
             && exchange.get(CardSymbol.CAVALRY) <= 1 && numberOfWildcards <= 1);
   }
 
-  public Card drawCard() {
-    return deck.getDeckCards().remove(0);
-
-  }
-
-  public void setDeck(Deck deck) {
-    this.deck = deck;
-  }
 
   public void setHand(Hand hand) {
     this.hand = hand;
   }
 
-  public Deck getDeck() {
-    return deck;
-  }
 
   public Hand getHand() {
     return hand;
