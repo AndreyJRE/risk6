@@ -2,7 +2,7 @@ package com.unima.risk6.network.serialization;
 
 import com.google.gson.*;
 import com.unima.risk6.game.logic.Dice;
-import com.unima.risk6.game.logic.GameState;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
@@ -14,7 +14,7 @@ import java.util.Queue;
 import java.util.Set;
 
 public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDeserializer<GameState> {
-
+    //TODO nur Continents Set Serialisieren und bei deserialiierung aus continents countries generieren.
     @Override
     public JsonElement serialize(GameState gameState, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject jsonObject = new JsonObject();
@@ -38,9 +38,10 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDese
         jsonObject.add("activePlayers", activePlayersJsonArray);
 
         jsonObject.add("currentPlayer", context.serialize(gameState.getCurrentPlayer()));
-        jsonObject.add("dice", context.serialize(gameState.getDice()));
+
+        //TODO jsonObject.add("dice", context.serialize(gameState.getDice()));
         jsonObject.addProperty("numberOfHandIns", gameState.getNumberOfHandIns());
-        jsonObject.addProperty("currentPhase", gameState.getCurrentPhase().name());
+        //jsonObject.addProperty("currentPhase", gameState.getCurrentPhase().name());
 
         return jsonObject;
     }
@@ -58,7 +59,7 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDese
         gameState.setCurrentPlayer(context.deserialize(jsonObject.get("currentPlayer"), Player.class));
         //gameState.setDice(context.deserialize(jsonObject.get("dice"), Dice.class));
         //gameState.setNumberOfHandIns(jsonObject.get("numberOfHandIns").getAsInt());
-        gameState.setCurrentPhase(GamePhase.valueOf(jsonObject.get("currentPhase").getAsString()));
+        //gameState.setCurrentPhase(GamePhase.valueOf(jsonObject.get("currentPhase").getAsString()));
 
         return gameState;
     }

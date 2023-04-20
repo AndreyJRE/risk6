@@ -4,8 +4,9 @@ package com.unima.risk6.network;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.GameController;
-import com.unima.risk6.game.logic.GameState;
+import com.unima.risk6.game.logic.controllers.GameController;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.Deserializer;
 import com.unima.risk6.network.serialization.Serializer;
@@ -32,7 +33,7 @@ public class GamestateSendTest {
 
         try {
             ArrayList<String> users =  new ArrayList<String>(Arrays.asList("Andrey","Max","Fung"));
-            ArrayList<AiBot> bots = new ArrayList<AiBot>(Arrays.asList(new EasyBot(),new EasyBot()));
+            ArrayList<AiBot> bots = new ArrayList<AiBot>(Arrays.asList(new EasyBot(gamestate),new EasyBot(gamestate)));
             gamestate = GameConfiguration.configureGame(users, bots);
             gamecontroller = new GameController(gamestate);
         } catch (Exception e) {
