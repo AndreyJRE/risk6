@@ -1,16 +1,19 @@
 package com.unima.risk6.gui.controllers;
 
-import com.unima.risk6.gui.configurations.CountriesUIConfiguration;
-import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.uiModels.ActivePlayerUi;
-import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.uiModels.PlayerUi;
+import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.logic.GameState;
+import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.uiModels.ActivePlayerUi;
+import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -80,10 +83,18 @@ public class TitleScreenController implements Initializable {
     System.out.println("Single player game started");
     SceneController sceneController = SceneConfiguration.getSceneController();
 
+    List<String> players = new ArrayList<>();
+    players.add("Jeff");
+    players.add("Jeff2");
+    players.add("Jeff3");
+    List<AiBot> bots = new ArrayList<>();
+
+    GameState gameState = GameConfiguration.configureGame(players, bots);
+
     Pane pane = new Pane();
-    CountriesUIConfiguration countriesUIConfiguration =
-        new CountriesUIConfiguration(COUNTRIES_JSON_PATH);
-    countriesUIConfiguration.configureCountries();
+    CountriesUiConfiguration countriesUIConfiguration =
+        new CountriesUiConfiguration(COUNTRIES_JSON_PATH);
+    countriesUIConfiguration.configureCountries(gameState.getCountries());
 
     //dummy initialisation of Players with dummyvalue
     ArrayList<PlayerUi> PlayerUis = new ArrayList<PlayerUi>();
@@ -96,7 +107,7 @@ public class TitleScreenController implements Initializable {
     Scene gameScene = new GameScene(
         1080,
         720,
-        countriesUIConfiguration.getCountriesUIs(),
+        countriesUIConfiguration.getCountriesUis(),
         new ActivePlayerUi(40,
             40, 280, 50),
         PlayerUis, new TimeUi(40, 40));
