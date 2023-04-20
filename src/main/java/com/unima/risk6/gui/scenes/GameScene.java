@@ -1,19 +1,18 @@
 package com.unima.risk6.gui.scenes;
 
-import com.unima.risk6.game.ai.AiBot;
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.gui.uiModels.TroopsCounterUi;
-import java.util.List;
-import javafx.event.EventHandler;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
+import com.unima.risk6.gui.uiModels.TroopsCounterUi;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.event.EventHandler;
+import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -35,7 +34,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Popup;
 
-public class GameScene extends Scene {
+public class GameScene extends Scene implements Initializable {
 
 //  private GameState gameState;
 //
@@ -65,13 +64,10 @@ public class GameScene extends Scene {
 
   private Group countriesGroup;
 
-  private Group troopsCounterGroup;
-
   public GameScene(
 //  GameState gameState,
 //  Stack<CardUi> cardUiS
 //  this.gameState = gameState;
-//  this.playerUiS = playerUiS;
 //  this.cardUiS = cardUiS;
       int width,
       int height,
@@ -88,7 +84,6 @@ public class GameScene extends Scene {
 
     this.root = (BorderPane) getRoot();
     this.countriesGroup = new Group();
-    this.troopsCounterGroup = new Group();
 
     this.initializeGameScene();
 
@@ -97,6 +92,17 @@ public class GameScene extends Scene {
 
   private void initializeGameScene() {
 
+    StackPane countriesPane = initializeCountriesPane();
+    root.setCenter(countriesPane);
+    StackPane playerPane = initializePlayersPane();
+    root.setLeft(playerPane);
+    StackPane timePane = initializeTimePane();
+    root.setRight(timePane);
+    StackPane bottomPane = initializeBottomPane();
+    root.setBottom(bottomPane);
+  }
+
+  private StackPane initializeCountriesPane() {
     double widthRatio = getWidth() / originalScreenWidth;
     double heightRatio = getHeight() / originalScreenHeight;
     double initialScale = Math.min(widthRatio, heightRatio);
@@ -126,8 +132,10 @@ public class GameScene extends Scene {
     countriesGroup.setScaleY(initialScale);
 
     countriesPane.getChildren().add(countriesGroup);
-    root.setCenter(countriesPane);
+    return countriesPane;
+  }
 
+  private StackPane initializePlayersPane() {
     VBox playersVbox = new VBox();
     playersVbox.setMaxWidth(100);
     playersVbox.getChildren().addAll(PlayerUis);
@@ -136,14 +144,18 @@ public class GameScene extends Scene {
     StackPane playerPane = new StackPane();
     playerPane.getChildren().add(playersVbox);
     playerPane.setPadding(new Insets(0, 0, 0, 15));
-    root.setLeft(playerPane);
+    return playerPane;
+  }
 
+  private StackPane initializeTimePane() {
     StackPane timePane = new StackPane();
     timePane.getChildren().add(TimeUi);
     timePane.setAlignment(Pos.CENTER);
     timePane.setPadding(new Insets(0, 15, 0, 0));
-    root.setRight(timePane);
+    return timePane;
+  }
 
+  private StackPane initializeBottomPane() {
     StackPane bottomPane = new StackPane();
     Button chatButton = new Button();
     ImageView chatIcon = new ImageView(new Image(
@@ -211,9 +223,7 @@ public class GameScene extends Scene {
     bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
     bottomPane.setMargin(chatButton, new Insets(0, 10, 0, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));
-    root.setBottom(bottomPane);
-
-
+    return bottomPane;
   }
 
   private void addMouseHandlers(Group countriesGroup) {
@@ -331,9 +341,6 @@ public class GameScene extends Scene {
       double scale = Math.min(widthScale, heightScale);
       countriesGroup.setScaleX(scale + 0.4);
       countriesGroup.setScaleY(scale + 0.4);
-      troopsCounterGroup.setScaleX(scale + 0.4);
-      troopsCounterGroup.setScaleY(scale + 0.4);
-
     });
 
     heightProperty().addListener((obs, oldVal, newVal) -> {
@@ -342,9 +349,12 @@ public class GameScene extends Scene {
       double scale = Math.min(widthScale, heightScale);
       countriesGroup.setScaleX(scale + 0.3);
       countriesGroup.setScaleY(scale + 0.3);
-      troopsCounterGroup.setScaleX(scale + 0.4);
-      troopsCounterGroup.setScaleY(scale + 0.4);
     });
+  }
+
+  @Override
+  public void initialize(URL url, ResourceBundle resourceBundle) {
+
   }
 }
 
