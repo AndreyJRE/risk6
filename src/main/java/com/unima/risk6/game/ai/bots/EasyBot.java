@@ -6,7 +6,6 @@ import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
-import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +21,11 @@ public class EasyBot extends Player implements AiBot {
 
   private final Random rng;
   private final PlayerController playerController;
+  private Set<Country> countries;
 
-  public EasyBot(GameState gameState) {
+  public EasyBot() {
     rng = new Random();
-    playerController = new PlayerController(gameState);
+    playerController = new PlayerController();
     playerController.setPlayer(this);
   }
 
@@ -52,9 +52,8 @@ public class EasyBot extends Player implements AiBot {
    */
   @Override
   public void claimCountry() {
-    List<Country> unclaimed = this.playerController.getGameState().getCountries().stream()
-        .filter(country -> !country.hasPlayer()).toList();
-    // should we use reinforce for claim phase?
+    List<Country> unclaimed = this.countries.stream().filter(country -> !country.hasPlayer())
+        .toList();
     this.playerController.sendReinforce(unclaimed.get(rng.nextInt(unclaimed.size())), 1);
   }
 
@@ -180,5 +179,9 @@ public class EasyBot extends Player implements AiBot {
     return troopsLost < troopsUsed && troopsAvailable > 1 && this.equals(
         attack.getAttackingCountry().getPlayer()) && !this.equals(
         attack.getDefendingCountry().getPlayer());
+  }
+
+  public void setCountries(Set<Country> countries) {
+    this.countries = countries;
   }
 }
