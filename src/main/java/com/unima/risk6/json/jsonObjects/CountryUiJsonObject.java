@@ -1,6 +1,5 @@
 package com.unima.risk6.json.jsonObjects;
 
-import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
 
 /**
@@ -9,13 +8,13 @@ import com.unima.risk6.game.models.enums.CountryName;
  * @author mmeider
  */
 
-public class CountryUIJsonObject {
+public class CountryUiJsonObject {
 
   private String path;
 
   private CountryName countryName;
 
-  public CountryUIJsonObject(String path, CountryName countryName) {
+  public CountryUiJsonObject(String path, CountryName countryName) {
     this.path = path;
     this.countryName = countryName;
   }
