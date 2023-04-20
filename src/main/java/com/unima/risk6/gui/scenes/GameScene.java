@@ -202,7 +202,7 @@ public class GameScene extends Scene implements Initializable {
     chatButton.setOnAction(event -> {
       chatBoxPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
 
-      Bounds rootBounds = root.getBoundsInLocal();
+      Bounds rootBounds = root.localToScreen(root.getBoundsInLocal());
 
       double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
       double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
