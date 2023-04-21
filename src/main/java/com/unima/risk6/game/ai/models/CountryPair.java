@@ -9,13 +9,13 @@ import com.unima.risk6.game.models.Country;
  *
  * @author eameri
  */
-public class MovePair {
+public class CountryPair {
   // TODO: fix javadocs of all methods changed by this class
 
   private final Country outgoing;
   private final Country incoming;
 
-  public MovePair(Country outgoing, Country incoming) {
+  public CountryPair(Country outgoing, Country incoming) {
     this.outgoing = outgoing;
     this.incoming = incoming;
   }
