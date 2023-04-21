@@ -2,7 +2,7 @@ package com.unima.risk6.game.logic.controllers;
 
 import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 
-import com.unima.risk6.game.ai.models.MovePair;
+import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
@@ -67,22 +67,22 @@ public class PlayerController {
   //TODO have to implement which Continent is fully Occupied by Player
 
 
-  public List<MovePair> getValidFortifiesFromCountry(Country country) {
-    List<MovePair> fortifiable = new ArrayList<>();
+  public List<CountryPair> getValidFortifiesFromCountry(Country country) {
+    List<CountryPair> fortifiable = new ArrayList<>();
     country.getAdjacentCountries().forEach((adj) -> {
       if (adj.getPlayer().equals(player)) {
-        fortifiable.add(new MovePair(country, adj));
+        fortifiable.add(new CountryPair(country, adj));
       }
     });
     return fortifiable;
   }
 
-  public List<MovePair> getValidAttacksFromCountry(Country country) {
-    List<MovePair> attackable = new ArrayList<>();
+  public List<CountryPair> getValidAttacksFromCountry(Country country) {
+    List<CountryPair> attackable = new ArrayList<>();
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
         if (!this.player.equals(adjacentCountry.getPlayer())) {
-          attackable.add(new MovePair(country, adjacentCountry));
+          attackable.add(new CountryPair(country, adjacentCountry));
         }
       }
     }
@@ -90,10 +90,10 @@ public class PlayerController {
   }
 
 
-  public List<MovePair> getAllValidFortifies() {
-    List<MovePair> countriesFortifiable = new ArrayList<>();
+  public List<CountryPair> getAllValidFortifies() {
+    List<CountryPair> countriesFortifiable = new ArrayList<>();
     for (Country country : this.player.getCountries()) {
-      List<MovePair> fortifiable = getValidFortifiesFromCountry(country);
+      List<CountryPair> fortifiable = getValidFortifiesFromCountry(country);
       if (fortifiable.size() > 0) {
         countriesFortifiable.addAll(fortifiable);
       }
@@ -101,10 +101,10 @@ public class PlayerController {
     return countriesFortifiable;
   }
 
-  public List<MovePair> getAllAttackableCountryPairs(Continent continent) {
-    List<MovePair> countriesAttackable = new ArrayList<>();
+  public List<CountryPair> getAllAttackableCountryPairs(Continent continent) {
+    List<CountryPair> countriesAttackable = new ArrayList<>();
     for (Country country : continent.getCountries()) {
-      List<MovePair> attackable = getValidAttacksFromCountry(country);
+      List<CountryPair> attackable = getValidAttacksFromCountry(country);
       if (attackable.size() > 0) {
         countriesAttackable.addAll(attackable);
       }
