@@ -1,8 +1,11 @@
 package com.unima.risk6.game.ai.bots;
 
 import com.unima.risk6.game.ai.AiBot;
-import com.unima.risk6.game.ai.models.MovePair;
+import com.unima.risk6.game.ai.models.CountryPair;
+import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
@@ -33,17 +36,16 @@ public class EasyBot extends Player implements AiBot {
    * A method for a bot to make moves for all 3 phases of the game
    */
   @Override
-  public void makeMove() { // later: separate based off of round
+  public MoveTriplet makeMove() { // later: separate based off of round
     if (this.playerController.getNumberOfCountries()
         == 0) { // unable to make a move if bot is out of the game.
-      return;
+      return null;
     }
-    this.createAllReinforcements();
-    this.createAllAttacks();
-    //this.nextPhase();
-    this.createFortify();
-    //this.nextPhase();
+    List<Reinforce> allReinforcements = this.createAllReinforcements();
+    List<Attack> allAttacks = this.createAllAttacks();
+    Fortify fortify = this.createFortify();
 
+    return new MoveTriplet(allReinforcements, allAttacks, fortify);
   }
 
   /**
@@ -51,33 +53,38 @@ public class EasyBot extends Player implements AiBot {
    * picks its country to claim randomly.
    */
   @Override
-  public void claimCountry() {
+  public Reinforce claimCountry() {
     List<Country> unclaimed = this.countries.stream().filter(country -> !country.hasPlayer())
         .toList();
-    this.playerController.sendReinforce(unclaimed.get(rng.nextInt(unclaimed.size())), 1);
+    return new Reinforce(unclaimed.get(rng.nextInt(unclaimed.size())), 1);
   }
 
   /**
    * Randomly picks countries to attack. The bot will continue to attack the same country until it
    * loses a fight
    *
+   * @return
    * @author eameri
    */
-  public void createAllAttacks() {
+  public List<Attack> createAllAttacks() {
+    List<Attack> allAttacks = new ArrayList<>();
 
-    List<MovePair> decisions = new ArrayList<>();
+    List<CountryPair> decisions = new ArrayList<>();
     for (Continent continent : this.getContinents()) {
       decisions.addAll(this.playerController.getAllAttackableCountryPairs(continent));
     }
     double attackProbability = 0.8;
     while (rng.nextDouble() < attackProbability) {
-      MovePair toAttack = this.getRandomCountryPair(decisions);
+      CountryPair toAttack = this.getRandomCountryPair(decisions);
       Attack attack = createAndSendAttack(toAttack);
+      allAttacks.add(attack);
       while (attackAgain(attack)) {
         attack = createAndSendAttack(toAttack);
+        allAttacks.add(attack);
       }
       attackProbability *= 0.6;
     }
+    return allAttacks;
   }
 
   /**
@@ -87,28 +94,27 @@ public class EasyBot extends Player implements AiBot {
    * @return the attack object which was sent
    * @author eameri
    */
-  public Attack createAndSendAttack(MovePair toAttack) {
+  private Attack createAndSendAttack(CountryPair toAttack) {
     int availableTroops = toAttack.getOutgoing().getTroops();
     int attackingTroops = rng.nextInt(1, Math.min(4, availableTroops)); // exclusive bound
-    return this.playerController.sendAttack(toAttack.getOutgoing(), toAttack.getIncoming(),
-        attackingTroops);
+    return toAttack.createAttack(attackingTroops);
   }
 
   /**
    * Randomly picks two countries for the fortify move with a random amount of troops. Low
    * possibility of choosing not to fortify.
    *
+   * @return
    * @author eameri
    */
-  public void createFortify() {
+  private Fortify createFortify() {
     if (rng.nextDouble() < 0.25) {
-      return;
+      return null;
     }
-    List<MovePair> decisions = this.playerController.getAllValidFortifies();
-    MovePair toFortify = this.getRandomCountryPair(decisions);
+    List<CountryPair> decisions = this.playerController.getAllValidFortifies();
+    CountryPair toFortify = this.getRandomCountryPair(decisions);
     int troopsToMove = rng.nextInt(1, toFortify.getOutgoing().getTroops());
-    this.playerController.sendFortify(toFortify.getOutgoing(), toFortify.getIncoming(),
-        troopsToMove);
+    return toFortify.createFortify(troopsToMove);
   }
 
   /**
@@ -117,12 +123,15 @@ public class EasyBot extends Player implements AiBot {
    *
    * @author eameri
    */
-  public void createAllReinforcements() {
+  private List<Reinforce> createAllReinforcements() {
+    List<Reinforce> reinforcements = new ArrayList<>();
     while (this.getDeployableTroops() > 0) {
       int troopsSent = rng.nextInt(1, this.getDeployableTroops());
-      this.createReinforce(troopsSent);
+      Reinforce toAdd = this.createReinforce(troopsSent);
+      reinforcements.add(toAdd);
       this.playerController.changeDeployableTroops(-troopsSent);
     }
+    return reinforcements;
   }
 
   /**
@@ -131,9 +140,9 @@ public class EasyBot extends Player implements AiBot {
    * @param troops The amount of troops to send to a country
    * @author eameri
    */
-  public void createReinforce(int troops) {
+  private Reinforce createReinforce(int troops) {
     Country toReinforce = getRandomCountryFromSet(this.getCountries());
-    this.playerController.sendReinforce(toReinforce, troops);
+    return new Reinforce(toReinforce, troops);
   }
 
   /**
@@ -143,7 +152,7 @@ public class EasyBot extends Player implements AiBot {
    * @return A randomly chosen country
    * @author eameri
    */
-  public Country getRandomCountryFromSet(Set<Country> countrySet) {
+  private Country getRandomCountryFromSet(Set<Country> countrySet) {
     int stopIndex = rng.nextInt(this.playerController.getNumberOfCountries());
     int counter = 0;
     for (Country country : countrySet) {
@@ -160,7 +169,7 @@ public class EasyBot extends Player implements AiBot {
    * @return An array of 2 Countries (0. from, 1. to)
    * @author eameri
    */
-  public MovePair getRandomCountryPair(List<MovePair> decision) {
+  private CountryPair getRandomCountryPair(List<CountryPair> decision) {
     return decision.get(rng.nextInt(decision.size()));
   }
 
@@ -172,7 +181,7 @@ public class EasyBot extends Player implements AiBot {
    * over yet
    * @author eameri
    */
-  public boolean attackAgain(Attack attack) {
+  private boolean attackAgain(Attack attack) {
     int troopsUsed = Math.min(2, attack.getTroopNumber());
     int troopsLost = attack.getAttackerLosses();
     int troopsAvailable = attack.getAttackingCountry().getTroops(); // contains number after attack
