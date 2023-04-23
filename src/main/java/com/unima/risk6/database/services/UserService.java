@@ -9,6 +9,8 @@ import com.unima.risk6.database.repositories.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The UserService class is a service class for the User model. It contains methods that are used to
@@ -27,7 +29,7 @@ public class UserService {
       at least one digit (0-9)
       at least one special character (#?!@$%^&*-)
       and has a minimum length of 8 characters""";
-
+  private final static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
   private static final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?="
       + ".*?[#?!@$%^&*-]).{8,}$";
 
@@ -90,6 +92,7 @@ public class UserService {
     user.setPassword(encryptedPassword);
     user.setCreatedAt(LocalDate.now());
     user.setActive(true);
+    LOGGER.info("User with username {" + user.getUsername() + "} was saved in the database");
     return userRepository.save(user);
   }
 
@@ -105,6 +108,7 @@ public class UserService {
     if (databaseUser.isEmpty()) {
       throw new NotFoundException("User with id {" + userId + "} is not in the database");
     }
+    LOGGER.info("User with id {" + userId + "} was deleted from the database");
     userRepository.deleteById(userId);
   }
 
@@ -137,7 +141,7 @@ public class UserService {
       String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
       user.setPassword(encryptedPassword);
     }
-
+    LOGGER.info("User with id {" + user.getId() + "} was updated in the database");
     userRepository.update(user);
   }
 
