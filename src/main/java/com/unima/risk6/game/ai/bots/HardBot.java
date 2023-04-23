@@ -2,6 +2,7 @@ package com.unima.risk6.game.ai.bots;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.MoveTriplet;
+import com.unima.risk6.game.ai.montecarlo.MonteCarloTreeSearch;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Player;
@@ -20,7 +21,9 @@ public class HardBot extends Player implements AiBot {
    */
   @Override
   public MoveTriplet makeMove() {
-    return null;
+    MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(this);
+    // TODO: get GameState from somewhere :(
+    return mcts.getBestMove(null);
   }
 
   /**

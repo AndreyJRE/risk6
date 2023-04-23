@@ -2,6 +2,7 @@ package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Player {
@@ -31,8 +32,18 @@ public class Player {
     this.user = user;
     this.statistic = new Statistic();
     this.currentPhase = GamePhase.ORDER_PHASE;
+  }
 
-
+  public Player(Player toCopy) {
+    // only to be used by AI!
+    this.hand = toCopy.getHand();
+    this.countries = toCopy.getCountries();
+    this.continents = toCopy.getContinents();
+    this.user = toCopy.getUser();
+    this.deployableTroops = toCopy.getDeployableTroops();
+    this.initialTroops = toCopy.getInitialTroops();
+    this.statistic = null;
+    this.currentPhase = toCopy.getCurrentPhase();
   }
 
   public Set<Continent> getContinents() {
@@ -78,6 +89,17 @@ public class Player {
 
   public void setCurrentPhase(GamePhase currentPhase) {
     this.currentPhase = currentPhase;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Player player)) {
+      return false;
+    }
+    return Objects.equals(getUser(), player.getUser());
   }
 
 }

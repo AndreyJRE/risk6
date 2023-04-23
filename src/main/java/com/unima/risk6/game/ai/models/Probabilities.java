@@ -3,11 +3,14 @@ package com.unima.risk6.game.ai.models;
 
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.json.JsonParser;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class containing static methods and attributes relating to probabilities and the calculations
@@ -81,5 +84,29 @@ public class Probabilities {
    */
   public static boolean isBorderCountry(Country country) {
     return Arrays.asList(borderCountries).contains(country.getCountryName());
+  }
+
+  public static Player findStrongestPlayer(GameState gameState) {
+    Map<Player, Integer> playerTroopCount = new HashMap<>();
+    double totalTroopCount = 0;
+    for (Country country : gameState.getCountries()) {
+      int countryCount = country.getTroops();
+      totalTroopCount += countryCount;
+      Integer mapValue = playerTroopCount.get(country.getPlayer());
+      if (mapValue == null) {
+        playerTroopCount.put(country.getPlayer(), countryCount);
+      } else {
+        playerTroopCount.put(country.getPlayer(),
+            playerTroopCount.get(country.getPlayer()) + countryCount);
+      }
+    }
+    Player strongest = null;
+    double strongestPercent = 0.0;
+    for (Player player : playerTroopCount.keySet()) {
+      if (playerTroopCount.get(player) / totalTroopCount > strongestPercent) {
+        strongest = player;
+      }
+    }
+    return strongest;
   }
 }
