@@ -65,14 +65,15 @@ public class LoginSceneController {
     usersGridPane.setAlignment(Pos.CENTER);
 
     ImageView riskImage = new ImageView(
-        new Image(getClass().getResource("/pictures/Risk.png").toString()));
+        new Image(getClass().getResource("/com/unima/risk6/pictures/Risk.png").toString()));
 
     int column = 0;
     int row = 1;
 
     for (User user : users) {
-      ImageView userImage = new ImageView(new Image(getClass().getResource("/pictures" +
-          "/747376.png").toString()));
+      ImageView userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures" +
+              "/747376.png").toString()));
       userImage.setFitHeight(120);
       userImage.setFitWidth(120);
 

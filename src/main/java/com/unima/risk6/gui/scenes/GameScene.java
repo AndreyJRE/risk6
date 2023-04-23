@@ -141,11 +141,12 @@ public class GameScene extends Scene implements Initializable {
 
     PlayerColor[] possibleColors = {PlayerColor.RED, PlayerColor.BLUE, PlayerColor.PURPLE,
         PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
-
+    int colorIndex = 0;
     ArrayList<PlayerUi> playerUis = new ArrayList<>();
     for (Player player : gameState.getActivePlayers()) {
-      playerUis.add(new PlayerUi(player, 35,
+      playerUis.add(new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
           35, 100, 45));
+      colorIndex++;
     }
 
     playersVbox.getChildren().addAll(playerUis);

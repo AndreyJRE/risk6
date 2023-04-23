@@ -12,7 +12,7 @@ public class TimeUi extends Group {
   public TimeUi(double rectangleWidth, double rectangleHeight) {
 
     Image reinforcementImage = new Image(
-        getClass().getResource("/pictures/sandUhr.png").toString());
+        getClass().getResource("/com/unima/risk6/pictures/sandUhr.png").toString());
     ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
 
     Rectangle icon1 = new Rectangle(rectangleWidth, rectangleHeight);
