@@ -13,6 +13,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -58,41 +59,61 @@ public class MediumBot extends Player implements AiBot {
    */
   @Override
   public Reinforce claimCountry() {
-    // TODO: check percentage of control and focus on taking over strongest continent
     Map<ContinentName, Continent> continentMap = new HashMap<>();
     this.continentsCopy.forEach(cont -> continentMap.put(cont.getContinentName(), cont));
+    List<Continent> priorityList = Arrays.asList(
+        continentMap.get(ContinentName.AUSTRALIA),
+        continentMap.get(ContinentName.SOUTH_AMERICA),
+        continentMap.get(ContinentName.NORTH_AMERICA),
+        continentMap.get(ContinentName.AFRICA),
+        continentMap.get(ContinentName.EUROPE),
+        continentMap.get(ContinentName.ASIA)
+    );
+    Continent targetContinent = findBestClaim(priorityList);
+    Country targetCountry = findUnclaimedCountry(targetContinent);
+    return new Reinforce(targetCountry, 1);
+  }
 
-    for (Country australia : continentMap.get(ContinentName.AUSTRALIA).getCountries()) {
-      if (!australia.hasPlayer()) {
-        return new Reinforce(australia, 1);
+  private Country findUnclaimedCountry(Continent continent) {
+    for (Country country : continent.getCountries()) {
+      if (!country.hasPlayer()) {
+        return country;
       }
     }
-    for (Country southAmerica : continentMap.get(ContinentName.SOUTH_AMERICA).getCountries()) {
-      if (!southAmerica.hasPlayer()) {
-        return new Reinforce(southAmerica, 1);
+    return null; // method only called on continents which have a free country
+  }
+
+  private Continent findBestClaim(List<Continent> priorityList) {
+    Continent targetContinent = null;
+    double maxOwnedPercentage = -1;
+    for (Continent continent : priorityList) {
+      double ownedPercentage = calculateClaimPhasePower(continent);
+      if (ownedPercentage > maxOwnedPercentage && hasFreeCountry(continent)) {
+        targetContinent = continent;
+        maxOwnedPercentage = ownedPercentage;
       }
     }
-    for (Country northAmerica : continentMap.get(ContinentName.NORTH_AMERICA).getCountries()) {
-      if (!northAmerica.hasPlayer()) {
-        return new Reinforce(northAmerica, 1);
+    return targetContinent;
+  }
+
+  private boolean hasFreeCountry(Continent continent) {
+    for (Country country : continent.getCountries()) {
+      if (!country.hasPlayer()) {
+        return true;
       }
     }
-    for (Country africa : continentMap.get(ContinentName.AFRICA).getCountries()) {
-      if (!africa.hasPlayer()) {
-        return new Reinforce(africa, 1);
+    return false;
+  }
+
+  private double calculateClaimPhasePower(Continent continent) {
+    double totalSize = continent.getCountries().size();
+    int owned = 0;
+    for (Country country : continent.getCountries()) {
+      if (this.equals(country.getPlayer())) {
+        owned++;
       }
     }
-    for (Country europe : continentMap.get(ContinentName.EUROPE).getCountries()) {
-      if (!europe.hasPlayer()) {
-        return new Reinforce(europe, 1);
-      }
-    }
-    for (Country asia : continentMap.get(ContinentName.ASIA).getCountries()) {
-      if (!asia.hasPlayer()) {
-        return new Reinforce(asia, 1);
-      }
-    }
-    return null;
+    return owned / totalSize;
   }
 
   /**
