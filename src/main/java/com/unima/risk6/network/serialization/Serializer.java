@@ -30,11 +30,9 @@ public class Serializer {
 
 
             .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
-            /*
+
             .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
             .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
-
-             */
             .create()
             .toJson(obj);
   }
