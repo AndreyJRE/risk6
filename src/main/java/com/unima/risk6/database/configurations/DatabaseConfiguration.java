@@ -6,6 +6,8 @@ import com.unima.risk6.database.repositories.UserRepository;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.database.services.UserService;
 import java.sql.Connection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents the configuration of the database for the application. It provides various
@@ -22,7 +24,7 @@ public class DatabaseConfiguration {
   private static UserRepository userRepository;
   private static GameStatisticRepository gameStatisticRepository;
   private static Connection databaseConnection;
-  private static AppDatabase appDatabase;
+  private final static Logger LOGGER = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
   /**
    * The method is called to initialize the database configuration by calling the
@@ -30,8 +32,10 @@ public class DatabaseConfiguration {
    */
   public static void startDatabaseConfiguration() {
     configureDatabaseConnection();
+    LOGGER.info("Database connection was established");
     configureRepositories();
     configureServices();
+    LOGGER.info("Database services were configured and database is ready to use");
   }
 
   /**
@@ -58,7 +62,7 @@ public class DatabaseConfiguration {
    */
   private static void configureDatabaseConnection() {
     String databasePath = "dbFiles/risk_database.db";
-    appDatabase = new AppDatabase(databasePath);
+    AppDatabase appDatabase = new AppDatabase(databasePath);
     databaseConnection = appDatabase.getConnection();
 
   }
@@ -67,23 +71,11 @@ public class DatabaseConfiguration {
     return userService;
   }
 
-  public static UserRepository getUserRepository() {
-    return userRepository;
-  }
-
   public static Connection getDatabaseConnection() {
     return databaseConnection;
   }
 
-  public static AppDatabase getAppDatabase() {
-    return appDatabase;
-  }
-
   public static GameStatisticService getGameStatisticService() {
     return gameStatisticService;
-  }
-
-  public static GameStatisticRepository getGameStatisticRepository() {
-    return gameStatisticRepository;
   }
 }

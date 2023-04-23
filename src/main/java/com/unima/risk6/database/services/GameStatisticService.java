@@ -5,6 +5,9 @@ import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The GameStatisticService class is a service class for the GameStatistic model. It contains
@@ -16,6 +19,7 @@ import java.util.List;
 public class GameStatisticService {
 
   private final GameStatisticRepository gameStatisticRepository;
+  private final static Logger LOGGER = LoggerFactory.getLogger(GameStatisticService.class);
 
   /**
    * Constructs a new GameStatisticService object with the specified GameStatisticRepository.
@@ -67,6 +71,14 @@ public class GameStatisticService {
    * @param gameStatistic The GameStatistic object to update.
    */
   public void updateGameStatisticAfterGame(GameStatistic gameStatistic) {
+    Optional<GameStatistic> gameStatisticOptional = gameStatisticRepository.get(
+        gameStatistic.getId());
+    if (gameStatisticOptional.isEmpty()) {
+      throw new NotFoundException("Game Statistic with id {" + gameStatistic.getId()
+          + "} is not in the database");
+    }
+    gameStatistic.setFinishDate(LocalDateTime.now());
+    LOGGER.info("Updating game statistic with id {}", gameStatistic.getId());
     gameStatisticRepository.update(gameStatistic);
   }
 
@@ -78,6 +90,7 @@ public class GameStatisticService {
    */
   public Long saveGameStatistic(GameStatistic gameStatistic) {
     gameStatistic.setStartDate(LocalDateTime.now());
+    LOGGER.info("Saving game statistic with id {}", gameStatistic.getId());
     return gameStatisticRepository.save(gameStatistic);
   }
 
