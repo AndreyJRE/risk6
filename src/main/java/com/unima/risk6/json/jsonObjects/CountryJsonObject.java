@@ -21,9 +21,9 @@ public class CountryJsonObject {
   /**
    * Constructor with all attributes
    *
-   * @param countryName
-   * @param adjacentCountries
-   * @param continent
+   * @param countryName       - name of the country
+   * @param adjacentCountries - array of adjacent countries
+   * @param continent         - continent the country belongs to
    */
   public CountryJsonObject(CountryName countryName, CountryName[] adjacentCountries,
       ContinentName continent) {
@@ -55,8 +55,6 @@ public class CountryJsonObject {
   public void setContinent(ContinentName continent) {
     this.continent = continent;
   }
-
-
 
 
 }

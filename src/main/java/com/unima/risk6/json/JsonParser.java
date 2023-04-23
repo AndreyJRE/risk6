@@ -18,7 +18,6 @@ public class JsonParser {
    * @param jsonFile the JSON file to be parsed
    * @param clazz    the class of the object to be returned
    * @return an object of type T, created from the parsed JSON file
-   * @throws RuntimeException if the specified JSON file is not found
    */
   public static <T> T parseJsonFile(InputStreamReader jsonFile, Class<T> clazz) {
     Gson gson = new GsonBuilder().create();
