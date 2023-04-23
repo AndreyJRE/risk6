@@ -18,7 +18,7 @@ public class PlayerUi extends Group {
 
   private Rectangle rectangle;
 
-  public PlayerUi(//Player player,
+  public PlayerUi(Player player,
       double radiusX, double radiusY,
       double rectangleWidth, double rectangleHeight) {
     this.player = player;

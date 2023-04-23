@@ -2,6 +2,8 @@ package com.unima.risk6.gui.scenes;
 
 import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.PlayerColor;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PathTransition;
@@ -48,7 +50,7 @@ import javafx.util.Duration;
 
 public class GameScene extends Scene implements Initializable {
 
-  private GameState v;
+  private GameState gameState;
 //
 //  private Stack<CardUi> cardUis;
 
@@ -60,13 +62,7 @@ public class GameScene extends Scene implements Initializable {
 
   private double originalScreenHeight;
 
-  private ActivePlayerUi ellipseWithRectangle;
-
-  private ArrayList<PlayerUi> PlayerUis;
-
-  private TimeUi TimeUi;
-
-  private BorderPane chatBoxPane = new BorderPane();
+  private BorderPane chatBoxPane;
 
   private Group countriesGroup;
 
@@ -79,19 +75,15 @@ public class GameScene extends Scene implements Initializable {
 //  this.cardUiS = cardUiS;
       int width,
       int height,
-      Set<CountryUi> countriesUis,
-      ActivePlayerUi ellipseWithRectangle,
-      ArrayList<PlayerUi> PlayerUis, TimeUi TimeUi) {
+      Set<CountryUi> countriesUis) {
     super(new BorderPane(), width, height);
+    this.gameState = gameState;
     this.originalScreenWidth = width;
     this.originalScreenHeight = height;
     this.countriesUis = countriesUis;
-    this.ellipseWithRectangle = ellipseWithRectangle;
-    this.PlayerUis = PlayerUis;
-    this.TimeUi = TimeUi;
-
     this.root = (BorderPane) getRoot();
     this.countriesGroup = new Group();
+    this.chatBoxPane = new BorderPane();
 
     this.initializeGameScene();
 
@@ -146,7 +138,17 @@ public class GameScene extends Scene implements Initializable {
   private StackPane initializePlayersPane() {
     VBox playersVbox = new VBox();
     playersVbox.setMaxWidth(100);
-    playersVbox.getChildren().addAll(PlayerUis);
+
+    PlayerColor[] possibleColors = {PlayerColor.RED, PlayerColor.BLUE, PlayerColor.PURPLE,
+        PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
+
+    ArrayList<PlayerUi> playerUis = new ArrayList<>();
+    for (Player player : gameState.getActivePlayers()) {
+      playerUis.add(new PlayerUi(player, 35,
+          35, 100, 45));
+    }
+
+    playersVbox.getChildren().addAll(playerUis);
     playersVbox.setAlignment(Pos.CENTER);
     playersVbox.setSpacing(10);
     StackPane playerPane = new StackPane();
@@ -157,7 +159,8 @@ public class GameScene extends Scene implements Initializable {
 
   private StackPane initializeTimePane() {
     StackPane timePane = new StackPane();
-    timePane.getChildren().add(TimeUi);
+    TimeUi timeUi = new TimeUi(40, 40);
+    timePane.getChildren().add(timeUi);
     timePane.setAlignment(Pos.CENTER);
     timePane.setPadding(new Insets(0, 15, 0, 0));
     return timePane;
@@ -225,7 +228,10 @@ public class GameScene extends Scene implements Initializable {
       chatPopup.show(chatButton.getScene().getWindow());
     });
 
-    bottomPane.getChildren().add(ellipseWithRectangle);
+    ActivePlayerUi activePlayerUi = new ActivePlayerUi(40,
+        40, 280, 50);
+
+    bottomPane.getChildren().add(activePlayerUi);
     bottomPane.getChildren().add(chatButton);
     bottomPane.setAlignment(Pos.CENTER);
     bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);

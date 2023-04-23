@@ -96,20 +96,11 @@ public class TitleScreenController implements Initializable {
     countriesUiConfiguration.configureCountries(gameState.getCountries());
 
     //dummy initialisation of Players with dummyvalue
-    ArrayList<PlayerUi> PlayerUis = new ArrayList<PlayerUi>();
-    int amountOfPlayers = 4;
-    for (int i = 0; i < 4; i++) {
-      PlayerUis.add(new PlayerUi(35,
-          35, 100, 45));
-    }
 
     Scene gameScene = new GameScene(gameState,
         1080,
         720,
-        countriesUiConfiguration.getCountriesUis(),
-        new ActivePlayerUi(40,
-            40, 280, 50),
-        PlayerUis, new TimeUi(40, 40));
+        countriesUiConfiguration.getCountriesUis());
 
     sceneController.addScene(SceneName.GAME, gameScene);
     sceneController.activate(SceneName.GAME);
