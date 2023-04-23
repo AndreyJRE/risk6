@@ -8,6 +8,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -26,7 +27,7 @@ public class CountryUi extends Group {
 
   private SVGPath countryPath;
 
-  private Glow glowEffect;
+  private DropShadow glowEffect;
 
   private TroopsCounterUi troopsCounterUi;
 
@@ -57,8 +58,9 @@ public class CountryUi extends Group {
         Color.RED,
         Color.WHITE);
     reverseTransition.setInterpolator(Interpolator.EASE_BOTH);
-    glowEffect = new Glow();
-    glowEffect.setLevel(0.9);
+
+    glowEffect = new DropShadow();
+    glowEffect.setColor(Color.RED);
 
     setOnMouseEntered((MouseEvent event) -> {
       this.setCursor(Cursor.CROSSHAIR);
@@ -137,6 +139,10 @@ public class CountryUi extends Group {
 
   public TroopsCounterUi getTroopsCounterUi() {
     return troopsCounterUi;
+  }
+
+  public DropShadow getGlowEffect() {
+    return glowEffect;
   }
 }
 

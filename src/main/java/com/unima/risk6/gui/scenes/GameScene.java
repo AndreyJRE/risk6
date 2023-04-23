@@ -1,6 +1,10 @@
 package com.unima.risk6.gui.scenes;
 
+import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Country;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.PathTransition;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
@@ -9,8 +13,11 @@ import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -32,11 +39,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.StrokeType;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 
 public class GameScene extends Scene implements Initializable {
 
-//  private GameState gameState;
+  private GameState v;
 //
 //  private Stack<CardUi> cardUis;
 
@@ -56,16 +68,12 @@ public class GameScene extends Scene implements Initializable {
 
   private BorderPane chatBoxPane = new BorderPane();
 
-  private Set<Line> arrow;
-
-  private CountryName previousCountry;
-
-  private CountryName newCountry;
-
   private Group countriesGroup;
 
+  private boolean isCountrySelectedToAttackOthers;
+
   public GameScene(
-//  GameState gameState,
+      GameState gameState,
 //  Stack<CardUi> cardUiS
 //  this.gameState = gameState;
 //  this.cardUiS = cardUiS;
@@ -229,59 +237,121 @@ public class GameScene extends Scene implements Initializable {
   private void addMouseHandlers(Group countriesGroup) {
     // Mouse press event handler
     EventHandler<MouseEvent> mousePressHandler = event -> {
-      if (event.getSource() instanceof CountryUi) {
-        CountryUi currentCountryUi = (CountryUi) event.getSource();
 
-        Set<Country> adjacentCountries = currentCountryUi.getCountry().getAdjacentCountries();
+      if (isCountrySelectedToAttackOthers) {
+        System.out.println(countriesGroup.getChildren());
 
-        for (Country country : adjacentCountries) {
-          CountryUi adjecentCountryUi = null;
-          for (Node countryUiNode : countriesGroup.getChildren()) {
-            if (countryUiNode instanceof CountryUi) {
-              CountryUi desiredCountryUI = (CountryUi) countryUiNode;
-              if (desiredCountryUI.getCountryId().equals(country.getCountryName())) {
-                adjecentCountryUi = desiredCountryUI;
-                break;
+//        int startIndex = countriesUis.size() + 1;
+//        System.out.println(startIndex);
+//        int endIndex = countriesGroup.getChildren().size();
+//        System.out.println(endIndex);
+//
+//        List<CountryUi> countryUiList = new ArrayList<>();
+//
+        Iterator<Node> nodeIterator = countriesGroup.getChildren().iterator();
+        while (nodeIterator.hasNext()) {
+          Node countriesGroupNode = nodeIterator.next();
+          if (countriesGroupNode instanceof SVGPath || countriesGroupNode instanceof Line) {
+            nodeIterator.remove();
+          }
+        }
+//        countriesGroup.requestLayout();
+
+//// Bring CountryUi instances to the front
+//        for (CountryUi countryUi : countryUiList) {
+//          countryUi.toFront();
+//        }
+//        System.out.println(countriesGroup.getChildren());
+
+//        for (int i = startIndex; i <= endIndex; i++) {
+//          if (countriesGroup.getChildren().get(i) instanceof Line) {
+//            endIndex = i;
+//            break;
+//          }
+//        }
+//        System.out.println(endIndex);
+//        for (int i = startIndex; i < endIndex; i++) {
+//          System.out.println(i);
+//          countriesGroup.getChildren().remove(startIndex);
+//        }
+//
+//        for (Node arrowNode : countriesGroup.getChildren()) {
+//          if (arrowNode instanceof Line) {
+//            arrowNode.setVisible(false);
+//          }
+//        }
+        setCursor(Cursor.DEFAULT);
+        isCountrySelectedToAttackOthers = false;
+      } else {
+        if (event.getSource() instanceof CountryUi) {
+          CountryUi currentCountryUi = (CountryUi) event.getSource();
+          Set<Country> adjacentCountries = currentCountryUi.getCountry().getAdjacentCountries();
+          for (Country country : adjacentCountries) {
+            CountryUi adjecentCountryUi = null;
+            SVGPath currentShape = null;
+            for (Node countryUiNode : countriesGroup.getChildren()) {
+              if (countryUiNode instanceof CountryUi) {
+                CountryUi desiredCountryUI = (CountryUi) countryUiNode;
+                if (desiredCountryUI.getCountryId().equals(country.getCountryName())) {
+                  adjecentCountryUi = desiredCountryUI;
+                  currentShape = svgPathClone(adjecentCountryUi.getCountryPath());
+                  currentShape.setEffect(adjecentCountryUi.getGlowEffect());
+                  break;
+                }
               }
             }
-          }
-
-          Line arrow = new Line();
-          arrow.setStroke(Color.RED);
-          arrow.setVisible(false);
-
-          int index = 0;
-          for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
-            if (troopsCounterUiNode instanceof TroopsCounterUi) {
-              countriesGroup.getChildren().add(index++, arrow);
-              break;
-            } else {
-              index++;
+            int index = 0;
+            for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
+              if (troopsCounterUiNode instanceof TroopsCounterUi) {
+                countriesGroup.getChildren().add(index++, currentShape);
+                break;
+              } else {
+                index++;
+              }
             }
+            Line arrow = new Line();
+            arrow.setStroke(Color.RED);
+            index = 0;
+            for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
+              if (troopsCounterUiNode instanceof TroopsCounterUi) {
+                countriesGroup.getChildren().add(index++, arrow);
+                break;
+              } else {
+                index++;
+              }
+            }
+            Point2D clickPosInScene =
+                currentCountryUi.localToScene(
+                    currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+                    currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
+            Point2D clickPosInSceneToCountry = adjecentCountryUi.localToScene(
+                adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+                adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
+            Point2D clickPosInGroup = countriesGroup.sceneToLocal(clickPosInScene);
+            Point2D clickPosInGroupToCountry = countriesGroup.sceneToLocal(
+                clickPosInSceneToCountry);
+            arrow.setStartX(clickPosInGroup.getX());
+            arrow.setStartY(clickPosInGroup.getY());
+            arrow.setEndX(clickPosInGroup.getX());
+            arrow.setEndY(clickPosInGroup.getY());
+            setCursor(Cursor.MOVE);
+
+            Timeline timeline = new Timeline();
+
+            KeyValue endXValue = new KeyValue(arrow.endXProperty(),
+                clickPosInGroupToCountry.getX());
+            KeyValue endYValue = new KeyValue(arrow.endYProperty(),
+                clickPosInGroupToCountry.getY());
+            KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXValue, endYValue);
+
+            timeline.getKeyFrames().add(keyFrame);
+            timeline.setCycleCount(1);
+            timeline.setAutoReverse(false);
+            timeline.play();
+
+//            arrow.setVisible(true);
+            isCountrySelectedToAttackOthers = true;
           }
-
-          Point2D clickPosInScene =
-              currentCountryUi.localToScene(
-                  currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-                  currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
-
-          Point2D clickPosInSceneToCountry = adjecentCountryUi.localToScene(
-              adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-              adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
-
-          Point2D clickPosInGroup = countriesGroup.sceneToLocal(clickPosInScene);
-          Point2D clickPosInGroupToCountry = countriesGroup.sceneToLocal(clickPosInSceneToCountry);
-
-          arrow.setStartX(clickPosInGroup.getX());
-          arrow.setStartY(clickPosInGroup.getY());
-          arrow.setEndX(clickPosInGroupToCountry.getX());
-          arrow.setEndY(clickPosInGroupToCountry.getY());
-
-          // Change the cursor
-          setCursor(Cursor.MOVE);
-
-          // Make the arrow visible
-          arrow.setVisible(true);
         }
       }
     };
@@ -331,6 +401,17 @@ public class GameScene extends Scene implements Initializable {
 //      countryUi.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDragHandler);
 //      countryUi.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleaseHandler);
     }
+  }
+
+  private SVGPath svgPathClone(SVGPath original) {
+    SVGPath clone = new SVGPath();
+    clone.setContent(original.getContent());
+    clone.setFill(original.getFill());
+    clone.setStroke(original.getStroke());
+    clone.setStrokeWidth(original.getStrokeWidth());
+    clone.setLayoutX(original.getLayoutX());
+    clone.setLayoutY(original.getLayoutY());
+    return clone;
   }
 
 
