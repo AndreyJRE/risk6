@@ -24,7 +24,7 @@ class UserServiceTest {
 
   private static Connection connection;
 
-  private static Long userId;
+  private Long userId;
 
   @BeforeAll
   static void setUp() {
@@ -44,8 +44,9 @@ class UserServiceTest {
   @Order(1)
   void saveUser() {
     User newUser = new User("astoyano", "password"
-        , "src/main/resources/com/unima/risk6/images/test.png");
-    userId = userService.saveUser(newUser);
+        , "/com/unima/risk6/images/test.png");
+    userService.saveUser(newUser);
+    userId = newUser.getId();
     User databaseUser = userService.getUserById(userId);
     assertEquals(newUser, databaseUser);
 
