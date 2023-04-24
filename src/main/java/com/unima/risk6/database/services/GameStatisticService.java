@@ -78,8 +78,9 @@ public class GameStatisticService {
           + "} is not in the database");
     }
     gameStatistic.setFinishDate(LocalDateTime.now());
-    LOGGER.info("Updating game statistic with id {}", gameStatistic.getId());
     gameStatisticRepository.update(gameStatistic);
+    LOGGER.info("Updating game statistic with id {}", gameStatistic.getId());
+
   }
 
   /**
@@ -88,10 +89,10 @@ public class GameStatisticService {
    * @param gameStatistic The GameStatistic object to save.
    * @return The ID of the saved GameStatistic object.
    */
-  public Long saveGameStatistic(GameStatistic gameStatistic) {
+  public void saveGameStatistic(GameStatistic gameStatistic) {
     gameStatistic.setStartDate(LocalDateTime.now());
+    gameStatisticRepository.save(gameStatistic);
     LOGGER.info("Saving game statistic with id {}", gameStatistic.getId());
-    return gameStatisticRepository.save(gameStatistic);
   }
 
   /**

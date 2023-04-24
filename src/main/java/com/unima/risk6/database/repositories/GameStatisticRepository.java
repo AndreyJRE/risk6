@@ -100,8 +100,10 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getBoolean(5);
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6));
-        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7));
+        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), localDateTimeDtf);
+        LocalDateTime finishDate = (rs.getString(7) != null) ?
+            LocalDateTime.parse(rs.getString(7),
+                localDateTimeDtf) : null;
         int countriesWon = rs.getInt(8);
         int countriesLost = rs.getInt(9);
         gameStatistic = Optional.of(new GameStatistic(id, user, startDate, finishDate,
@@ -169,6 +171,7 @@ public class GameStatisticRepository implements GameStatisticDao {
         id = generatedKeys.getLong(1);
         gameStatistic.setId(id);
       }
+      generatedKeys.close();
       return id;
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -188,9 +191,9 @@ public class GameStatisticRepository implements GameStatisticDao {
       updateGameStatisticStatement.setBoolean(2, gameStatistic.isGameWon());
       updateGameStatisticStatement.setInt(3, gameStatistic.getTroopsGained());
       updateGameStatisticStatement.setInt(4, gameStatistic.getTroopsLost());
-      updateGameStatisticStatement.setLong(5, gameStatistic.getId());
-      updateGameStatisticStatement.setInt(6, gameStatistic.getCountriesWon());
-      updateGameStatisticStatement.setInt(7, gameStatistic.getCountriesLost());
+      updateGameStatisticStatement.setLong(7, gameStatistic.getId());
+      updateGameStatisticStatement.setInt(5, gameStatistic.getCountriesWon());
+      updateGameStatisticStatement.setInt(6, gameStatistic.getCountriesLost());
       updateGameStatisticStatement.execute();
     } catch (SQLException e) {
       throw new RuntimeException(e);
