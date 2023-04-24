@@ -9,6 +9,8 @@ import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -60,7 +62,7 @@ public class SerializationTest {
     StandardMessage standard =  new StandardMessage("tetest");
     String json = Serializer.serialize(standard);
     StandardMessage s2 = (StandardMessage) Deserializer.deserialize(json);
-    System.out.println(s2.getStatusCode() + (String)s2.getContent());
+    //System.out.println(s2.getStatusCode() + (String)s2.getContent());
 
     //assertEquals(standard, s2);
     assertTrue(standard.equals(s2));
@@ -107,11 +109,35 @@ public class SerializationTest {
       Country c1 = new Country(CountryName.ALASKA);
       c1.setContinent(new Continent(ContinentName.AFRICA));
       Country c2 = new Country(CountryName.ICELAND);
-      c1.setContinent(new Continent(ContinentName.AFRICA));
+      c2.setContinent(new Continent(ContinentName.AFRICA));
 
       Attack a = new Attack(c1, c2, 69);
       StandardMessage<Attack> message = new StandardMessage<>(a);
-      System.out.println(Serializer.serialize(message));
+      System.out.println("Attack Serialization:\n" + Serializer.serialize(message));
+      assertTrue(Serializer.serialize(message).equals("{\"statusCode\":-1,\"content\":{\"attackingCountry\":{\"countryName\":\"ALASKA\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"defendingCountry\":{\"countryName\":\"ICELAND\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"troopNumber\":69,\"attackerLosses\":0,\"defenderLosses\":0,\"attackDiceResult\":[],\"defendDiceResult\":[]},\"contentType\":\"ATTACK\"}"));
 
   }
+    @Test
+    void testFortifySerialization(){
+        Country c1 = new Country(CountryName.ALASKA);
+        c1.setContinent(new Continent(ContinentName.AFRICA));
+        Country c2 = new Country(CountryName.ICELAND);
+        c2.setContinent(new Continent(ContinentName.AFRICA));
+
+        Fortify a = new Fortify(c1, c2, 69);
+        StandardMessage<Fortify> message = new StandardMessage<>(a);
+        System.out.println("Fortify Serialization:\n" + Serializer.serialize(message));
+        assertTrue(Serializer.serialize(message).equals("{\"statusCode\":-1,\"content\":{\"outgoing\":{\"countryName\":\"ALASKA\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"incoming\":{\"countryName\":\"ICELAND\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"troopsToMove\":69},\"contentType\":\"FORTIFY\"}"));
+
+    }
+    @Test
+    void testReinforceSerialization(){
+        Country c1 = new Country(CountryName.ALASKA);
+        c1.setContinent(new Continent(ContinentName.AFRICA));
+
+        Reinforce a = new Reinforce(c1, 69);
+        StandardMessage<Reinforce> message = new StandardMessage<>(a);
+        System.out.println("Reinforce Serialization:\n" + Serializer.serialize(message));
+        assertTrue(Serializer.serialize(message).equals("{\"statusCode\":-1,\"content\":{\"country\":{\"countryName\":\"ALASKA\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"toAdd\":69},\"contentType\":\"REINFORCE\"}"));
+    }
 }

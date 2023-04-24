@@ -33,7 +33,7 @@ public class GamestateSendTest {
 
         try {
             ArrayList<String> users =  new ArrayList<String>(Arrays.asList("Andrey","Max","Fung"));
-            ArrayList<AiBot> bots = new ArrayList<AiBot>(Arrays.asList(new EasyBot(gamestate),new EasyBot(gamestate)));
+            ArrayList<AiBot> bots = new ArrayList<AiBot>(Arrays.asList(new EasyBot(),new EasyBot()));
             gamestate = GameConfiguration.configureGame(users, bots);
             gamecontroller = new GameController(gamestate);
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class GamestateSendTest {
     @Test
     void testSerializationWithStatus() {
         //System.out.println(gamestate);
-        System.out.println(Serializer.serialize(new StandardMessage(gamestate, 200)));
+        //System.out.println(Serializer.serialize(new StandardMessage(gamestate, 200)));
         assertEquals("{\"statusCode\":200,\"content\":\"tetest\"}", Serializer.serialize(new StandardMessage("tetest", 200)));
     }
 }

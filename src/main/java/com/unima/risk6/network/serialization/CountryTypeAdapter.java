@@ -39,7 +39,7 @@ public class CountryTypeAdapter implements JsonSerializer<Country> {
     }
     jsonObject.add("adjacentCountries", adjacentCountriesArray);
 
-    jsonObject.addProperty("continent", country.getContinent().toString());
+    jsonObject.addProperty("continent", country.getContinent().getContinentName().toString());
 
     return jsonObject;
   }
