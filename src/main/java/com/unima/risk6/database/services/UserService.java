@@ -74,7 +74,7 @@ public class UserService {
    * @throws NotValidPasswordException  If the password is not valid (does not match the password
    *                                    regex)
    */
-  public Long saveUser(User user) {
+  public void saveUser(User user) {
     if (user.getUsername() == null || user.getUsername().isEmpty() || user.getPassword() == null
         || user.getPassword().isEmpty()) {
       throw new IllegalArgumentException("Username and password must not be empty");
@@ -92,8 +92,8 @@ public class UserService {
     user.setPassword(encryptedPassword);
     user.setCreatedAt(LocalDate.now());
     user.setActive(true);
+    userRepository.save(user);
     LOGGER.info("User with username {" + user.getUsername() + "} was saved in the database");
-    return userRepository.save(user);
   }
 
   /**
