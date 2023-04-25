@@ -24,7 +24,6 @@ public class MonteCarloNode {
   private final Set<MoveTriplet> testedMoves;
 
 
-
   public MonteCarloNode(GameState gameState, MoveTriplet move) {
     this.gameState = gameState;
     this.move = move;

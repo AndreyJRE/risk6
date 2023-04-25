@@ -1,11 +1,11 @@
 package com.unima.risk6.game.ai.models;
 
-import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import java.util.List;
 
 public class MoveTriplet {
+
   private final List<Reinforce> reinforcements;
   private final List<CountryPair> attacks;
   private final Fortify fortify;
