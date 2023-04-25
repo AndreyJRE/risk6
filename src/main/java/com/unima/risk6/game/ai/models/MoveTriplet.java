@@ -7,14 +7,14 @@ import java.util.List;
 
 public class MoveTriplet {
   private final List<Reinforce> reinforcements;
-  private final List<Attack> attacks;
+  private final List<CountryPair> attacks;
   private final Fortify fortify;
 
   public List<Reinforce> getReinforcements() {
     return reinforcements;
   }
 
-  public List<Attack> getAttacks() {
+  public List<CountryPair> getAttacks() {
     return attacks;
   }
 
@@ -22,7 +22,7 @@ public class MoveTriplet {
     return fortify;
   }
 
-  public MoveTriplet(List<Reinforce> reinforcements, List<Attack> attacks, Fortify fortify) {
+  public MoveTriplet(List<Reinforce> reinforcements, List<CountryPair> attacks, Fortify fortify) {
     this.reinforcements = reinforcements;
     this.attacks = attacks;
     this.fortify = fortify;
