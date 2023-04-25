@@ -287,7 +287,7 @@ public class MediumBot extends Player implements AiBot {
     for (CountryPair attackPair : allPossibleAttacks) {
       Country attacker = attackPair.getOutgoing();
       Country defender = attackPair.getIncoming();
-      if (this.getWinningProbability(attackPair) > 70) {
+      if (attackPair.getWinningProbability() > 70) {
         // how to check if country defeated?
         // temp solution: attack isn't done until owner of either attacker or defender country
         // changes
@@ -310,7 +310,7 @@ public class MediumBot extends Player implements AiBot {
    * @param unsortedPairs The general unsorted list of possible attack moves
    */
   private void sortAttacksByProbability(List<CountryPair> unsortedPairs) {
-    unsortedPairs.sort(Comparator.comparing(this::getWinningProbability).reversed());
+    unsortedPairs.sort(Comparator.comparing(CountryPair::getWinningProbability).reversed());
 
   }
 
@@ -353,19 +353,6 @@ public class MediumBot extends Player implements AiBot {
     return fortify;
   }
 
-
-  /**
-   * Gets the probability of a country winning an entire battle against another country
-   *
-   * @param attacker The country initiating the battle
-   * @param defender The country which is to defend in the battle
-   * @return The probability of the attacking country winning the entire battle
-   */
-  private int getWinningProbability(CountryPair countryPair) {
-    int attackerCount = countryPair.getOutgoing().getTroops();
-    int defenderCount = countryPair.getIncoming().getTroops();
-    return Probabilities.getWinProbability(attackerCount, defenderCount);
-  }
 
   public void setContinentsCopy(Set<Continent> continents) {
     this.continentsCopy.addAll(continents);

@@ -35,4 +35,17 @@ public class CountryPair {
   public Fortify createFortify(int troopsToMove) {
     return new Fortify(this.outgoing, this.incoming, troopsToMove);
   }
+
+  /**
+   * Gets the probability of a country winning an entire battle against another country
+   *
+   * @return The probability of the attacking country winning the entire battle
+   */
+  public int getWinningProbability() {
+    int attackerCount = getOutgoing().getTroops();
+    int defenderCount = getIncoming().getTroops();
+    return Probabilities.getWinProbability(attackerCount, defenderCount);
+  }
+
+  //TODO: compare method? see usages of sort in mediumbot
 }

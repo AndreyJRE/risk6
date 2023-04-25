@@ -71,7 +71,8 @@ public class Probabilities {
    * @return the probability of the attacker winning an entire battle (rounded, given as an integer)
    */
   public static int getWinProbability(int attackerTotal, int defenderTotal) {
-    int attackerIndex = Math.min(attackerTotal - 1, 19);
+    // attacker always needs to have at least 1 troop
+    int attackerIndex = Math.min(attackerTotal - 2, 19);
     int defenderIndex = Math.min(defenderTotal - 1, 19);
     return winProbability[attackerIndex][defenderIndex];
   }
