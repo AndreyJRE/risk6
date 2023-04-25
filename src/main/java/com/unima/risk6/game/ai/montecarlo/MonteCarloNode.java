@@ -1,11 +1,15 @@
 package com.unima.risk6.game.ai.montecarlo;
 
+import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.bots.MonteCarloBot;
 import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MonteCarloNode {
 
@@ -17,15 +21,11 @@ public class MonteCarloNode {
   private final MoveTriplet move;
   private final List<MonteCarloNode> children;
   private MonteCarloNode parent;
+  private final Set<MoveTriplet> testedMoves;
 
-  private MonteCarloBot playerInstance;
-  private List<MoveTriplet> movesFromHere;
 
-  public MonteCarloBot getPlayerInstance() {
-    return playerInstance;
-  }
 
-  public MonteCarloNode(GameState gameState, MoveTriplet move, Player playerAtState) {
+  public MonteCarloNode(GameState gameState, MoveTriplet move) {
     this.gameState = gameState;
     this.move = move;
     this.wins = 0;
@@ -33,19 +33,20 @@ public class MonteCarloNode {
     this.children = new ArrayList<>();
     this.parent = null;
     this.depth = 0;
-    this.playerInstance = new MonteCarloBot(playerAtState);
-    this.movesFromHere = this.playerInstance.getLegalMoves();
+    // everytime a node is created, it is our players turn
+    this.testedMoves = new HashSet<>();
   }
 
-  public MonteCarloNode(GameState game, MoveTriplet move, Player playerAtState,
-      MonteCarloNode parent) {
-    this(game, move, playerAtState);
+  public MonteCarloNode(GameState game, MoveTriplet move, MonteCarloNode parent) {
+    this(game, move);
     this.parent = parent;
+    this.parent.addChild(this);
     this.depth = parent.getDepth() + 1;
   }
 
   public void addChild(MonteCarloNode child) {
     this.children.add(child);
+    this.testedMoves.add(child.getMove());
   }
 
   public List<MonteCarloNode> getChildren() {
@@ -57,7 +58,7 @@ public class MonteCarloNode {
   }
 
   public MoveTriplet getMove() {
-    return move;
+    return this.move;
   }
 
   public int getWins() {
@@ -86,7 +87,8 @@ public class MonteCarloNode {
 
 
   public boolean isFullyExpanded() {
-    return this.movesFromHere.size() == children.size();
+    // TODO: find good number for this
+    return this.testedMoves.size() > 10;
   }
 
   public MonteCarloNode getBestChild() {
@@ -104,13 +106,27 @@ public class MonteCarloNode {
     return bestChild;
   }
 
-  private double calculateUCTValue(MonteCarloNode child) {
+  private double calculateUCTValue(MonteCarloNode child) { // what happens when visits are zero :(
     return (double) child.getWins() / child.getVisits() + EXPLORATION_PARAMETER * Math.sqrt(
         Math.log(this.getVisits()) / child.getVisits());
   }
 
-  public boolean playerLost() {
-    return this.playerInstance == null || this.getGameState().getActivePlayers()
-        .contains(playerInstance);
+  public List<MoveTriplet> getLegalMoves(Player player) {
+    List<MoveTriplet> legalMoves = new ArrayList<>();
+    if (this.playerIsMonteCarlo(player)) {
+      legalMoves = ((MonteCarloBot) player).getLegalMoves();
+    } else {
+//      legalMoves.add(((AiBot) player).makeMove());
+    }
+    return legalMoves;
+  }
+
+
+  private boolean playerIsMonteCarlo(Player player) {
+    return !(player instanceof EasyBot || player instanceof MediumBot);
+  }
+
+  public boolean playerLost(Player player) {
+    return player == null || this.getGameState().getActivePlayers().contains(player);
   }
 }
