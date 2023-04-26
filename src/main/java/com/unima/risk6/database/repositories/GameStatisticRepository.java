@@ -38,8 +38,6 @@ public class GameStatisticRepository implements GameStatisticDao {
 
   private final DateTimeFormatter dtf;
 
-  private final DateTimeFormatter localDateTimeDtf;
-
   /**
    * Constructs a new instance of the GameStatisticRepository.
    *
@@ -52,7 +50,6 @@ public class GameStatisticRepository implements GameStatisticDao {
     this.databaseConnection = databaseConnection;
     this.userRepository = userRepository;
     dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    localDateTimeDtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     initStatements();
   }
 
@@ -100,10 +97,10 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getBoolean(5);
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), localDateTimeDtf);
+        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), dtf);
         LocalDateTime finishDate = (rs.getString(7) != null) ?
             LocalDateTime.parse(rs.getString(7),
-                localDateTimeDtf) : null;
+                dtf) : null;
         int countriesWon = rs.getInt(8);
         int countriesLost = rs.getInt(9);
         gameStatistic = Optional.of(new GameStatistic(id, user, startDate, finishDate,
@@ -225,9 +222,9 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6)
-            , localDateTimeDtf);
+            , dtf);
         LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7)
-            , localDateTimeDtf);
+            , dtf);
         int countriesWon = rs.getInt(8);
         int countriesLost = rs.getInt(9);
         GameStatistic gameStatistic = new GameStatistic(statisticId, user, startDate, finishDate,
