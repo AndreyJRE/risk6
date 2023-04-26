@@ -22,12 +22,10 @@ public abstract class Message <MessageType> {
     this.statusCode = statusCode;
     if(content.getClass().equals(Attack.class)) {
       contentType = ContentType.ATTACK;
-    }else if(content.equals(Fortify.class)) {
+    }else if(content.getClass().equals(Fortify.class)) {
       contentType = ContentType.FORTIFY;
-    }else if(content.equals(GameState.class)) {
+    }else if(content.getClass().equals(GameState.class)) {
       contentType = ContentType.GAMESTATE;
-    }else if(content.equals(Move.class)) {
-      contentType = ContentType.MOVE;
     }else if(content.getClass().equals(Reinforce.class)) {
       contentType = ContentType.REINFORCE;
     }

@@ -1,6 +1,14 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.*;
+
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonSerializationContext;
+
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.models.Country;
 import java.lang.reflect.Type;
