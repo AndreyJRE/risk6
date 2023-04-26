@@ -1,13 +1,10 @@
 package com.unima.risk6.gui.scenes;
 
-import com.unima.risk6.game.logic.GameState;
+
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.PlayerColor;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.PathTransition;
-import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
@@ -16,9 +13,10 @@ import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
@@ -41,10 +39,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.StrokeType;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 

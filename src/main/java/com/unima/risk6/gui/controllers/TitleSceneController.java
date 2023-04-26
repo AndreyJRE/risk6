@@ -3,15 +3,13 @@ package com.unima.risk6.gui.controllers;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.GameState;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.scenes.SelectedUserScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,7 +25,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import com.unima.risk6.database.services.UserService;
 
 public class TitleSceneController implements Initializable {
 
@@ -130,17 +127,17 @@ public class TitleSceneController implements Initializable {
   @FXML
   private void handleOptions() {
     // TODO: Implement the options screen
-      UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
-          .getSceneBySceneName(SceneName.USER_OPTION);
-      if (scene == null) {
-        scene = new UserOptionsScene();
-        UserOptionsSceneController userOptionsSceneController = new UserOptionsSceneController(
-            scene);
-        scene.setController(userOptionsSceneController);
-        sceneController.addScene(SceneName.USER_OPTION, scene);
-      }
-      scene.setUser(user);
-      sceneController.activate(SceneName.USER_OPTION);
+    UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.USER_OPTION);
+    if (scene == null) {
+      scene = new UserOptionsScene();
+      UserOptionsSceneController userOptionsSceneController = new UserOptionsSceneController(
+          scene);
+      scene.setController(userOptionsSceneController);
+      sceneController.addScene(SceneName.USER_OPTION, scene);
+    }
+    scene.setUser(user);
+    sceneController.activate(SceneName.USER_OPTION);
   }
 
   @FXML
