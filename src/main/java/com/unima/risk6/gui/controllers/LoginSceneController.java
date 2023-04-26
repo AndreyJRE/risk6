@@ -10,12 +10,15 @@ import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
 import java.util.List;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Pagination;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -23,6 +26,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javax.swing.event.ChangeListener;
 
 public class LoginSceneController {
 
@@ -47,18 +51,17 @@ public class LoginSceneController {
     root = (VBox) loginScene.getRoot();
     root.setPrefWidth(SceneConfiguration.getWidth());
     root.setPrefHeight(SceneConfiguration.getHeight());
+    Pagination usersPagination = initializeUsersPagination();
     Button createButton = createCustomCreateButton();
-    GridPane usersGridPane = initializeUsersGridPane();
     Label selectUser = new Label("Select User Profile");
     selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
-
-    root.getChildren().addAll(selectUser, usersGridPane, createButton);
+    root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(100);
   }
 
-  private GridPane initializeUsersGridPane() {
+  private GridPane createUsersGridPanePage(List<User> usersPage) {
     GridPane usersGridPane = new GridPane();
     usersGridPane.setHgap(30);
     usersGridPane.setVgap(10);
@@ -67,10 +70,11 @@ public class LoginSceneController {
     ImageView riskImage = new ImageView(
         new Image(getClass().getResource("/com/unima/risk6/pictures/Risk.png").toString()));
 
+
     int column = 0;
     int row = 1;
 
-    for (User user : users) {
+    for (User user : usersPage) {
       ImageView userImage = new ImageView(
           new Image(getClass().getResource("/com/unima/risk6/pictures" +
               "/747376.png").toString()));
@@ -119,6 +123,23 @@ public class LoginSceneController {
     }
     return usersGridPane;
   }
+
+  private Pagination initializeUsersPagination() {
+    int usersPerPage = 5;
+    int pageCount = (int) Math.ceil(users.size() / (double) usersPerPage);
+
+    Pagination pagination = new Pagination(pageCount, 0);
+    pagination.setPageFactory((pageIndex) -> {
+      int fromIndex = pageIndex * usersPerPage;
+      int toIndex = Math.min(fromIndex + usersPerPage, users.size());
+      List<User> usersPage = users.subList(fromIndex, toIndex);
+
+      return createUsersGridPanePage(usersPage);
+    });
+
+    return pagination;
+  }
+
 
   private Button createCustomCreateButton() {
     Button createButton = new Button("New Account needed?");
@@ -177,9 +198,5 @@ public class LoginSceneController {
     scene.setUser(user);
 
     sceneController.activate(SceneName.SELECTED_USER);
-
-
   }
-
-
 }

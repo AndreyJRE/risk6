@@ -12,6 +12,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -31,8 +33,8 @@ import javafx.scene.text.Font;
 public class SelectedUserSceneController {
 
   private final SelectedUserScene selectedUserScene;
-  private User user;
   private final SceneController sceneController;
+  private User user;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
@@ -111,7 +113,7 @@ public class SelectedUserSceneController {
     if (PasswordEncryption.validatePassword(enteredPassword, user.getPassword())) {
       // Proceed to the next scene (game) that is created with FXML
       try {
-        FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
+        FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene"
             + ".fxml"));
         Parent root = fxmlLoader.load();
         Scene titleScene = sceneController.getSceneBySceneName(SceneName.TITLE);
@@ -127,9 +129,19 @@ public class SelectedUserSceneController {
       }
     } else {
       // TODO: Show an error message (incorrect password)
-      System.out.println("Wrong password!");
+      showErrorDialog("Incorrect Password",
+          "The password you entered is incorrect. Please try again.");
     }
   }
+
+  private void showErrorDialog(String title, String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+
 
   private void initElements() {
     Label selectedUserName = new Label(user.getUsername());

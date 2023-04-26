@@ -106,7 +106,7 @@ public class SecurityQuestionsController {
   }
 
   static void activateTitleScreen() {
-    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene.fxml"));
     Scene scene = null;
     try {
       scene = new Scene(fxmlLoader.load());
