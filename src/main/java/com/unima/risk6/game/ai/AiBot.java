@@ -1,7 +1,6 @@
 package com.unima.risk6.game.ai;
 
 import com.unima.risk6.game.ai.models.CountryPair;
-import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import java.util.List;

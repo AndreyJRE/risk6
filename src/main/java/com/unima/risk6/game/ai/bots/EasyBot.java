@@ -26,7 +26,15 @@ public class EasyBot extends Player implements AiBot {
   private final PlayerController playerController;
   private int reinforceTroopsCopy;
 
+  public EasyBot(String username) {
+    super(username)
+    rng = new Random();
+    playerController = new PlayerController();
+    playerController.setPlayer(this);
+  }
+
   public EasyBot() {
+    super();
     rng = new Random();
     playerController = new PlayerController();
     playerController.setPlayer(this);

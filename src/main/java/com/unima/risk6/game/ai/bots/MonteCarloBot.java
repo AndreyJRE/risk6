@@ -41,10 +41,12 @@ public class MonteCarloBot extends Player {
     return legalMoves;
   }
 
+  // TODO: DO
   public List<List<Reinforce>> getReinforceMoves() {
     return null;
   }
 
+  // TODO: List<List>
   public List<CountryPair> getAttackMoves() {
     List<CountryPair> attackPairs = new ArrayList<>();
     for (Continent continent : this.getContinents()) {

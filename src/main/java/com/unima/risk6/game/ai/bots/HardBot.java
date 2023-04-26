@@ -7,6 +7,14 @@ import com.unima.risk6.game.ai.montecarlo.MonteCarloTreeSearch;
 public class HardBot extends MediumBot implements AiBot {
 
 
+  public HardBot(String username) {
+    super(username);
+  }
+
+  public HardBot() {
+    super();
+  }
+
   /**
    * A method for a bot to make moves for all 3 phases of the game
    */
