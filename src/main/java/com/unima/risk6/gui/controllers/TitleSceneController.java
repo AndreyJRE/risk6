@@ -129,7 +129,6 @@ public class TitleSceneController implements Initializable {
   // Define the event handler for the options button
   @FXML
   private void handleOptions() {
-    // TODO: Implement the options screen
       UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
           .getSceneBySceneName(SceneName.USER_OPTION);
       if (scene == null) {
