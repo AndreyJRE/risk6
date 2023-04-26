@@ -21,6 +21,7 @@ public class GameState {
   private int numberOfHandIns;
   private final ArrayList<Move> lastMoves;
   private final Deck deck;
+  private boolean isGameOver;
 
   /**
    * Constructs a new game state with the given countries, continents, and players.
@@ -40,7 +41,7 @@ public class GameState {
     this.currentPlayer = activePlayers.peek();
     this.lostPlayers = new ArrayList<>();
     this.deck = new Deck();
-
+    this.isGameOver = false;
 
   }
 
@@ -116,6 +117,10 @@ public class GameState {
 
   public Deck getDeck() {
     return deck;
+  }
+
+  public boolean isGameOver() {
+    return isGameOver;
   }
 }
 

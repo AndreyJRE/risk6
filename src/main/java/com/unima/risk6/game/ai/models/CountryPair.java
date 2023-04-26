@@ -9,13 +9,13 @@ import com.unima.risk6.game.models.Country;
  *
  * @author eameri
  */
-public class MovePair {
+public class CountryPair {
   // TODO: fix javadocs of all methods changed by this class
 
   private final Country outgoing;
   private final Country incoming;
 
-  public MovePair(Country outgoing, Country incoming) {
+  public CountryPair(Country outgoing, Country incoming) {
     this.outgoing = outgoing;
     this.incoming = incoming;
   }
@@ -35,4 +35,17 @@ public class MovePair {
   public Fortify createFortify(int troopsToMove) {
     return new Fortify(this.outgoing, this.incoming, troopsToMove);
   }
+
+  /**
+   * Gets the probability of a country winning an entire battle against another country
+   *
+   * @return The probability of the attacking country winning the entire battle
+   */
+  public int getWinningProbability() {
+    int attackerCount = getOutgoing().getTroops();
+    int defenderCount = getIncoming().getTroops();
+    return Probabilities.getWinProbability(attackerCount, defenderCount);
+  }
+
+  //TODO: compare method? see usages of sort in mediumbot
 }

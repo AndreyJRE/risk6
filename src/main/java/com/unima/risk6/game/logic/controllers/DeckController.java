@@ -49,4 +49,7 @@ public class DeckController {
     return deck.getDeckCards().isEmpty();
   }
 
+  public Deck getDeck() {
+    return deck;
+  }
 }

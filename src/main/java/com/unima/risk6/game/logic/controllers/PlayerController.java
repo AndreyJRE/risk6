@@ -2,16 +2,16 @@ package com.unima.risk6.game.logic.controllers;
 
 import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 
-import com.unima.risk6.game.ai.models.MovePair;
+import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class PlayerController {
 
@@ -21,6 +21,7 @@ public class PlayerController {
 
   public PlayerController() {
     this.handController = new HandController();
+
   }
 
   public Reinforce sendReinforce(Country reinforcedCountry, int troopNumber) {
@@ -40,49 +41,37 @@ public class PlayerController {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
 
-  public void handInCards(int numberOfHandIn) {
-    if (handController.isExchangable()) {
-      Set<Country> countries = player.getCountries();
-      if (!handController.hasCountryBonus(countries).isEmpty()) {
-        //TODO send REINFORCE or add troops
 
-        handController.hasCountryBonus(countries).forEach(n -> sendReinforce(n, 2));
-      }
+  public void sendHandIn() {
+    if (handController.isExchangeable()) {
+      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+      //removes Cards that were selected and can be exchanged
       handController.exchangeCards();
-      if (numberOfHandIn > 5) {
-        changeDeployableTroops(15 + 5 * (numberOfHandIn - 6));
-      } else {
-        changeDeployableTroops(2 + 2 * (numberOfHandIn));
-      }
+      //TODO Send HandIn Move
 
     }
 
   }
 
-  public void addCountry(Country countryToAdd) {
-    player.getCountries().add(countryToAdd);
-    countryToAdd.setPlayer(player);
-  }
-
   //TODO have to implement which Continent is fully Occupied by Player
 
 
-  public List<MovePair> getValidFortifiesFromCountry(Country country) {
-    List<MovePair> fortifiable = new ArrayList<>();
+  public List<CountryPair> getValidFortifiesFromCountry(Country country) {
+    List<CountryPair> fortifiable = new ArrayList<>();
     country.getAdjacentCountries().forEach((adj) -> {
       if (adj.getPlayer().equals(player)) {
-        fortifiable.add(new MovePair(country, adj));
+        fortifiable.add(new CountryPair(country, adj));
       }
     });
     return fortifiable;
   }
 
-  public List<MovePair> getValidAttacksFromCountry(Country country) {
-    List<MovePair> attackable = new ArrayList<>();
+  public List<CountryPair> getValidAttacksFromCountry(Country country) {
+    List<CountryPair> attackable = new ArrayList<>();
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
         if (!this.player.equals(adjacentCountry.getPlayer())) {
-          attackable.add(new MovePair(country, adjacentCountry));
+          attackable.add(new CountryPair(country, adjacentCountry));
         }
       }
     }
@@ -90,10 +79,10 @@ public class PlayerController {
   }
 
 
-  public List<MovePair> getAllValidFortifies() {
-    List<MovePair> countriesFortifiable = new ArrayList<>();
+  public List<CountryPair> getAllValidFortifies() {
+    List<CountryPair> countriesFortifiable = new ArrayList<>();
     for (Country country : this.player.getCountries()) {
-      List<MovePair> fortifiable = getValidFortifiesFromCountry(country);
+      List<CountryPair> fortifiable = getValidFortifiesFromCountry(country);
       if (fortifiable.size() > 0) {
         countriesFortifiable.addAll(fortifiable);
       }
@@ -101,10 +90,10 @@ public class PlayerController {
     return countriesFortifiable;
   }
 
-  public List<MovePair> getAllAttackableCountryPairs(Continent continent) {
-    List<MovePair> countriesAttackable = new ArrayList<>();
+  public List<CountryPair> getAllAttackableCountryPairs(Continent continent) {
+    List<CountryPair> countriesAttackable = new ArrayList<>();
     for (Country country : continent.getCountries()) {
-      List<MovePair> attackable = getValidAttacksFromCountry(country);
+      List<CountryPair> attackable = getValidAttacksFromCountry(country);
       if (attackable.size() > 0) {
         countriesAttackable.addAll(attackable);
       }
@@ -116,12 +105,25 @@ public class PlayerController {
     player.getCountries().remove(countryToRemove);
   }
 
+  public void addCountry(Country countryToAdd) {
+    player.getCountries().add(countryToAdd);
+    countryToAdd.setPlayer(player);
+  }
 
   public void setPlayer(Player player) {
     this.player = player;
     this.handController.setHand(player.getHand());
 
   }
+
+  public Player getPlayer() {
+    return player;
+  }
+
+  public HandController getHandController() {
+    return handController;
+  }
+
 
   public int getNumberOfCountries() {
     return player.getCountries().size();
