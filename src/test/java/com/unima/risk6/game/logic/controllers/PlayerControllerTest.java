@@ -7,12 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.enums.CardSymbol;
 import com.unima.risk6.game.models.enums.CountryName;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
@@ -102,6 +100,9 @@ class PlayerControllerTest {
 
   @Test
   void handInCardsTest() {
+
+    //TODO Move to Class with all controllers
+    /*
     //Adds exchangeable cards to hand of currently controlled player
     Card[] cards = new Card[3];
     cards[0] = new Card(CardSymbol.CAVALRY, CountryName.ALASKA);
@@ -113,10 +114,38 @@ class PlayerControllerTest {
 
     playerController.getHandController().selectExchangeableCards();
     assertTrue(playerController.getHandController().isExchangeable());
-    //The first hand in should give
+    //The first hand in should give 4 Troops
     playerController.handInCards(1);
     assertEquals(4, playerController.getPlayer().getDeployableTroops());
 
+    player.setDeployableTroops(0);
+    //The second hand in should give 6 Troops
+    playerController.getHandController().getHand().getCards().add(cards[0]);
+    playerController.getHandController().getHand().getCards().add(cards[1]);
+    playerController.getHandController().getHand().getCards().add(cards[2]);
+    playerController.getHandController().selectExchangeableCards();
+    playerController.handInCards(2);
+    assertEquals(6, playerController.getPlayer().getDeployableTroops());
+
+    player.setDeployableTroops(0);
+    //The 6th hand in should give 15 troops
+    playerController.getHandController().getHand().getCards().add(cards[0]);
+    playerController.getHandController().getHand().getCards().add(cards[1]);
+    playerController.getHandController().getHand().getCards().add(cards[2]);
+    playerController.getHandController().selectExchangeableCards();
+    playerController.handInCards(6);
+    assertEquals(15, playerController.getPlayer().getDeployableTroops());
+
+    player.setDeployableTroops(0);
+    //The 7th hand in should give 20 troops
+    playerController.getHandController().getHand().getCards().add(cards[0]);
+    playerController.getHandController().getHand().getCards().add(cards[1]);
+    playerController.getHandController().getHand().getCards().add(cards[2]);
+    playerController.getHandController().selectExchangeableCards();
+    playerController.handInCards(7);
+    assertEquals(20, playerController.getPlayer().getDeployableTroops());
+
+     */
 
   }
 

@@ -5,14 +5,13 @@ import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.Statistic;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class PlayerController {
 
@@ -42,26 +41,14 @@ public class PlayerController {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
 
-  public void handInCards(int numberOfHandIn) {
-    if (handController.isExchangeable()) {
-      Set<Country> countries = player.getCountries();
-      if (!handController.hasCountryBonus(countries).isEmpty()) {
-        //TODO send REINFORCE or add troops
 
-        handController.hasCountryBonus(countries).forEach(n -> sendReinforce(n, 2));
-      }
+  public void sendHandIn() {
+    if (handController.isExchangeable()) {
+      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+      //removes Cards that were selected and can be exchanged
       handController.exchangeCards();
-      int diff = 0;
-      if (numberOfHandIn > 5) {
-        diff = 15 + 5 * (numberOfHandIn - 6);
-      } else {
-        diff = 2 + 2 * (numberOfHandIn);
-      }
-      changeDeployableTroops(diff);
-      //Increase troopsGained statistic according to troops gotten through card Exchange
-      Statistic statisticOfCurrentPlayer = player.getStatistic();
-      statisticOfCurrentPlayer.setTroopsGained(
-          statisticOfCurrentPlayer.getTroopsGained() + diff);
+      //TODO Send HandIn Move
+
     }
 
   }

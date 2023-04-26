@@ -30,8 +30,6 @@ public class GameController implements GameStateObserver {
   private GameState gameState;
 
   private boolean hasConquered;
-  private boolean allClaimed;
-  private HashMap<Player, Integer> initialTroops;
   private final Queue<Player> players;
 
   public GameController(GameState gameState) {
@@ -39,7 +37,6 @@ public class GameController implements GameStateObserver {
     this.players = gameState.getActivePlayers();
     GameConfiguration.addObserver(this);
     hasConquered = false;
-    allClaimed = false;
   }
 
   public void nextPlayer() {
@@ -144,7 +141,8 @@ public class GameController implements GameStateObserver {
   public void processReinforce(Reinforce reinforce) {
     addLastMove(reinforce);
     Player currentPlayer = gameState.getCurrentPlayer();
-    if (currentPlayer.getCurrentPhase().equals(CLAIM_PHASE) && !allClaimed) {
+    if (currentPlayer.getCurrentPhase().equals(CLAIM_PHASE) && !reinforce.getCountry()
+        .hasPlayer()) {
       reinforce.getCountry().setPlayer(currentPlayer);
       //TODO Player controller by server use
       //gameState.getCurrentPlayer().addCountry(reinforce.getCountry());
@@ -206,6 +204,32 @@ public class GameController implements GameStateObserver {
     Card drawnCard = gameState.getDeck().getDeckCards().remove(0);
     gameState.getCurrentPlayer().getHand().getCards().add(drawnCard);
   }
+//TODO in server mit allen Controllern
+  /*
+  public void handInCards(int numberOfHandIn) {
+    if (handController.isExchangeable()) {
+      Set<Country> countries = player.getCountries();
+      if (!handController.hasCountryBonus(countries).isEmpty()) {
+        //TODO add troops in those countries
+
+        handController.hasCountryBonus(countries).forEach(n -> sendReinforce(n, 2));
+      }
+      handController.exchangeCards();
+      int diff = 0;
+      if (numberOfHandIn > 5) {
+        diff = 15 + 5 * (numberOfHandIn - 6);
+      } else {
+        diff = 2 + 2 * (numberOfHandIn);
+      }
+      changeDeployableTroops(diff);
+      //Increase troopsGained statistic according to troops gotten through card Exchange
+      Statistic statisticOfCurrentPlayer = player.getStatistic();
+      statisticOfCurrentPlayer.setTroopsGained(
+          statisticOfCurrentPlayer.getTroopsGained() + diff);
+    }
+
+  }
+*/
 
 
   public void calculateDeployableTroops() {
@@ -234,6 +258,5 @@ public class GameController implements GameStateObserver {
     });
 
   }
-
 
 }
