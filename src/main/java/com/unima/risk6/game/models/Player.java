@@ -27,8 +27,8 @@ public class Player {
 
   public Player(String user) {
     this.hand = new Hand();
-    countries = new HashSet<>();
-    continents = new HashSet<>();
+    this.countries = new HashSet<>();
+    this.continents = new HashSet<>();
     this.user = user;
     this.statistic = new Statistic();
     this.currentPhase = GamePhase.ORDER_PHASE;

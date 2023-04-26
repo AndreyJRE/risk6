@@ -177,7 +177,7 @@ public class Attack extends Move {
     return troopNumber;
   }
 
-  public boolean battleWon() {
-    return true; // TEMP METHOD
+  public boolean willConquer() {
+    return (defenderLosses >= defendingCountry.getTroops());
   }
 }
