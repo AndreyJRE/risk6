@@ -72,8 +72,6 @@ public class SelectedUserSceneController {
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.LOGIN));
 
-    StackPane n = new StackPane();
-
     HBox hbox = new HBox(passwordEntryBox);
     hbox.setAlignment(Pos.CENTER);
 
@@ -128,7 +126,6 @@ public class SelectedUserSceneController {
         throw new RuntimeException(ex);
       }
     } else {
-      // TODO: Show an error message (incorrect password)
       showErrorDialog("Incorrect Password",
           "The password you entered is incorrect. Please try again.");
     }

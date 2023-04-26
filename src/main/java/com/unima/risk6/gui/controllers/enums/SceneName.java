@@ -7,7 +7,8 @@ public enum SceneName {
   SECURITY_QUESTIONS,
   CREATE_ACCOUNT,
   SELECTED_USER,
-  USER_OPTION
+  USER_OPTION,
+  USER_STATISTICS
 
   // add more scene names as needed
 
