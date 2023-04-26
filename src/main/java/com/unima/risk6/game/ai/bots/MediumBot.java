@@ -31,11 +31,20 @@ public class MediumBot extends Player implements AiBot {
   private final List<Continent> continentsCopy;
   private int reinforceTroopsCopy;
 
-  public MediumBot() {
+  public MediumBot(String username) {
+    super(username);
     playerController = new PlayerController();
     playerController.setPlayer(this);
     continentsCopy = new ArrayList<>();
   }
+
+  public MediumBot() {
+    super();
+    playerController = new PlayerController();
+    playerController.setPlayer(this);
+    continentsCopy = new ArrayList<>();
+  }
+
 
   /**
    * A method for a bot to make moves for all 3 phases of the game
