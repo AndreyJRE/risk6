@@ -36,13 +36,15 @@ public class ActivePlayerUi extends Group {
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
 
     Image reinforcementImage = new Image(
-        getClass().getResource("/pictures/reinforcement.png").toString());
+        getClass().getResource("/com/unima/risk6/pictures/reinforcement.png").toString());
     ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
 
-    Image attackImage = new Image(getClass().getResource("/pictures/sword.png").toString());
+    Image attackImage = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/sword.png").toString());
     ImagePattern attackImagePattern = new ImagePattern(attackImage);
 
-    Image fortifyImage = new Image(getClass().getResource("/pictures/fortify.png").toString());
+    Image fortifyImage = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/fortify.png").toString());
     ImagePattern fortifyImagePattern = new ImagePattern(fortifyImage);
 
     Rectangle icon1 = new Rectangle(radiusX, radiusY);

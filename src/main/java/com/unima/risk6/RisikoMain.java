@@ -31,18 +31,17 @@ public class RisikoMain extends Application {
     stage.setHeight(720);
     SceneConfiguration.startSceneControllerConfiguration(stage);
     SceneController sceneController = SceneConfiguration.getSceneController();
+    LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
+    LoginSceneController loginSceneController = new LoginSceneController(loginScene);
+    loginScene.setLoginSceneController(loginSceneController);
+    sceneController.addScene(SceneName.LOGIN,loginScene);
     if(users.isEmpty()){
       FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/CreateAccount.fxml"));
       Scene scene = new Scene(fxmlLoader.load());
       sceneController.addScene(SceneName.CREATE_ACCOUNT, scene);
       sceneController.activate(SceneName.CREATE_ACCOUNT);
     }else{
-      LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
-      LoginSceneController loginSceneController = new LoginSceneController(loginScene);
-      loginScene.setLoginSceneController(loginSceneController);
-      sceneController.addScene(SceneName.LOGIN,loginScene);
       sceneController.activate(SceneName.LOGIN);
-
     }
     stage.setTitle("RISK");
     stage.show();

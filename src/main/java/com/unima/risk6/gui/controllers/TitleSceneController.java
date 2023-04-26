@@ -1,15 +1,18 @@
 package com.unima.risk6.gui.controllers;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.models.User;
+import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
-import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.uiModels.ActivePlayerUi;
-import com.unima.risk6.gui.uiModels.PlayerUi;
-import com.unima.risk6.gui.uiModels.TimeUi;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.scenes.SelectedUserScene;
+import com.unima.risk6.gui.scenes.UserOptionsScene;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +25,13 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import com.unima.risk6.database.services.UserService;
 
-public class TitleScreenController implements Initializable {
+public class TitleSceneController implements Initializable {
 
-  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUI.json";
+  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUi.json";
 
   @FXML
   private AnchorPane root;
@@ -60,8 +63,14 @@ public class TitleScreenController implements Initializable {
   @FXML
   private Button quitButton;
 
+  private SceneController sceneController;
+  private User user;
+  private List<User> activeUser;
+  private UserService userService;
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
     root.setPrefHeight(SceneConfiguration.getHeight());
@@ -74,6 +83,9 @@ public class TitleScreenController implements Initializable {
     multiPlayerButton.setStyle(buttonStyle);
     optionsButton.setStyle(buttonStyle);
     quitButton.setStyle(buttonStyle);
+    sceneController = SceneConfiguration.getSceneController();
+    activeUser = userService.getUsersByActive(true);
+    user = activeUser.get(0);
   }
 
   // Define the event handler for the single player button
@@ -83,34 +95,24 @@ public class TitleScreenController implements Initializable {
     System.out.println("Single player game started");
     SceneController sceneController = SceneConfiguration.getSceneController();
 
-    List<String> players = new ArrayList<>();
-    players.add("Jeff");
-    players.add("Jeff2");
-    players.add("Jeff3");
+    List<String> users = new ArrayList<>();
+    users.add("Jeff");
+    users.add("Jake");
+    users.add("Joel");
+    users.add("John");
     List<AiBot> bots = new ArrayList<>();
+    GameState gameState = GameConfiguration.configureGame(users, bots);
 
-    GameState gameState = GameConfiguration.configureGame(players, bots);
-
-    Pane pane = new Pane();
-    CountriesUiConfiguration countriesUIConfiguration =
+    CountriesUiConfiguration countriesUiConfiguration =
         new CountriesUiConfiguration(COUNTRIES_JSON_PATH);
-    countriesUIConfiguration.configureCountries(gameState.getCountries());
+    countriesUiConfiguration.configureCountries(gameState.getCountries());
 
     //dummy initialisation of Players with dummyvalue
-    ArrayList<PlayerUi> PlayerUis = new ArrayList<PlayerUi>();
-    int amountOfPlayers = 4;
-    for (int i = 0; i < 4; i++) {
-      PlayerUis.add(new PlayerUi(35,
-          35, 100, 45));
-    }
 
-    Scene gameScene = new GameScene(
+    Scene gameScene = new GameScene(gameState,
         1080,
         720,
-        countriesUIConfiguration.getCountriesUis(),
-        new ActivePlayerUi(40,
-            40, 280, 50),
-        PlayerUis, new TimeUi(40, 40));
+        countriesUiConfiguration.getCountriesUis());
 
     sceneController.addScene(SceneName.GAME, gameScene);
     sceneController.activate(SceneName.GAME);
@@ -128,7 +130,17 @@ public class TitleScreenController implements Initializable {
   @FXML
   private void handleOptions() {
     // TODO: Implement the options screen
-    System.out.println("Options screen opened");
+      UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
+          .getSceneBySceneName(SceneName.USER_OPTION);
+      if (scene == null) {
+        scene = new UserOptionsScene();
+        UserOptionsSceneController userOptionsSceneController = new UserOptionsSceneController(
+            scene);
+        scene.setController(userOptionsSceneController);
+        sceneController.addScene(SceneName.USER_OPTION, scene);
+      }
+      scene.setUser(user);
+      sceneController.activate(SceneName.USER_OPTION);
   }
 
   @FXML

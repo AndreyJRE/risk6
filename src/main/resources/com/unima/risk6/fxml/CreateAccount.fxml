@@ -24,7 +24,7 @@
               AnchorPane.topAnchor="0.0">
               <Label contentDisplay="CENTER"
                 style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
-                text="Create new user!">
+                text="Create new User">
                 <font>
                   <Font name="BentonSans Bold" size="41.0"/>
                 </font>
@@ -69,7 +69,7 @@
               <Label onMouseClicked="#handleSkipToTitleScreen" onMouseEntered="#handleMouseEntered"
                 onMouseExited="#handleMouseExited"
                 style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-text-fill: #BEBEBE; -fx-underline: true;"
-                text="Skip to titlescreen">
+                text="Login to existing account">
                 <font>
                   <Font size="24.0"/>
                 </font>

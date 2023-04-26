@@ -7,8 +7,9 @@ import com.unima.risk6.database.exceptions.NotValidPasswordException;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,9 +46,12 @@ public class CreateAccountController implements Initializable {
   @FXML
   private Label passwordMismatchLabel;
 
+  private SceneController sceneController;
+
   @FXML
   private void handleSkipToTitleScreen() {
-    SecurityQuestionsController.activateTitleScreen();
+    sceneController = SceneConfiguration.getSceneController();
+    sceneController.activate(SceneName.LOGIN);
   }
 
   @FXML
@@ -76,23 +80,25 @@ public class CreateAccountController implements Initializable {
         "src/main/resources/Pictures/AdobeStock_259394679.png");
     try {
       userService.saveUser(user);
-      FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScreen"
-          + ".fxml"));
-      Scene scene = null;
+      sceneController = SceneConfiguration.getSceneController();
+      SelectedUserScene scene = (SelectedUserScene) SceneConfiguration.getSceneController()
+          .getSceneBySceneName(SceneName.SELECTED_USER);
+      if (scene == null) {
+        scene = new SelectedUserScene();
+        SelectedUserSceneController selectedUserSceneController = new SelectedUserSceneController(
+            scene);
+        scene.setController(selectedUserSceneController);
+        sceneController.addScene(SceneName.SELECTED_USER, scene);
+      }
+      scene.setUser(user);
 
-        scene = new Scene(fxmlLoader.load());
-
-      SceneController sceneController = SceneConfiguration.getSceneController();
-      sceneController.addScene(SceneName.TITLE, scene);
-      sceneController.activate(SceneName.TITLE);
+      sceneController.activate(SceneName.SELECTED_USER);
     } catch (IllegalArgumentException illegalArgumentException) {
 
     } catch (UsernameNotUniqueException usernameNotUniqueException) {
       System.out.println(usernameNotUniqueException.getMessage());
     } catch (NotValidPasswordException notValidPasswordException) {
       System.out.println(notValidPasswordException.getMessage());
-    }catch (IOException ioException){
-      throw new RuntimeException(ioException);
     }
   }
 

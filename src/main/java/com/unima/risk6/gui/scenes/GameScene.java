@@ -1,6 +1,12 @@
 package com.unima.risk6.gui.scenes;
 
+import com.unima.risk6.game.logic.GameState;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.PlayerColor;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.PathTransition;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
@@ -9,8 +15,11 @@ import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -32,11 +41,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.StrokeType;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 
 public class GameScene extends Scene implements Initializable {
 
-//  private GameState gameState;
+  private GameState gameState;
 //
 //  private Stack<CardUi> cardUis;
 
@@ -48,42 +62,28 @@ public class GameScene extends Scene implements Initializable {
 
   private double originalScreenHeight;
 
-  private ActivePlayerUi ellipseWithRectangle;
-
-  private ArrayList<PlayerUi> PlayerUis;
-
-  private TimeUi TimeUi;
-
-  private BorderPane chatBoxPane = new BorderPane();
-
-  private Set<Line> arrow;
-
-  private CountryName previousCountry;
-
-  private CountryName newCountry;
+  private BorderPane chatBoxPane;
 
   private Group countriesGroup;
 
+  private boolean isCountrySelectedToAttackOthers;
+
   public GameScene(
-//  GameState gameState,
+      GameState gameState,
 //  Stack<CardUi> cardUiS
 //  this.gameState = gameState;
 //  this.cardUiS = cardUiS;
       int width,
       int height,
-      Set<CountryUi> countriesUis,
-      ActivePlayerUi ellipseWithRectangle,
-      ArrayList<PlayerUi> PlayerUis, TimeUi TimeUi) {
+      Set<CountryUi> countriesUis) {
     super(new BorderPane(), width, height);
+    this.gameState = gameState;
     this.originalScreenWidth = width;
     this.originalScreenHeight = height;
     this.countriesUis = countriesUis;
-    this.ellipseWithRectangle = ellipseWithRectangle;
-    this.PlayerUis = PlayerUis;
-    this.TimeUi = TimeUi;
-
     this.root = (BorderPane) getRoot();
     this.countriesGroup = new Group();
+    this.chatBoxPane = new BorderPane();
 
     this.initializeGameScene();
 
@@ -138,7 +138,18 @@ public class GameScene extends Scene implements Initializable {
   private StackPane initializePlayersPane() {
     VBox playersVbox = new VBox();
     playersVbox.setMaxWidth(100);
-    playersVbox.getChildren().addAll(PlayerUis);
+
+    PlayerColor[] possibleColors = {PlayerColor.RED, PlayerColor.BLUE, PlayerColor.PURPLE,
+        PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
+    int colorIndex = 0;
+    ArrayList<PlayerUi> playerUis = new ArrayList<>();
+    for (Player player : gameState.getActivePlayers()) {
+      playerUis.add(new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
+          35, 100, 45));
+      colorIndex++;
+    }
+
+    playersVbox.getChildren().addAll(playerUis);
     playersVbox.setAlignment(Pos.CENTER);
     playersVbox.setSpacing(10);
     StackPane playerPane = new StackPane();
@@ -149,7 +160,8 @@ public class GameScene extends Scene implements Initializable {
 
   private StackPane initializeTimePane() {
     StackPane timePane = new StackPane();
-    timePane.getChildren().add(TimeUi);
+    TimeUi timeUi = new TimeUi(40, 40);
+    timePane.getChildren().add(timeUi);
     timePane.setAlignment(Pos.CENTER);
     timePane.setPadding(new Insets(0, 15, 0, 0));
     return timePane;
@@ -217,7 +229,10 @@ public class GameScene extends Scene implements Initializable {
       chatPopup.show(chatButton.getScene().getWindow());
     });
 
-    bottomPane.getChildren().add(ellipseWithRectangle);
+    ActivePlayerUi activePlayerUi = new ActivePlayerUi(40,
+        40, 280, 50);
+
+    bottomPane.getChildren().add(activePlayerUi);
     bottomPane.getChildren().add(chatButton);
     bottomPane.setAlignment(Pos.CENTER);
     bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
@@ -229,59 +244,121 @@ public class GameScene extends Scene implements Initializable {
   private void addMouseHandlers(Group countriesGroup) {
     // Mouse press event handler
     EventHandler<MouseEvent> mousePressHandler = event -> {
-      if (event.getSource() instanceof CountryUi) {
-        CountryUi currentCountryUi = (CountryUi) event.getSource();
 
-        Set<Country> adjacentCountries = currentCountryUi.getCountry().getAdjacentCountries();
+      if (isCountrySelectedToAttackOthers) {
+        System.out.println(countriesGroup.getChildren());
 
-        for (Country country : adjacentCountries) {
-          CountryUi adjecentCountryUi = null;
-          for (Node countryUiNode : countriesGroup.getChildren()) {
-            if (countryUiNode instanceof CountryUi) {
-              CountryUi desiredCountryUI = (CountryUi) countryUiNode;
-              if (desiredCountryUI.getCountryId().equals(country.getCountryName())) {
-                adjecentCountryUi = desiredCountryUI;
-                break;
+//        int startIndex = countriesUis.size() + 1;
+//        System.out.println(startIndex);
+//        int endIndex = countriesGroup.getChildren().size();
+//        System.out.println(endIndex);
+//
+//        List<CountryUi> countryUiList = new ArrayList<>();
+//
+        Iterator<Node> nodeIterator = countriesGroup.getChildren().iterator();
+        while (nodeIterator.hasNext()) {
+          Node countriesGroupNode = nodeIterator.next();
+          if (countriesGroupNode instanceof SVGPath || countriesGroupNode instanceof Line) {
+            nodeIterator.remove();
+          }
+        }
+//        countriesGroup.requestLayout();
+
+//// Bring CountryUi instances to the front
+//        for (CountryUi countryUi : countryUiList) {
+//          countryUi.toFront();
+//        }
+//        System.out.println(countriesGroup.getChildren());
+
+//        for (int i = startIndex; i <= endIndex; i++) {
+//          if (countriesGroup.getChildren().get(i) instanceof Line) {
+//            endIndex = i;
+//            break;
+//          }
+//        }
+//        System.out.println(endIndex);
+//        for (int i = startIndex; i < endIndex; i++) {
+//          System.out.println(i);
+//          countriesGroup.getChildren().remove(startIndex);
+//        }
+//
+//        for (Node arrowNode : countriesGroup.getChildren()) {
+//          if (arrowNode instanceof Line) {
+//            arrowNode.setVisible(false);
+//          }
+//        }
+        setCursor(Cursor.DEFAULT);
+        isCountrySelectedToAttackOthers = false;
+      } else {
+        if (event.getSource() instanceof CountryUi) {
+          CountryUi currentCountryUi = (CountryUi) event.getSource();
+          Set<Country> adjacentCountries = currentCountryUi.getCountry().getAdjacentCountries();
+          for (Country country : adjacentCountries) {
+            CountryUi adjecentCountryUi = null;
+            SVGPath currentShape = null;
+            for (Node countryUiNode : countriesGroup.getChildren()) {
+              if (countryUiNode instanceof CountryUi) {
+                CountryUi desiredCountryUI = (CountryUi) countryUiNode;
+                if (desiredCountryUI.getCountryId().equals(country.getCountryName())) {
+                  adjecentCountryUi = desiredCountryUI;
+                  currentShape = svgPathClone(adjecentCountryUi.getCountryPath());
+                  currentShape.setEffect(adjecentCountryUi.getGlowEffect());
+                  break;
+                }
               }
             }
-          }
-
-          Line arrow = new Line();
-          arrow.setStroke(Color.RED);
-          arrow.setVisible(false);
-
-          int index = 0;
-          for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
-            if (troopsCounterUiNode instanceof TroopsCounterUi) {
-              countriesGroup.getChildren().add(index++, arrow);
-              break;
-            } else {
-              index++;
+            int index = 0;
+            for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
+              if (troopsCounterUiNode instanceof TroopsCounterUi) {
+                countriesGroup.getChildren().add(index++, currentShape);
+                break;
+              } else {
+                index++;
+              }
             }
+            Line arrow = new Line();
+            arrow.setStroke(Color.RED);
+            index = 0;
+            for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
+              if (troopsCounterUiNode instanceof TroopsCounterUi) {
+                countriesGroup.getChildren().add(index++, arrow);
+                break;
+              } else {
+                index++;
+              }
+            }
+            Point2D clickPosInScene =
+                currentCountryUi.localToScene(
+                    currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+                    currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
+            Point2D clickPosInSceneToCountry = adjecentCountryUi.localToScene(
+                adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+                adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
+            Point2D clickPosInGroup = countriesGroup.sceneToLocal(clickPosInScene);
+            Point2D clickPosInGroupToCountry = countriesGroup.sceneToLocal(
+                clickPosInSceneToCountry);
+            arrow.setStartX(clickPosInGroup.getX());
+            arrow.setStartY(clickPosInGroup.getY());
+            arrow.setEndX(clickPosInGroup.getX());
+            arrow.setEndY(clickPosInGroup.getY());
+            setCursor(Cursor.MOVE);
+
+            Timeline timeline = new Timeline();
+
+            KeyValue endXValue = new KeyValue(arrow.endXProperty(),
+                clickPosInGroupToCountry.getX());
+            KeyValue endYValue = new KeyValue(arrow.endYProperty(),
+                clickPosInGroupToCountry.getY());
+            KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXValue, endYValue);
+
+            timeline.getKeyFrames().add(keyFrame);
+            timeline.setCycleCount(1);
+            timeline.setAutoReverse(false);
+            timeline.play();
+
+//            arrow.setVisible(true);
+            isCountrySelectedToAttackOthers = true;
           }
-
-          Point2D clickPosInScene =
-              currentCountryUi.localToScene(
-                  currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-                  currentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
-
-          Point2D clickPosInSceneToCountry = adjecentCountryUi.localToScene(
-              adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-              adjecentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
-
-          Point2D clickPosInGroup = countriesGroup.sceneToLocal(clickPosInScene);
-          Point2D clickPosInGroupToCountry = countriesGroup.sceneToLocal(clickPosInSceneToCountry);
-
-          arrow.setStartX(clickPosInGroup.getX());
-          arrow.setStartY(clickPosInGroup.getY());
-          arrow.setEndX(clickPosInGroupToCountry.getX());
-          arrow.setEndY(clickPosInGroupToCountry.getY());
-
-          // Change the cursor
-          setCursor(Cursor.MOVE);
-
-          // Make the arrow visible
-          arrow.setVisible(true);
         }
       }
     };
@@ -331,6 +408,17 @@ public class GameScene extends Scene implements Initializable {
 //      countryUi.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseDragHandler);
 //      countryUi.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleaseHandler);
     }
+  }
+
+  private SVGPath svgPathClone(SVGPath original) {
+    SVGPath clone = new SVGPath();
+    clone.setContent(original.getContent());
+    clone.setFill(original.getFill());
+    clone.setStroke(original.getStroke());
+    clone.setStrokeWidth(original.getStrokeWidth());
+    clone.setLayoutX(original.getLayoutX());
+    clone.setLayoutY(original.getLayoutY());
+    return clone;
   }
 
 
