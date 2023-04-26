@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 class GameStatisticServiceTest {
@@ -41,7 +40,6 @@ class GameStatisticServiceTest {
   }
 
   @Test
-  @Order(1)
   void saveGameStatistic() {
     User newUser = new User("testUser", "12345Andrey!"
         , "/com/unima/risk6/images/test.png");
@@ -59,10 +57,9 @@ class GameStatisticServiceTest {
   }
 
   @Test
-  @Order(2)
   void updateGameStatistic() {
     User newUser = new User("testUser", "12345Andrey!",
-        "src/main/resources/com/unima/risk6/images/test.png");
+        "/com/unima/risk6/images/test.png");
     userService.saveUser(newUser);
     User databaseUser = userService.getUserById(newUser.getId());
 
@@ -80,9 +77,23 @@ class GameStatisticServiceTest {
   }
 
   @Test
-  @Order(3)
   void getAllStatisticsByUserId_NotFound() {
     assertThrows(NotFoundException.class,
         () -> gameStatisticService.getAllStatisticsByUserId(Long.MAX_VALUE));
   }
+
+  @Test
+  void getGameStatistic() {
+    User newUser = new User("testUser", "12345Andrey!",
+        "/com/unima/risk6/images/test.png");
+    userService.saveUser(newUser);
+    User databaseUser = userService.getUserById(newUser.getId());
+    assertEquals(newUser, databaseUser);
+    GameStatistic gameStatistic = new GameStatistic(databaseUser, LocalDateTime.now());
+    gameStatisticService.saveGameStatistic(gameStatistic);
+    GameStatistic gameStatistic1 = gameStatisticService.getGameStatisticById(gameStatistic.getId());
+    assertEquals(gameStatistic.getId(), gameStatistic1.getId());
+
+  }
+
 }
