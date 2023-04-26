@@ -9,6 +9,7 @@ import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.Statistic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class PlayerController {
 
   public PlayerController() {
     this.handController = new HandController();
+
   }
 
   public Reinforce sendReinforce(Country reinforcedCountry, int troopNumber) {
@@ -41,7 +43,7 @@ public class PlayerController {
   }
 
   public void handInCards(int numberOfHandIn) {
-    if (handController.isExchangable()) {
+    if (handController.isExchangeable()) {
       Set<Country> countries = player.getCountries();
       if (!handController.hasCountryBonus(countries).isEmpty()) {
         //TODO send REINFORCE or add troops
@@ -49,19 +51,19 @@ public class PlayerController {
         handController.hasCountryBonus(countries).forEach(n -> sendReinforce(n, 2));
       }
       handController.exchangeCards();
+      int diff = 0;
       if (numberOfHandIn > 5) {
-        changeDeployableTroops(15 + 5 * (numberOfHandIn - 6));
+        diff = 15 + 5 * (numberOfHandIn - 6);
       } else {
-        changeDeployableTroops(2 + 2 * (numberOfHandIn));
+        diff = 2 + 2 * (numberOfHandIn);
       }
-
+      changeDeployableTroops(diff);
+      //Increase troopsGained statistic according to troops gotten through card Exchange
+      Statistic statisticOfCurrentPlayer = player.getStatistic();
+      statisticOfCurrentPlayer.setTroopsGained(
+          statisticOfCurrentPlayer.getTroopsGained() + diff);
     }
 
-  }
-
-  public void addCountry(Country countryToAdd) {
-    player.getCountries().add(countryToAdd);
-    countryToAdd.setPlayer(player);
   }
 
   //TODO have to implement which Continent is fully Occupied by Player
@@ -116,12 +118,25 @@ public class PlayerController {
     player.getCountries().remove(countryToRemove);
   }
 
+  public void addCountry(Country countryToAdd) {
+    player.getCountries().add(countryToAdd);
+    countryToAdd.setPlayer(player);
+  }
 
   public void setPlayer(Player player) {
     this.player = player;
     this.handController.setHand(player.getHand());
 
   }
+
+  public Player getPlayer() {
+    return player;
+  }
+
+  public HandController getHandController() {
+    return handController;
+  }
+
 
   public int getNumberOfCountries() {
     return player.getCountries().size();
