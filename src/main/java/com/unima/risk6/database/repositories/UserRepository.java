@@ -37,6 +37,8 @@ public class UserRepository implements UserDao {
 
   private PreparedStatement getUserByUsernameStatement;
 
+  private PreparedStatement deleteGameStatisticsByUserIdStatement;
+
   private final DateTimeFormatter localDateDtf;
 
   /**
@@ -72,6 +74,8 @@ public class UserRepository implements UserDao {
           SELECT * FROM user""");
       getUserByUsernameStatement = this.databaseConnection.prepareStatement("""
           SELECT id,password,image_path,active,created_at FROM user WHERE username = ?""");
+      deleteGameStatisticsByUserIdStatement = this.databaseConnection.prepareStatement("""
+          DELETE FROM game_statistic WHERE user_id=?""");
     } catch (SQLException e) {
       throw new RuntimeException(e);
 
@@ -196,7 +200,9 @@ public class UserRepository implements UserDao {
   public void deleteById(Long id) {
     try {
       deleteUserStatement.setLong(1, id);
+      deleteGameStatisticsByUserIdStatement.setLong(1, id);
       deleteUserStatement.execute();
+      deleteGameStatisticsByUserIdStatement.execute();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
