@@ -11,6 +11,7 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -68,7 +69,7 @@ public class SerializationTest {
     assertTrue(standard.equals(s2));
 
   }
-/*
+
   @Test
   void testPlayerSerialization() {
     Player player = new Player("Jakob");
@@ -77,13 +78,15 @@ public class SerializationTest {
     System.out.println(json);
     //StandardMessage s2 = (StandardMessage) Deserializer.deserialize(json);
     //System.out.println(s2.getStatusCode() + (String)s2.getContent());
-    StandardMessage message = (StandardMessage<Player>) Deserializer.deserialize(json);
+    //StandardMessage message = (StandardMessage<Player>) Deserializer.deserialize(json);
     //Player player2 = (Player) message.getContent();
-    System.out.println("test");
+    //System.out.println(M);
     //TODO
+    assertTrue(false);
     //assertTrue(player.equals(player2));
 
   }
+  /*
   @Test
   void testEasyBotSerialization() {
     System.out.println("EasyBotSrialization");
@@ -140,4 +143,17 @@ public class SerializationTest {
         System.out.println("Reinforce Serialization:\n" + Serializer.serialize(message));
         assertTrue(Serializer.serialize(message).equals("{\"statusCode\":-1,\"content\":{\"country\":{\"countryName\":\"ALASKA\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"toAdd\":69},\"contentType\":\"REINFORCE\"}"));
     }
+
+  @Test
+  void testInitialGamestateSerialization(){
+    ArrayList<String> users =  new ArrayList<String>(Arrays.asList("Andrey","Max","Fung"));
+    ArrayList<AiBot> bots = new ArrayList<AiBot>(Arrays.asList(new EasyBot(),new EasyBot()));
+    GameState gamestate = GameConfiguration.configureGame(users, bots);;
+    StandardMessage<GameState> message = new StandardMessage<>(gamestate);
+    System.out.println("GameState Serialization:\n" + Serializer.serialize(message));
+    StandardMessage<GameState> m2 =
+        (StandardMessage<GameState>) Deserializer.deserialize(Serializer.serialize(message));
+    GameState g2 = m2.getContent();
+    assertTrue(Serializer.serialize(message).equals(Serializer.serialize(new StandardMessage<GameState>(g2))));
+  }
 }
