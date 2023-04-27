@@ -9,7 +9,6 @@ import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +45,7 @@ class GameStatisticServiceTest {
     userService.saveUser(newUser);
     User databaseUser = userService.getUserById(newUser.getId());
 
-    GameStatistic gameStatistic = new GameStatistic(databaseUser, LocalDateTime.now());
+    GameStatistic gameStatistic = new GameStatistic(databaseUser);
     gameStatisticService.saveGameStatistic(gameStatistic);
     gameStatisticService.updateGameStatisticAfterGame(gameStatistic);
     List<GameStatistic> userStatistics = gameStatisticService.getAllStatisticsByUserId(
@@ -58,12 +57,12 @@ class GameStatisticServiceTest {
 
   @Test
   void updateGameStatistic() {
-    User newUser = new User("testUser", "12345Andrey!",
-        "/com/unima/risk6/images/test.png");
+    User newUser = new User("testUser", "12345Andrey!"
+        , "/com/unima/risk6/images/test.png");
     userService.saveUser(newUser);
     User databaseUser = userService.getUserById(newUser.getId());
 
-    GameStatistic gameStatistic = new GameStatistic(databaseUser, LocalDateTime.now());
+    GameStatistic gameStatistic = new GameStatistic(databaseUser);
     gameStatisticService.saveGameStatistic(gameStatistic);
 
     GameStatistic gameStatisticToUpdate = gameStatisticService.getGameStatisticById(
@@ -84,12 +83,12 @@ class GameStatisticServiceTest {
 
   @Test
   void getGameStatistic() {
-    User newUser = new User("testUser", "12345Andrey!",
-        "/com/unima/risk6/images/test.png");
+    User newUser = new User("testUser", "12345Andrey!"
+        , "/com/unima/risk6/images/test.png");
     userService.saveUser(newUser);
     User databaseUser = userService.getUserById(newUser.getId());
     assertEquals(newUser, databaseUser);
-    GameStatistic gameStatistic = new GameStatistic(databaseUser, LocalDateTime.now());
+    GameStatistic gameStatistic = new GameStatistic(databaseUser);
     gameStatisticService.saveGameStatistic(gameStatistic);
     GameStatistic gameStatistic1 = gameStatisticService.getGameStatisticById(gameStatistic.getId());
     assertEquals(gameStatistic.getId(), gameStatistic1.getId());
