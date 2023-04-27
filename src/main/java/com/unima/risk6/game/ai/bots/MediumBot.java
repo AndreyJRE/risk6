@@ -282,6 +282,28 @@ public class MediumBot extends Player implements AiBot {
     return allAttacks;
   }
 
+  @Override
+  public Fortify moveAfterAttack(CountryPair winPair) {
+    int troopsAffordable = Integer.MIN_VALUE;
+    for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
+      if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
+        int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
+        if (diff > troopsAffordable) {
+          troopsAffordable = diff;
+        }
+      }
+    }
+    // we can spare troops
+    if (troopsAffordable < 0) {
+      troopsAffordable *= -1;
+      return winPair.createFortify(-troopsAffordable);
+    } else { // else try to make it equal
+      int outgoingTroops = winPair.getOutgoing().getTroops();
+      int incomingTroops = winPair.getIncoming().getTroops();
+      return winPair.createFortify((outgoingTroops - incomingTroops) / 2);
+    }
+  }
+
   /**
    * Grabs all possible attack moves in the current continent, and performs only those which have a
    * high probability of victory until one side loses.

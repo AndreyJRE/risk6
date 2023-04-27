@@ -13,6 +13,7 @@ public interface AiBot {
 
   List<Reinforce> createAllReinforcements();
   List<CountryPair> createAllAttacks();
+  Fortify moveAfterAttack(CountryPair winPair);
   Fortify createFortify();
   /**
    * A method for a bot to claim a single country during the CLAIM PHASE Game State.

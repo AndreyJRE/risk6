@@ -93,6 +93,14 @@ public class EasyBot extends Player implements AiBot {
     return allAttacks;
   }
 
+  @Override
+  public Fortify moveAfterAttack(CountryPair winPair) {
+    // the automatic move will have already been made
+    int maxAvailable = winPair.getOutgoing().getTroops();
+    // nextInt automatically chooses any number while always leaving at least one troop behind
+    return winPair.createFortify(rng.nextInt(maxAvailable));
+  }
+
   /**
    * Creates and sends an Attack object to the server.
    *
