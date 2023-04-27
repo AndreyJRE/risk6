@@ -1,6 +1,7 @@
 package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.CountryName;
+import java.util.Objects;
 import java.util.Set;
 
 public class Country {
@@ -67,6 +68,7 @@ public class Country {
     return continent;
   }
 
+
   @Override
   public String toString() {
     return "Country{" +
@@ -74,9 +76,20 @@ public class Country {
         ", player=" + player +
         ", hasPlayer=" + hasPlayer +
         ", troops=" + troops +
-        ", adjacentCountries=" + adjacentCountries +
-        ", continent=" + continent +
+      //  ", adjacentCountries=" + adjacentCountries. +
+        ", continent=" + continent.getContinentName() +
         '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Country country)) {
+      return false;
+    }
+    return this.getCountryName().equals(country.getCountryName());
   }
 }
 

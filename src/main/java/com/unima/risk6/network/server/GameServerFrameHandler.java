@@ -24,8 +24,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         ch.writeAndFlush(
             new TextWebSocketFrame(/*ctx.channel().attr("name") +*/ " has written: " + request));
       }
-      System.out.println(channels.size());
-      ctx.channel().writeAndFlush(new TextWebSocketFrame(request));
+      //System.out.println(channels.size());
+      //ctx.channel().writeAndFlush(new TextWebSocketFrame(request));
     } else {
       String message = "unsupported frame type: " + frame.getClass().getName();
       throw new UnsupportedOperationException(message);

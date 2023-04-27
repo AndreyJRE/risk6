@@ -9,8 +9,8 @@ import com.unima.risk6.game.models.Country;
  */
 public class Reinforce extends Move {
 
-  private Country country;
-  private int toAdd;
+  private final Country country;
+  private final int toAdd;
 
   /**
    * Constructs a new reinforcement move with the given country and number of troops to add.
@@ -22,11 +22,11 @@ public class Reinforce extends Move {
     this.toAdd = toAdd;
     this.country = country;
   }
+
   /**
    * Returns the country being reinforced.
    *
    * @return the country being reinforced
-   *
    */
   public Country getCountry() {
     return country;
