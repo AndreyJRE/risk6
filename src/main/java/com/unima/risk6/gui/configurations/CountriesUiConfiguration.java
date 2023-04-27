@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CountriesUiConfiguration {
 
@@ -38,6 +39,16 @@ public class CountriesUiConfiguration {
         }
       }
     }
+    setNeighboursCountryUisForEachCountry();
+  }
+
+  private static void setNeighboursCountryUisForEachCountry() {
+    countriesUis.forEach(countryUi -> {
+      countryUi.setAdjacentCountryUis(countriesUis.stream()
+          .filter(countryUi1 -> countryUi1.getCountry().getAdjacentCountries()
+              .contains(countryUi.getCountry()))
+          .collect(Collectors.toSet()));
+    });
   }
 
   public Set<CountryUi> getCountriesUis() {
