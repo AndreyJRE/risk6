@@ -160,7 +160,7 @@ public class GameStatisticRepository implements GameStatisticDao {
   public Long save(GameStatistic gameStatistic) {
     try {
       addGameStatisticStatement.setLong(1, gameStatistic.getUser().getId());
-      addGameStatisticStatement.setString(2, LocalDateTime.now().format(dtf));
+      addGameStatisticStatement.setString(2, gameStatistic.getStartDate().format(dtf));
       addGameStatisticStatement.execute();
       ResultSet generatedKeys = addGameStatisticStatement.getGeneratedKeys();
       Long id = null;
