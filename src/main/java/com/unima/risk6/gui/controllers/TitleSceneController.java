@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -27,8 +26,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 public class TitleSceneController implements Initializable {
-
-  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUi.json";
 
   @FXML
   private AnchorPane root;
@@ -99,19 +96,16 @@ public class TitleSceneController implements Initializable {
     users.add("John");
     List<AiBot> bots = new ArrayList<>();
     GameState gameState = GameConfiguration.configureGame(users, bots);
-
-    CountriesUiConfiguration countriesUiConfiguration =
-        new CountriesUiConfiguration(COUNTRIES_JSON_PATH);
-    countriesUiConfiguration.configureCountries(gameState.getCountries());
-
-    //dummy initialisation of Players with dummyvalue
-
-    Scene gameScene = new GameScene(gameState,
-        1080,
-        720,
-        countriesUiConfiguration.getCountriesUis());
-
-    sceneController.addScene(SceneName.GAME, gameScene);
+    GameConfiguration.setGameState(gameState);
+    CountriesUiConfiguration.configureCountries(gameState.getCountries());
+    GameScene gameScene =
+        (GameScene) SceneConfiguration.getSceneController().getSceneBySceneName(SceneName.GAME);
+    if (gameScene == null) {
+      gameScene = new GameScene();
+      GameSceneController gameSceneController = new GameSceneController(gameScene);
+      gameScene.setGameSceneController(gameSceneController);
+      sceneController.addScene(SceneName.GAME, gameScene);
+    }
     sceneController.activate(SceneName.GAME);
   }
 

@@ -44,14 +44,6 @@ public class CountryUi extends Group {
     this.countryPath.setContent(SVGPath);
     this.countryPath.setFill(Color.WHITE);
     this.countryPath.setStroke(Color.BLACK);
-
-//    Bounds bounds = this.countryPath.getBoundsInParent();
-
-//    this.ellipseX = bounds.getMinX() + bounds.getWidth() * 0.5;
-//    this.ellipseY = bounds.getMinY() + bounds.getHeight() * 0.5;
-
-//    this.correctEllipsePlacement(this.country, this.ellipseX, this.ellipseY);
-
     this.getChildren().add(new Group(this.countryPath));
 
     FillTransition highlightTransition = new FillTransition(Duration.seconds(0.1), countryPath,

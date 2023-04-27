@@ -1,6 +1,249 @@
 package com.unima.risk6.gui.controllers;
 
-public class GameSceneController {
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.GameStateObserver;
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Move;
+import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.game.models.enums.PlayerColor;
+import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.uiModels.ActivePlayerUi;
+import com.unima.risk6.gui.uiModels.CountryUi;
+import com.unima.risk6.gui.uiModels.PlayerUi;
+import com.unima.risk6.gui.uiModels.TimeUi;
+import com.unima.risk6.gui.uiModels.TroopsCounterUi;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Popup;
+
+public class GameSceneController implements GameStateObserver {
+
+  private GameState gameState;
+//
+//  private Stack<CardUi> cardUis;
+
+  private BorderPane root;
+
+  private Set<CountryUi> countriesUis;
+
+  private double originalScreenWidth;
+
+  private double originalScreenHeight;
+
+  private BorderPane chatBoxPane;
+
+  private Group countriesGroup;
+
+  private final GameScene gameScene;
+
+  private final SceneController sceneController;
+
+  public GameSceneController(GameScene gameScene) {
+    this.gameScene = gameScene;
+    this.sceneController = SceneConfiguration.getSceneController();
+  }
+
+  public void init() {
+    this.gameState = GameConfiguration.getGameState();
+    this.originalScreenWidth = SceneConfiguration.getWidth();
+    this.originalScreenHeight = SceneConfiguration.getHeight();
+    this.countriesUis = CountriesUiConfiguration.getCountriesUis();
+    this.root = (BorderPane) gameScene.getRoot();
+    this.countriesGroup = new Group();
+    this.chatBoxPane = new BorderPane();
+    GameConfiguration.addObserver(this);
+    this.initializeGameScene();
+
+    this.addListeners();
+  }
+
+  private void initializeGameScene() {
+
+    StackPane countriesPane = initializeCountriesPane();
+    root.setCenter(countriesPane);
+    StackPane playerPane = initializePlayersPane();
+    root.setLeft(playerPane);
+    StackPane timePane = initializeTimePane();
+    root.setRight(timePane);
+    StackPane bottomPane = initializeBottomPane();
+    root.setBottom(bottomPane);
+  }
+
+  private StackPane initializeCountriesPane() {
+    double widthRatio = gameScene.getWidth() / originalScreenWidth;
+    double heightRatio = gameScene.getHeight() / originalScreenHeight;
+    double initialScale = Math.min(widthRatio, heightRatio);
+
+    countriesGroup.getChildren().addAll(countriesUis);
+    StackPane countriesPane = new StackPane();
+
+    for (CountryUi countryUi : countriesUis) {
+      Bounds bounds = countryUi.getCountryPath().getBoundsInParent();
+      double ellipseX = bounds.getMinX() + bounds.getWidth() * 0.5;
+      double ellipseY = bounds.getMinY() + bounds.getHeight() * 0.5;
+
+      Point2D correctedCoordinates = CountryUi.correctEllipsePlacement(countryUi.getCountry(),
+          ellipseX, ellipseY);
+      ellipseX = correctedCoordinates.getX();
+      ellipseY = correctedCoordinates.getY();
+
+      TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
+
+      countryUi.setTroopsCounterUi(troopsCounterUi);
+
+      countriesGroup.getChildren().add(troopsCounterUi);
+
+    }
+    countriesGroup.setScaleX(initialScale);
+    countriesGroup.setScaleY(initialScale);
+
+    countriesPane.getChildren().add(countriesGroup);
+    return countriesPane;
+  }
+
+  private StackPane initializePlayersPane() {
+    VBox playersVbox = new VBox();
+    playersVbox.setMaxWidth(100);
+
+    PlayerColor[] possibleColors = {PlayerColor.RED, PlayerColor.BLUE, PlayerColor.PURPLE,
+        PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
+    int colorIndex = 0;
+    ArrayList<PlayerUi> playerUis = new ArrayList<>();
+    for (Player player : gameState.getActivePlayers()) {
+      playerUis.add(new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
+          35, 100, 45));
+      colorIndex++;
+    }
+
+    playersVbox.getChildren().addAll(playerUis);
+    playersVbox.setAlignment(Pos.CENTER);
+    playersVbox.setSpacing(10);
+    StackPane playerPane = new StackPane();
+    playerPane.getChildren().add(playersVbox);
+    playerPane.setPadding(new Insets(0, 0, 0, 15));
+    return playerPane;
+  }
+
+  private StackPane initializeTimePane() {
+    StackPane timePane = new StackPane();
+    TimeUi timeUi = new TimeUi(40, 40);
+    timePane.getChildren().add(timeUi);
+    timePane.setAlignment(Pos.CENTER);
+    timePane.setPadding(new Insets(0, 15, 0, 0));
+    return timePane;
+  }
+
+  private StackPane initializeBottomPane() {
+    StackPane bottomPane = new StackPane();
+    Button chatButton = new Button();
+    ImageView chatIcon = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/chatIcon.png").toString()));
+    chatIcon.setFitWidth(40);
+    chatIcon.setFitHeight(40);
+    chatButton.setGraphic(chatIcon);
+    chatButton.setStyle("-fx-background-radius: 15px;");
+    chatButton.setFocusTraversable(false);
+
+    Label chatLabel = new Label("This is a chat popup.");
+    chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+
+    Button closeButton = new Button();
+    closeButton.setPrefSize(20, 20);
+    ImageView closeIcon = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeIcon.setFitWidth(40);
+    closeIcon.setFitHeight(40);
+    closeButton.setGraphic(closeIcon);
+    closeButton.setStyle("-fx-background-radius: 15px;");
+    closeButton.setFocusTraversable(false);
+
+    chatBoxPane.setTop(closeButton);
+    chatBoxPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+
+    VBox chatBox = new VBox();
+    chatBox.getChildren().addAll(chatLabel);
+
+    chatBoxPane.setCenter(chatBox);
+
+    chatBoxPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+
+    Popup chatPopup = new Popup();
+    chatPopup.getContent().add(chatBoxPane);
+
+    closeButton.setOnAction(event -> chatPopup.hide());
+
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setColor(Color.BLACK);
+    dropShadow.setRadius(10);
+    chatBoxPane.setEffect(dropShadow);
+
+    chatButton.setOnAction(event -> {
+      chatBoxPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
+
+      Bounds rootBounds = root.localToScreen(root.getBoundsInLocal());
+
+      double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+      double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+
+      // Get the width and height of the popup
+      double popupWidth = chatBoxPane.getPrefWidth();
+      double popupHeight = chatBoxPane.getPrefHeight();
+
+      // Set the position of the chat popup to center it in the root Scene
+      chatPopup.setX(centerX - popupWidth / 2);
+      chatPopup.setY(centerY - popupHeight / 2);
+      chatPopup.show(chatButton.getScene().getWindow());
+    });
+
+    ActivePlayerUi activePlayerUi = new ActivePlayerUi(40,
+        40, 280, 50);
+
+    bottomPane.getChildren().add(activePlayerUi);
+    bottomPane.getChildren().add(chatButton);
+    bottomPane.setAlignment(Pos.CENTER);
+    bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
+    bottomPane.setMargin(chatButton, new Insets(0, 10, 0, 0));
+    bottomPane.setPadding(new Insets(0, 0, 15, 0));
+    return bottomPane;
+  }
+
+  private void addListeners() {
+    gameScene.widthProperty().addListener((obs, oldVal, newVal) -> {
+      double widthScale = newVal.doubleValue() / originalScreenWidth;
+      double heightScale = gameScene.getHeight() / originalScreenHeight;
+      double scale = Math.min(widthScale, heightScale);
+      countriesGroup.setScaleX(scale + 0.4);
+      countriesGroup.setScaleY(scale + 0.4);
+    });
+
+    gameScene.heightProperty().addListener((obs, oldVal, newVal) -> {
+      double widthScale = gameScene.getWidth() / originalScreenWidth;
+      double heightScale = newVal.doubleValue() / originalScreenHeight;
+      double scale = Math.min(widthScale, heightScale);
+      countriesGroup.setScaleX(scale + 0.3);
+      countriesGroup.setScaleY(scale + 0.3);
+    });
+  }
 
   @Override
   public void update(GameState gameState) {
