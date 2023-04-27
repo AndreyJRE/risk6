@@ -25,6 +25,7 @@ public class TutorialBot extends Player implements AiBot {
   private final Queue<Reinforce> deterministicClaims;
   private final Queue<Reinforce> deterministicReinforces;
   private final Queue<CountryPair> deterministicAttacks;
+  private final Queue<Fortify> deterministicAfterAttacks;
   private final Queue<Fortify> deterministicFortifies;
   private final Map<CountryName, Country> countryMap;
 
@@ -33,8 +34,16 @@ public class TutorialBot extends Player implements AiBot {
     this.deterministicClaims = this.createDeterministicClaims();
     this.deterministicReinforces = this.createDeterministicReinforces();
     this.deterministicAttacks = this.createDeterministicAttacks();
+    this.deterministicAfterAttacks = this.createDeterministicAfterAttacks();
     this.deterministicFortifies = this.createDeterministicFortifies();
     this.countryMap = this.initalizeMap();
+  }
+
+  private Queue<Fortify> createDeterministicAfterAttacks() {
+    Queue<Fortify> afterAttacks = new LinkedList<>();
+    afterAttacks.add(new Fortify(this.countryMap.get(CountryName.BRAZIL),
+        this.countryMap.get(CountryName.VENEZUELA), 1));
+    return afterAttacks;
   }
 
   private Queue<Fortify> createDeterministicFortifies() {
@@ -76,6 +85,11 @@ public class TutorialBot extends Player implements AiBot {
     List<CountryPair> nextAttack = new LinkedList<>();
     nextAttack.add(this.deterministicAttacks.poll());
     return nextAttack;
+  }
+
+  @Override
+  public Fortify moveAfterAttack(CountryPair winPair) {
+    return this.deterministicAfterAttacks.poll();
   }
 
   @Override
