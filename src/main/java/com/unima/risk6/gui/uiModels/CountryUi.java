@@ -8,15 +8,29 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.Popup;
 import javafx.util.Duration;
 
 public class CountryUi extends Group {
@@ -32,6 +46,9 @@ public class CountryUi extends Group {
   private final DropShadow glowEffect;
 
   private TroopsCounterUi troopsCounterUi;
+
+  private int amountOfTroops = 0;
+
   private static boolean isCountrySelectedToAttackOthers = false;
 
 
@@ -98,17 +115,16 @@ public class CountryUi extends Group {
         setCursor(Cursor.DEFAULT);
         isCountrySelectedToAttackOthers = false;
       } else {
-        System.out.println("Country clicked: " + this.getCountryId());
         for (CountryUi adjacentCountryUi : adjacentCountryUis) {
-          System.out.println(adjacentCountryUi.getCountryId());
-          SVGPath countryPath1 = svgPathClone(adjacentCountryUi.getCountryPath());
-          countryPath1.setEffect(adjacentCountryUi.getGlowEffect());
+          SVGPath adjacentCountryPath = svgPathClone(adjacentCountryUi.getCountryPath());
+          adjacentCountryPath.setEffect(adjacentCountryUi.getGlowEffect());
+          addEventHandlersToAdjacentCountryPath(adjacentCountryPath);
           Line arrow = new Line();
           arrow.setStroke(Color.RED);
           int index = 0;
           for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
             if (troopsCounterUiNode instanceof TroopsCounterUi) {
-              countriesGroup.getChildren().add(index++, countryPath1);
+              countriesGroup.getChildren().add(index++, adjacentCountryPath);
               break;
             } else {
               index++;
@@ -148,7 +164,6 @@ public class CountryUi extends Group {
           timeline.setAutoReverse(false);
           timeline.play();
         }
-        // arrow.setVisible(true);
         isCountrySelectedToAttackOthers = true;
       }
 
@@ -165,6 +180,100 @@ public class CountryUi extends Group {
     clone.setLayoutX(original.getLayoutX());
     clone.setLayoutY(original.getLayoutY());
     return clone;
+  }
+
+  public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath) {
+    adjacentCountryPath.setOnMouseClicked(event -> {
+      BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+      BorderPane chatBoxPane = new BorderPane();
+
+      Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
+      chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+
+      Button closeButton = new Button();
+      closeButton.setPrefSize(15, 15);
+      ImageView closeIcon = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+      closeIcon.setFitWidth(15);
+      closeIcon.setFitHeight(15);
+      closeButton.setGraphic(closeIcon);
+      closeButton.setStyle("-fx-background-radius: 15px;");
+      closeButton.setFocusTraversable(false);
+
+      chatBoxPane.setTop(closeButton);
+      chatBoxPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+
+      HBox chatBox = new HBox();
+      chatBox.setAlignment(Pos.CENTER);
+      chatBox.setSpacing(15);
+
+      Popup chatPopup = new Popup();
+      closeButton.setOnAction(closeEvent -> chatPopup.hide());
+
+      Circle leftCircle = new Circle(25);
+      Image leftImage = new Image(
+          getClass().getResource("/com/unima/risk6/pictures/minusIcon.png").toString());
+      leftCircle.setFill(new ImagePattern(leftImage));
+      leftCircle.setOnMouseClicked(minusEvent -> {
+        if (amountOfTroops > 0) {
+          amountOfTroops--;
+          chatLabel.setText("Amount of Troops: " + amountOfTroops);
+        }
+      });
+
+      Circle rightCircle = new Circle(25);
+      Image rightImage = new Image(
+          getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString());
+      rightCircle.setFill(new ImagePattern(rightImage));
+      rightCircle.setOnMouseClicked(plusEvent -> {
+        amountOfTroops++;
+        chatLabel.setText("Amount of Troops: " + amountOfTroops);
+      });
+
+      Circle confirmCircle = new Circle(25);
+      Image confirmImage = new Image(
+          getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png").toString());
+      confirmCircle.setFill(new ImagePattern(confirmImage));
+      confirmCircle.setOnMouseClicked(confirmEvent -> {
+        chatPopup.hide();
+        Group countriesGroup = (Group) this.getParent();
+        countriesGroup.getChildren()
+            .removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
+                || countriesGroupNode instanceof SVGPath);
+        setCursor(Cursor.DEFAULT);
+        isCountrySelectedToAttackOthers = false;
+      });
+
+      chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
+      chatBox.setHgrow(confirmCircle, Priority.ALWAYS);
+
+      chatBoxPane.setCenter(chatBox);
+      chatBoxPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
+      chatBoxPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+      DropShadow dropShadow = new DropShadow();
+      dropShadow.setColor(Color.BLACK);
+      dropShadow.setRadius(10);
+      chatBoxPane.setEffect(dropShadow);
+
+      Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
+
+      double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+      double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+
+      double popupWidth = chatBoxPane.getPrefWidth();
+      double popupHeight = chatBoxPane.getPrefHeight();
+
+      chatPopup.getContent().add(chatBoxPane);
+
+      chatPopup.setX(centerX - popupWidth / 2);
+      chatPopup.setY(centerY - popupHeight / 2);
+      chatPopup.show(gamePane.getScene().getWindow());
+
+
+    });
+    adjacentCountryPath.setOnMouseEntered(event -> {
+      adjacentCountryPath.setCursor(Cursor.HAND);
+    });
   }
 
   public SVGPath getCountryPath() {
