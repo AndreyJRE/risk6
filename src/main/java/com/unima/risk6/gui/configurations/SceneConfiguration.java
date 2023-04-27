@@ -12,6 +12,8 @@ public class SceneConfiguration {
 
   public static void startSceneControllerConfiguration(Stage stage) {
     configureListeners(stage);
+    width = stage.getWidth();
+    height = stage.getHeight();
     sceneController = new SceneController(stage);
   }
 
