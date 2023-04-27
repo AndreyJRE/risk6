@@ -2,7 +2,6 @@ package com.unima.risk6.game.ai.bots;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.CountryPair;
-import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
@@ -24,6 +23,7 @@ import java.util.Map;
 public class MediumBot extends GreedyBot implements AiBot {
 
   private final PlayerController playerController;
+  private int reinforceTroopsCopy;
 
   public MediumBot(String username) {
     super(username);
@@ -37,36 +37,14 @@ public class MediumBot extends GreedyBot implements AiBot {
     playerController.setPlayer(this);
   }
 
-
-  /**
-   * A method for a bot to make moves for all 3 phases of the game
-   */
-  public MoveTriplet makeMove() {
-    // unable to make a move if bot is out of the game.
-    if (this.playerController.getNumberOfCountries() == 0) {
-      return null;
-    }
-    List<Reinforce> allReinforcements = this.createAllReinforcements();
-    List<CountryPair> allAttacks = this.createAllAttacks();
-    Fortify fortify = this.createFortify();
-    return new MoveTriplet(allReinforcements, allAttacks, fortify);
-  }
-
-
-  /**
-   * Reinforces based off of weighted continent importance, focusing on preventing an easy loss of a
-   * country and on securing borders of continents which are 100% controlled
-   *
-   * @return
-   * @author eameri
-   */
+  @Override
   public List<Reinforce> createAllReinforcements() {
     List<Reinforce> allReinforcements = new ArrayList<>();
-    int reinforceTroopsCopy = this.getDeployableTroops();
+    this.reinforceTroopsCopy = this.getDeployableTroops();
     sortContinentsByHighestRelativePower();
     // reinforce defensively
     for (Continent continent : this.getContinentsCopy()) {
-      if (reinforceTroopsCopy > 0) {
+      if (this.reinforceTroopsCopy > 0) {
         allReinforcements.addAll(makeContinentDefendable(continent));
       } else {
         break;
@@ -74,7 +52,7 @@ public class MediumBot extends GreedyBot implements AiBot {
     }
 
     for (Continent continent : this.getContinentsCopy()) {
-      if (reinforceTroopsCopy > 0
+      if (this.reinforceTroopsCopy > 0
           && Probabilities.relativeTroopContinentPower(this, continent) != 1.0) {
         allReinforcements.addAll(aggressiveReinforce(continent));
       } else {
@@ -140,11 +118,10 @@ public class MediumBot extends GreedyBot implements AiBot {
       List<Country> sortedCountryList) {
     List<Reinforce> listReinforce = new ArrayList<>();
     for (Country country : sortedCountryList) {
-      if (this.getDeployableTroops() > 0 && ownedCountryDiffs.get(country) > 0) {
+      if (this.reinforceTroopsCopy > 0 && ownedCountryDiffs.get(country) > 0) {
         int amountDeployed = Math.min(this.getDeployableTroops(), ownedCountryDiffs.get(country));
         listReinforce.add(new Reinforce(country, amountDeployed));
-        this.playerController.changeDeployableTroops(-amountDeployed); // TODO: all occurences
-        // of this should be done by server?
+        this.reinforceTroopsCopy -= amountDeployed;
       } else {
         break;
       }
@@ -189,14 +166,7 @@ public class MediumBot extends GreedyBot implements AiBot {
     return ownedCountryDiffs;
   }
 
-
-
-  /**
-   * In order of strongest continents, makes the strongest attack moves which have high chances of
-   * victory
-   *
-   * @return
-   */
+  @Override
   public List<CountryPair> createAllAttacks() {
     List<CountryPair> allAttacks = new ArrayList<>();
     sortContinentsByHighestRelativePower();
@@ -205,7 +175,6 @@ public class MediumBot extends GreedyBot implements AiBot {
     }
     return allAttacks;
   }
-
 
   /**
    * Grabs all possible attack moves in the current continent, and performs only those which have a
@@ -241,9 +210,9 @@ public class MediumBot extends GreedyBot implements AiBot {
 
   /**
    * From the weakest countries, only fortifies the weakest one which would also result in the
-   * lowest loss of strength in surrounding territories
+   * lowest loss of strength in surrounding territories.
    *
-   * @return
+   * @return The strongest fortify move.
    */
   public Fortify createFortify() {
     Fortify fortify = null;
@@ -277,5 +246,4 @@ public class MediumBot extends GreedyBot implements AiBot {
     }
     return fortify;
   }
-
 }

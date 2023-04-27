@@ -6,9 +6,16 @@ import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.ai.montecarlo.MonteCarloTreeSearch;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.GameState;
 import java.util.List;
 
 public class HardBot extends GreedyBot implements AiBot {
+
+  private List<Reinforce> reinforces;
+  private List<CountryPair> attacks;
+  private Fortify fortifies;
+
+  private GameState currentGameState;
 
 
   public HardBot(String username) {
@@ -21,26 +28,40 @@ public class HardBot extends GreedyBot implements AiBot {
 
   @Override
   public List<Reinforce> createAllReinforcements() {
-    return null;
+    updateBestMoves();
+    return this.reinforces;
   }
 
   @Override
   public List<CountryPair> createAllAttacks() {
-    return null;
+    return this.attacks;
   }
 
   @Override
   public Fortify createFortify() {
-    return null;
+    return this.fortifies;
   }
 
   /**
-   * A method for a bot to make moves for all 3 phases of the game
+   * Uses the Monte Carlo Tree Search algorithm to update the variables holding the best moves from
+   * the current state of the game.
    */
-  public MoveTriplet makeMove() {
+  private void updateBestMoves() {
     MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(this);
-    // TODO: get GameState from somewhere :(
-    return mcts.getBestMove(null);
+    MoveTriplet results = mcts.getBestMove(this.currentGameState);
+    this.reinforces = results.getReinforcements();
+    this.attacks = results.getAttacks();
+    this.fortifies = results.getFortify();
   }
+
+  /**
+   * Update the value of currentGameState.
+   *
+   * @param currentGameState The state of the game right at the beginning of the HardBots turn.
+   */
+  public void setCurrentGameState(GameState currentGameState) {
+    this.currentGameState = currentGameState;
+  }
+
 
 }

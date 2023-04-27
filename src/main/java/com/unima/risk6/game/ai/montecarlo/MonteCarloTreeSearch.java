@@ -46,11 +46,21 @@ public class MonteCarloTreeSearch {
   private final HardBot player;
   private int treeDepth;
 
+  /**
+   * Constructor for MonteCarloTreeSearch.
+   *
+   * @param player The HardBot player that will use this Monte Carlo Tree Search algorithm.
+   */
   public MonteCarloTreeSearch(HardBot player) {
     this.player = player;
-
   }
 
+  /**
+   * Returns the best move for the given game state based on Monte Carlo Tree Search algorithm.
+   *
+   * @param game The current game state.
+   * @return The best move for the current game state.
+   */
   public MoveTriplet getBestMove(GameState game) {
     MonteCarloNode root = new MonteCarloNode(game, null);
     for (int i = 0; i < SIMULATION_COUNT; i++) {
@@ -66,6 +76,12 @@ public class MonteCarloTreeSearch {
     return chooseBestMove(root);
   }
 
+  /**
+   * Selects the most promising node from the tree based on UCT values.
+   *
+   * @param node The root node of the Monte Carlo Tree.
+   * @return The most promising node.
+   */
   private MonteCarloNode select(MonteCarloNode node) {
     // goes to specific depth?
     // keep traversing non-terminal states, finding a leaf node <-> not expanded fully
@@ -76,9 +92,10 @@ public class MonteCarloTreeSearch {
   }
 
   /**
-   * Creates a child node of a node, each containing one turn's worth of moves
+   * Expands the given node by creating a child node with one turn's worth of moves.
    *
-   * @param node The node in the Monte Carlo Tree whose child is to be created
+   * @param node The node in the Monte Carlo Tree whose child is to be created.
+   * @return The created child node.
    */
   private MonteCarloNode expand(MonteCarloNode node) { // choose only best moves
     GameState oneTurn = this.copyGameState(node.getGameState());
@@ -106,10 +123,11 @@ public class MonteCarloTreeSearch {
   }
 
   /**
-   * Plays the game with everyone making random moves until a certain stop condition is met
+   * Simulates the game from the given game state, with all players making moves akin to their skill
+   * until a certain stop condition is met.
    *
-   * @param game the GameState from which the simulation will begin
-   * @return the strongest player once the game has stopped being simulated
+   * @param game The GameState from which the simulation will begin.
+   * @return The strongest player once the game has stopped being simulated.
    */
   private Player simulate(GameState game) { // here: mediumbots that keep playing
     // simulation gets stopped after time period
@@ -126,29 +144,39 @@ public class MonteCarloTreeSearch {
     return Probabilities.findStrongestPlayer(simulation);
   }
 
-
+  /**
+   * Returns a list of legal moves for the given player during the simulation.
+   *
+   * @param player The player whose legal moves are to be retrieved.
+   * @return A list of legal moves for the given player.
+   */
   private List<MoveTriplet> getSimulationMoves(Player player) {
     List<MoveTriplet> legalMoves = new ArrayList<>();
     if (this.isMonteCarlo(player)) {
       legalMoves = ((MonteCarloBot) player).getLegalMoves();
     } else {
-//      legalMoves.add(((AiBot) player).makeMove());
+      // legalMoves.add(((AiBot) player).makeMove());
     }
     return legalMoves;
   }
 
+  /**
+   * Checks if the given player is an instance of MonteCarloBot.
+   *
+   * @param player The player to be checked.
+   * @return A boolean value indicating whether the player is an instance of MonteCarloBot.
+   */
   private boolean isMonteCarlo(Player player) {
     return !(player instanceof EasyBot || player instanceof MediumBot);
   }
 
-  private boolean keepSimulating(long endTime, Player player, GameState simulation) {
-    int movesLeft = 1;
-    if (player instanceof MonteCarloBot) {
-      movesLeft = ((MonteCarloBot) player).getLegalMoves().size();
-    }
-    return System.currentTimeMillis() < endTime && movesLeft > 0 && !simulation.isGameOver();
-  }
-
+  /**
+   * Updates the wins and visits of the nodes in the Monte Carlo Tree based on the simulation
+   * result.
+   *
+   * @param node   The leaf node from which backpropagation will start.
+   * @param result The strongest player after the simulation.
+   */
   private void backpropagate(MonteCarloNode node, Player result) {
     while (node != null) {
       node.incrementVisits();
@@ -159,6 +187,13 @@ public class MonteCarloTreeSearch {
     }
   }
 
+  /**
+   * Chooses the best move from the children of the given node based on the maximum number of
+   * visits.
+   *
+   * @param node The root node of the Monte Carlo Tree.
+   * @return The best move to make for the current game state.
+   */
   private MoveTriplet chooseBestMove(MonteCarloNode node) {
     MonteCarloNode bestChild = null;
     int maxVisits = Integer.MIN_VALUE;
@@ -172,6 +207,12 @@ public class MonteCarloTreeSearch {
     return bestChild.getMove();
   }
 
+  /**
+   * Creates a deep copy of the given game state.
+   *
+   * @param gameState The game state to be copied.
+   * @return A deep copy of the given game state.
+   */
   private GameState copyGameState(GameState gameState) {
     GameState copy = gson.fromJson(gson.toJson(gameState), gameState.getClass());
     // swap players
@@ -195,6 +236,13 @@ public class MonteCarloTreeSearch {
     return copy;
   }
 
+  /**
+   * Retrieves the player object of the HardBot in the given game state.
+   *
+   * @param gameState The current game state.
+   * @return The player object of the HardBot in the given game state, or null if the player is no
+   * longer in the game.
+   */
   private Player getPlayerAtGameState(GameState gameState) {
     for (Player player : gameState.getActivePlayers()) {
       if (player.equals(this.player)) {

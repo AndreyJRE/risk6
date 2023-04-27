@@ -19,8 +19,6 @@ public class MonteCarloBot extends Player {
     super(toCopy);
     playerController = new PlayerController();
     playerController.setPlayer(this);
-//    this.continentsCopy = new ArrayList<>();
-//    continentsCopy.addAll(this.getContinents());
 
   }
 
@@ -30,13 +28,13 @@ public class MonteCarloBot extends Player {
     List<Fortify> fortifyMoves = this.getFortifyMoves();
 
     List<MoveTriplet> legalMoves = new ArrayList<>();
-//    for (List<Reinforce> reinforce : reinforceMoves) {
-//      for (List<> attack : attackMoves) {
-//        for (Fortify fortify : fortifyMoves) {
-//          legalMoves.add(new MoveTriplet(reinforce, attack, fortify));
-//        }
-//      }
-//    }
+    // for (List<Reinforce> reinforce : reinforceMoves) {
+    // for (List<> attack : attackMoves) {
+    // for (Fortify fortify : fortifyMoves) {
+    // legalMoves.add(new MoveTriplet(reinforce, attack, fortify));
+    // }
+    // }
+    // }
 
     return legalMoves;
   }

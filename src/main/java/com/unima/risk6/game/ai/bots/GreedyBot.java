@@ -15,17 +15,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * An intermediate class representing a player which only makes greedy moves. Used for Medium- and
+ * HardBot since they do some things in the same way.
+ *
+ * @author eameri
+ */
 abstract class GreedyBot extends Player implements AiBot {
 
+  private final List<Continent> continentsCopy;
+
+  /**
+   * Retrieves a copy of the list of continents.
+   *
+   * @return a copy of the list of continents.
+   */
   public List<Continent> getContinentsCopy() {
     return continentsCopy;
   }
 
+  /**
+   * Adds all items of a Set of continents to the continentsCopy list.
+   *
+   * @param continents the set of continents.
+   */
   public void setContinentsCopy(Set<Continent> continents) {
     this.continentsCopy.addAll(continents);
   }
-
-  private final List<Continent> continentsCopy;
 
   public GreedyBot(String username) {
     super(username);
@@ -65,11 +81,11 @@ abstract class GreedyBot extends Player implements AiBot {
 
   /**
    * Calculates how many additional troops an adjacent country has in comparison to the current
-   * country
+   * country.
    *
-   * @param country The country being tested
-   * @param adj     One adjacent country
-   * @return The amount of troops country needs to have the same amount as adj
+   * @param country The country being tested.
+   * @param adj     One adjacent country.
+   * @return The amount of troops country needs to have the same amount as adj.
    */
   protected int calculateTroopWeakness(Country country, Country adj) {
     return adj.getTroops() - country.getTroops();
@@ -94,6 +110,12 @@ abstract class GreedyBot extends Player implements AiBot {
     return new Reinforce(targetCountry, 1);
   }
 
+  /**
+   * Finds an unclaimed country within a given continent.
+   *
+   * @param continent The continent in which to search for an unclaimed country.
+   * @return The unclaimed country if found, otherwise null.
+   */
   private Country findUnclaimedCountry(Continent continent) {
     for (Country country : continent.getCountries()) {
       if (!country.hasPlayer()) {
@@ -103,6 +125,13 @@ abstract class GreedyBot extends Player implements AiBot {
     return null; // method only called on continents which have a free country
   }
 
+  /**
+   * Finds the best continent to claim a country in based on the priority list and the owned
+   * percentage of countries within each continent.
+   *
+   * @param priorityList a list of continents sorted by priority.
+   * @return the best continent to claim a country in.
+   */
   private Continent findBestClaim(List<Continent> priorityList) {
     Continent targetContinent = null;
     double maxOwnedPercentage = -1;
@@ -116,6 +145,12 @@ abstract class GreedyBot extends Player implements AiBot {
     return targetContinent;
   }
 
+  /**
+   * Checks if a continent has any unclaimed countries.
+   *
+   * @param continent the continent to check for unclaimed countries.
+   * @return true if the continent has an unclaimed country, otherwise false.
+   */
   private boolean hasFreeCountry(Continent continent) {
     for (Country country : continent.getCountries()) {
       if (!country.hasPlayer()) {
@@ -125,6 +160,12 @@ abstract class GreedyBot extends Player implements AiBot {
     return false;
   }
 
+  /**
+   * Calculates the percentage of countries owned by the bot within a given continent.
+   *
+   * @param continent the continent to calculate the owned percentage for.
+   * @return the percentage of countries owned by the bot within the continent.
+   */
   private double calculateClaimPhasePower(Continent continent) {
     double totalSize = continent.getCountries().size();
     int owned = 0;
