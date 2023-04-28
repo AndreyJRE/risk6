@@ -85,6 +85,7 @@ public class MediumBot extends GreedyBot implements AiBot {
    * presence the bot has over a continent
    */
   private void sortContinentsByHighestRelativePower() {
+    this.updateContinentsCopy(this.getContinents());
     this.getContinentsCopy().sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
         .reversed());
@@ -154,16 +155,21 @@ public class MediumBot extends GreedyBot implements AiBot {
     Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
     List<CountryPair> diffInfo = this.playerController.getAllAttackableCountryPairs(continent);
     for (CountryPair countryPair : diffInfo) {
-      if (ownedCountryDiffs.get(countryPair.getOutgoing()) == null) {
-        ownedCountryDiffs.put(countryPair.getOutgoing(),
-            calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()));
-      } else {
-        ownedCountryDiffs.put(countryPair.getOutgoing(),
-            Math.max(calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()),
-                ownedCountryDiffs.get(countryPair.getOutgoing())));
-      }
+      this.getCountryPairDiff(ownedCountryDiffs, countryPair);
     }
     return ownedCountryDiffs;
+  }
+
+  private void getCountryPairDiff(Map<Country, Integer> ownedCountryDiffs,
+      CountryPair countryPair) {
+    if (ownedCountryDiffs.get(countryPair.getOutgoing()) == null) {
+      ownedCountryDiffs.put(countryPair.getOutgoing(),
+          calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()));
+    } else {
+      ownedCountryDiffs.put(countryPair.getOutgoing(),
+          Math.max(calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()),
+              ownedCountryDiffs.get(countryPair.getOutgoing())));
+    }
   }
 
   @Override

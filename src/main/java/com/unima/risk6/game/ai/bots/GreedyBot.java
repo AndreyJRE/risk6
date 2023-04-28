@@ -23,7 +23,7 @@ import java.util.Set;
  */
 abstract class GreedyBot extends Player implements AiBot {
 
-  private final List<Continent> continentsCopy;
+  private List<Continent> continentsCopy;
 
   /**
    * Retrieves a copy of the list of continents.
@@ -39,7 +39,8 @@ abstract class GreedyBot extends Player implements AiBot {
    *
    * @param continents the set of continents.
    */
-  public void setContinentsCopy(Set<Continent> continents) {
+  public void updateContinentsCopy(Set<Continent> continents) {
+    this.continentsCopy = new ArrayList<>();
     this.continentsCopy.addAll(continents);
   }
 
