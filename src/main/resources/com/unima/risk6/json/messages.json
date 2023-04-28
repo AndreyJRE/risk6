@@ -1,0 +1,37 @@
+[
+  [
+    "Welcome to Risk Tutorial mode! This game mode intends to teach you the basics of the game and",
+    "provide an understanding of how to play a match of risk. We start with the claim phase, each",
+    "player takes turns placing one troop on one unclaimed country. Watch how the bot does it",
+    "and try it out by clicking on the highlighted country."
+  ],
+  [
+    "Now the game can begin! There are three phases each round: Reinforce, Attack, Fortify. Let's",
+    "check them out. At the beginning of each reinforce phase, you get a certain amount of troops",
+    "and can place them on any of the countries that belong to you"
+  ],
+  [
+    "Now we get to the attack phase: Select a country you own, then select one of the adjacent",
+    "enemy territories and choose with how many troops you want to attack. You then roll dice to",
+    "decide a winner. If the attacker wins, they must choose an amount of troops to move to the",
+    "defeated country"
+  ],
+  [
+    "Finally, the fortify phase: The player has the ability to pick exactly one country and",
+    "move some of its troops to an adjacent country"
+  ],
+  [
+    "Now your turn! For simplicity, your moves have been highlighted in order to give you a feel",
+    "of how to play a turn. This is the tutorial after all!"
+  ],
+  [
+    "If you conquer a country during the attack phase, you will receive a random card from the",
+    "deck at the end of your turn. According to the rulebook, at the beginning of a turn you have",
+    "the ability to swap 3 cards which match specific rules and get extra troops in return for",
+    "your reinforce phase. Right now, you have the chance to try out swapping cards. Make sure",
+    "to read the rulebook for an explanation of the card-swapping rules."
+  ],
+  ["That's all for the tutorial, now you can choose to continue the game from this state against a",
+  "bot of your choosing or leave the tutorial. Remember to read the rulebook if you need",
+  "clarification on anything!"]
+]
