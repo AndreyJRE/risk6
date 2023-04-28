@@ -48,14 +48,19 @@ public class Probabilities {
       }
       troopsTotal += country.getTroops();
     }
-    return troopsOwned / troopsTotal;
+    if (troopsTotal == 0) {
+      return 0;
+    } else {
+      return troopsOwned / troopsTotal;
+    }
   }
 
 
   /**
    * Gets the probability of a country winning a battle against another country based off of their
    * amount of troops ("Calculations are done in python, data wrangling in pandas", for more
-   * information on the source of the data see: ...).
+   * information on the source of the data see: ...https://www.reddit.com/r/dataisbeautiful/
+   * comments/vknu9r/oc_the_probability_of_winning_a_battle_as_an/
    *
    * @param attackerTotal The total amount of troops the attacking country has.
    * @param defenderTotal The total amount of troops the defending country has.
@@ -87,6 +92,7 @@ public class Probabilities {
     Player strongest = null;
     double strongestPercent = 0.0;
     double currentPercent;
+    // total troop count can't be 0 during the times where this method is called
     for (Player player : playerTroopCount.keySet()) {
       if ((currentPercent = playerTroopCount.get(player) / totalTroopCount) > strongestPercent) {
         strongestPercent = currentPercent;
