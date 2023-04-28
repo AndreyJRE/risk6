@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
-import com.unima.risk6.game.ai.bots.MonteCarloBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.ai.models.Probabilities;
@@ -102,16 +101,18 @@ public class MonteCarloTreeSearch {
     // apply move from bots perspective
     // move get player method to node?
     MonteCarloBot ourBot = new MonteCarloBot(this.getPlayerAtGameState(node.getGameState()));
-    List<Reinforce> reinforcements = ourBot.getReinforceMoves()
-        .get(RNG.nextInt(ourBot.getReinforceMoves().size()));
+    List<Reinforce> reinforcements = ourBot.getReinforceMoves().subList(0,
+        Math.min(RNG.nextInt(ourBot.getReinforceMoves().size()),
+            ourBot.getReinforceMoves().size()));
     // perform reinforcements, now the get attack move will be based off of the state after
-    List<CountryPair> attacks = ourBot.getAttackMoves();
-    // how to select attacks?
+    // randomly select reinforcements until no more troops deployable
+    // ^ new method, keeps selecting, if troops still available verteil them randomly
+    List<CountryPair> attacks = ourBot.getAttackMoves()
+        .subList(0, Math.min(RNG.nextInt(4), ourBot.getAttackMoves().size()));
     // perform attacks, then we are ready for fortify
-    List<Fortify> fortifies = ourBot.getFortifyMoves();
-    Fortify botFortify = fortifies.get(RNG.nextInt(fortifies.size()));
+    Fortify fortify = ourBot.getFortifyMoves().get(RNG.nextInt(ourBot.getFortifyMoves().size()));
     // perform fortify
-    MoveTriplet move = new MoveTriplet(reinforcements, attacks, botFortify);
+    MoveTriplet move = new MoveTriplet(reinforcements, attacks, fortify);
     int players = oneTurn.getActivePlayers().size();
     // play for all other bots
     for (int i = 0; i < players - 1; i++) {

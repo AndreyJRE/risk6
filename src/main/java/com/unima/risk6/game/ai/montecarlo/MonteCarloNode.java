@@ -2,7 +2,6 @@ package com.unima.risk6.game.ai.montecarlo;
 
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
-import com.unima.risk6.game.ai.bots.MonteCarloBot;
 import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
