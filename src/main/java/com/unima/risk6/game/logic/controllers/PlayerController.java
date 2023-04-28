@@ -58,11 +58,13 @@ public class PlayerController {
 
   public List<CountryPair> getValidFortifiesFromCountry(Country country) {
     List<CountryPair> fortifiable = new ArrayList<>();
-    country.getAdjacentCountries().forEach((adj) -> {
-      if (adj.getPlayer().equals(player)) {
-        fortifiable.add(new CountryPair(country, adj));
-      }
-    });
+    if (country.getTroops() > 1) {
+      country.getAdjacentCountries().forEach((adj) -> {
+        if (this.player.equals(adj.getPlayer())) {
+          fortifiable.add(new CountryPair(country, adj));
+        }
+      });
+    }
     return fortifiable;
   }
 

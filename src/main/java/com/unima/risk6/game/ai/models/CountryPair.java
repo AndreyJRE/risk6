@@ -3,6 +3,7 @@ package com.unima.risk6.game.ai.models;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.models.Country;
+import java.util.Objects;
 
 /**
  * A class to provide a data object for a pair of countries involved in a move
@@ -75,4 +76,17 @@ public class CountryPair {
     int defenderCount = getIncoming().getTroops();
     return Probabilities.getWinProbability(attackerCount, defenderCount);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof CountryPair that)) {
+      return false;
+    }
+    return Objects.equals(getOutgoing(), that.getOutgoing()) && Objects.equals(
+        getIncoming(), that.getIncoming());
+  }
+
 }

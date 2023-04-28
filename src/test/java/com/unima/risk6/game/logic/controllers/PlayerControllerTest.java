@@ -1,18 +1,22 @@
 package com.unima.risk6.game.logic.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -164,6 +168,94 @@ class PlayerControllerTest {
     player.getCountries().clear();
 
 
+  }
+
+  @Test
+  void validFortifyFromCountryTest() {
+    Country middleEast = getCountryByCountryName(CountryName.MIDDLE_EAST);
+    Country afghanistan = getCountryByCountryName(CountryName.AFGHANISTAN);
+    Country ukraine = getCountryByCountryName(CountryName.UKRAINE);
+    Country egypt = getCountryByCountryName(CountryName.EGYPT);
+    playerController.addCountry(middleEast);
+    playerController.addCountry(afghanistan);
+    playerController.addCountry(ukraine);
+    middleEast.setTroops(5);
+    afghanistan.setTroops(1);
+    egypt.setPlayer(new Player("T.E Lawrence"));
+    CountryPair validPair1 = new CountryPair(middleEast, afghanistan);
+    CountryPair validPair2 = new CountryPair(middleEast, ukraine);
+    CountryPair notValid = new CountryPair(middleEast, egypt);
+    List<CountryPair> result = playerController.getValidFortifiesFromCountry(middleEast);
+    assertEquals(2, result.size());
+    assertTrue(result.contains(validPair1));
+    assertTrue(result.contains(validPair2));
+    assertFalse(result.contains(notValid));
+    List<CountryPair> cantFortify = playerController.getValidFortifiesFromCountry(afghanistan);
+    assertEquals(0, cantFortify.size());
+  }
+
+  @Test
+  void validAttacksFromCountryTest() {
+    Country japan = getCountryByCountryName(CountryName.JAPAN);
+    playerController.addCountry(japan);
+    japan.setTroops(1);
+    List<CountryPair> cantAttack = playerController.getValidAttacksFromCountry(japan);
+    assertEquals(0, cantAttack.size());
+    japan.setTroops(5);
+    List<CountryPair> attackable = playerController.getValidAttacksFromCountry(japan);
+    assertEquals(2, attackable.size());
+    for (Country enemy : japan.getAdjacentCountries()) {
+      assertTrue(attackable.contains(new CountryPair(japan, enemy)));
+    }
+  }
+
+  @Test
+  void validAttacksfromContinentTest() {
+    Player enemy = new Player("Juror 5");
+    PlayerController enemyController = new PlayerController();
+    enemyController.setPlayer(enemy);
+    Country alaska = getCountryByCountryName(CountryName.ALASKA);
+    Country eastern = getCountryByCountryName(CountryName.EASTERN_UNITED_STATES);
+    playerController.addCountry(alaska);
+    playerController.addCountry(eastern);
+    alaska.setTroops(5);
+    eastern.setTroops(2);
+    for (Country adj : eastern.getAdjacentCountries()) {
+      playerController.addCountry(adj);
+      adj.setTroops(1);
+    }
+    List<CountryPair> expected = new ArrayList<>();
+    for (Country adj : alaska.getAdjacentCountries()) {
+      enemyController.addCountry(adj);
+      expected.add(new CountryPair(alaska, adj));
+    }
+    Continent usa = alaska.getContinent();
+
+    List<CountryPair> results = playerController.getAllAttackableCountryPairs(usa);
+    assertEquals(expected, results);
+
+  }
+
+  @Test
+  void allValidFortifiesTest() {
+    Country greenland = getCountryByCountryName(CountryName.GREENLAND);
+    Country quebec = getCountryByCountryName(CountryName.QUEBEC);
+    Country yakutsk = getCountryByCountryName(CountryName.YAKUTSK);
+    Country irkutsk = getCountryByCountryName(CountryName.IRKUTSK);
+    playerController.addCountry(greenland);
+    playerController.addCountry(quebec);
+    playerController.addCountry(yakutsk);
+    playerController.addCountry(irkutsk);
+    greenland.setTroops(5);
+    quebec.setTroops(3);
+    yakutsk.setTroops(2);
+    irkutsk.setTroops(1);
+    List<CountryPair> expected = new ArrayList<>();
+    expected.add(new CountryPair(greenland, quebec));
+    expected.add(new CountryPair(yakutsk, irkutsk));
+    expected.add(new CountryPair(quebec, greenland));
+    List<CountryPair> results = playerController.getAllValidFortifies();
+    assertEquals(expected, results);
   }
 
 }
