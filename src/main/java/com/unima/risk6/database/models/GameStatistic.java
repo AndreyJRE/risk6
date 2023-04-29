@@ -39,12 +39,10 @@ public class GameStatistic {
    * Constructor for a game statistic. This constructor is used when a game is started. The finish
    * date and game won are not known yet.
    *
-   * @param user      The user that is playing the game.
-   * @param startDate The date and time the game was started.
+   * @param user The user that is playing the game.
    */
-  public GameStatistic(User user, LocalDateTime startDate) {
+  public GameStatistic(User user) {
     this.user = user;
-    this.startDate = startDate;
   }
 
   /**
