@@ -72,7 +72,7 @@ public class PlayerController {
     List<CountryPair> attackable = new ArrayList<>();
     if (country.getTroops() >= 2) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
-        if (!this.player.equals(adjacentCountry.getPlayer())) {
+        if (!this.player.equals(adjacentCountry.getPlayer()) && adjacentCountry.getTroops() > 0) {
           attackable.add(new CountryPair(country, adjacentCountry));
         }
       }
@@ -109,6 +109,7 @@ public class PlayerController {
 
   public void addCountry(Country countryToAdd) {
     player.getCountries().add(countryToAdd);
+    player.getContinents().add(countryToAdd.getContinent());
     countryToAdd.setPlayer(player);
   }
 

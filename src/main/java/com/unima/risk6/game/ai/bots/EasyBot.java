@@ -7,6 +7,7 @@ import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class EasyBot extends Player implements AiBot {
 
   private final Random rng;
   private final PlayerController playerController;
+  private GameState currentGameState;
 
   /**
    * Constructs an EasyBot with a specified username.
@@ -52,8 +54,8 @@ public class EasyBot extends Player implements AiBot {
    */
   @Override
   public Reinforce claimCountry() {
-    List<Country> unclaimed = this.getCountries().stream().filter(country -> !country.hasPlayer())
-        .toList();
+    List<Country> unclaimed = this.currentGameState.getCountries().stream()
+        .filter(country -> !country.hasPlayer()).toList();
     return new Reinforce(unclaimed.get(rng.nextInt(unclaimed.size())), 1);
   }
 
@@ -68,7 +70,9 @@ public class EasyBot extends Player implements AiBot {
     double attackProbability = 0.8;
     while (rng.nextDouble() < attackProbability) {
       CountryPair toAttack = this.getRandomCountryPair(decisions);
-      allAttacks.add(toAttack);
+      if (toAttack != null) {
+        allAttacks.add(toAttack);
+      }
       attackProbability *= 0.6;
     }
     return allAttacks;
@@ -90,8 +94,12 @@ public class EasyBot extends Player implements AiBot {
     }
     List<CountryPair> decisions = this.playerController.getAllValidFortifies();
     CountryPair toFortify = this.getRandomCountryPair(decisions);
-    int troopsToMove = rng.nextInt(1, toFortify.getOutgoing().getTroops());
-    return toFortify.createFortify(troopsToMove);
+    if (toFortify != null) {
+      int troopsToMove = rng.nextInt(1, toFortify.getOutgoing().getTroops());
+      return toFortify.createFortify(troopsToMove);
+    }
+    // return end phase
+    return null;
   }
 
   /**
@@ -147,6 +155,14 @@ public class EasyBot extends Player implements AiBot {
    * @return A randomly chosen CountryPair from the list.
    */
   private CountryPair getRandomCountryPair(List<CountryPair> decision) {
-    return decision.get(rng.nextInt(decision.size()));
+    if (decision.size() == 0) {
+      return null;
+    } else {
+      return decision.get(rng.nextInt(decision.size()));
+    }
+  }
+
+  public void setCurrentGameState(GameState currentGameState) {
+    this.currentGameState = currentGameState;
   }
 }
