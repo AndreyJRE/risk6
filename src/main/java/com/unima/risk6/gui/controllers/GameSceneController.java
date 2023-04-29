@@ -18,18 +18,23 @@ import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -56,7 +61,11 @@ public class GameSceneController implements GameStateObserver {
 
   private final GameScene gameScene;
 
+  private LinkedList<PlayerUi> playerUis;
+
   private final SceneController sceneController;
+
+  public static GamePhase mockGamePhase;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -71,6 +80,7 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.chatBoxPane = new BorderPane();
+    this.mockGamePhase = GamePhase.CLAIM_PHASE;
     GameConfiguration.addObserver(this);
     this.initializeGameScene();
 
@@ -78,11 +88,11 @@ public class GameSceneController implements GameStateObserver {
   }
 
   private void initializeGameScene() {
-
-    StackPane countriesPane = initializeCountriesPane();
-    root.setCenter(countriesPane);
+    root.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
     StackPane playerPane = initializePlayersPane();
     root.setLeft(playerPane);
+    StackPane countriesPane = initializeCountriesPane();
+    root.setCenter(countriesPane);
     StackPane timePane = initializeTimePane();
     root.setRight(timePane);
     StackPane bottomPane = initializeBottomPane();
@@ -101,6 +111,7 @@ public class GameSceneController implements GameStateObserver {
       Bounds bounds = countryUi.getCountryPath().getBoundsInParent();
       double ellipseX = bounds.getMinX() + bounds.getWidth() * 0.5;
       double ellipseY = bounds.getMinY() + bounds.getHeight() * 0.5;
+      countryUi.initMouseListener(playerUis);
 
       Point2D correctedCoordinates = CountryUi.correctEllipsePlacement(countryUi.getCountry(),
           ellipseX, ellipseY);
@@ -128,9 +139,9 @@ public class GameSceneController implements GameStateObserver {
     PlayerColor[] possibleColors = {PlayerColor.RED, PlayerColor.BLUE, PlayerColor.PURPLE,
         PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
     int colorIndex = 0;
-    ArrayList<PlayerUi> playerUis = new ArrayList<>();
+    playerUis = new LinkedList<>();
     for (Player player : gameState.getActivePlayers()) {
-      playerUis.add(new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
+      playerUis.offer(new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
           35, 100, 45));
       colorIndex++;
     }
@@ -216,7 +227,8 @@ public class GameSceneController implements GameStateObserver {
     });
 
     ActivePlayerUi activePlayerUi = new ActivePlayerUi(40,
-        40, 280, 50);
+        40, 280, 50, playerUis.peek());
+    playerUis.offer(playerUis.poll());
 
     bottomPane.getChildren().add(activePlayerUi);
     bottomPane.getChildren().add(chatButton);
@@ -245,6 +257,22 @@ public class GameSceneController implements GameStateObserver {
     });
   }
 
+  public static void checkIfAllCountriesOccupied(Group countriesGroup) {
+    boolean allOccupied = true;
+    for (Node node : countriesGroup.getChildren()) {
+      if (node instanceof CountryUi) {
+        CountryUi countryUi = (CountryUi) node;
+        if (countryUi.getCountryPath().getFill() == Color.WHITE) {
+          allOccupied = false;
+          break;
+        }
+      }
+    }
+    if (allOccupied) {
+      mockGamePhase = GamePhase.ATTACK_PHASE;
+    }
+  }
+
   @Override
   public void update(GameState gameState) {
     this.gameState = gameState;
@@ -252,9 +280,7 @@ public class GameSceneController implements GameStateObserver {
     lastMoves.forEach(lastMove -> {
       if (lastMove instanceof Reinforce reinforce
           && gameState.getCurrentPlayer().getCurrentPhase() == GamePhase.CLAIM_PHASE) {
-
       }
     });
-
   }
 }

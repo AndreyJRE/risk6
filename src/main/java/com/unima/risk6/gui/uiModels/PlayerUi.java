@@ -68,5 +68,11 @@ public class PlayerUi extends Group {
 
   }
 
+  public Player getPlayer() {
+    return player;
+  }
 
+  public Color getPlayerColor() {
+    return playerColor;
+  }
 }

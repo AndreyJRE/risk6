@@ -2,11 +2,17 @@ package com.unima.risk6.gui.uiModels;
 
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.gui.controllers.GameSceneController;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -24,11 +30,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.SVGPath;
 import javafx.stage.Popup;
 import javafx.util.Duration;
@@ -72,7 +82,7 @@ public class CountryUi extends Group {
 
     glowEffect = new DropShadow();
     glowEffect.setColor(Color.RED);
-    initMouseListener();
+
   }
 
   public static Point2D correctEllipsePlacement(Country country, double ellipseX, double ellipseY) {
@@ -102,69 +112,91 @@ public class CountryUi extends Group {
     return new Point2D(ellipseX, ellipseY);
   }
 
-  public void initMouseListener() {
+  public void initMouseListener(LinkedList<PlayerUi> playerUis) {
     setOnMouseEntered((MouseEvent event) -> {
       this.setCursor(Cursor.CROSSHAIR);
     });
     setOnMouseClicked(event -> {
       Group countriesGroup = (Group) this.getParent();
-      if (isCountrySelectedToAttackOthers) {
-        countriesGroup.getChildren()
-            .removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
-                || countriesGroupNode instanceof SVGPath);
-        setCursor(Cursor.DEFAULT);
-        isCountrySelectedToAttackOthers = false;
-      } else {
-        for (CountryUi adjacentCountryUi : adjacentCountryUis) {
-          SVGPath adjacentCountryPath = svgPathClone(adjacentCountryUi.getCountryPath());
-          adjacentCountryPath.setEffect(adjacentCountryUi.getGlowEffect());
-          addEventHandlersToAdjacentCountryPath(adjacentCountryPath);
-          Line arrow = new Line();
-          arrow.setStroke(Color.RED);
-          int index = 0;
-          for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
-            if (troopsCounterUiNode instanceof TroopsCounterUi) {
-              countriesGroup.getChildren().add(index++, adjacentCountryPath);
-              break;
-            } else {
-              index++;
-            }
+      switch (GameSceneController.mockGamePhase) {
+        case CLAIM_PHASE:
+          if (this.countryPath.getFill() == Color.WHITE) {
+            BorderPane currentRoot = (BorderPane) this.getParent().getParent().getParent();
+            StackPane bottomPane = (StackPane) currentRoot.getBottom();
+            ActivePlayerUi activePlayerUi = (ActivePlayerUi) bottomPane.lookup("#activePlayerUi");
+            this.countryPath.setFill(activePlayerUi.getPlayerUi().getPlayerColor());
+            PlayerUi nextPlayerUi = playerUis.peek();
+            playerUis.offer(playerUis.poll());
+            activePlayerUi.changeActivePlayerUi(nextPlayerUi);
+            GameSceneController.checkIfAllCountriesOccupied(countriesGroup);
           }
-          index = 0;
-          for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
-            if (troopsCounterUiNode instanceof TroopsCounterUi) {
-              countriesGroup.getChildren().add(index++, arrow);
-              break;
-            } else {
-              index++;
+          break;
+        case ATTACK_PHASE:
+          if (isCountrySelectedToAttackOthers) {
+            countriesGroup.getChildren()
+                .removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
+                    || countriesGroupNode instanceof AdjacentCountryUi);
+            setCursor(Cursor.DEFAULT);
+            isCountrySelectedToAttackOthers = false;
+          } else {
+            for (CountryUi adjacentCountryUi : adjacentCountryUis) {
+              AdjacentCountryUi adjacentCountryPath =
+                  new AdjacentCountryUi(svgPathClone(adjacentCountryUi.getCountryPath()),
+                      adjacentCountryUi.getCountry());
+              adjacentCountryPath.setEffect(adjacentCountryUi.getGlowEffect());
+              addEventHandlersToAdjacentCountryPath(adjacentCountryPath);
+              Line arrow = new Line();
+              adjacentCountryPath.setLine(arrow);
+              arrow.setStroke(Color.RED);
+              int index = 0;
+              for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
+                if (troopsCounterUiNode instanceof TroopsCounterUi) {
+                  countriesGroup.getChildren().add(index++, adjacentCountryPath);
+                  break;
+                } else {
+                  index++;
+                }
+              }
+              index = 0;
+              for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
+                if (troopsCounterUiNode instanceof TroopsCounterUi) {
+                  countriesGroup.getChildren().add(index++, arrow);
+                  break;
+                } else {
+                  index++;
+                }
+              }
+              Point2D clickPosInScene = this.localToScene(
+                  this.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+                  this.getTroopsCounterUi().getEllipseCounter().getCenterY());
+              Point2D clickPosInSceneToCountry = adjacentCountryUi.localToScene(
+                  adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+                  adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
+              Point2D clickPosInGroup = this.sceneToLocal(clickPosInScene);
+              Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
+              arrow.setStartX(clickPosInGroup.getX());
+              arrow.setStartY(clickPosInGroup.getY());
+              arrow.setEndX(clickPosInGroup.getX());
+              arrow.setEndY(clickPosInGroup.getY());
+              setCursor(Cursor.MOVE);
+
+              Timeline timeline = new Timeline();
+
+              KeyValue endXValue = new KeyValue(arrow.endXProperty(),
+                  clickPosInGroupToCountry.getX());
+              KeyValue endYValue = new KeyValue(arrow.endYProperty(),
+                  clickPosInGroupToCountry.getY());
+              KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXValue, endYValue);
+
+              timeline.getKeyFrames().add(keyFrame);
+              timeline.setCycleCount(1);
+              timeline.setAutoReverse(false);
+              timeline.play();
             }
+            isCountrySelectedToAttackOthers = true;
           }
-          Point2D clickPosInScene = this.localToScene(
-              this.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-              this.getTroopsCounterUi().getEllipseCounter().getCenterY());
-          Point2D clickPosInSceneToCountry = adjacentCountryUi.localToScene(
-              adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-              adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
-          Point2D clickPosInGroup = this.sceneToLocal(clickPosInScene);
-          Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
-          arrow.setStartX(clickPosInGroup.getX());
-          arrow.setStartY(clickPosInGroup.getY());
-          arrow.setEndX(clickPosInGroup.getX());
-          arrow.setEndY(clickPosInGroup.getY());
-          setCursor(Cursor.MOVE);
-
-          Timeline timeline = new Timeline();
-
-          KeyValue endXValue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
-          KeyValue endYValue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
-          KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXValue, endYValue);
-
-          timeline.getKeyFrames().add(keyFrame);
-          timeline.setCycleCount(1);
-          timeline.setAutoReverse(false);
-          timeline.play();
-        }
-        isCountrySelectedToAttackOthers = true;
+          break;
+        // add more cases for other enum values
       }
 
 
@@ -182,7 +214,7 @@ public class CountryUi extends Group {
     return clone;
   }
 
-  public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath) {
+  public void addEventHandlersToAdjacentCountryPath(AdjacentCountryUi adjacentCountryPath) {
     adjacentCountryPath.setOnMouseClicked(event -> {
       BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
       BorderPane chatBoxPane = new BorderPane();
@@ -239,9 +271,44 @@ public class CountryUi extends Group {
         Group countriesGroup = (Group) this.getParent();
         countriesGroup.getChildren()
             .removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
-                || countriesGroupNode instanceof SVGPath);
+                || countriesGroupNode instanceof AdjacentCountryUi);
         setCursor(Cursor.DEFAULT);
         isCountrySelectedToAttackOthers = false;
+
+        Line adjacentCountryPathLine = adjacentCountryPath.getLine();
+        System.out.println(adjacentCountryPathLine);
+        System.out.println(adjacentCountryPath.getCountry());
+
+        double maxOffsetX = 10;
+        double maxOffsetY = 10;
+        for (int i = 0; i < amountOfTroops; i++) {
+          ImageView imageView = new ImageView(new Image(
+              getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString()));
+          imageView.setFitWidth(35);
+          imageView.setFitHeight(35);
+          double offsetX = Math.random() * maxOffsetX;
+          double offsetY = Math.random() * maxOffsetY;
+          double startX = adjacentCountryPathLine.getStartX() + i * offsetX;
+          double startY = adjacentCountryPathLine.getStartY() + i * offsetY;
+          double endX = adjacentCountryPathLine.getEndX() + i * offsetX;
+          double endY = adjacentCountryPathLine.getEndY() + i * offsetY;
+          if (endX < startX) {
+            imageView.setScaleX(-1); // flip horizontally
+          }
+          Path path = new Path();
+          path.getElements().add(
+              new MoveTo(startX, startY));
+          path.getElements()
+              .add(new LineTo(endX, endY));
+          PathTransition pathTransition = new PathTransition();
+          pathTransition.setDuration(Duration.seconds(2));
+          pathTransition.setPath(path);
+          pathTransition.setNode(imageView);
+          pathTransition.setOnFinished(
+              onFinishedEvent -> countriesGroup.getChildren().remove(imageView));
+          pathTransition.play();
+          countriesGroup.getChildren().add(imageView);
+        }
       });
 
       chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);

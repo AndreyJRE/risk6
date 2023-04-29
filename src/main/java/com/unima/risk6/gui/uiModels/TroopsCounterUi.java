@@ -15,6 +15,10 @@ public class TroopsCounterUi extends Group {
 
   private Ellipse ellipseCounter;
 
+  private String counterText;
+
+  private Text text;
+
 
   public TroopsCounterUi(double ellipseX, double ellipseY) {
     super();
@@ -23,7 +27,9 @@ public class TroopsCounterUi extends Group {
     ellipseCounter.setStroke(Color.BLACK);
     ellipseCounter.setFill(Color.WHITE);
 
-    Text text = new Text(Integer.toString((int) (Math.random() * 20)));
+    counterText = Integer.toString((int) (Math.random() * 20));
+
+    text = new Text(counterText);
     text.setFont(new Font("Arial", ellipseSize));
     text.setFill(Color.BLACK);
     text.setX(ellipseX - text.getLayoutBounds().getWidth() * 0.5);
@@ -36,5 +42,13 @@ public class TroopsCounterUi extends Group {
 
   public Ellipse getEllipseCounter() {
     return ellipseCounter;
+  }
+
+  public void setText(String counterText) {
+    this.text.setText(counterText);
+  }
+
+  public String getCounterText() {
+    return counterText;
   }
 }
