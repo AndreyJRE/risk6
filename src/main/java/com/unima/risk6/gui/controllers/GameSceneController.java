@@ -78,6 +78,7 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.chatBoxPane = new BorderPane();
+    mockGamePhase = GamePhase.CLAIM_PHASE;
     GameConfiguration.addObserver(this);
     this.initializeGameScene();
 
