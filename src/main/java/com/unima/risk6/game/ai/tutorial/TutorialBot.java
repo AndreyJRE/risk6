@@ -16,7 +16,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * The bot used in tutorial mode - all the moves it makes are deterministic
+ * The TutorialBot class represents an AI bot specifically designed for the game tutorial mode by
+ * only performing deterministic moves
  *
  * @author eameri
  */
@@ -25,18 +26,42 @@ public class TutorialBot extends Player implements AiBot {
   private final Queue<Reinforce> deterministicClaims;
   private final Queue<Reinforce> deterministicReinforces;
   private final Queue<CountryPair> deterministicAttacks;
+  private final Queue<Fortify> deterministicAfterAttacks;
   private final Queue<Fortify> deterministicFortifies;
   private final Map<CountryName, Country> countryMap;
 
+  /**
+   * Constructs a TutorialBot instance with a specified username.
+   *
+   * @param username the unique name of the bot in the game.
+   */
   public TutorialBot(String username) {
     super(username);
     this.deterministicClaims = this.createDeterministicClaims();
     this.deterministicReinforces = this.createDeterministicReinforces();
     this.deterministicAttacks = this.createDeterministicAttacks();
+    this.deterministicAfterAttacks = this.createDeterministicAfterAttacks();
     this.deterministicFortifies = this.createDeterministicFortifies();
     this.countryMap = this.initalizeMap();
   }
 
+  /**
+   * Creates a queue of deterministic after-attack moves for the bot during the tutorial.
+   *
+   * @return a queue of Fortify objects representing the bot's deterministic after-attack moves.
+   */
+  private Queue<Fortify> createDeterministicAfterAttacks() {
+    Queue<Fortify> afterAttacks = new LinkedList<>();
+    afterAttacks.add(new Fortify(this.countryMap.get(CountryName.BRAZIL),
+        this.countryMap.get(CountryName.VENEZUELA), 1));
+    return afterAttacks;
+  }
+
+  /**
+   * Creates a queue of deterministic fortification moves for the bot during the tutorial.
+   *
+   * @return a queue of Fortify objects representing the bot's deterministic fortification moves.
+   */
   private Queue<Fortify> createDeterministicFortifies() {
     Queue<Fortify> fortifies = new LinkedList<>();
     fortifies.add(
@@ -45,6 +70,11 @@ public class TutorialBot extends Player implements AiBot {
     return fortifies;
   }
 
+  /**
+   * Creates a queue of deterministic attack moves for the bot during the tutorial.
+   *
+   * @return a queue of CountryPair objects representing the bot's deterministic attack moves.
+   */
   private Queue<CountryPair> createDeterministicAttacks() {
     Queue<CountryPair> attacks = new LinkedList<>();
     attacks.add(new CountryPair(this.countryMap.get(CountryName.VENEZUELA),
@@ -52,12 +82,23 @@ public class TutorialBot extends Player implements AiBot {
     return attacks;
   }
 
+  /**
+   * Creates a queue of deterministic reinforcement moves for the bot during the tutorial.
+   *
+   * @return a queue of Reinforce objects representing the bot's deterministic reinforcement moves.
+   */
   private Queue<Reinforce> createDeterministicReinforces() {
     Queue<Reinforce> reinforces = new LinkedList<>();
     reinforces.add(new Reinforce(this.countryMap.get(CountryName.VENEZUELA), 3));
     return reinforces;
   }
 
+  /**
+   * Initializes the map for the TutorialBot by creating a mapping between CountryName and Country
+   * objects.
+   *
+   * @return A mapping of CountryNames to their countries.
+   */
   private Map<CountryName, Country> initalizeMap() {
     return GameConfiguration.configureGame(new LinkedList<>(), new LinkedList<>()).getCountries()
         .stream().collect(Collectors.toMap(Country::getCountryName, Function.identity()));
@@ -79,6 +120,11 @@ public class TutorialBot extends Player implements AiBot {
   }
 
   @Override
+  public Fortify moveAfterAttack(CountryPair winPair) {
+    return this.deterministicAfterAttacks.poll();
+  }
+
+  @Override
   public Fortify createFortify() {
     return this.deterministicFortifies.poll();
   }
@@ -91,6 +137,11 @@ public class TutorialBot extends Player implements AiBot {
     return this.deterministicClaims.poll();
   }
 
+  /**
+   * Creates a queue of deterministic country claims for the bot during the tutorial.
+   *
+   * @return a queue of Reinforce objects representing the bot's deterministic country claims.
+   */
   private Queue<Reinforce> createDeterministicClaims() {
     Queue<Reinforce> claims = new LinkedList<>();
     claims.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 1));
