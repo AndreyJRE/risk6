@@ -89,4 +89,9 @@ public class CountryPair {
         getIncoming(), that.getIncoming());
   }
 
+  @Override
+  public String toString() {
+    return "outgoing:" + outgoing.getCountryName() +
+        ", incoming=" + incoming.getCountryName();
+  }
 }

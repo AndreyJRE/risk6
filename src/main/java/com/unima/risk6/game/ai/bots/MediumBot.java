@@ -84,7 +84,7 @@ public class MediumBot extends GreedyBot implements AiBot {
    * Sorts the local list of continents in a descending manner based off of how much total control/
    * presence the bot has over a continent
    */
-  private void sortContinentsByHighestRelativePower() {
+  public void sortContinentsByHighestRelativePower() {
     this.updateContinentsCopy(this.getContinents());
     this.getContinentsCopy().sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
@@ -120,7 +120,7 @@ public class MediumBot extends GreedyBot implements AiBot {
     List<Reinforce> listReinforce = new ArrayList<>();
     for (Country country : sortedCountryList) {
       if (this.reinforceTroopsCopy > 0 && ownedCountryDiffs.get(country) > 0) {
-        int amountDeployed = Math.min(this.getDeployableTroops(), ownedCountryDiffs.get(country));
+        int amountDeployed = Math.min(this.reinforceTroopsCopy, ownedCountryDiffs.get(country));
         listReinforce.add(new Reinforce(country, amountDeployed));
         this.reinforceTroopsCopy -= amountDeployed;
       } else {
@@ -153,7 +153,7 @@ public class MediumBot extends GreedyBot implements AiBot {
    */
   private Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
     Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
-    List<CountryPair> diffInfo = this.playerController.getAllAttackableCountryPairs(continent);
+    List<CountryPair> diffInfo = this.playerController.getAllValidCountryPairs(continent);
     for (CountryPair countryPair : diffInfo) {
       this.getCountryPairDiff(ownedCountryDiffs, countryPair);
     }
@@ -190,7 +190,7 @@ public class MediumBot extends GreedyBot implements AiBot {
    */
   private List<CountryPair> makeBestAttackInContinent(Continent continent) {
     List<CountryPair> attacksToReturn = new ArrayList<>();
-    List<CountryPair> allPossibleAttacks = this.playerController.getAllAttackableCountryPairs(
+    List<CountryPair> allPossibleAttacks = this.playerController.getAllValidCountryPairs(
         continent);
     sortAttacksByProbability(allPossibleAttacks);
     for (CountryPair attackPair : allPossibleAttacks) {
@@ -243,10 +243,9 @@ public class MediumBot extends GreedyBot implements AiBot {
         }
       }
       if (bestAdj != null) {
-        // TODO: Math.max?
         fortify = new Fortify(bestAdj, country,
-            Math.min((bestAdj.getTroops() - country.getTroops()) / 2,
-                -allOwnedCountryDiffs.get(bestAdj)));
+            Math.max((bestAdj.getTroops() - country.getTroops()) / 2,
+                -allOwnedCountryDiffs.get(bestAdj) / 2));
         break;
       }
     }

@@ -30,7 +30,7 @@ abstract class GreedyBot extends Player implements AiBot {
    *
    * @return a copy of the list of continents.
    */
-  public List<Continent> getContinentsCopy() {
+  protected List<Continent> getContinentsCopy() {
     return continentsCopy;
   }
 
@@ -39,7 +39,7 @@ abstract class GreedyBot extends Player implements AiBot {
    *
    * @param continents the set of continents.
    */
-  public void updateContinentsCopy(Set<Continent> continents) {
+  protected void updateContinentsCopy(Set<Continent> continents) {
     this.continentsCopy = new ArrayList<>();
     this.continentsCopy.addAll(continents);
   }
@@ -88,7 +88,7 @@ abstract class GreedyBot extends Player implements AiBot {
    * @param adj     One adjacent country.
    * @return The amount of troops country needs to have the same amount as adj.
    */
-  protected int calculateTroopWeakness(Country country, Country adj) {
+  public int calculateTroopWeakness(Country country, Country adj) {
     return adj.getTroops() - country.getTroops();
   }
 

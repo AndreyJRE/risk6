@@ -73,7 +73,7 @@ public class MonteCarloBot extends Player {
   public List<CountryPair> getAttackMoves() {
     List<CountryPair> attackPairs = new ArrayList<>();
     for (Continent continent : this.getContinents()) {
-      attackPairs.addAll(this.playerController.getAllAttackableCountryPairs(continent));
+      attackPairs.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
     // TODO: sort by best for continent?
     return attackPairs.stream().filter(pair -> pair.getWinningProbability() > 70).toList();
@@ -102,7 +102,7 @@ public class MonteCarloBot extends Player {
       }
       if (bestAdj != null) {
         int diff = allOwnedCountryDiffs.get(bestAdj);
-        int surrounding = diff < 0 ? -diff : new Random().nextInt(0, 2);
+        int surrounding = diff < 0 ? -diff / 2 : new Random().nextInt(0, 2);
         fortifyList.add(new Fortify(bestAdj, country,
             Math.min((bestAdj.getTroops() - country.getTroops()) / 2, surrounding)));
         break;
@@ -113,7 +113,7 @@ public class MonteCarloBot extends Player {
 
   private Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
     Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
-    List<CountryPair> diffInfo = this.playerController.getAllAttackableCountryPairs(continent);
+    List<CountryPair> diffInfo = this.playerController.getAllValidCountryPairs(continent);
     for (CountryPair countryPair : diffInfo) {
       this.getCountryPairDiff(ownedCountryDiffs, countryPair);
     }

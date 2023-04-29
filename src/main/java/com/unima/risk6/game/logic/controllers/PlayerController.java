@@ -10,6 +10,7 @@ import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,16 +69,20 @@ public class PlayerController {
     return fortifiable;
   }
 
-  public List<CountryPair> getValidAttacksFromCountry(Country country) {
+  public List<CountryPair> getValidCountryPairsFromCountry(Country country) {
     List<CountryPair> attackable = new ArrayList<>();
-    if (country.getTroops() >= 2) {
+    if (country.getTroops() >= troopLimitPerPhase()) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
-        if (!this.player.equals(adjacentCountry.getPlayer()) && adjacentCountry.getTroops() > 0) {
+        if (!this.player.equals(adjacentCountry.getPlayer()) && adjacentCountry.hasPlayer()) {
           attackable.add(new CountryPair(country, adjacentCountry));
         }
       }
     }
     return attackable;
+  }
+
+  private int troopLimitPerPhase() {
+    return this.player.getCurrentPhase() == GamePhase.REINFORCEMENT_PHASE ? 1 : 2;
   }
 
 
@@ -92,10 +97,13 @@ public class PlayerController {
     return countriesFortifiable;
   }
 
-  public List<CountryPair> getAllAttackableCountryPairs(Continent continent) {
+  public List<CountryPair> getAllValidCountryPairs(Continent continent) {
     List<CountryPair> countriesAttackable = new ArrayList<>();
     for (Country country : continent.getCountries()) {
-      List<CountryPair> attackable = getValidAttacksFromCountry(country);
+      List<CountryPair> attackable = new ArrayList<>();
+      if (this.player.equals(country.getPlayer())) {
+        attackable = getValidCountryPairsFromCountry(country);
+      }
       if (attackable.size() > 0) {
         countriesAttackable.addAll(attackable);
       }
