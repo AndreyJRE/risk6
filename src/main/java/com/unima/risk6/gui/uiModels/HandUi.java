@@ -12,4 +12,11 @@ public class HandUi extends Pane {
     this.hand = hand;
   }
 
+  public Hand getHand() {
+    return hand;
+  }
+
+  public void setHand(Hand hand) {
+    this.hand = hand;
+  }
 }

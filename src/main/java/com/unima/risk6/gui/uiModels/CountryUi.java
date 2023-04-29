@@ -2,19 +2,15 @@ package com.unima.risk6.gui.uiModels;
 
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.CountryName;
-import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -31,7 +27,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -45,7 +40,7 @@ import javafx.util.Duration;
 
 public class CountryUi extends Group {
 
-  private final Country country;
+  private Country country;
 
   private Set<CountryUi> adjacentCountryUis;
 
@@ -118,6 +113,9 @@ public class CountryUi extends Group {
     });
     setOnMouseClicked(event -> {
       Group countriesGroup = (Group) this.getParent();
+      //TODO Handle for the player who is playing
+      // switch(GameSceneController.getMyPlayerUi().getPlayer().getCurrentPhase()) like this
+      // animation for another users would be happening only when it game state is updated
       switch (GameSceneController.mockGamePhase) {
         case CLAIM_PHASE:
           if (this.countryPath.getFill() == Color.WHITE) {
@@ -369,6 +367,14 @@ public class CountryUi extends Group {
 
   public void setAdjacentCountryUis(Set<CountryUi> adjacentCountryUis) {
     this.adjacentCountryUis = adjacentCountryUis;
+  }
+
+  public void setCountry(Country country) {
+    this.country = country;
+  }
+
+  public Set<CountryUi> getAdjacentCountryUis() {
+    return adjacentCountryUis;
   }
 }
 

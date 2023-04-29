@@ -2,7 +2,6 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.GameStateObserver;
-import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
@@ -17,11 +16,9 @@ import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -66,6 +63,7 @@ public class GameSceneController implements GameStateObserver {
   private final SceneController sceneController;
 
   public static GamePhase mockGamePhase;
+  private static PlayerUi myPlayerUi;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -80,7 +78,6 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.chatBoxPane = new BorderPane();
-    this.mockGamePhase = GamePhase.CLAIM_PHASE;
     GameConfiguration.addObserver(this);
     this.initializeGameScene();
 
@@ -141,8 +138,12 @@ public class GameSceneController implements GameStateObserver {
     int colorIndex = 0;
     playerUis = new LinkedList<>();
     for (Player player : gameState.getActivePlayers()) {
-      playerUis.offer(new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
-          35, 100, 45));
+      PlayerUi playerUi = new PlayerUi(player, possibleColors[colorIndex].getColor(), 35,
+          35, 100, 45);
+      playerUis.offer(playerUi);
+      if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
+        myPlayerUi = playerUi;
+      }
       colorIndex++;
     }
 
@@ -282,5 +283,39 @@ public class GameSceneController implements GameStateObserver {
           && gameState.getCurrentPlayer().getCurrentPhase() == GamePhase.CLAIM_PHASE) {
       }
     });
+    updateReferencesFromGameState();
+
+  }
+
+  private void updateReferencesFromGameState() {
+    //TODO Update all references to the new gameState
+    this.gameState.getActivePlayers().forEach(player -> {
+      if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
+        myPlayerUi.setPlayer(player);
+      } else {
+        playerUis.forEach(playerUi -> {
+          if (playerUi.getPlayer().getUser().equals(player.getUser())) {
+            playerUi.setPlayer(player);
+          }
+        });
+      }
+    });
+    this.gameState.getCountries().forEach(country -> countriesUis.forEach(countryUi -> {
+      if (countryUi.getCountry().getCountryName().equals(country.getCountryName())) {
+        countryUi.setCountry(country);
+      }
+    }));
+    countriesUis.forEach(countryUi -> countryUi.getAdjacentCountryUis()
+        .forEach(adjacentCountryUi -> {
+          adjacentCountryUi.setCountry(countriesUis.stream()
+              .filter(countryUi1 -> countryUi1.getCountry().getCountryName()
+                  .equals(adjacentCountryUi.getCountry().getCountryName()))
+              .findFirst().get().getCountry());
+        }));
+    //TODO Update reference for the deckUi,handUi, etc
+  }
+
+  public static PlayerUi getMyPlayerUi() {
+    return myPlayerUi;
   }
 }
