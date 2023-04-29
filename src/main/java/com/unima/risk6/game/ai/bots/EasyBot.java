@@ -65,7 +65,7 @@ public class EasyBot extends Player implements AiBot {
 
     List<CountryPair> decisions = new ArrayList<>();
     for (Continent continent : this.getContinents()) {
-      decisions.addAll(this.playerController.getAllAttackableCountryPairs(continent));
+      decisions.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
     double attackProbability = 0.8;
     while (rng.nextDouble() < attackProbability) {

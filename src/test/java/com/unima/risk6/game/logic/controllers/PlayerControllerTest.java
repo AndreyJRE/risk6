@@ -199,10 +199,10 @@ class PlayerControllerTest {
     Country japan = getCountryByCountryName(CountryName.JAPAN);
     playerController.addCountry(japan);
     japan.setTroops(1);
-    List<CountryPair> cantAttack = playerController.getValidAttacksFromCountry(japan);
+    List<CountryPair> cantAttack = playerController.getValidCountryPairsFromCountry(japan);
     assertEquals(0, cantAttack.size());
     japan.setTroops(5);
-    List<CountryPair> attackable = playerController.getValidAttacksFromCountry(japan);
+    List<CountryPair> attackable = playerController.getValidCountryPairsFromCountry(japan);
     assertEquals(2, attackable.size());
     for (Country enemy : japan.getAdjacentCountries()) {
       assertTrue(attackable.contains(new CountryPair(japan, enemy)));
@@ -231,7 +231,7 @@ class PlayerControllerTest {
     }
     Continent usa = alaska.getContinent();
 
-    List<CountryPair> results = playerController.getAllAttackableCountryPairs(usa);
+    List<CountryPair> results = playerController.getAllValidCountryPairs(usa);
     assertEquals(expected, results);
 
   }
