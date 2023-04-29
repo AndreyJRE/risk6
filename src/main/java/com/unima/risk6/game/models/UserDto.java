@@ -1,5 +1,10 @@
 package com.unima.risk6.game.models;
 
+import com.unima.risk6.database.models.GameStatistic;
+import com.unima.risk6.database.models.User;
+import java.time.Duration;
+import java.util.List;
+
 public class UserDto {
 
   private final String username;
@@ -45,5 +50,24 @@ public class UserDto {
 
   public int getCountriesConquered() {
     return countriesConquered;
+  }
+
+  public static UserDto mapUserAndHisGameStatistics(User user,
+      List<GameStatistic> userGameStatistic) {
+    if (userGameStatistic.isEmpty()) {
+      return new UserDto(user.getUsername(), 0, 0, 0, 0, 0);
+    }
+    int won = (int) userGameStatistic.stream().filter(GameStatistic::isGameWon).count();
+    double lossRatio = (double) won / userGameStatistic.size() - won;
+    double hoursPlayed =
+        userGameStatistic.stream().mapToDouble(g -> {
+              Duration duration = Duration.between(g.getStartDate(), g.getFinishDate());
+              return duration.toSeconds() / 3600.0;
+            })
+            .sum();
+    int countriesConquered = userGameStatistic.stream()
+        .mapToInt(GameStatistic::getCountriesWon).sum();
+    return new UserDto(user.getUsername(), lossRatio, hoursPlayed,
+        won, userGameStatistic.size() - won, countriesConquered);
   }
 }
