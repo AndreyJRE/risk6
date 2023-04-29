@@ -1,0 +1,2 @@
+2023-04-26 23:47:47.821 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-04-26 23:47:47.873 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
