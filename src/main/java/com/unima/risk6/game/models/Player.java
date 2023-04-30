@@ -108,10 +108,6 @@ public class Player {
     return Objects.equals(getUser(), player.getUser());
   }
 
-  public void setHand(Hand hand) {
-    this.hand = hand;
-  }
-
   public boolean isHasConquered() {
     return hasConquered;
   }
