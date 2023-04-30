@@ -31,7 +31,7 @@ class GameServerFrameHandlerTest {
   private static ArrayList<String> playerList;
   private static DeckController deckController;
   private static PlayerController playerController;
-  private static GameServerFrameHandler gameServerFrameHandler;
+  private static MoveProcessor moveProcessor;
 
 
   @BeforeAll
@@ -54,7 +54,7 @@ class GameServerFrameHandlerTest {
     gameController = new GameController(gameState);
     playerController = new PlayerController();
     deckController = new DeckController(new Deck());
-    gameServerFrameHandler = new GameServerFrameHandler(playerController,
+    moveProcessor = new MoveProcessor(playerController,
         gameController, deckController);
     players = new Player[6];
     gameState = GameConfiguration.getGameState();
@@ -90,7 +90,7 @@ class GameServerFrameHandlerTest {
 
   @Test
   void successfulInit() {
-    assertNotNull(gameServerFrameHandler);
+    assertNotNull(moveProcessor);
   }
 
   @Test
@@ -107,7 +107,7 @@ class GameServerFrameHandlerTest {
     System.out.println(players[3].getCurrentPhase());
     System.out.println(players[4].getCurrentPhase());
     System.out.println(players[5].getCurrentPhase());
-    gameServerFrameHandler.processReinforce(
+    moveProcessor.processReinforce(
         new Reinforce(getCountryByCountryName(CountryName.ALASKA), 100));
     System.out.println(getCountryByCountryName(CountryName.ALASKA));
 
@@ -121,7 +121,7 @@ class GameServerFrameHandlerTest {
     System.out.println(players[4].getCurrentPhase());
     System.out.println(players[5].getCurrentPhase());
 
-    gameServerFrameHandler.processReinforce(
+    moveProcessor.processReinforce(
         new Reinforce(getCountryByCountryName(CountryName.CHINA), 1));
     System.out.println(getCountryByCountryName(CountryName.CHINA));
 
