@@ -22,6 +22,15 @@ import java.util.Set;
 
 public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDeserializer<GameState> {
     private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countries.json";
+    private GameState gameState;
+
+    public GameStateTypeAdapter(GameState gameState) {
+        this.gameState = gameState;
+        System.out.println("GAmestateTypeAdapter");
+    }
+    public GameStateTypeAdapter() {
+    }
+
     //TODO nur Continents Set Serialisieren und bei deserialiierung aus continents countries generieren.
     @Override
     public JsonElement serialize(GameState gameState, Type typeOfSrc, JsonSerializationContext context) {
@@ -50,7 +59,8 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDese
             );
         jsonObject.add("lostPlayers", lostPlayersJsonArray);
 
-        jsonObject.add("currentPlayer", context.serialize(gameState.getCurrentPlayer()));
+        //to ensure that the current player and the players in the activePlayers List have the right reference
+        jsonObject.add("currentPlayer", context.serialize(gameState.getCurrentPlayer().hashCode()));
 
         //TODO jsonObject.add("dice", context.serialize(gameState.getDice()));
         jsonObject.addProperty("numberOfHandIns", gameState.getNumberOfHandIns());
@@ -74,14 +84,27 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDese
     public GameState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
 
+        int currentPlayerReference = jsonObject.get("currentPlayer").getAsInt();
+
+        //TODO Currentplayer muss auf einen player referenzieren
+
         //Set<Country> countries = context.deserialize(jsonObject.get("countries"), Set.class);
         //Set<Continent> continents = context.deserialize(jsonObject.get("continents"), Set.class);
         //TODO Bots und Players unterscheiden
-        Queue<Player> activePlayers = context.deserialize(jsonObject.get("activePlayers"),
+        /*Queue<Player> activePlayers = context.deserialize(jsonObject.get("activePlayers"),
             new TypeToken<Queue<Player>>(){}.getType());
+         */
+        JsonArray activePlayersJsonArray = jsonObject.getAsJsonArray("activePlayers");
+        activePlayersJsonArray.forEach(x -> {
+            Player p = context.deserialize(x, Player.class);
+            gameState.getActivePlayers().add(p);
+            if(x.getAsJsonObject().get("hashCode").getAsInt() == currentPlayerReference){
+                gameState.setCurrentPlayer(p);
+            }
+        });
         ArrayList<Player> lostPlayers = context.deserialize(jsonObject.get("lostPlayers"),
             new TypeToken<ArrayList<Player>>(){}.getType());
-        Player currentPlayer = context.deserialize(jsonObject.get("currentPlayer"), Player.class);
+
         int numberOfHandIns = jsonObject.get("numberOfHandIns").getAsInt();
         ArrayList<Move> lastMoves = context.deserialize(jsonObject.get("lastMoves"),
             new TypeToken<ArrayList<Move>>(){}.getType());
@@ -90,19 +113,18 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>, JsonDese
         boolean isGameOver = jsonObject.get("isGameOver").getAsBoolean();
 
 
-        //TODO veränderte Länder aus Players Liste einfügen
+        //TODO veränderte Länder aus Players Liste einfügen, sollte wegfallen, da direkt im Gamestate gehandelt wird
         CountriesConfiguration countriesConfiguration = new CountriesConfiguration(COUNTRIES_JSON_PATH);
         countriesConfiguration.configureCountriesAndContinents();
         Set<Country> countries = countriesConfiguration.getCountries();
         Set<Continent> continents = countriesConfiguration.getContinents();
 
-        GameState gameState =  new GameState(countries, continents, activePlayers);
+        //GameState gameState =  new GameState(countries, continents, activePlayers);
 
         //TODO Funktioniert die referenz?
         ArrayList<Player> currentLostPlayers = gameState.getLostPlayers();
         currentLostPlayers = lostPlayers;
 
-        gameState.setCurrentPlayer(currentPlayer);
 
         for(int j = 0; j < numberOfHandIns; j++){
             gameState.setNumberOfHandIns();

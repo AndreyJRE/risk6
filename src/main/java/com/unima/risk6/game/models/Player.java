@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Player {
 
-  private final Hand hand;
+  private Hand hand;
   private final Set<Country> countries;
   private final Set<Continent> continents;
   private final String user;
@@ -57,6 +57,10 @@ public class Player {
 
   public Hand getHand() {
     return hand;
+  }
+
+  public void setHand(Hand hand) {
+    this.hand = hand;
   }
 
   public int getInitialTroops() {
