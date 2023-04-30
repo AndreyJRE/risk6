@@ -97,13 +97,13 @@ public class TitleSceneController implements Initializable {
     users.add("John");
     List<AiBot> bots = new ArrayList<>();
     GameState gameState = GameConfiguration.configureGame(users, bots);
-    //TODO Use session management to get the user (For example hier the user with id 1 is used)
-    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(userService.getUserById(1L),
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(1L)));
+    //TODO Use session management to get the user (For example hier the user with id 9 is used)
+    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(userService.getUserById(9L),
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(9L)));
     GameConfiguration.setGameState(gameState);
     CountriesUiConfiguration.configureCountries(gameState.getCountries());
-    GameScene gameScene =
-        (GameScene) SceneConfiguration.getSceneController().getSceneBySceneName(SceneName.GAME);
+    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.GAME);
     if (gameScene == null) {
       gameScene = new GameScene();
       GameSceneController gameSceneController = new GameSceneController(gameScene);
@@ -128,8 +128,7 @@ public class TitleSceneController implements Initializable {
         .getSceneBySceneName(SceneName.USER_OPTION);
     if (scene == null) {
       scene = new UserOptionsScene();
-      UserOptionsSceneController userOptionsSceneController = new UserOptionsSceneController(
-          scene);
+      UserOptionsSceneController userOptionsSceneController = new UserOptionsSceneController(scene);
       scene.setController(userOptionsSceneController);
       sceneController.addScene(SceneName.USER_OPTION, scene);
     }

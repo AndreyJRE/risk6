@@ -1,10 +1,8 @@
 package com.unima.risk6.gui.uiModels;
 
-import com.unima.risk6.game.models.Country;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -14,8 +12,6 @@ public class TroopsCounterUi extends Group {
   private double ellipseSize = 10;
 
   private Ellipse ellipseCounter;
-
-  private String counterText;
 
   private Text text;
 
@@ -27,7 +23,7 @@ public class TroopsCounterUi extends Group {
     ellipseCounter.setStroke(Color.BLACK);
     ellipseCounter.setFill(Color.WHITE);
 
-    counterText = Integer.toString((int) (Math.random() * 20));
+    String counterText = Integer.toString((int) (Math.random() * 20));
 
     text = new Text(counterText);
     text.setFont(new Font("Arial", ellipseSize));
@@ -46,9 +42,5 @@ public class TroopsCounterUi extends Group {
 
   public void setText(String counterText) {
     this.text.setText(counterText);
-  }
-
-  public String getCounterText() {
-    return counterText;
   }
 }
