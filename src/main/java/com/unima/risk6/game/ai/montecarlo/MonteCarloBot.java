@@ -138,6 +138,7 @@ public class MonteCarloBot extends Player {
 
   public void updateContinentsList() {
     this.continentsCopy = new ArrayList<>();
+    //TODO: continents must be gotten from a gamestate
     this.continentsCopy.addAll(this.getContinents());
   }
 

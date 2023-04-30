@@ -15,13 +15,13 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MediumBotTest {
@@ -34,8 +34,9 @@ class MediumBotTest {
 
   @BeforeAll
   static void setUp() {
-    File data = new File("src/main/resources/com/unima/risk6/json/probabilities.json");
-    try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(data))) {
+    InputStream data = MediumBotTest.class.getResourceAsStream(
+        "/com/unima/risk6/json/probabilities.json");
+    try (InputStreamReader fileReader = new InputStreamReader(data)) {
       Probabilities.init(fileReader);
     } catch (IOException e) {
       fail("Probabilities could not be loaded");
@@ -58,6 +59,16 @@ class MediumBotTest {
     enemyController.setPlayer(enemy);
   }
 
+  @BeforeEach
+  void resetState() {
+    gameState.getCountries().forEach(c -> {
+      c.setTroops(0);
+      c.setPlayer(null);
+      c.setHasPlayer(false);
+    });
+    ((MediumBot) mediumBot).updateContinentsCopy(gameState.getContinents());
+  }
+
   @Test
   void moveAfterAttack() {
   }
@@ -73,7 +84,6 @@ class MediumBotTest {
 
   @Test
   void claimCountry() {
-    ((MediumBot) mediumBot).updateContinentsCopy(gameState.getContinents());
     Continent australia = getCountryByName(CountryName.WESTERN_AUSTRALIA).getContinent();
     // prioritizes australia
     Reinforce first = mediumBot.claimCountry();
@@ -133,7 +143,6 @@ class MediumBotTest {
     enemyController.addCountry(siam);
     siam.setTroops(1);
     List<CountryPair> attacks = mediumBot.createAllAttacks();
-    System.out.println(attacks);
     assertEquals(3, attacks.size());
     assertEquals(indonesia, attacks.get(0).getOutgoing());
   }

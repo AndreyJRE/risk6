@@ -24,6 +24,7 @@ public class EasyBot extends Player implements AiBot {
   private final Random rng;
   private final PlayerController playerController;
   private GameState currentGameState;
+  private double attackProbability;
 
   /**
    * Constructs an EasyBot with a specified username.
@@ -35,16 +36,14 @@ public class EasyBot extends Player implements AiBot {
     rng = new Random();
     playerController = new PlayerController();
     playerController.setPlayer(this);
+    this.attackProbability = 0.8;
   }
 
   /**
    * Constructs an EasyBot with a default username.
    */
   public EasyBot() {
-    super();
-    rng = new Random();
-    playerController = new PlayerController();
-    playerController.setPlayer(this);
+    this("EasyBot Default");
   }
 
   /**
@@ -67,15 +66,19 @@ public class EasyBot extends Player implements AiBot {
     for (Continent continent : this.getContinents()) {
       decisions.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
-    double attackProbability = 0.8;
-    while (rng.nextDouble() < attackProbability) {
-      CountryPair toAttack = this.getRandomCountryPair(decisions);
-      if (toAttack != null) {
-        allAttacks.add(toAttack);
-      }
-      attackProbability *= 0.6;
+    CountryPair toAttack = this.getRandomCountryPair(decisions);
+    // TODO: see if we can change method to return one CountryPair
+    if (toAttack != null) {
+      allAttacks.add(toAttack);
     }
     return allAttacks;
+}
+
+  @Override
+  public boolean attackAgain() {
+    boolean answer = rng.nextDouble() < this.attackProbability;
+    this.attackProbability *= 0.6;
+    return answer;
   }
 
   @Override
@@ -89,6 +92,7 @@ public class EasyBot extends Player implements AiBot {
 
   @Override
   public Fortify createFortify() {
+    this.attackProbability = 0.8;
     if (rng.nextDouble() < 0.25) {
       return null;
     }

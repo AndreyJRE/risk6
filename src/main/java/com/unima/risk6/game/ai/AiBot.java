@@ -48,4 +48,5 @@ public interface AiBot {
    * @return A Reinforce object representing the claimed country with one troop placed on it.
    */
   Reinforce claimCountry();
+  boolean attackAgain();
 }
