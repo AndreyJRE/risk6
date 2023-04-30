@@ -55,7 +55,7 @@ public class HandController {
   public Set<Country> hasCountryBonus(Set<Country> countries) {
     HashSet<Country> bonusCountries = new HashSet<>();
     countries.forEach(country -> selectedCards.forEach(card -> {
-              if (card.getCountry() != null) {
+              if (card.isHasCountry()) {
                 if (card.getCountry().equals(country.getCountryName())) {
                   bonusCountries.add(country);
                 }
@@ -148,6 +148,10 @@ public class HandController {
     this.hand = hand;
     this.selectedCards = hand.getSelectedCards();
     this.cards = hand.getCards();
+  }
+
+  public void addCard(Card addedCard) {
+    hand.getCards().add(addedCard);
   }
 
 

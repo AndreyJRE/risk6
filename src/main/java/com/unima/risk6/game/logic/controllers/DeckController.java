@@ -52,4 +52,9 @@ public class DeckController {
   public Deck getDeck() {
     return deck;
   }
+
+  public Card removeCardOnTop() {
+    return deck.getDeckCards().remove(0);
+  }
+
 }

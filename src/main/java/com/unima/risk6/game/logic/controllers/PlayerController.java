@@ -117,7 +117,6 @@ public class PlayerController {
 
   public void addCountry(Country countryToAdd) {
     player.getCountries().add(countryToAdd);
-    player.getContinents().add(countryToAdd.getContinent());
     countryToAdd.setPlayer(player);
   }
 
