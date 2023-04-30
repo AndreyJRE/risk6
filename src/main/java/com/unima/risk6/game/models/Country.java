@@ -72,10 +72,10 @@ public class Country {
   public String toString() {
     return "Country{" +
         "countryName=" + countryName +
-        ", player=" + player +
+        ", player=" + player.getUser() +
         ", hasPlayer=" + hasPlayer +
         ", troops=" + troops +
-      //  ", adjacentCountries=" + adjacentCountries. +
+        //  ", adjacentCountries=" + adjacentCountries. +
         ", continent=" + continent.getContinentName() +
         '}';
   }
