@@ -1,7 +1,6 @@
 package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.CountryName;
-import java.util.Objects;
 import java.util.Set;
 
 public class Country {
@@ -90,6 +89,10 @@ public class Country {
       return false;
     }
     return this.getCountryName().equals(country.getCountryName());
+  }
+
+  public void setHasPlayer(boolean hasPlayer) {
+    this.hasPlayer = hasPlayer;
   }
 }
 
