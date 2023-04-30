@@ -24,17 +24,17 @@ public class MediumBot extends GreedyBot implements AiBot {
 
   private final PlayerController playerController;
   private int reinforceTroopsCopy;
+  private int lastAttackSize;
 
   public MediumBot(String username) {
     super(username);
     playerController = new PlayerController();
     playerController.setPlayer(this);
+    this.lastAttackSize = 0;
   }
 
   public MediumBot() {
-    super();
-    playerController = new PlayerController();
-    playerController.setPlayer(this);
+    this("MediumBot Default");
   }
 
   @Override
@@ -85,7 +85,6 @@ public class MediumBot extends GreedyBot implements AiBot {
    * presence the bot has over a continent
    */
   public void sortContinentsByHighestRelativePower() {
-    this.updateContinentsCopy(this.getContinents());
     this.getContinentsCopy().sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
         .reversed());
@@ -179,7 +178,13 @@ public class MediumBot extends GreedyBot implements AiBot {
     for (Continent continent : this.getContinentsCopy()) {
       allAttacks.addAll(makeBestAttackInContinent(continent));
     }
+    this.lastAttackSize = allAttacks.size();
     return allAttacks;
+  }
+
+  @Override
+  public boolean attackAgain() {
+    return this.lastAttackSize > 1;
   }
 
   /**

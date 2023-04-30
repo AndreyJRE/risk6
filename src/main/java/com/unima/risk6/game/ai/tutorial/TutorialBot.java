@@ -147,4 +147,9 @@ public class TutorialBot extends Player implements AiBot {
     claims.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 1));
     return claims;
   }
+
+  @Override
+  public boolean attackAgain() { // we always know what will happen in the tutorial
+    return false;
+  }
 }

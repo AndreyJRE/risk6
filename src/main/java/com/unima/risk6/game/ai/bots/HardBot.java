@@ -63,5 +63,8 @@ public class HardBot extends GreedyBot implements AiBot {
     this.currentGameState = currentGameState;
   }
 
-
+  @Override
+  public boolean attackAgain() { // the hard bot will return all attacks at once
+    return false;
+  }
 }

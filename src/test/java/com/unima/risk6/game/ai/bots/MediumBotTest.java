@@ -66,6 +66,7 @@ class MediumBotTest {
       c.setPlayer(null);
       c.setHasPlayer(false);
     });
+    ((MediumBot) mediumBot).updateContinentsCopy(gameState.getContinents());
   }
 
   @Test
@@ -83,7 +84,6 @@ class MediumBotTest {
 
   @Test
   void claimCountry() {
-    ((MediumBot) mediumBot).updateContinentsCopy(gameState.getContinents());
     Continent australia = getCountryByName(CountryName.WESTERN_AUSTRALIA).getContinent();
     // prioritizes australia
     Reinforce first = mediumBot.claimCountry();
