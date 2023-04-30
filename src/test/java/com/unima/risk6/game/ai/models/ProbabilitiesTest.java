@@ -11,9 +11,8 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +29,11 @@ class ProbabilitiesTest {
 
   @BeforeAll
   static void setUp() {
-    File data = new File("src/main/resources/com/unima/risk6/json/probabilities.json");
-    try (InputStreamReader fileReader = new InputStreamReader(new FileInputStream(data))) {
+    InputStream data = ProbabilitiesTest.class.getResourceAsStream(
+        "/com/unima/risk6/json/probabilities.json");
+    try (InputStreamReader fileReader = new InputStreamReader(data)) {
       Probabilities.init(fileReader);
-    } catch (IOException e) {
+    } catch (IOException | NullPointerException e) {
       fail("Probabilities could not be loaded");
     }
     List<String> players = new ArrayList<>();
@@ -64,7 +64,7 @@ class ProbabilitiesTest {
     double playerPower = Probabilities.relativeTroopContinentPower(player, southAmerica);
     assertTrue(Math.abs(0.88235 - playerPower) < 1E-4);
     double enemyPower = Probabilities.relativeTroopContinentPower(enemy, southAmerica);
-    assertTrue(Math.abs((1-playerPower) - enemyPower) < 1E-4);
+    assertTrue(Math.abs((1 - playerPower) - enemyPower) < 1E-4);
     Continent africa = getCountryByName(CountryName.SOUTH_AFRICA).getContinent();
     assertEquals(0, Probabilities.relativeTroopContinentPower(player, africa));
     assertEquals(1, Probabilities.relativeTroopContinentPower(enemy, africa));
