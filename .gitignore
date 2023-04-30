@@ -37,6 +37,5 @@ build/
 ### Mac OS ###
 .DS_Store
 /out.html
-
-#logs
-/logs/
+/logs/application.log
+/test.json

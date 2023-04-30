@@ -5,10 +5,8 @@ import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.json.JsonParser;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,31 +20,24 @@ import java.util.Map;
 public class Probabilities {
 
   private static Integer[][] winProbability;
-  private static CountryName[] borderCountries;
 
   /**
    * Initialize the Probabilities class by setting the classes static winProbability and
-   * borderCountries attributes
+   * borderCountries attributes.
    *
    * @param fileReader An InputStreamReader pointing to the json file containing the 20x20
-   *                   Win-Probability Matrix
+   *                   Win-Probability Matrix.
    */
   public static void init(InputStreamReader fileReader) {
     winProbability = JsonParser.parseJsonFile(fileReader, Integer[][].class);
-    borderCountries = new CountryName[]{CountryName.ALASKA, CountryName.BRAZIL,
-        CountryName.CENTRAL_AMERICA, CountryName.GREENLAND, CountryName.ICELAND,
-        CountryName.INDONESIA, CountryName.KAMCHATKA, CountryName.MIDDLE_EAST,
-        CountryName.NORTH_AFRICA, CountryName.SIAM, CountryName.SOUTHERN_EUROPE,
-        CountryName.VENEZUELA, CountryName.WESTERN_EUROPE};
   }
 
   /**
-   * Calculate the percentage of Troops owned by a specific player in a continent
+   * Calculate the percentage of Troops owned by a specific player in a continent.
    *
-   * @param player    The player which is being tested
-   * @param continent The continent to be tested
-   * @return The percentage of troops in the continent which belong to the player
-   * @author eameri
+   * @param player    The player which is being tested.
+   * @param continent The continent to be tested.
+   * @return The percentage of troops in the continent which belong to the player.
    */
   public static double relativeTroopContinentPower(Player player, Continent continent) {
     double troopsOwned = 0.0;
@@ -57,18 +48,24 @@ public class Probabilities {
       }
       troopsTotal += country.getTroops();
     }
-    return troopsOwned / troopsTotal;
+    if (troopsTotal == 0) {
+      return 0;
+    } else {
+      return troopsOwned / troopsTotal;
+    }
   }
 
 
   /**
    * Gets the probability of a country winning a battle against another country based off of their
    * amount of troops ("Calculations are done in python, data wrangling in pandas", for more
-   * information on the source of the data see: ...)
+   * information on the source of the data see: ...https://www.reddit.com/r/dataisbeautiful/
+   * comments/vknu9r/oc_the_probability_of_winning_a_battle_as_an/
    *
-   * @param attackerTotal The total amount of troops the attacking country has
-   * @param defenderTotal The total amount of troops the defending country has
-   * @return the probability of the attacker winning an entire battle (rounded, given as an integer)
+   * @param attackerTotal The total amount of troops the attacking country has.
+   * @param defenderTotal The total amount of troops the defending country has.
+   * @return the probability of the attacker winning an entire battle, rounded and given as an
+   * integer.
    */
   public static int getWinProbability(int attackerTotal, int defenderTotal) {
     // attacker always needs to have at least 1 troop
@@ -78,33 +75,27 @@ public class Probabilities {
   }
 
   /**
-   * Checks if the given country is a bordering country of a continent
+   * Finds the strongest player in the game based on the ratio of troops they have compared to the
+   * amount of all troops.
    *
-   * @param country The country to be checked
-   * @return A boolean value expressing if the country can be attacked from another continent
+   * @param gameState The current GameState object containing the game information.
+   * @return The strongest player based on their troop control ratio.
    */
-  public static boolean isBorderCountry(Country country) {
-    return Arrays.asList(borderCountries).contains(country.getCountryName());
-  }
-
   public static Player findStrongestPlayer(GameState gameState) {
     Map<Player, Integer> playerTroopCount = new HashMap<>();
     double totalTroopCount = 0;
     for (Country country : gameState.getCountries()) {
       int countryCount = country.getTroops();
       totalTroopCount += countryCount;
-      Integer mapValue = playerTroopCount.get(country.getPlayer());
-      if (mapValue == null) {
-        playerTroopCount.put(country.getPlayer(), countryCount);
-      } else {
-        playerTroopCount.put(country.getPlayer(),
-            playerTroopCount.get(country.getPlayer()) + countryCount);
-      }
+      playerTroopCount.merge(country.getPlayer(), countryCount, Integer::sum);
     }
     Player strongest = null;
     double strongestPercent = 0.0;
+    double currentPercent;
+    // total troop count can't be 0 during the times where this method is called
     for (Player player : playerTroopCount.keySet()) {
-      if (playerTroopCount.get(player) / totalTroopCount > strongestPercent) {
+      if ((currentPercent = playerTroopCount.get(player) / totalTroopCount) > strongestPercent) {
+        strongestPercent = currentPercent;
         strongest = player;
       }
     }

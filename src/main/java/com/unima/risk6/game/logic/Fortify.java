@@ -9,9 +9,9 @@ import com.unima.risk6.game.models.Country;
  */
 public class Fortify extends Move {
 
-  public Country outgoing;
-  public Country incoming;
-  public int troopsToMove;
+  private final Country outgoing;
+  private final Country incoming;
+  private final int troopsToMove;
 
   /**
    * Constructs a new fortification move with the given outgoing and incoming countries and number

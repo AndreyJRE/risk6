@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.game.models.Player;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -12,18 +13,23 @@ import javafx.scene.shape.Rectangle;
 public class ActivePlayerUi extends Group {
 
   private Ellipse ellipse;
+
   private Rectangle rectangle;
 
-  public ActivePlayerUi(double radiusX, double radiusY,
-      double rectangleWidth, double rectangleHeight) {
+  private PlayerUi playerUi;
 
+  public ActivePlayerUi(double radiusX, double radiusY,
+      double rectangleWidth, double rectangleHeight, PlayerUi playerUi) {
+    this.setId("activePlayerUi");
+    this.playerUi = playerUi;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
     ellipse.setFill(Color.WHITE);
-    ellipse.setStroke(Color.BLACK);
-
+    ellipse.setStroke(this.playerUi.getPlayerColor());
+    ellipse.setStrokeWidth(3);
     rectangle = new Rectangle(rectangleWidth, rectangleHeight);
     rectangle.setFill(Color.WHITE);
-    rectangle.setStroke(Color.BLACK);
+    rectangle.setStroke(this.playerUi.getPlayerColor());
+    rectangle.setStrokeWidth(2);
     rectangle.setArcWidth(rectangleHeight);
     rectangle.setArcHeight(rectangleHeight);
     rectangle.setLayoutX(0);
@@ -62,4 +68,13 @@ public class ActivePlayerUi extends Group {
     getChildren().addAll(rectangle, ellipse, iconsPane);
   }
 
+  public PlayerUi getPlayerUi() {
+    return playerUi;
+  }
+
+  public void changeActivePlayerUi(PlayerUi playerUi) {
+    this.playerUi = playerUi;
+    ellipse.setStroke(playerUi.getPlayerColor());
+    rectangle.setStroke(playerUi.getPlayerColor());
+  }
 }

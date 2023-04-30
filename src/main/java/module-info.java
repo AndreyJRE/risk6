@@ -13,7 +13,9 @@ module com.unima.risk6 {
   requires com.google.gson;
   requires org.slf4j;
   opens com.unima.risk6.network.message to com.google.gson;
-
+  exports com.unima.risk6.database.models;
+  exports com.unima.risk6.gui.uiModels;
+  exports com.unima.risk6.gui.scenes;
   exports com.unima.risk6.game.models.enums;
   opens com.unima.risk6.json.jsonObjects to com.google.gson;
   opens com.unima.risk6 to javafx.fxml;
@@ -26,7 +28,7 @@ module com.unima.risk6 {
   opens com.unima.risk6.game.logic to javafx.fxml;
   exports com.unima.risk6.gui.controllers.enums;
   opens com.unima.risk6.gui.controllers.enums to javafx.fxml;
-
+  exports com.unima.risk6.game.logic.controllers;
   exports com.unima.risk6.network.serialization;
 
 }

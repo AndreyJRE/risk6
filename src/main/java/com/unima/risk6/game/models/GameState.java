@@ -19,9 +19,11 @@ public class GameState {
   private final Set<Continent> continents;
   private Player currentPlayer;
   private int numberOfHandIns;
-  private final ArrayList<Move> lastMoves;
+  //TODO change to lastMove
+  private Move lastMove;
   private final Deck deck;
   private boolean isGameOver;
+
 
   /**
    * Constructs a new game state with the given countries, continents, and players.
@@ -37,11 +39,11 @@ public class GameState {
     this.continents = continents;
     this.activePlayers = activePlayers;
     this.numberOfHandIns = 0;
-    this.lastMoves = new ArrayList<>();
     this.currentPlayer = activePlayers.peek();
     this.lostPlayers = new ArrayList<>();
     this.deck = new Deck();
     this.isGameOver = false;
+  
 
   }
 
@@ -107,8 +109,12 @@ public class GameState {
     this.currentPlayer = currentPlayer;
   }
 
-  public ArrayList<Move> getLastMoves() {
-    return lastMoves;
+  public Move getLastMove() {
+    return lastMove;
+  }
+
+  public void setLastMove(Move lastMove) {
+    this.lastMove = lastMove;
   }
 
   public ArrayList<Player> getLostPlayers() {
@@ -122,5 +128,15 @@ public class GameState {
   public boolean isGameOver() {
     return isGameOver;
   }
+
+  public void setGameOver(boolean gameOver) {
+    isGameOver = gameOver;
+  }
+
+  public void setNumberOfHandIns(int numberOfHandIns) {
+    this.numberOfHandIns = numberOfHandIns;
+  }
+
 }
+
 

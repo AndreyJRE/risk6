@@ -13,4 +13,11 @@ public class DeckUi extends Pane {
     this.deck = deck;
   }
 
+  public Deck getDeck() {
+    return deck;
+  }
+
+  public void setDeck(Deck deck) {
+    this.deck = deck;
+  }
 }

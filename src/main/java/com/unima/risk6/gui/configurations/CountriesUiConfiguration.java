@@ -11,25 +11,30 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CountriesUiConfiguration {
 
-  private final CountryUiJsonObject[] countryUiJsonObjects;
+  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUi.json";
 
-  private final Set<CountryUi> countriesUis;
+  private static Set<CountryUi> countriesUis;
 
-  public CountriesUiConfiguration(String jsonCountriesFilePath) {
-    InputStream inputStream = getClass().getResourceAsStream(jsonCountriesFilePath);
+  private static CountryUiJsonObject[] getCountryUiJsonObjects() {
+    CountryUiJsonObject[] countryUiJsonObjects;
+    InputStream inputStream = CountriesUiConfiguration.class.getResourceAsStream(
+        COUNTRIES_JSON_PATH);
     try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-      this.countryUiJsonObjects = JsonParser.parseJsonFile(reader,
+      countryUiJsonObjects = JsonParser.parseJsonFile(reader,
           CountryUiJsonObject[].class);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
     countriesUis = new HashSet<>();
+    return countryUiJsonObjects;
   }
 
-  public void configureCountries(Set<Country> countries) {
+  public static void configureCountries(Set<Country> countries) {
+    CountryUiJsonObject[] countryUiJsonObjects = getCountryUiJsonObjects();
     for (CountryUiJsonObject countryUiJson : countryUiJsonObjects) {
       CountryName countryName = countryUiJson.getCountryName();
       for (Country country : countries) {
@@ -38,9 +43,19 @@ public class CountriesUiConfiguration {
         }
       }
     }
+    setNeighboursCountryUisForEachCountry();
   }
 
-  public Set<CountryUi> getCountriesUis() {
+  private static void setNeighboursCountryUisForEachCountry() {
+    countriesUis.forEach(countryUi -> {
+      countryUi.setAdjacentCountryUis(countriesUis.stream()
+          .filter(countryUi1 -> countryUi1.getCountry().getAdjacentCountries()
+              .contains(countryUi.getCountry()))
+          .collect(Collectors.toSet()));
+    });
+  }
+
+  public static Set<CountryUi> getCountriesUis() {
     return countriesUis;
   }
 

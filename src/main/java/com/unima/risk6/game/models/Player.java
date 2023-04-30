@@ -15,6 +15,7 @@ public class Player {
   private int initialTroops;
   private final Statistic statistic;
   private GamePhase currentPhase;
+  private boolean hasConquered;
 
   public Player() {
     this.hand = new Hand();
@@ -95,6 +96,7 @@ public class Player {
     this.currentPhase = currentPhase;
   }
 
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -106,5 +108,16 @@ public class Player {
     return Objects.equals(getUser(), player.getUser());
   }
 
+  public void setHand(Hand hand) {
+    this.hand = hand;
+  }
+
+  public boolean isHasConquered() {
+    return hasConquered;
+  }
+
+  public void setHasConquered(boolean hasConquered) {
+    this.hasConquered = hasConquered;
+  }
 }
 
