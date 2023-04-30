@@ -2,8 +2,12 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.GameStateObserver;
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.PlayerController;
+import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
@@ -19,6 +23,7 @@ import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javafx.animation.PathTransition;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -36,7 +41,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 
 public class GameSceneController implements GameStateObserver {
 
@@ -65,6 +74,8 @@ public class GameSceneController implements GameStateObserver {
   public static GamePhase mockGamePhase;
   private static PlayerUi myPlayerUi;
 
+  private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
+
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -78,7 +89,7 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.chatBoxPane = new BorderPane();
-    mockGamePhase = GamePhase.CLAIM_PHASE;
+    mockGamePhase = GamePhase.ATTACK_PHASE;
     GameConfiguration.addObserver(this);
     this.initializeGameScene();
 
@@ -109,7 +120,7 @@ public class GameSceneController implements GameStateObserver {
       Bounds bounds = countryUi.getCountryPath().getBoundsInParent();
       double ellipseX = bounds.getMinX() + bounds.getWidth() * 0.5;
       double ellipseY = bounds.getMinY() + bounds.getHeight() * 0.5;
-      countryUi.initMouseListener(playerUis);
+      countryUi.initMouseListener();
 
       Point2D correctedCoordinates = CountryUi.correctEllipsePlacement(countryUi.getCountry(),
           ellipseX, ellipseY);
@@ -117,7 +128,7 @@ public class GameSceneController implements GameStateObserver {
       ellipseY = correctedCoordinates.getY();
 
       TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
-
+      troopsCounterUi.setText(countryUi.getCountry().getTroops().toString());
       countryUi.setTroopsCounterUi(troopsCounterUi);
 
       countriesGroup.getChildren().add(troopsCounterUi);
@@ -144,6 +155,7 @@ public class GameSceneController implements GameStateObserver {
       playerUis.offer(playerUi);
       if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi = playerUi;
+        PLAYER_CONTROLLER.setPlayer(player);
       }
       colorIndex++;
     }
@@ -279,13 +291,16 @@ public class GameSceneController implements GameStateObserver {
   public void update(GameState gameState) {
     this.gameState = gameState;
     List<Move> lastMoves = gameState.getLastMoves();
+    updateReferencesFromGameState();
     lastMoves.forEach(lastMove -> {
-      if (lastMove instanceof Reinforce reinforce
-          && gameState.getCurrentPlayer().getCurrentPhase() == GamePhase.CLAIM_PHASE) {
+      if (lastMove instanceof Fortify fortify) {
+        animateFortify(fortify);
+      } else if (lastMove instanceof Attack attack) {
+        animateAttack(attack);
+      } else if (lastMove instanceof Reinforce reinforce) {
+        animateReinforce(reinforce);
       }
     });
-    updateReferencesFromGameState();
-
   }
 
   private void updateReferencesFromGameState() {
@@ -293,6 +308,7 @@ public class GameSceneController implements GameStateObserver {
     this.gameState.getActivePlayers().forEach(player -> {
       if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi.setPlayer(player);
+        PLAYER_CONTROLLER.setPlayer(player);
       } else {
         playerUis.forEach(playerUi -> {
           if (playerUi.getPlayer().getUser().equals(player.getUser())) {
@@ -319,4 +335,66 @@ public class GameSceneController implements GameStateObserver {
   public static PlayerUi getMyPlayerUi() {
     return myPlayerUi;
   }
+
+  public CountryUi getCountryUiByCountry(Country country) {
+    return countriesUis.stream()
+        .filter(countryUi -> countryUi.getCountry().equals(country))
+        .findFirst().get();
+  }
+
+  public void animateFortify(Fortify fortify) {
+    double maxOffsetX = 10;
+    double maxOffsetY = 10;
+    for (int i = 0; i < fortify.getTroopsToMove(); i++) {
+      ImageView imageView = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif")
+              .toString()));
+      imageView.setFitWidth(35);
+      imageView.setFitHeight(35);
+      double offsetX = Math.random() * maxOffsetX;
+      double offsetY = Math.random() * maxOffsetY;
+      CountryUi countryUiFrom = getCountryUiByCountry(fortify.getOutgoing());
+      CountryUi countryUiTo = getCountryUiByCountry(fortify.getIncoming());
+      Point2D clickPosInScene = countryUiFrom.localToScene(
+          countryUiFrom.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+          countryUiFrom.getTroopsCounterUi().getEllipseCounter().getCenterY());
+      Point2D clickPosInSceneToCountry = countryUiTo.localToScene(
+          countryUiTo.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+          countryUiTo.getTroopsCounterUi().getEllipseCounter().getCenterY());
+      Point2D clickPosInGroup = countryUiFrom.sceneToLocal(clickPosInScene);
+      Point2D clickPosInGroupToCountry = countryUiTo.sceneToLocal(clickPosInSceneToCountry);
+      double startX = clickPosInGroup.getX() + i * offsetX;
+      double startY = clickPosInGroup.getY() + i * offsetY;
+      double endX = clickPosInGroupToCountry.getX() + i * offsetX;
+      double endY = clickPosInGroupToCountry.getY() + i * offsetY;
+      if (endX < startX) {
+        imageView.setScaleX(-1); // flip horizontally
+      }
+      Path path = new Path();
+      path.getElements().add(
+          new MoveTo(startX, startY));
+      path.getElements()
+          .add(new LineTo(endX, endY));
+      PathTransition pathTransition = new PathTransition();
+      pathTransition.setDuration(Duration.seconds(2));
+      pathTransition.setPath(path);
+      pathTransition.setNode(imageView);
+      pathTransition.setOnFinished(
+          onFinishedEvent -> countriesGroup.getChildren().remove(imageView));
+      pathTransition.play();
+      countriesGroup.getChildren().add(imageView);
+    }
+  }
+
+  private void animateAttack(Attack attack) {
+  }
+
+  private void animateReinforce(Reinforce reinforce) {
+  }
+
+  public static PlayerController getPlayerController() {
+    return PLAYER_CONTROLLER;
+  }
+
 }
+
