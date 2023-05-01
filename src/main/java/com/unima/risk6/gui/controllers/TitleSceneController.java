@@ -20,15 +20,27 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 public class TitleSceneController implements Initializable {
 
@@ -72,6 +84,13 @@ public class TitleSceneController implements Initializable {
     userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setRadius(10.0);
+    dropShadow.setOffsetX(3.0);
+    dropShadow.setOffsetY(3.0);
+    dropShadow.setColor(Color.BLACK);
+    titleLabel.setEffect(dropShadow);
+    animateTitleLabel();
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefWidth(SceneConfiguration.getWidth());
     backgroundImageView.fitWidthProperty().bind(root.widthProperty());
@@ -103,8 +122,7 @@ public class TitleSceneController implements Initializable {
     GameState gameState = GameConfiguration.configureGame(users, bots);
     User myUser = SessionManager.getUser();
     GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
-    );
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId())));
     GameConfiguration.setGameState(gameState);
     CountriesUiConfiguration.configureCountries(gameState.getCountries());
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
@@ -155,5 +173,39 @@ public class TitleSceneController implements Initializable {
   private void handleQuitGame() {
     SceneController sceneController = SceneConfiguration.getSceneController();
     sceneController.close();
+  }
+
+  private void animateTitleLabel() {
+    // Rotate animation
+    TranslateTransition movementTransition = new TranslateTransition(Duration.seconds(1),
+        titleLabel);
+    movementTransition.setByY(-10);
+    movementTransition.setCycleCount(Animation.INDEFINITE);
+    movementTransition.setAutoReverse(true);
+    // Scale animation
+    ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1), titleLabel);
+    scaleTransition.setByX(0.1);
+    scaleTransition.setByY(0.1);
+    scaleTransition.setAutoReverse(true);
+    scaleTransition.setCycleCount(Animation.INDEFINITE);
+
+    // Color animation
+    ObjectProperty<Color> colorProperty = new SimpleObjectProperty<>(Color.WHITE);
+    colorProperty.addListener((observable, oldValue, newValue) -> titleLabel.setTextFill(newValue));
+
+    KeyValue keyValue1 = new KeyValue(colorProperty, Color.web("#0093ff"));
+    KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(1), keyValue1);
+
+    KeyValue keyValue2 = new KeyValue(colorProperty, Color.WHITE);
+    KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(2), keyValue2);
+
+    Timeline colorTimeline = new Timeline(keyFrame1, keyFrame2);
+    colorTimeline.setCycleCount(Animation.INDEFINITE);
+    colorTimeline.setAutoReverse(true);
+
+    // Play all animations together
+    ParallelTransition parallelTransition = new ParallelTransition(movementTransition,
+        scaleTransition, colorTimeline);
+    parallelTransition.play();
   }
 }
