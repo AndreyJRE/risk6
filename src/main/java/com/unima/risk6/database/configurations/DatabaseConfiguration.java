@@ -67,14 +67,42 @@ public class DatabaseConfiguration {
 
   }
 
+  /**
+   * Closes the database connection and services.
+   */
+  public static void closeDatabaseConnectionAndServices() {
+    try {
+      userService.close();
+      gameStatisticService.close();
+      databaseConnection.close();
+    } catch (Exception e) {
+      LOGGER.error("Error closing database connection: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Returns the UserService.
+   *
+   * @return The UserService.
+   */
   public static UserService getUserService() {
     return userService;
   }
 
+  /**
+   * Returns the database connection.
+   *
+   * @return The database connection.
+   */
   public static Connection getDatabaseConnection() {
     return databaseConnection;
   }
 
+  /**
+   * Returns the GameStatisticService.
+   *
+   * @return The GameStatisticService.
+   */
   public static GameStatisticService getGameStatisticService() {
     return gameStatisticService;
   }

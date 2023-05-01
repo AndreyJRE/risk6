@@ -16,11 +16,21 @@ public class AppDatabase {
   private final String databasePath;
   private Connection conn;
 
+  /**
+   * Constructor for the AppDatabase class that takes the database path as a parameter and
+   * initializes the database connection.
+   *
+   * @param databasePath the path to the database
+   */
   public AppDatabase(final String databasePath) {
     this.databasePath = databasePath;
     init();
   }
 
+  /**
+   * The init method initializes the database connection and creates the database if it does not yet
+   * exist.
+   */
   private void init() {
     conn = null;
     try {
@@ -32,11 +42,21 @@ public class AppDatabase {
     }
   }
 
+  /**
+   * The createDatabase method creates the database if it does not yet exist.
+   *
+   * @throws SQLException if the database cannot be created
+   */
   private void createDatabase() throws SQLException {
     creatUserTable();
     creatGameStatisticTable();
   }
 
+  /**
+   * The creatUserTable method creates the user table if it does not yet exist.
+   *
+   * @throws SQLException if the user table cannot be created
+   */
   private void creatUserTable() throws SQLException {
     Statement statement = conn.createStatement();
     String createSql = """
@@ -46,6 +66,11 @@ public class AppDatabase {
     statement.execute(createSql);
   }
 
+  /**
+   * The creatGameStatisticTable method creates the game_statistic table if it does not yet exist.
+   *
+   * @throws SQLException if the game_statistic table cannot be created
+   */
   private void creatGameStatisticTable() throws SQLException {
     Statement statement = conn.createStatement();
     String createSql = """
@@ -55,7 +80,6 @@ public class AppDatabase {
         ,countries_lost INTEGER,FOREIGN KEY (user_id) REFERENCES user (id))""";
     statement.execute(createSql);
   }
-
 
   public Connection getConnection() {
     return conn;
