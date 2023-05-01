@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.controllers;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.InitializableScene;
 import java.util.HashMap;
@@ -26,13 +27,14 @@ public class SceneController {
 
   public void activate(SceneName name) {
     Scene scene = scenes.get(name);
-    if(scene instanceof InitializableScene scene1){
+    if (scene instanceof InitializableScene scene1) {
       scene1.init();
     }
     stage.setScene(scene);
   }
 
   public void close() {
+    DatabaseConfiguration.closeDatabaseConnectionAndServices();
     stage.close();
   }
 
@@ -40,7 +42,7 @@ public class SceneController {
     return stage;
   }
 
-  public Scene getSceneBySceneName(SceneName sceneName){
+  public Scene getSceneBySceneName(SceneName sceneName) {
     return scenes.get(sceneName);
   }
 }

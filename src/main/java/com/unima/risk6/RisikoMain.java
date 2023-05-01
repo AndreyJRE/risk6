@@ -3,11 +3,11 @@ package com.unima.risk6;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.LoginSceneController;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LogInScene;
-import com.unima.risk6.gui.configurations.SceneConfiguration;
 import java.io.IOException;
 import java.util.List;
 import javafx.application.Application;
@@ -27,6 +27,8 @@ public class RisikoMain extends Application {
 
     this.userService = DatabaseConfiguration.getUserService();
     this.users = userService.getAllUsers();
+    stage.setMinWidth(900);
+    stage.setMinHeight(700);
     stage.setWidth(1080);
     stage.setHeight(720);
     SceneConfiguration.startSceneControllerConfiguration(stage);
@@ -34,13 +36,14 @@ public class RisikoMain extends Application {
     LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
     LoginSceneController loginSceneController = new LoginSceneController(loginScene);
     loginScene.setLoginSceneController(loginSceneController);
-    sceneController.addScene(SceneName.LOGIN,loginScene);
-    if(users.isEmpty()){
-      FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/CreateAccount.fxml"));
+    sceneController.addScene(SceneName.LOGIN, loginScene);
+    if (users.isEmpty()) {
+      FXMLLoader fxmlLoader = new FXMLLoader(
+          RisikoMain.class.getResource("fxml/CreateAccount.fxml"));
       Scene scene = new Scene(fxmlLoader.load());
       sceneController.addScene(SceneName.CREATE_ACCOUNT, scene);
       sceneController.activate(SceneName.CREATE_ACCOUNT);
-    }else{
+    } else {
       sceneController.activate(SceneName.LOGIN);
     }
     stage.setTitle("RISK");
