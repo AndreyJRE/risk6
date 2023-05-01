@@ -1,5 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
@@ -75,15 +77,15 @@ public class TitleSceneController implements Initializable {
     backgroundImageView.fitWidthProperty().bind(root.widthProperty());
     backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     // Set the style of the buttons
-    String buttonStyle = "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;";
-    singlePlayerButton.setStyle(buttonStyle);
-    multiPlayerButton.setStyle(buttonStyle);
-    optionsButton.setStyle(buttonStyle);
-    quitButton.setStyle(buttonStyle);
+    applyButtonStyle(singlePlayerButton);
+    applyButtonStyle(multiPlayerButton);
+    applyButtonStyle(optionsButton);
+    applyButtonStyle(quitButton);
     sceneController = SceneConfiguration.getSceneController();
     activeUser = userService.getUsersByActive(true);
     user = activeUser.get(0);
   }
+
 
   // Define the event handler for the single player button
   @FXML
@@ -114,6 +116,8 @@ public class TitleSceneController implements Initializable {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
+    //TODO If we want to go full screen we can use this
+    sceneController.getStage().setFullScreen(true);
   }
 
 
