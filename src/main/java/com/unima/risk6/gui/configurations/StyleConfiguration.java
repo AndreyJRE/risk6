@@ -6,8 +6,7 @@ public class StyleConfiguration {
 
   private static final String NORMAL_BUTTON_STYLE = "-fx-background-color: linear-gradient"
       + "(#FFDAB9, #FFA07A)"
-      + "; -fx-background-radius: 40; -fx-border-radius: 40"
-      + "; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);"
+      + "; -fx-background-radius: 40; -fx-border-radius: 40;"
       + " -fx-text-fill: #FFFFFF;";
   private static final String HOVER_BUTTON_STYLE = "-fx-background-color: linear-gradient"
       + "(#FFA07A, "

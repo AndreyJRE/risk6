@@ -1,6 +1,10 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
+import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
@@ -44,14 +48,12 @@ public class UserOptionsSceneController {
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
-  private final String buttonStyle = "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); "
-      + "-fx-text-fill: #FFFFFF; "
-      + "-fx-background-radius: 20; -fx-border-radius: 20; "
-      + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);";
+  private final UserService userService;
 
 
   public UserOptionsSceneController(UserOptionsScene userOptions) {
     this.userOptions = userOptions;
+    this.userService = DatabaseConfiguration.getUserService();
     this.sceneController = SceneConfiguration.getSceneController();
   }
 
@@ -134,7 +136,7 @@ public class UserOptionsSceneController {
               "Do you really want to change the name of your user?");
           if (confirm) {
             user.setUsername(userNameField.getText());
-            // Save the updated user name to the database
+            userService.updateUser(user);
           } else {
             userNameField.setText(user.getUsername());
           }
@@ -155,7 +157,7 @@ public class UserOptionsSceneController {
     changeUserButton.setPrefWidth(470);
     changeUserButton.setPrefHeight(40);
     changeUserButton.setAlignment(Pos.CENTER);
-    changeUserButton.setStyle(buttonStyle);
+    applyButtonStyle(changeUserButton);
     changeUserButton.setFont(new Font(18));
 
     changeUserButton.setOnAction(e -> {
@@ -173,7 +175,7 @@ public class UserOptionsSceneController {
     showStatisticsButton.setPrefWidth(470);
     showStatisticsButton.setPrefHeight(40);
     showStatisticsButton.setAlignment(Pos.CENTER);
-    showStatisticsButton.setStyle(buttonStyle);
+    applyButtonStyle(showStatisticsButton);
     showStatisticsButton.setFont(new Font(18));
 
     showStatisticsButton.setOnAction(e -> {
