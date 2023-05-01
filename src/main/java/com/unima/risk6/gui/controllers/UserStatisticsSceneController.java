@@ -6,12 +6,12 @@ import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -49,10 +49,11 @@ public class UserStatisticsSceneController {
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
   }
 
-  public void init(User user) {
-    this.user = user;
+  public void init() {
+    this.user = SessionManager.getUser();
     this.root = (BorderPane) userStatisticsScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"), 26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+        26);
     // Initialize elements
     initUserStackPane();
     initGridPane();

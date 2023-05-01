@@ -1,18 +1,13 @@
 package com.unima.risk6.gui.controllers;
 
-import com.unima.risk6.RisikoMain;
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
-import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -47,8 +42,8 @@ public class SinglePlayerSettingsSceneController {
     this.sceneController = SceneConfiguration.getSceneController();
   }
 
-  public void init(User user) {
-    this.user = user;
+  public void init() {
+    this.user = SessionManager.getUser();
     this.root = (AnchorPane) singlePlayerSettingsScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
         26);
@@ -79,7 +74,8 @@ public class SinglePlayerSettingsSceneController {
 // Create an invisible button
     Button invisibleButton = new Button();
     invisibleButton.setOpacity(0); // Make it invisible
-    invisibleButton.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // Make it fill the entire StackPane
+    invisibleButton.setMaxSize(Double.MAX_VALUE,
+        Double.MAX_VALUE); // Make it fill the entire StackPane
     invisibleButton.setOnAction(e -> sceneController.activate(SceneName.TITLE)); // Set the action
 
 // Wrap the arrow in a StackPane to handle the click event
@@ -112,7 +108,6 @@ public class SinglePlayerSettingsSceneController {
     AnchorPane.setTopAnchor(title, 25.0);
     AnchorPane.setRightAnchor(title, 25.0);
     AnchorPane.setLeftAnchor(title, 25.0);
-
 
     root.getChildren().addAll(backButton, title, gridPaneContainer, play);
   }

@@ -133,7 +133,6 @@ public class TitleSceneController implements Initializable {
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
-    scene.setUser(user);
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
     System.out.println("Multi player game started");
   }
@@ -149,7 +148,6 @@ public class TitleSceneController implements Initializable {
       scene.setController(userOptionsSceneController);
       sceneController.addScene(SceneName.USER_OPTION, scene);
     }
-    scene.setUser(user);
     sceneController.activate(SceneName.USER_OPTION);
   }
 
