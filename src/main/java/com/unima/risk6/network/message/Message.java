@@ -28,6 +28,8 @@ public abstract class Message <MessageType> {
       contentType = ContentType.GAMESTATE;
     }else if(content.getClass().equals(Reinforce.class)) {
       contentType = ContentType.REINFORCE;
+    }else if(content.getClass().equals(ConnectionActions.class)) {
+      contentType = ContentType.CONNECTION;
     }
   }
 
