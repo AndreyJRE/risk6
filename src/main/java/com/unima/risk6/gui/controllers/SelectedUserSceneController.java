@@ -4,6 +4,7 @@ import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
@@ -48,8 +49,8 @@ public class SelectedUserSceneController {
   }
 
 
-  public void init(User user) {
-    this.user = user;
+  public void init() {
+    this.user = SessionManager.getUser();
     this.root = (BorderPane) selectedUserScene.getRoot();
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(200);

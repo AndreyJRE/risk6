@@ -4,6 +4,13 @@ import com.unima.risk6.database.models.User;
 
 public class SessionManager {
 
-  public static User user;
+  private static User user;
 
+  public static User getUser() {
+    return user;
+  }
+
+  public static void setUser(User user) {
+    SessionManager.user = user;
+  }
 }

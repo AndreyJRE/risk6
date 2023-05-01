@@ -5,15 +5,14 @@ import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
 import java.util.List;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,7 +25,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javax.swing.event.ChangeListener;
 
 public class LoginSceneController {
 
@@ -228,7 +226,7 @@ public class LoginSceneController {
       scene.setController(selectedUserSceneController);
       sceneController.addScene(SceneName.SELECTED_USER, scene);
     }
-    scene.setUser(user);
+    SessionManager.setUser(user);
 
     sceneController.activate(SceneName.SELECTED_USER);
   }

@@ -9,6 +9,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
@@ -98,9 +99,10 @@ public class TitleSceneController implements Initializable {
     users.add("John");
     List<AiBot> bots = new ArrayList<>();
     GameState gameState = GameConfiguration.configureGame(users, bots);
-    //TODO Use session management to get the user (For example hier the user with id 9 is used)
-    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(userService.getUserById(9L),
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(9L)));
+    User myUser = SessionManager.getUser();
+    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
+    );
     GameConfiguration.setGameState(gameState);
     CountriesUiConfiguration.configureCountries(gameState.getCountries());
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
@@ -122,7 +124,8 @@ public class TitleSceneController implements Initializable {
         .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
