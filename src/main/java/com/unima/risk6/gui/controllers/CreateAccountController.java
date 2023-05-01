@@ -73,7 +73,7 @@ public class CreateAccountController implements Initializable {
     pause.play();
 
     pause = new PauseTransition(Duration.millis(500));
-    User user = new User(username, password, "/com/unima/risk6/pictures/747376.png");
+    User user = new User(username, password, "/com/unima/risk6/pictures/playerIcon.png");
     try {
       userService.saveUser(user);
       sceneController = SceneConfiguration.getSceneController();

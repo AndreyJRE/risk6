@@ -73,7 +73,7 @@ public class LoginSceneController {
     usersGridPane.setAlignment(Pos.CENTER);
 
     ImageView riskImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/Risk.png").toString()));
+        new Image(getClass().getResource("/com/unima/risk6/pictures/risk.png").toString()));
 
     int column = 0;
     int row = 1;

@@ -86,14 +86,16 @@ public class UserOptionsSceneController {
     // Initialize the user name TextField
     TextField userNameField = new TextField(user.getUsername());
     userNameField.setEditable(false);
-    userNameField.setStyle("-fx-font-size: 40; -fx-background-color: transparent; "
+    userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
+        + "70px; -fx-background-color: transparent; "
         + "-fx-border-color: transparent;");
     userNameField.setAlignment(Pos.CENTER);
 
     // Add a Tooltip to the userNameField
     Tooltip tooltip = new Tooltip("Click twice to change the name");
-    tooltip.setShowDelay(Duration.millis(50)); // Set the delay to 100 milliseconds
+    tooltip.setShowDelay(Duration.millis(20)); // Set the delay to 100 milliseconds
     Tooltip.install(userNameField, tooltip);
+    tooltip.setStyle("-fx-font-size: 26px");
 
     // Add a click event listener to make the TextField editable
     EventHandler<MouseEvent> mouseClickedHandler = event -> {
@@ -122,7 +124,8 @@ public class UserOptionsSceneController {
             userNameField.setText(user.getUsername());
           }
         }
-        userNameField.setStyle("-fx-font-size: 40; -fx-background-color: transparent; "
+        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
+            + "-fx-font-size: 70px; -fx-background-color: transparent; "
             + "-fx-border-color: transparent;");
       }
     });
@@ -141,7 +144,8 @@ public class UserOptionsSceneController {
             userNameField.setText(user.getUsername());
           }
         }
-        userNameField.setStyle("-fx-font-size: 40; -fx-background-color: transparent; "
+        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
+            + "-fx-font-size: 70px; -fx-background-color: transparent; "
             + "-fx-border-color: transparent;");
         userNameField.getParent().requestFocus(); // Move the focus to the parent
       }

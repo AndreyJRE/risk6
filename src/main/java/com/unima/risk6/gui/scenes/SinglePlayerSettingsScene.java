@@ -2,14 +2,14 @@ package com.unima.risk6.gui.scenes;
 
 import com.unima.risk6.gui.controllers.SinglePlayerSettingsSceneController;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 
 public class SinglePlayerSettingsScene extends Scene implements InitializableScene {
 
   private SinglePlayerSettingsSceneController singlePlayerSettingsSceneController;
 
   public SinglePlayerSettingsScene() {
-    super(new AnchorPane());
+    super(new BorderPane());
   }
 
   @Override
