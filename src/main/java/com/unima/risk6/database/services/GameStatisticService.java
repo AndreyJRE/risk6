@@ -39,10 +39,8 @@ public class GameStatisticService {
    * @throws NotFoundException If no GameStatistic object is found with the specified ID.
    */
   public GameStatistic getGameStatisticById(Long id) {
-    return gameStatisticRepository.get(id)
-        .orElseThrow(
-            () -> new NotFoundException(
-                "Game Statistic with id {" + id + "} is not in the database"));
+    return gameStatisticRepository.get(id).orElseThrow(
+        () -> new NotFoundException("Game Statistic with id {" + id + "} is not in the database"));
   }
 
   /**
@@ -74,8 +72,8 @@ public class GameStatisticService {
     Optional<GameStatistic> gameStatisticOptional = gameStatisticRepository.get(
         gameStatistic.getId());
     if (gameStatisticOptional.isEmpty()) {
-      throw new NotFoundException("Game Statistic with id {" + gameStatistic.getId()
-          + "} is not in the database");
+      throw new NotFoundException(
+          "Game Statistic with id {" + gameStatistic.getId() + "} is not in the database");
     }
     gameStatistic.setFinishDate(LocalDateTime.now());
     gameStatisticRepository.update(gameStatistic);
@@ -105,4 +103,14 @@ public class GameStatisticService {
     return gameStatisticRepository.getAllStatisticsByGameWon(gameWon);
   }
 
+  /**
+   * Closes the connection to the repository.
+   */
+  public void close() {
+    try {
+      gameStatisticRepository.closeStatements();
+    } catch (Exception e) {
+      LOGGER.error("Error closing connection to database", e);
+    }
+  }
 }

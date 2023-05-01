@@ -265,5 +265,20 @@ public class GameStatisticRepository implements GameStatisticDao {
     return getAll().stream().filter(gameStatistic -> gameStatistic.isGameWon() == gameWon).toList();
   }
 
-
+  /**
+   * Closes all prepared statements.
+   *
+   * @throws RuntimeException if there is a problem closing the statements
+   */
+  public void closeStatements() {
+    try {
+      addGameStatisticStatement.close();
+      getAllGameStatisticsStatement.close();
+      getGameStatisticByIdStatement.close();
+      updateGameStatisticStatement.close();
+      getAllStatisticsByUserIdStatement.close();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
