@@ -138,8 +138,7 @@ public class UserStatisticsSceneController {
   }
 
   private void initUserStackPane() {
-    userImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures"
-        + "/747376.png").toString()));
+    userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(150);
     userImage.setFitWidth(150);
 

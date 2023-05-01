@@ -51,8 +51,7 @@ public class SelectedUserSceneController {
   public void init(User user) {
     this.user = user;
     this.root = (BorderPane) selectedUserScene.getRoot();
-    userImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures"
-        + "/747376.png").toString()));
+    userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(200);
     userImage.setFitWidth(200);
 

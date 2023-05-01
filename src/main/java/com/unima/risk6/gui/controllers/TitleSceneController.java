@@ -11,6 +11,7 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import java.net.URL;
 import java.util.ArrayList;
@@ -117,7 +118,16 @@ public class TitleSceneController implements Initializable {
   // Define the event handler for the multi player button
   @FXML
   private void handleMultiPlayer() {
-    // TODO: Implement the multi player game
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(scene);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    scene.setUser(user);
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
     System.out.println("Multi player game started");
   }
 

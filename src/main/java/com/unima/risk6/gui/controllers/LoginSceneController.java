@@ -76,8 +76,7 @@ public class LoginSceneController {
 
     for (User user : usersPage) {
       ImageView userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures" +
-              "/747376.png").toString()));
+          new Image(getClass().getResource(user.getImagePath()).toString()));
       userImage.setFitHeight(120);
       userImage.setFitWidth(120);
 

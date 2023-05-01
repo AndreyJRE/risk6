@@ -77,7 +77,7 @@ public class CreateAccountController implements Initializable {
 
     pause = new PauseTransition(Duration.millis(500));
     User user = new User(username, password,
-        "src/main/resources/Pictures/AdobeStock_259394679.png");
+        "/com/unima/risk6/pictures/747376.png");
     try {
       userService.saveUser(user);
       sceneController = SceneConfiguration.getSceneController();

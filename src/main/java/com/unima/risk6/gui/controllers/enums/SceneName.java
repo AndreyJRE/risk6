@@ -8,7 +8,8 @@ public enum SceneName {
   CREATE_ACCOUNT,
   SELECTED_USER,
   USER_OPTION,
-  USER_STATISTICS
+  USER_STATISTICS,
+  SINGLE_PLAYER_SETTINGS
 
   // add more scene names as needed
 
