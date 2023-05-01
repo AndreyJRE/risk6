@@ -7,6 +7,7 @@ import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
 import java.util.List;
@@ -22,8 +23,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -62,14 +61,7 @@ public class UserStatisticsSceneController {
 
   private void initElements() {
     // Back arrow
-    Path arrow = new Path();
-    arrow.getElements().add(new MoveTo(10, 15));
-    arrow.getElements().add(new LineTo(30, 0));
-    arrow.getElements().add(new MoveTo(30, 30));
-    arrow.getElements().add(new LineTo(10, 15));
-    arrow.setStrokeWidth(3);
-    arrow.setStroke(Color.BLACK);
-    arrow.setFill(Color.TRANSPARENT);
+    Path arrow = StyleConfiguration.generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);

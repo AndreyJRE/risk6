@@ -1,6 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -24,8 +25,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -56,14 +55,7 @@ public class SinglePlayerSettingsSceneController {
   }
 
   private void initElements() {
-    Path arrow = new Path();
-    arrow.getElements().add(new MoveTo(10, 15));
-    arrow.getElements().add(new LineTo(30, 0));
-    arrow.getElements().add(new MoveTo(30, 30));
-    arrow.getElements().add(new LineTo(10, 15));
-    arrow.setStrokeWidth(3);
-    arrow.setStroke(Color.BLACK);
-    arrow.setFill(Color.TRANSPARENT);
+    Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
