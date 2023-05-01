@@ -248,4 +248,23 @@ public class UserRepository implements UserDao {
   public List<User> getAllUsersByActive(boolean active) {
     return getAll().stream().filter(x -> x.isActive() == active).toList();
   }
+
+  /**
+   * Closes all PreparedStatements used by this DAO.
+   *
+   * @throws RuntimeException if there is a problem closing the PreparedStatements
+   */
+  public void closeStatements() {
+    try {
+      getUserStatement.close();
+      getUsersStatement.close();
+      addUserStatement.close();
+      updateUserStatement.close();
+      deleteUserStatement.close();
+      getUserByUsernameStatement.close();
+      deleteGameStatisticsByUserIdStatement.close();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
