@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -38,6 +39,8 @@ public class LoginSceneController {
 
   private final SceneController sceneController;
 
+  private DropShadow dropShadow;
+
   public LoginSceneController(LogInScene loginScene) {
     this.loginScene = loginScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -49,6 +52,9 @@ public class LoginSceneController {
     root = (VBox) loginScene.getRoot();
     root.setPrefWidth(SceneConfiguration.getWidth());
     root.setPrefHeight(SceneConfiguration.getHeight());
+    dropShadow = new DropShadow();
+    dropShadow.setRadius(15.0);
+    dropShadow.setColor(Color.LIGHTSKYBLUE.darker());
     Pagination usersPagination = initializeUsersPagination();
     Button createButton = createCustomCreateButton();
     Button skipButton = createSkipButton();
@@ -57,7 +63,7 @@ public class LoginSceneController {
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
     root.getChildren().addAll(selectUser, usersPagination, createButton, skipButton);
     root.setAlignment(Pos.CENTER);
-    root.setSpacing(100);
+    root.setSpacing(75);
   }
 
   private GridPane createUsersGridPanePage(List<User> usersPage) {
@@ -97,7 +103,13 @@ public class LoginSceneController {
       userStackPane.getChildren().addAll(circle, userImage);
 
       userStackPane.setOnMouseClicked(e -> showSelectedUser(user));
-
+      userStackPane.hoverProperty().addListener((observableValue, aBoolean, t1) -> {
+        if (t1) {
+          userStackPane.setEffect(dropShadow);
+        } else {
+          userStackPane.setEffect(null);
+        }
+      });
       Label userName = new Label(user.getUsername());
       userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
           + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
@@ -161,8 +173,8 @@ public class LoginSceneController {
 
   // define the event handler for the button
   private void handleCreateButton() {
-    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/CreateAccount"
-        + ".fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        RisikoMain.class.getResource("fxml/CreateAccount" + ".fxml"));
     Parent root;
     try {
       root = fxmlLoader.load();

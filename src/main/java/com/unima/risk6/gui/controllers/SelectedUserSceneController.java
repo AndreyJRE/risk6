@@ -1,5 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+
 import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
@@ -154,10 +156,7 @@ public class SelectedUserSceneController {
     loginButton.setPrefWidth(470);
     loginButton.setPrefHeight(40);
     loginButton.setAlignment(Pos.CENTER);
-    loginButton.setStyle(
-        "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF;"
-            + " -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect:"
-            + " dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    applyButtonStyle(loginButton);
     loginButton.setFont(new Font(18));
 
     welcomeBack = new Label("Welcome Back!");
