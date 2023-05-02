@@ -4,7 +4,6 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
-import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.models.GameState;
@@ -12,6 +11,7 @@ import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
@@ -75,14 +75,11 @@ public class TitleSceneController implements Initializable {
   private Button quitButton;
 
   private SceneController sceneController;
-  private User user;
-  private List<User> activeUser;
-  private UserService userService;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
+    SoundConfiguration.playTitleSound();
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
     DropShadow dropShadow = new DropShadow();
     dropShadow.setRadius(10.0);
@@ -101,8 +98,6 @@ public class TitleSceneController implements Initializable {
     applyButtonStyle(optionsButton);
     applyButtonStyle(quitButton);
     sceneController = SceneConfiguration.getSceneController();
-    activeUser = userService.getUsersByActive(true);
-    user = activeUser.get(0);
   }
 
 
