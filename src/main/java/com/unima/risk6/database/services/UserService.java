@@ -179,4 +179,15 @@ public class UserService {
     return userRepository.getAllUsersByActive(active);
   }
 
+  /**
+   * Closes the database connection.
+   */
+  public void close() {
+    try {
+      userRepository.closeStatements();
+    } catch (Exception e) {
+      LOGGER.error("Error closing the database connection");
+    }
+
+  }
 }

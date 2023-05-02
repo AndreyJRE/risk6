@@ -21,7 +21,6 @@ import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import javafx.animation.PathTransition;
 import javafx.geometry.Bounds;
@@ -290,17 +289,15 @@ public class GameSceneController implements GameStateObserver {
   @Override
   public void update(GameState gameState) {
     this.gameState = gameState;
-    List<Move> lastMoves = gameState.getLastMoves();
+    Move lastMove = gameState.getLastMove();
     updateReferencesFromGameState();
-    lastMoves.forEach(lastMove -> {
-      if (lastMove instanceof Fortify fortify) {
-        animateFortify(fortify);
-      } else if (lastMove instanceof Attack attack) {
-        animateAttack(attack);
-      } else if (lastMove instanceof Reinforce reinforce) {
-        animateReinforce(reinforce);
-      }
-    });
+    if (lastMove instanceof Fortify fortify) {
+      animateFortify(fortify);
+    } else if (lastMove instanceof Attack attack) {
+      animateAttack(attack);
+    } else if (lastMove instanceof Reinforce reinforce) {
+      animateReinforce(reinforce);
+    }
   }
 
   private void updateReferencesFromGameState() {
