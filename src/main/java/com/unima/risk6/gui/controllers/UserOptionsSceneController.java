@@ -4,6 +4,7 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -20,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
@@ -44,11 +46,11 @@ public class UserOptionsSceneController {
 
   private final UserOptionsScene userOptions;
   private final SceneController sceneController;
+  private final UserService userService;
   private User user;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
-  private final UserService userService;
 
 
   public UserOptionsSceneController(UserOptionsScene userOptions) {
@@ -106,7 +108,7 @@ public class UserOptionsSceneController {
     userNameField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue && !enterPressed.get()) {
         userNameField.setEditable(false);
-        changePasswordConfirmation(userNameField);
+        changeUsernameConfirmation(userNameField);
       }
     });
 
@@ -114,7 +116,7 @@ public class UserOptionsSceneController {
       if (event.getCode() == KeyCode.ENTER) {
         userNameField.setEditable(false);
         enterPressed.set(true);
-        changePasswordConfirmation(userNameField);
+        changeUsernameConfirmation(userNameField);
         userNameField.getParent().requestFocus(); // Move the focus to the parent
       }
       enterPressed.set(false);
@@ -156,8 +158,8 @@ public class UserOptionsSceneController {
           .getSceneBySceneName(SceneName.USER_STATISTICS);
       if (scene == null) {
         scene = new UserStatisticsScene();
-        UserStatisticsSceneController userStatisticsSceneController = new UserStatisticsSceneController(
-            scene);
+        UserStatisticsSceneController userStatisticsSceneController =
+            new UserStatisticsSceneController(scene);
         scene.setController(userStatisticsSceneController);
         sceneController.addScene(SceneName.USER_STATISTICS, scene);
       }
@@ -201,13 +203,18 @@ public class UserOptionsSceneController {
     return changePasswordButton;
   }
 
-  private void changePasswordConfirmation(TextField userNameField) {
+  private void changeUsernameConfirmation(TextField userNameField) {
     if (!user.getUsername().equals(userNameField.getText())) {
       boolean confirm = showConfirmationDialog("Change username",
           "Do you really want to change the name of your user?");
       if (confirm) {
         user.setUsername(userNameField.getText());
-        userService.updateUser(user);
+        try {
+          userService.updateUser(user);
+        } catch (UsernameNotUniqueException e) {
+          showErrorDialog("Error", e.getMessage());
+          userNameField.setText(user.getUsername());
+        }
       } else {
         userNameField.setText(user.getUsername());
       }
@@ -282,6 +289,14 @@ public class UserOptionsSceneController {
 
     Optional<ButtonType> result = alert.showAndWait();
     return result.isPresent() && result.get() == yesButton;
+  }
+
+  private void showErrorDialog(String title, String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 
 }
