@@ -1,6 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.InitializableScene;
 import java.util.HashMap;
@@ -35,6 +36,9 @@ public class SceneController {
       scene1.init();
     }
     stage.setScene(scene);
+    switch (name) {
+      case TITLE -> SoundConfiguration.playTitleSound();
+    }
     fadeIn(scene);
   }
 

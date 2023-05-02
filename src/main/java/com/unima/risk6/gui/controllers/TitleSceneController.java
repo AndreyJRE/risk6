@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
@@ -11,7 +12,6 @@ import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
-import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
@@ -79,7 +79,6 @@ public class TitleSceneController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     // Set the font of the title label
-    SoundConfiguration.playTitleSound();
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
     DropShadow dropShadow = new DropShadow();
     dropShadow.setRadius(10.0);
@@ -130,6 +129,7 @@ public class TitleSceneController implements Initializable {
     }
     sceneController.activate(SceneName.GAME);
     //TODO If we want to go full screen we can use this
+    pauseTitleSound();
     sceneController.getStage().setFullScreen(true);
   }
 
@@ -146,6 +146,7 @@ public class TitleSceneController implements Initializable {
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
+    pauseTitleSound();
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
     System.out.println("Multi player game started");
   }
@@ -161,12 +162,12 @@ public class TitleSceneController implements Initializable {
       scene.setController(userOptionsSceneController);
       sceneController.addScene(SceneName.USER_OPTION, scene);
     }
+    pauseTitleSound();
     sceneController.activate(SceneName.USER_OPTION);
   }
 
   @FXML
   private void handleQuitGame() {
-    SceneController sceneController = SceneConfiguration.getSceneController();
     sceneController.close();
   }
 

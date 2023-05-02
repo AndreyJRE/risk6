@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import java.util.Random;
 import javafx.animation.PauseTransition;
 import javafx.scene.image.Image;
@@ -25,6 +26,7 @@ public class DiceUi extends Pane {
   public void rollDice() {
     int rollDuration = 1000 + random.nextInt(2000);
     showRollingGif();
+    SoundConfiguration.playRollDiceSound();
     PauseTransition pauseTransition = new PauseTransition(Duration.millis(rollDuration));
     pauseTransition.setOnFinished(e -> showDiceResult(random.nextInt(6) + 1));
     pauseTransition.play();
