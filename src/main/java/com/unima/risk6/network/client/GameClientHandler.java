@@ -59,8 +59,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
     if (msg instanceof FullHttpResponse response) {
       throw new IllegalStateException(
-          "Unexpected FullHttpResponse (getStatus=" + response.status() +
-              ", content=" + response.content().toString(CharsetUtil.UTF_8) + ')');
+              "Unexpected FullHttpResponse (getStatus=" + response.status() +
+                      ", content=" + response.content().toString(CharsetUtil.UTF_8) + ')');
     }
 
     WebSocketFrame frame = (WebSocketFrame) msg;

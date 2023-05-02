@@ -27,16 +27,20 @@ public final class GameClient implements Runnable {
 
   private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
 
-  private String msg;
-  private boolean sended = true;
+  private volatile String msg;
+  private volatile boolean sended = true;
+  private Channel ch;
 
   public GameClient(String url) {
     URL = System.getProperty("url", url);
   }
 
   public void sendMessage(String msg){
-    this.msg = msg;
-    sended = false;
+    System.out.println("Sending Message: " + msg);
+    WebSocketFrame frame = new TextWebSocketFrame(msg);
+    ch.writeAndFlush(frame);
+    /*this.msg = msg;
+    sended = false;*/
   }
 
   public void run() {
@@ -47,25 +51,25 @@ public final class GameClient implements Runnable {
       EventLoopGroup group = new NioEventLoopGroup();
       try {
         final GameClientHandler handler = new GameClientHandler(
-            WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, true,
-                new DefaultHttpHeaders()));
+                WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, true,
+                        new DefaultHttpHeaders()));
 
         Bootstrap b = new Bootstrap();
         b.group(group).channel(NioSocketChannel.class)
-            .handler(new ChannelInitializer<SocketChannel>() {
-              @Override
-              protected void initChannel(SocketChannel ch) {
-                ChannelPipeline p = ch.pipeline();
-                p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192),
-                    WebSocketClientCompressionHandler.INSTANCE, handler);
-              }
-            });
+                .handler(new ChannelInitializer<SocketChannel>() {
+                  @Override
+                  protected void initChannel(SocketChannel ch) {
+                    ChannelPipeline p = ch.pipeline();
+                    p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192),
+                            WebSocketClientCompressionHandler.INSTANCE, handler);
+                  }
+                });
 
-        Channel ch = b.connect(uri.getHost(), port).sync().channel();
+        ch = b.connect(uri.getHost(), port).sync().channel();
         handler.handshakeFuture().sync();
 
         //BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
+        /*while (true) {
           //String msg = console.readLine();
           if (msg == null && !sended) {
             break;
@@ -83,13 +87,17 @@ public final class GameClient implements Runnable {
             WebSocketFrame frame = new TextWebSocketFrame(msg);
             ch.writeAndFlush(frame);
           }
+        }*/
+        //Nötig, damit Thread nicht terminiert.
+        while(true){
+          Thread.sleep(10000);
         }
       } finally {
         group.shutdownGracefully();
       }
     } catch (Exception e) {
       //TODO Logger
-        System.out.println(e);
+      System.out.println(e);
     }
   }
 }
