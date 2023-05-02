@@ -130,12 +130,16 @@ public class UserService {
     if (!userDatabase.getUsername().equals(user.getUsername())) {
       Optional<User> userWithUsername = userRepository.getUserByUsername(user.getUsername());
       if (userWithUsername.isPresent()) {
+        String newUsername = user.getUsername();
+        user.setUsername(userDatabase.getUsername());
         throw new UsernameNotUniqueException(
-            "This username{" + user.getUsername() + "} is already used");
+            "This username{" + newUsername + "} is already used");
+
       }
     }
     if (!userDatabase.getPassword().equals(user.getPassword())) {
       if (!isPasswordValid(user.getPassword())) {
+        user.setPassword(userDatabase.getPassword());
         throw new NotValidPasswordException(PASSWORD_EXCEPTION_MESSAGE);
       }
       String encryptedPassword = PasswordEncryption.encryptPassword(user.getPassword());
