@@ -3,7 +3,9 @@ package com.unima.risk6.network.serialization;
 import com.google.gson.GsonBuilder;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Continent;
@@ -34,6 +36,8 @@ public class Deserializer {
         .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
         .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
         .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
+        .registerTypeAdapter(HandIn.class, new HandInTypeAdapter())
+        .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter())
         .create()
         .fromJson(json, StandardMessage.class);
     //return new Gson().fromJson(json, StandardMessage.class);
