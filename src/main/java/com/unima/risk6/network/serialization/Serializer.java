@@ -17,23 +17,25 @@ import com.unima.risk6.network.message.Message;
 
 public class Serializer {
 
-  public static String serialize(Message obj) {
-    return new GsonBuilder()
-        .registerTypeAdapter(GameState.class, new GameStateTypeAdapter())
+    public static String serialize(Message obj) {
+        return new GsonBuilder()
+                .registerTypeAdapter(GameState.class, new GameStateTypeAdapter())
 
-        .registerTypeAdapter(Country.class, new CountryTypeAdapter())
-        .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
-        .registerTypeAdapter(Card.class, new CardTypeAdapter())
-        .registerTypeAdapter(Hand.class, new HandTypeAdapter())
-        .registerTypeAdapter(Player.class, new PlayerTypeAdapter())
-        .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
+                .registerTypeAdapter(Country.class, new CountryTypeAdapter())
+                .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
+                .registerTypeAdapter(Card.class, new CardTypeAdapter())
+                .registerTypeAdapter(Hand.class, new HandTypeAdapter())
+                .registerTypeAdapter(Player.class, new PlayerTypeAdapter())
+                .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
+                .registerTypeAdapter(EasyBot.class, new MediumBotTypeAdapter())
+                .registerTypeAdapter(EasyBot.class, new HardBotTypeAdapter())
 
-        .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
-        .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
-        .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
-        .create()
-        .toJson(obj);
-  }
+                .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
+                .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
+                .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
+                .create()
+                .toJson(obj);
+    }
 
 
 }
