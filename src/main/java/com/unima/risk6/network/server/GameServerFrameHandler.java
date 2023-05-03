@@ -7,6 +7,7 @@ import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.Deserializer;
 import com.unima.risk6.network.serialization.Serializer;
@@ -16,6 +17,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +74,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             moveProcessor.processFortify(fortify);
             sendGamestate();
           }
+          //TODO Serializers
           case "HAND_IN" -> {
             LOGGER.debug("The server received a hand in object");
             HandIn handIn = (HandIn) Deserializer.deserialize(request).getContent();
@@ -83,6 +86,43 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             EndPhase endPhase = (EndPhase) Deserializer.deserialize(request).getContent();
             moveProcessor.processEndPhase(endPhase);
             sendGamestate();
+          }
+          case "CONNECTION" -> {
+            LOGGER.debug("The server received a connection message");
+            ConnectionMessage connectionMessage = null;
+            try {
+              connectionMessage = (ConnectionMessage) Deserializer.deserialize(
+                  request);
+            } catch (Exception e) {
+              LOGGER.error("Error at deserializing ConnectionMessage: " + e);
+            }
+            try {
+              switch (connectionMessage.getConnectionActions()) {
+
+                case GET_GAMES -> {
+                }
+                case JOIN_SERVER_LOBBY -> {
+                }
+                case JOIN_GAME_LOBBY -> {
+                }
+                case JOIN_GAME -> {
+                }
+                case LEAVE_SERVER_LOBBY -> {
+                }
+                case LEAVE_GAME_LOBBY -> {
+                }
+                case LEAVE_GAME -> {
+                }
+                case CREATE_GAME -> {
+                }
+                case ACCEPT_USER -> {
+                }
+                case DROP_USER -> {
+                }
+                default -> LOGGER.error("Server received a faulty connection message");
+              }
+            } catch (NullPointerException ignored) {
+            }
           }
           default -> {
             LOGGER.debug("The Message received wasnt a valid Message\nMessage: " + json);
@@ -100,7 +140,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void sendGamestate() {
     for (Channel ch : channels) {
-      LOGGER.debug("Send new gamestate");
+      LOGGER.debug("Send new gamestate to: " + ch.id());
       ch.writeAndFlush(
           new TextWebSocketFrame(Serializer.serialize(
               new StandardMessage(moveProcessor.getGameController().getGameState()))));
@@ -110,7 +150,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     channels.add(ctx.channel());
-    //ctx.channel().attr("name").set("Test");
+    //TODO Manage the different games and the server lobby, multiple channelGroups could be the solution
+    ctx.channel().attr(AttributeKey.newInstance("name")).set("Test");
   }
 
 }
