@@ -3,7 +3,6 @@ package com.unima.risk6.game.ai.montecarlo;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.GreedyBot;
 import com.unima.risk6.game.ai.models.CountryPair;
-import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
@@ -34,23 +33,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     playerController.setPlayer(this);
   }
 
-  public List<MoveTriplet> getLegalMoves() {
-    List<Reinforce> reinforceMoves = this.createAllReinforcements();
-    List<CountryPair> attackMoves = this.createAllAttacks();
-    List<Fortify> fortifyMoves = this.getFortifyMoves();
-
-    List<MoveTriplet> legalMoves = new ArrayList<>();
-    // for (List<Reinforce> reinforce : reinforceMoves) {
-    // for (List<> attack : attackMoves) {
-    // for (Fortify fortify : fortifyMoves) {
-    // legalMoves.add(new MoveTriplet(reinforce, attack, fortify));
-    // }
-    // }
-    // }
-
-    return legalMoves;
-  }
-
   public List<Reinforce> getReinforceMoves() {
     int troopsAvailable = this.getDeployableTroops();
     Map<Country, Integer> diffMap = new HashMap<>();
@@ -72,13 +54,12 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
             .map(entry -> new Reinforce(entry.getKey(), entry.getValue())).toList());
   }
 
-  // TODO: List<List>
   public List<CountryPair> getAttackMoves() {
     List<CountryPair> attackPairs = new ArrayList<>();
     for (Continent continent : this.getContinents()) {
       attackPairs.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
-    // TODO: sort by best for continent?
+    // TODO: shuffle moves or let it play by best chances?
     return attackPairs.stream().filter(pair -> pair.getWinningProbability() > 70).toList();
   }
 
@@ -180,8 +161,8 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
    * @return A list of CountryPair objects representing all attacks.
    */
   @Override
-  public List<CountryPair> createAllAttacks() {
-    return this.getAttackMoves().subList(0, 1);
+  public CountryPair createAttack() {
+    return this.getAttackMoves().get(0);
   }
 
   @Override

@@ -172,14 +172,14 @@ public class MediumBot extends GreedyBot implements AiBot {
   }
 
   @Override
-  public List<CountryPair> createAllAttacks() {
+  public CountryPair createAttack() {
     List<CountryPair> allAttacks = new ArrayList<>();
     sortContinentsByHighestRelativePower();
     for (Continent continent : this.getContinentsCopy()) {
       allAttacks.addAll(makeBestAttackInContinent(continent));
     }
     this.lastAttackSize = allAttacks.size();
-    return allAttacks;
+    return allAttacks.get(0);
   }
 
   @Override

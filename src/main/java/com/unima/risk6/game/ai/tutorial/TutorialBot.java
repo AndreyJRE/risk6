@@ -113,10 +113,8 @@ public class TutorialBot extends Player implements AiBot {
   }
 
   @Override
-  public List<CountryPair> createAllAttacks() {
-    List<CountryPair> nextAttack = new LinkedList<>();
-    nextAttack.add(this.deterministicAttacks.poll());
-    return nextAttack;
+  public CountryPair createAttack() {
+    return this.deterministicAttacks.poll();
   }
 
   @Override

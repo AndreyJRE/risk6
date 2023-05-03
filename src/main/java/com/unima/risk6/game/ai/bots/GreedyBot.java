@@ -60,7 +60,7 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   public abstract List<Reinforce> createAllReinforcements();
 
-  public abstract List<CountryPair> createAllAttacks();
+  public abstract CountryPair createAttack();
 
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {

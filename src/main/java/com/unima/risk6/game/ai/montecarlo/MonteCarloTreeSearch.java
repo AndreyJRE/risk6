@@ -37,7 +37,9 @@ import com.unima.risk6.network.serialization.HandTypeAdapter;
 import com.unima.risk6.network.serialization.PlayerTypeAdapter;
 import com.unima.risk6.network.server.MoveProcessor;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 public class MonteCarloTreeSearch {
@@ -270,15 +272,15 @@ public class MonteCarloTreeSearch {
     for (Reinforce reinforce : allReinforcements) {
       moveProcessor.processReinforce(reinforce);
     }
-    List<CountryPair> allAttacks = new ArrayList<>();
+    Queue<CountryPair> allAttacks = new LinkedList<>();
     do {
-      List<CountryPair> attacks = current.createAllAttacks();
+      CountryPair attacks = current.createAttack();
       // while not (one country has lost)
-      if (attacks.size() == 0) {
+      if (attacks == null) {
         break;
       }
       moveProcessor.processAttack(
-          attacks.get(0).createAttack(current.getAttackTroops(attacks.get(0).getOutgoing())));
+          attacks.createAttack(current.getAttackTroops(attacks.getOutgoing())));
     } while (current.attackAgain());
     // how to signal move after Attack?
     Fortify fortify = current.createFortify();

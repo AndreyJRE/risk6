@@ -25,7 +25,7 @@ public interface AiBot {
    *
    * @return A list of CountryPair objects representing all attacks.
    */
-  List<CountryPair> createAllAttacks();
+  CountryPair createAttack();
 
   /**
    * Creates a Fortify move for a country pair after a successful attack.
