@@ -69,9 +69,7 @@ class EasyBotTest {
     greatBritain.setTroops(3);
     iceland.setTroops(1);
     attack = easyBot.createAttack();
-    if (attack != null) {
-      assertEquals(new CountryPair(greatBritain, iceland), attack);
-    }
+    assertEquals(new CountryPair(greatBritain, iceland), attack);
   }
 
   @Test

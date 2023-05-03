@@ -61,11 +61,10 @@ public class EasyBot extends Player implements AiBot {
   @Override
   public CountryPair createAttack() {
     List<CountryPair> decisions = new ArrayList<>();
-    for (Continent continent : this.getContinents()) {
+    for (Continent continent : this.currentGameState.getContinents()) {
       decisions.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
-    CountryPair toAttack = this.getRandomCountryPair(decisions);
-    return toAttack;
+    return this.getRandomCountryPair(decisions);
   }
 
   @Override
