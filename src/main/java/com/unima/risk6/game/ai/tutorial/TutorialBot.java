@@ -152,4 +152,10 @@ public class TutorialBot extends Player implements AiBot {
   public boolean attackAgain() { // we always know what will happen in the tutorial
     return false;
   }
+
+  @Override
+  public int getAttackTroops(Country attacker) {
+    return 3;
+  }
+
 }
