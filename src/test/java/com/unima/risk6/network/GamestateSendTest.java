@@ -61,6 +61,7 @@ public class GamestateSendTest {
             Thread.sleep(1000);
             Thread client = new Thread(gameClient);
             client.start();
+            Thread.sleep(2000);
             gameClient.sendMessage("Penis");
             Thread.sleep(10000);
             //assertEquals("{\"statusCode\":200,\"content\":\"tetest\"}", Serializer.serialize(new StandardMessage("tetest", 200)));

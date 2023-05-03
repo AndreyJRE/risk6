@@ -1,10 +1,5 @@
 package com.unima.risk6.network.server;
 
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.controllers.DeckController;
-import com.unima.risk6.game.logic.controllers.GameController;
-import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.Deck;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -16,16 +11,10 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
-import java.util.ArrayList;
-
 public final class GameServer implements Runnable{
 
-    int PORT = 8080;
-    ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    //TODO
-    MoveProcessor moveProcessor = new MoveProcessor(new PlayerController(),new GameController(GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())),new DeckController(new Deck()));
-
-
+    static final int PORT = 8080;
+    static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     public void run() {
         System.out.println("Starting Server");
@@ -36,7 +25,7 @@ public final class GameServer implements Runnable{
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new GameServerInitializer(channels,moveProcessor,Integer.toString(PORT)));
+                    .childHandler(new GameServerInitializer(channels));
 
             Channel ch = b.bind(PORT).sync().channel();
             ch.closeFuture().sync();

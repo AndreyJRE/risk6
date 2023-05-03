@@ -20,6 +20,7 @@ public class ManualServerClientTest {
       Thread.sleep(1000);
       Thread client = new Thread(gameClient);
       client.start();
+      Thread.sleep(2000);
       BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
       gameClient.sendMessage("testest");
       while (true){
