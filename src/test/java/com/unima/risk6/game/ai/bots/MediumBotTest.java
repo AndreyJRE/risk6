@@ -1,6 +1,7 @@
 package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.unima.risk6.game.ai.AiBot;
@@ -144,7 +145,9 @@ class MediumBotTest {
     siam.setTroops(1);
     List<CountryPair> attacks = mediumBot.createAllAttacks();
     assertEquals(3, attacks.size());
-    assertEquals(indonesia, attacks.get(0).getOutgoing());
+    assertTrue(attacks.contains(new CountryPair(indonesia, siam)));
+    assertTrue(attacks.contains(new CountryPair(westernAus, easternAus)));
+    assertTrue(attacks.contains(new CountryPair(westernAus, newGuinea)));
   }
 
   @Test
