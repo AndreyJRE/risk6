@@ -7,10 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.CardSymbol;
 import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
@@ -51,7 +53,7 @@ class GameControllerTest {
     GameConfiguration.setGameState(GameConfiguration.configureGame(playerList, bots));
     players = new Player[6];
     gameState = GameConfiguration.getGameState();
-    gameController.setGameState(gameState);
+    gameController = new GameController(gameState);
     players[0] = gameState.getActivePlayers().poll();
     players[1] = gameState.getActivePlayers().poll();
     players[2] = gameState.getActivePlayers().poll();
@@ -194,7 +196,22 @@ class GameControllerTest {
   //Test if a player that has lost will be removed from active Player queue
   @Test
   void lostPlayerTest() {
+    assertEquals(gameState.getCurrentPlayer(), players[0]);
+    //Should add 3 Cards in players[1] hand.
+
+    players[1].getHand().getCards().add(new Card(CardSymbol.CAVALRY, CountryName.ALASKA, 1));
+    players[1].getHand().getCards().add(new Card(CardSymbol.CAVALRY, CountryName.ALASKA, 2));
+    players[1].getHand().getCards().add(new Card(CardSymbol.CAVALRY, CountryName.ALASKA, 3));
+
+    assertEquals(players[0], gameController.getCurrentPlayer());
+    assertEquals(0, players[0].getHand().getCards().size());
+    assertEquals(3, players[1].getHand().getCards().size());
+
     gameController.removeLostPlayer(players[1]);
+    //Should add all cards of players[1] into players[0] hand.
+    assertEquals(3, players[0].getHand().getCards().size());
+    assertEquals(0, players[1].getHand().getCards().size());
+
     assertEquals(5, gameState.getActivePlayers().size());
     assertFalse(gameState.getActivePlayers().contains(players[1]));
     assertTrue(gameState.getLostPlayers().contains(players[1]));
@@ -329,7 +346,21 @@ class GameControllerTest {
     assertEquals(6, players[0].getContinents().size());
   }
 
+  @Test
   void deployableTroopsCalculationWithContinentsTest() {
+    getContinentByContinentName(ContinentName.AUSTRALIA).getCountries()
+        .forEach(n -> addCountryToPlayer(n.getCountryName(), players[0]));
+    gameController.calculateDeployableTroops();
+    //Should calculate 5: 3 through the country number and 2 bonus troops for Australian continent
+    assertEquals(5, players[0].getDeployableTroops());
+
+    clearCountries(players[0]);
+
+    getContinentByContinentName(ContinentName.ASIA).getCountries()
+        .forEach(n -> addCountryToPlayer(n.getCountryName(), players[0]));
+    gameController.calculateDeployableTroops();
+    // Should calculate 11: 4 through the countries of asia: 12/3=4 and 7 as bonus from full Asian Continent
+    assertEquals(11, players[0].getDeployableTroops());
 
   }
 
