@@ -88,9 +88,11 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             "Client Received Message with ContentType: " + json.get("contentType").getAsString());
         switch (json.get("contentType").getAsString()) {
           case "GAME_STATE" -> {
+            LOGGER.debug("Overwrite GameState with new GameState from Server");
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
+
           }
           default -> LOGGER.debug("The Message received wasnt a gamestate");
         }

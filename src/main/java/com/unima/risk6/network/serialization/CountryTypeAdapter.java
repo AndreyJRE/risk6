@@ -1,6 +1,5 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -8,15 +7,27 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.NoSuchElementException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserializer<Country> {
+
+  private final static Logger LOGGER = LoggerFactory.getLogger(CountryTypeAdapter.class);
+  private GameState gameState;
+
+  public CountryTypeAdapter(GameState gameState) {
+    this.gameState = gameState;
+  }
+
+  public CountryTypeAdapter() {
+    this.gameState = null;
+  }
 
   @Override
   public JsonElement serialize(Country country, Type typeOfSrc, JsonSerializationContext context) {
@@ -37,17 +48,6 @@ public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserial
     jsonObject.addProperty("hasPlayer", country.hasPlayer());
     jsonObject.addProperty("troops", country.getTroops());
 
-    JsonArray adjacentCountriesArray = new JsonArray();
-    Set<Country> adjacentCountries = country.getAdjacentCountries();
-    if (adjacentCountries != null) {
-      for (Country adjacentCountry : adjacentCountries) {
-        adjacentCountriesArray.add(adjacentCountry.getCountryName().toString());
-      }
-    }
-    jsonObject.add("adjacentCountries", adjacentCountriesArray);
-
-    jsonObject.addProperty("continent", country.getContinent().getContinentName().toString());
-
     return jsonObject;
   }
 
@@ -58,7 +58,15 @@ public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserial
     JsonObject jsonObject = json.getAsJsonObject();
 
     CountryName countryName = context.deserialize(jsonObject.get("countryName"), CountryName.class);
-    Country country = new Country(countryName);
+    Country country;
+    try {
+
+      country = gameState.getCountries().stream()
+          .filter(x -> x.getCountryName().equals(countryName)).findFirst().orElseThrow();
+    } catch (NoSuchElementException e) {
+      LOGGER.error("No such Country");
+      country = new Country(CountryName.ALASKA);
+    }
 
     if (jsonObject.has("player")) {
       Player player = context.deserialize(jsonObject.get("player"), Player.class);
@@ -68,21 +76,6 @@ public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserial
     if (jsonObject.has("troops")) {
       int troops = jsonObject.get("troops").getAsInt();
       country.setTroops(troops);
-    }
-
-    if (jsonObject.has("adjacentCountries")) {
-      JsonArray adjacentCountriesArray = jsonObject.getAsJsonArray("adjacentCountries");
-      Set<Country> adjacentCountries = new HashSet<>();
-      for (JsonElement adjacentCountryJson : adjacentCountriesArray) {
-        Country adjacentCountry = context.deserialize(adjacentCountryJson, Country.class);
-        adjacentCountries.add(adjacentCountry);
-      }
-      country.setAdjacentCountries(adjacentCountries);
-    }
-
-    if (jsonObject.has("continent")) {
-      Continent continent = context.deserialize(jsonObject.get("continent"), Continent.class);
-      country.setContinent(continent);
     }
 
     return country;
