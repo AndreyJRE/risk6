@@ -223,12 +223,16 @@ public class MoveProcessor {
   }
 
 
-  Country getCountryByCountryName(CountryName countryName) {
+  public Country getCountryByCountryName(CountryName countryName) {
     final Country[] country = new Country[1];
     gameController.getGameState().getCountries().stream()
         .filter(n -> n.getCountryName().equals(countryName))
         .forEach(n -> country[0] = n);
     return country[0];
+  }
+
+  public void clearLastMoves() {
+    gameController.getGameState().getLastMoves().clear();
   }
 
 

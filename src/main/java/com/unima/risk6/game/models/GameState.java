@@ -4,6 +4,7 @@ import com.unima.risk6.game.logic.Move;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Represents the state of a game of Risk, including the current players, countries, continents, and
@@ -20,7 +21,7 @@ public class GameState {
   private Player currentPlayer;
   private int numberOfHandIns;
   //TODO change to lastMove
-  private Move lastMove;
+  private Queue<Move> lastMoves;
   private final Deck deck;
   private boolean isGameOver;
 
@@ -43,7 +44,8 @@ public class GameState {
     this.lostPlayers = new ArrayList<>();
     this.deck = new Deck();
     this.isGameOver = false;
-  
+    this.lastMoves = new ConcurrentLinkedQueue<>();
+
 
   }
 
@@ -66,56 +68,31 @@ public class GameState {
     return currentPlayer;
   }
 
-  /**
-   * Returns the queue of active players.
-   *
-   * @return the queue of active players
-   */
   public Queue<Player> getActivePlayers() {
     return activePlayers;
   }
 
-  /**
-   * Increments the number of hand-ins that have occurred since the Game has started.
-   */
   public void setNumberOfHandIns() {
     this.numberOfHandIns += 1;
   }
 
-  /**
-   * Returns the number of hand-ins that have occurred.
-   *
-   * @return the number of hand-ins that have occurred
-   */
   public int getNumberOfHandIns() {
     return numberOfHandIns;
   }
 
-  /**
-   * Returns the set of continents in the game.
-   *
-   * @return the set of continents in the game
-   */
   public Set<Continent> getContinents() {
     return continents;
   }
 
-  /**
-   * Sets the current player to the given player.
-   *
-   * @param currentPlayer the current player
-   */
+
   public void setCurrentPlayer(Player currentPlayer) {
     this.currentPlayer = currentPlayer;
   }
 
-  public Move getLastMove() {
-    return lastMove;
+  public Queue<Move> getLastMoves() {
+    return lastMoves;
   }
 
-  public void setLastMove(Move lastMove) {
-    this.lastMove = lastMove;
-  }
 
   public ArrayList<Player> getLostPlayers() {
     return lostPlayers;
