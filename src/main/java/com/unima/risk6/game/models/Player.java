@@ -96,6 +96,18 @@ public class Player {
     this.currentPhase = currentPhase;
   }
 
+  @Override
+  public String toString() {
+    StringBuffer s = new StringBuffer();
+    s.append(this.getUser() + " deployableTroops: " + deployableTroops + " initial Troops: "
+        + initialTroops + "\n" + this.currentPhase + "| ");
+    countries.stream()
+        .forEach(n -> s.append(n.getCountryName() + ": " + n.getTroops() + "| "));
+    s.append("\n--------------");
+
+    return s.toString();
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -108,7 +120,7 @@ public class Player {
     return Objects.equals(getUser(), player.getUser());
   }
 
-  public boolean isHasConquered() {
+  public boolean getHasConquered() {
     return hasConquered;
   }
 
