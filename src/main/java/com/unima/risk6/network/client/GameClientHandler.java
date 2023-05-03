@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) {
-    System.out.println("Client disconnected!");
+    LOGGER.info("Client disconnected");
   }
 
   @Override
@@ -57,10 +58,10 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     if (!handshaker.isHandshakeComplete()) {
       try {
         handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-        System.out.println("Connected Successfully!");
+        LOGGER.info("Connected successfully to Server!");
         handshakeFuture.setSuccess();
       } catch (WebSocketHandshakeException e) {
-        System.out.println("Failed to connect");
+        LOGGER.error("Failed to connect");
         handshakeFuture.setFailure(e);
       }
       return;
@@ -80,19 +81,18 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
         //TODO Error Handling
       } catch (Exception e) {
         LOGGER.debug("Not a JSON: " + textFrame.text() + "\n Exception: " + e);
-        System.out.println("Not a JSON: " + textFrame.text());
 
       }
       if (json != null) {
-        System.out.println(json.get("contentType").getAsString());
+        LOGGER.debug(
+            "Client Received Message with ContentType: " + json.get("contentType").getAsString());
         switch (json.get("contentType").getAsString()) {
-          case "GAMESTATE":
-            GameState g = (GameState) Deserializer.deserialize(textFrame.text()).getContent();
+          case "GAME_STATE" -> {
+            GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
+                GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
-            break;
-          default:
-            LOGGER.debug("The Message received wasnt a gamestate");
-            break;
+          }
+          default -> LOGGER.debug("The Message received wasnt a gamestate");
         }
       }
 
