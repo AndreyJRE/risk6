@@ -53,19 +53,22 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
           case "ATTACK" -> {
             LOGGER.debug("The server received a attack object");
-            Attack attack = (Attack) Deserializer.deserialize(request).getContent();
+            Attack attack = (Attack) Deserializer.deserialize(request,
+                moveProcessor.getGameController().getGameState()).getContent();
             moveProcessor.processAttack(attack);
             sendGamestate();
           }
           case "REINFORCE" -> {
             LOGGER.debug("The server received a reinforce object");
-            Reinforce reinforce = (Reinforce) Deserializer.deserialize(request).getContent();
+            Reinforce reinforce = (Reinforce) Deserializer.deserialize(request,
+                moveProcessor.getGameController().getGameState()).getContent();
             moveProcessor.processReinforce(reinforce);
             sendGamestate();
           }
           case "FORTIFY" -> {
             LOGGER.debug("The server received a fortify object");
-            Fortify fortify = (Fortify) Deserializer.deserialize(request).getContent();
+            Fortify fortify = (Fortify) Deserializer.deserialize(request,
+                moveProcessor.getGameController().getGameState()).getContent();
             moveProcessor.processFortify(fortify);
             sendGamestate();
           }
