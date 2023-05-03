@@ -34,6 +34,7 @@ public class MoveProcessor {
 
   }
 
+
   public void processFortify(Fortify fortify) {
     //TODO Unterscheiden ob in Fortify Phase
     gameController.addLastMove(fortify);
@@ -173,5 +174,9 @@ public class MoveProcessor {
   public void processEndPhase(EndPhase endPhase) {
     gameController.addLastMove(endPhase);
     gameController.nextPhase();
+  }
+
+  public GameController getGameController() {
+    return gameController;
   }
 }

@@ -13,8 +13,13 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 public final class GameServer implements Runnable {
 
+  private MoveProcessor moveProcessor;
   static final int PORT = 8080;
   static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+
+  public GameServer(MoveProcessor moveProcessor) {
+    this.moveProcessor = moveProcessor;
+  }
 
   public void run() {
     System.out.println("Starting Server");
@@ -25,7 +30,7 @@ public final class GameServer implements Runnable {
       b.group(bossGroup, workerGroup)
           .channel(NioServerSocketChannel.class)
           .handler(new LoggingHandler(LogLevel.INFO))
-          .childHandler(new GameServerInitializer(channels));
+          .childHandler(new GameServerInitializer(channels, moveProcessor));
 
       Channel ch = b.bind(PORT).sync().channel();
       ch.closeFuture().sync();
