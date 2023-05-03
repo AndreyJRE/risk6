@@ -54,8 +54,6 @@ public class PlayerController {
 
   }
 
-  //TODO have to implement which Continent is fully Occupied by Player
-
 
   public List<CountryPair> getValidFortifiesFromCountry(Country country) {
     List<CountryPair> fortifiable = new ArrayList<>();
