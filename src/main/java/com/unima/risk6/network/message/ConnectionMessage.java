@@ -13,4 +13,8 @@ public class ConnectionMessage<T> extends Message<T> {
     super(content, ContentType.CONNECTION, statusCode);
     this.connectionActions = connectionActions;
   }
+
+  public ConnectionActions getConnectionActions() {
+    return connectionActions;
+  }
 }
