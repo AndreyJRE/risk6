@@ -1,5 +1,7 @@
 package com.unima.risk6.game.ai.montecarlo;
 
+import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.bots.GreedyBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.ai.models.Probabilities;
@@ -17,21 +19,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class MonteCarloBot extends Player {
+public class MonteCarloBot extends GreedyBot implements AiBot {
 
   private final PlayerController playerController;
   private List<Continent> continentsCopy;
+
+  private static final Random RNG = new Random();
+  private double attackProbability = 1.;
+
 
   public MonteCarloBot(Player toCopy) {
     super(toCopy);
     playerController = new PlayerController();
     playerController.setPlayer(this);
-    this.continentsCopy = new ArrayList<>();
   }
 
   public List<MoveTriplet> getLegalMoves() {
-    List<Reinforce> reinforceMoves = this.getReinforceMoves();
-    List<CountryPair> attackMoves = this.getAttackMoves();
+    List<Reinforce> reinforceMoves = this.createAllReinforcements();
+    List<CountryPair> attackMoves = this.createAllAttacks();
     List<Fortify> fortifyMoves = this.getFortifyMoves();
 
     List<MoveTriplet> legalMoves = new ArrayList<>();
@@ -46,9 +51,7 @@ public class MonteCarloBot extends Player {
     return legalMoves;
   }
 
-  // TODO: DO
   public List<Reinforce> getReinforceMoves() {
-    List<Reinforce> reinforcements = new ArrayList<>();
     int troopsAvailable = this.getDeployableTroops();
     Map<Country, Integer> diffMap = new HashMap<>();
     for (Country reinforcable : this.getCountries()) {
@@ -59,14 +62,14 @@ public class MonteCarloBot extends Player {
       }
     }
 
-    List<Country> reinforceList = diffMap.keySet().stream().filter(c -> diffMap.get(c) > 0)
+    List<Country> reinforceList = diffMap.keySet().stream()
+        .filter(c -> diffMap.get(c) > 0 && diffMap.get(c) <= troopsAvailable)
         .sorted(Comparator.comparing(diffMap::get).reversed()).toList();
-    reinforcements.addAll(
-        diffMap.entrySet().stream().filter(entry -> reinforceList.contains(entry.getKey()))
-            .map(entry -> new Reinforce(entry.getKey(), entry.getValue())).toList());
     // reinforce if diff > 0
 
-    return reinforcements;
+    return new ArrayList<>(
+        diffMap.entrySet().stream().filter(entry -> reinforceList.contains(entry.getKey()))
+            .map(entry -> new Reinforce(entry.getKey(), entry.getValue())).toList());
   }
 
   // TODO: List<List>
@@ -132,10 +135,6 @@ public class MonteCarloBot extends Player {
     }
   }
 
-  private int calculateTroopWeakness(Country country, Country adj) {
-    return adj.getTroops() - country.getTroops();
-  }
-
   public void updateContinentsList() {
     this.continentsCopy = new ArrayList<>();
     //TODO: continents must be gotten from a gamestate
@@ -151,6 +150,51 @@ public class MonteCarloBot extends Player {
     this.continentsCopy.sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
         .reversed());
+  }
+
+
+  /**
+   * Creates a list of all Reinforce moves the bot will perform.
+   *
+   * @return A list of Reinforce objects representing all reinforcement moves to be performed.
+   */
+  @Override
+  public List<Reinforce> createAllReinforcements() {
+    List<Reinforce> answer = new ArrayList<>();
+    List<Reinforce> allPossibilities = this.getReinforceMoves();
+    int troopsAvailable = this.getDeployableTroops();
+    while (troopsAvailable > 0 && allPossibilities.size() > 0) {
+      Reinforce chosen = allPossibilities.get(RNG.nextInt(allPossibilities.size()));
+      answer.add(chosen);
+      allPossibilities.remove(chosen);
+      troopsAvailable -= chosen.getToAdd();
+    }
+
+    return answer;
+  }
+
+  /**
+   * Creates a list of all attacks the bot will perform as CountryPair objects which include both
+   * countries involved in each attack.
+   *
+   * @return A list of CountryPair objects representing all attacks.
+   */
+  @Override
+  public List<CountryPair> createAllAttacks() {
+    return this.getAttackMoves().subList(0, 1);
+  }
+
+  @Override
+  public Fortify createFortify() {
+    List<Fortify> fortifies = this.getFortifyMoves();
+    return fortifies.get(RNG.nextInt(fortifies.size()));
+  }
+
+
+  @Override
+  public boolean attackAgain() {
+    this.attackProbability *= 0.9;
+    return RNG.nextDouble() < this.attackProbability;
   }
 
 }

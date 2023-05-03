@@ -21,7 +21,7 @@ import java.util.Set;
  *
  * @author eameri
  */
-abstract class GreedyBot extends Player implements AiBot {
+public abstract class GreedyBot extends Player implements AiBot {
 
   private List<Continent> continentsCopy;
 
@@ -42,6 +42,10 @@ abstract class GreedyBot extends Player implements AiBot {
   protected void updateContinentsCopy(Set<Continent> continents) {
     this.continentsCopy = new ArrayList<>();
     this.continentsCopy.addAll(continents);
+  }
+
+  public GreedyBot(Player player) {
+    super(player);
   }
 
   public GreedyBot(String username) {
@@ -176,5 +180,9 @@ abstract class GreedyBot extends Player implements AiBot {
       }
     }
     return owned / totalSize;
+  }
+
+  public int getAttackTroops(Country attacker) {
+    return Math.min(3, attacker.getTroops() - 1);
   }
 }
