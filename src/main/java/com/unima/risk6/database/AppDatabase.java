@@ -39,8 +39,9 @@ public class AppDatabase {
     conn = null;
     try {
       Class.forName("org.sqlite.JDBC");
-      if (!Files.exists(Path.of(databasePath))) {
-        Files.createDirectory(Path.of("dbFiles"));
+      Path pathToDatabaseDirectory = Path.of("dbFiles");
+      if (!Files.exists(pathToDatabaseDirectory)) {
+        Files.createDirectory(pathToDatabaseDirectory);
       }
       conn = DriverManager.getConnection("jdbc:sqlite:" + databasePath);
       createDatabase();
