@@ -24,7 +24,7 @@ public class Deserializer {
 
         .registerTypeAdapter(GameState.class, new GameStateTypeAdapter(gameState))
 
-        .registerTypeAdapter(Country.class, new CountryTypeAdapter())
+        .registerTypeAdapter(Country.class, new CountryTypeAdapter(gameState))
         .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
         .registerTypeAdapter(Card.class, new CardTypeAdapter())
         .registerTypeAdapter(Hand.class, new HandTypeAdapter())

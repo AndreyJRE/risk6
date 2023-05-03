@@ -25,7 +25,6 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
 
   public GameStateTypeAdapter(GameState gameState) {
     this.gameState = gameState;
-    System.out.println("GAmestateTypeAdapter");
   }
 
   public GameStateTypeAdapter() {
