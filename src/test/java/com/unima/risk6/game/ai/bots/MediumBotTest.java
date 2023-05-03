@@ -142,9 +142,14 @@ class MediumBotTest {
     newGuinea.setTroops(5);
     enemyController.addCountry(siam);
     siam.setTroops(1);
-    List<CountryPair> attacks = mediumBot.createAllAttacks();
-    assertEquals(3, attacks.size());
-    assertEquals(indonesia, attacks.get(0).getOutgoing());
+    CountryPair attack = mediumBot.createAttack();
+    assertEquals(new CountryPair(westernAus, easternAus), attack);
+    easternAus.setTroops(6);
+    attack = mediumBot.createAttack();
+    assertEquals(new CountryPair(indonesia, siam), attack);
+    siam.setTroops(8);
+    attack = mediumBot.createAttack();
+    assertEquals(new CountryPair(westernAus, newGuinea), attack);
   }
 
   @Test

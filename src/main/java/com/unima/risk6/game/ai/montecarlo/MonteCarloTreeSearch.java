@@ -2,31 +2,44 @@ package com.unima.risk6.game.ai.montecarlo;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.ai.models.Probabilities;
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.DeckController;
+import com.unima.risk6.game.logic.controllers.GameController;
+import com.unima.risk6.game.logic.controllers.HandController;
+import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.network.message.Message;
+import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.AttackTypeAdapter;
 import com.unima.risk6.network.serialization.ContinentTypeAdapter;
 import com.unima.risk6.network.serialization.CountryTypeAdapter;
+import com.unima.risk6.network.serialization.Deserializer;
 import com.unima.risk6.network.serialization.EasyBotTypeAdapter;
 import com.unima.risk6.network.serialization.GameStateTypeAdapter;
 import com.unima.risk6.network.serialization.HandTypeAdapter;
 import com.unima.risk6.network.serialization.PlayerTypeAdapter;
+import com.unima.risk6.network.server.MoveProcessor;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 
 public class MonteCarloTreeSearch {
@@ -66,7 +79,8 @@ public class MonteCarloTreeSearch {
       // does reassigning node in select mess up root?
       MonteCarloNode node = select(root);
       Player result = null;
-      if (!node.getGameState().isGameOver()) {
+      if (!node.getGameState().isGameOver() && node.getGameState().getActivePlayers()
+          .contains(this.player)) {
         node = expand(node);
         result = simulate(node.getGameState());
       }
@@ -84,7 +98,8 @@ public class MonteCarloTreeSearch {
   private MonteCarloNode select(MonteCarloNode node) {
     // goes to specific depth?
     // keep traversing non-terminal states, finding a leaf node <-> not expanded fully
-    while (node.isFullyExpanded() && !node.getGameState().isGameOver()) {
+    while (node.isFullyExpanded() && !node.getGameState().isGameOver() && node.getGameState()
+        .getActivePlayers().contains(this.player)) {
       node = node.getBestChild();
     }
     return node;
@@ -98,30 +113,25 @@ public class MonteCarloTreeSearch {
    */
   private MonteCarloNode expand(MonteCarloNode node) { // choose only best moves
     GameState oneTurn = this.copyGameState(node.getGameState());
+    GameController simulationController = new GameController(oneTurn);
+    PlayerController playerController = new PlayerController();
+    playerController.setPlayer(simulationController.getCurrentPlayer());
+    DeckController deckController = new DeckController(oneTurn.getDeck());
+    MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
+        deckController);
     // apply move from bots perspective
     // move get player method to node?
-    MonteCarloBot ourBot = new MonteCarloBot(this.getPlayerAtGameState(node.getGameState()));
-    List<Reinforce> reinforcements = ourBot.getReinforceMoves().subList(0,
-        Math.min(RNG.nextInt(ourBot.getReinforceMoves().size()),
-            ourBot.getReinforceMoves().size()));
-    // perform reinforcements, now the get attack move will be based off of the state after
-    // randomly select reinforcements until no more troops deployable
-    // ^ new method, keeps selecting, if troops still available verteil them randomly
-    List<CountryPair> attacks = ourBot.getAttackMoves()
-        .subList(0, Math.min(RNG.nextInt(4), ourBot.getAttackMoves().size()));
-    // perform attacks, then we are ready for fortify
-    Fortify fortify = ourBot.getFortifyMoves().get(RNG.nextInt(ourBot.getFortifyMoves().size()));
-    // perform fortify
-    MoveTriplet move = new MoveTriplet(reinforcements, attacks, fortify);
+//    AiBot ourBot = new MonteCarloBot(this.getPlayerAtGameState(node.getGameState()));
+    // the current player is our bot?
+    MoveTriplet move = this.playTurn(simulationController, playerController, moveProcessor);
     int players = oneTurn.getActivePlayers().size();
     // play for all other bots
     for (int i = 0; i < players - 1; i++) {
-      Player player = oneTurn.getCurrentPlayer();
-      // perform moves
-      // changing the queue should be handled by server move performer method
+      this.playTurn(simulationController, playerController, moveProcessor);
     }
     return new MonteCarloNode(oneTurn, move, node);
   }
+
 
   /**
    * Simulates the game from the given game state, with all players making moves akin to their skill
@@ -130,18 +140,18 @@ public class MonteCarloTreeSearch {
    * @param game The GameState from which the simulation will begin.
    * @return The strongest player once the game has stopped being simulated.
    */
-  private Player simulate(GameState game) { // here: mediumbots that keep playing
-    // simulation gets stopped after time period
+  private Player simulate(GameState game) {
     GameState simulation = this.copyGameState(game);
     long endTime = System.currentTimeMillis() + SIMULATION_TIME_LIMIT;
-    // if bot -> createMove, if hardbot or human -> random move
+    GameController simulationController = new GameController(simulation);
+    PlayerController playerController = new PlayerController();
+    playerController.setPlayer(simulationController.getCurrentPlayer());
+    DeckController deckController = new DeckController(simulation.getDeck());
+    MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
+        deckController);
     while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
-      Player current = simulation.getCurrentPlayer();
-      List<MoveTriplet> legalMoves = this.getSimulationMoves(current);
-      MoveTriplet randomMove = legalMoves.get(RNG.nextInt(legalMoves.size()));
-//      simulation.applyMove(randomMove);
+      this.playTurn(simulationController, playerController, moveProcessor);
     }
-
     return Probabilities.findStrongestPlayer(simulation);
   }
 
@@ -154,7 +164,7 @@ public class MonteCarloTreeSearch {
   private List<MoveTriplet> getSimulationMoves(Player player) {
     List<MoveTriplet> legalMoves = new ArrayList<>();
     if (this.isMonteCarlo(player)) {
-      legalMoves = ((MonteCarloBot) player).getLegalMoves();
+//      legalMoves = ((MonteCarloBot) player).getLegalMoves();
     } else {
       // legalMoves.add(((AiBot) player).makeMove());
     }
@@ -215,23 +225,18 @@ public class MonteCarloTreeSearch {
    * @return A deep copy of the given game state.
    */
   public GameState copyGameState(GameState gameState) {
-    GameState copy = gson.fromJson(gson.toJson(gameState), gameState.getClass());
-    // swap players
-    Map<String, Player> playerMap = new HashMap<>();
-    for (Player player : copy.getActivePlayers()) {
-      // players/ hardbots may make different choices, assume others do as they usually do
+    List<AiBot> replacedPlayers = new ArrayList<>();
+    for (Player player : gameState.getActivePlayers()) {
       if (!(player instanceof EasyBot || player instanceof MediumBot)) {
-        player = new MonteCarloBot(player);
+        AiBot replacement = new MonteCarloBot(player);
+        replacedPlayers.add(replacement);
+      } else {
+        replacedPlayers.add((AiBot) player);
       }
-      playerMap.put(player.getUser(), player);
     }
-    // make changes in countries and current player
-    for (Country country : copy.getCountries()) {
-      country.setPlayer(playerMap.get(country.getPlayer().getUser()));
-    }
-    copy.setCurrentPlayer(playerMap.get(copy.getCurrentPlayer().getUser()));
-
-    return copy;
+    GameState empty = GameConfiguration.configureGame(new ArrayList<>(), replacedPlayers);
+    Message copy = Deserializer.deserialize(gson.toJson(new StandardMessage<>(gameState)), empty);
+    return (GameState) copy.getContent();
   }
 
   /**
@@ -250,4 +255,36 @@ public class MonteCarloTreeSearch {
     return null; // signifies that player is no longer in game
   }
 
+  public MoveTriplet playTurn(GameController simulationController,
+      PlayerController playerController, MoveProcessor moveProcessor) {
+    AiBot current = (AiBot) simulationController.getCurrentPlayer();
+    playerController.setPlayer((Player) current);
+    HandController handController = playerController.getHandController();
+    // TODO: add hand in to moveTriplet
+    if (handController.isExchangeable()) {
+      handController.selectExchangeableCards();
+      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+//        handController.exchangeCards();
+      moveProcessor.processHandIn(handIn);
+    }
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+    List<Reinforce> allReinforcements = current.createAllReinforcements();
+    for (Reinforce reinforce : allReinforcements) {
+      moveProcessor.processReinforce(reinforce);
+    }
+    Queue<CountryPair> allAttacks = new LinkedList<>();
+    do {
+      CountryPair attacks = current.createAttack();
+      // while not (one country has lost)
+      if (attacks == null) {
+        break;
+      }
+      moveProcessor.processAttack(
+          attacks.createAttack(current.getAttackTroops(attacks.getOutgoing())));
+    } while (current.attackAgain());
+    // how to signal move after Attack?
+    Fortify fortify = current.createFortify();
+    moveProcessor.processFortify(fortify);
+    return new MoveTriplet(allReinforcements, allAttacks, fortify);
+  }
 }

@@ -8,11 +8,12 @@ import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
 import java.util.List;
+import java.util.Queue;
 
 public class HardBot extends GreedyBot implements AiBot {
 
   private List<Reinforce> reinforces;
-  private List<CountryPair> attacks;
+  private Queue<CountryPair> attacks;
   private Fortify fortifies;
 
   private GameState currentGameState;
@@ -33,8 +34,8 @@ public class HardBot extends GreedyBot implements AiBot {
   }
 
   @Override
-  public List<CountryPair> createAllAttacks() {
-    return this.attacks;
+  public CountryPair createAttack() {
+    return this.attacks.poll();
   }
 
   @Override
@@ -65,6 +66,6 @@ public class HardBot extends GreedyBot implements AiBot {
 
   @Override
   public boolean attackAgain() { // the hard bot will return all attacks at once
-    return false;
+    return this.attacks.size() > 0;
   }
 }

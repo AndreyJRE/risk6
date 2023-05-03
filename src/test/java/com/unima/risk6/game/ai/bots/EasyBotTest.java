@@ -63,15 +63,13 @@ class EasyBotTest {
     Country iceland = getCountryByName(CountryName.ICELAND);
     enemyController.addCountry(iceland);
     ((EasyBot) easyBot).setCurrentGameState(gameState);
-    List<CountryPair> attacks = easyBot.createAllAttacks();
+    CountryPair attack = easyBot.createAttack();
     // can't attack with 1 troop
-    assertEquals(0, attacks.size());
+    assertNull(attack);
     greatBritain.setTroops(3);
     iceland.setTroops(1);
-    attacks = easyBot.createAllAttacks();
-    if (attacks.size() > 0) {
-      assertEquals(new CountryPair(greatBritain, iceland), attacks.get(0));
-    }
+    attack = easyBot.createAttack();
+    assertEquals(new CountryPair(greatBritain, iceland), attack);
   }
 
   @Test
