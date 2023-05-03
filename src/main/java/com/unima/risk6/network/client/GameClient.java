@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 public final class GameClient implements Runnable {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
 
   private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
 
@@ -36,9 +36,9 @@ public final class GameClient implements Runnable {
 
   public void sendMessage(Message message) {
     String json = Serializer.serialize(message);
-    LOGGER.debug("Sending Message: " + json);
     WebSocketFrame frame = new TextWebSocketFrame(json);
     ch.writeAndFlush(frame);
+    LOGGER.debug("Sent Message: " + json);
   }
 
   public void run() {
