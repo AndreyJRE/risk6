@@ -13,7 +13,8 @@ import java.util.Set;
 public class ContinentTypeAdapter implements JsonSerializer<Continent> {
 
   @Override
-  public JsonElement serialize(Continent continent, Type typeOfSrc, JsonSerializationContext context) {
+  public JsonElement serialize(Continent continent, Type typeOfSrc,
+      JsonSerializationContext context) {
     if (continent == null) {
       return null;
     }
@@ -32,7 +33,6 @@ public class ContinentTypeAdapter implements JsonSerializer<Continent> {
       }
       jsonObject.add("countries", countriesArray);
     }
-
 
     return jsonObject;
   }

@@ -1,11 +1,8 @@
 package com.unima.risk6.network.client;
 
-import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.network.message.Message;
-import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.Serializer;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -16,65 +13,60 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
+import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URI;
-
 public final class GameClient implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
 
-    private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
+  private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
 
-    private Channel ch;
+  private Channel ch;
 
-    public GameClient(String url) {
-        URL = System.getProperty("url", url);
-    }
+  public GameClient(String url) {
+    URL = System.getProperty("url", url);
+  }
 
-    public void sendMessage(Message message) {
-        String json = Serializer.serialize(message);
-        LOGGER.debug("Sending Message: " + json);
-        WebSocketFrame frame = new TextWebSocketFrame(json);
-        ch.writeAndFlush(frame);
-    }
+  public void sendMessage(Message message) {
+    String json = Serializer.serialize(message);
+    LOGGER.debug("Sending Message: " + json);
+    WebSocketFrame frame = new TextWebSocketFrame(json);
+    ch.writeAndFlush(frame);
+  }
 
-    public void run() {
-        try {
-            URI uri = new URI(URL);
-            final int port = 8080;
+  public void run() {
+    try {
+      URI uri = new URI(URL);
+      final int port = 8080;
 
-            EventLoopGroup group = new NioEventLoopGroup();
-            try {
-                final GameClientHandler handler = new GameClientHandler(
-                        WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, true,
-                                new DefaultHttpHeaders()));
+      EventLoopGroup group = new NioEventLoopGroup();
+      try {
+        final GameClientHandler handler = new GameClientHandler(
+            WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, true,
+                new DefaultHttpHeaders()));
 
-                Bootstrap b = new Bootstrap();
-                b.group(group).channel(NioSocketChannel.class)
-                        .handler(new ChannelInitializer<SocketChannel>() {
-                            @Override
-                            protected void initChannel(SocketChannel ch) {
-                                ChannelPipeline p = ch.pipeline();
-                                p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192),
-                                        WebSocketClientCompressionHandler.INSTANCE, handler);
-                            }
-                        });
+        Bootstrap b = new Bootstrap();
+        b.group(group).channel(NioSocketChannel.class)
+            .handler(new ChannelInitializer<SocketChannel>() {
+              @Override
+              protected void initChannel(SocketChannel ch) {
+                ChannelPipeline p = ch.pipeline();
+                p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192),
+                    WebSocketClientCompressionHandler.INSTANCE, handler);
+              }
+            });
 
-                ch = b.connect(uri.getHost(), port).sync().channel();
-                handler.handshakeFuture().sync();
+        ch = b.connect(uri.getHost(), port).sync().channel();
+        handler.handshakeFuture().sync();
 
-                //BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+        //BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
         /*while (true) {
           //String msg = console.readLine();
           if (msg == null && !sended) {
@@ -94,16 +86,16 @@ public final class GameClient implements Runnable {
             ch.writeAndFlush(frame);
           }
         }*/
-                //Nötig, damit Thread nicht terminiert.
-                while (true) {
-                    Thread.sleep(10000);
-                }
-            } finally {
-                group.shutdownGracefully();
-            }
-        } catch (Exception e) {
-            //TODO Logger
-            System.out.println(e);
+        //Nötig, damit Thread nicht terminiert.
+        while (true) {
+          Thread.sleep(10000);
         }
+      } finally {
+        group.shutdownGracefully();
+      }
+    } catch (Exception e) {
+      //TODO Logger
+      System.out.println(e);
     }
+  }
 }

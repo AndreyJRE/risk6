@@ -4,7 +4,7 @@ package com.unima.risk6.network;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.network.client.GameClient;
-import com.unima.risk6.network.client.GameClientFactory;
+import com.unima.risk6.network.configurations.GameClientFactory;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.server.GameServer;
 import org.junit.jupiter.api.BeforeAll;

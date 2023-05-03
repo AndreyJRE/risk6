@@ -1,20 +1,28 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.*;
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
-import com.unima.risk6.game.models.*;
+import com.unima.risk6.game.models.Continent;
+import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Hand;
+import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializer<Player>{
-
+public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializer<Player> {
 
 
   private final static Logger LOGGER = LoggerFactory.getLogger(PlayerTypeAdapter.class);
@@ -25,6 +33,7 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     this.gameState = gameState;
     System.out.println("PlayerTypeAdapter");
   }
+
   public PlayerTypeAdapter() {
   }
 
@@ -54,9 +63,9 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     Set<Continent> continents = player.getContinents();
     if (continents != null) {
       for (Continent continent : continents) {
-          JsonObject continentObject = new JsonObject();
-          continentObject.addProperty("name", continent.getContinentName().toString());
-          continentsArray.add(continentObject);
+        JsonObject continentObject = new JsonObject();
+        continentObject.addProperty("name", continent.getContinentName().toString());
+        continentsArray.add(continentObject);
         //continentsArray.add(context.serialize(continent, Continent.class));
       }
     }
@@ -68,15 +77,15 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     jsonObject.addProperty("type", player.getClass().getSimpleName());
     jsonObject.addProperty("hashCode", player.hashCode());
 
-
     return jsonObject;
   }
+
   @Override
-  public Player deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+  public Player deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
 
     Player player;
-
 
     Hand hand = context.deserialize(jsonObject.get("hand"), Hand.class);
 
@@ -85,7 +94,7 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     int deployableTroops = jsonObject.get("deployableTroops").getAsInt();
     int initialTroops = jsonObject.get("initialTroops").getAsInt();
 
-    switch(jsonObject.get("type").getAsString()){
+    switch (jsonObject.get("type").getAsString()) {
       case "Player":
         player = new Player(user);
         break;
@@ -111,14 +120,15 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     Set<Country> countries = gameState.getCountries();
     for (JsonElement countryElement : countriesArray) {
       String countryName = countryElement.getAsJsonObject().get("name").getAsString();
-      countries.stream().filter(x -> x.getCountryName().toString().equals(countryName)).forEach(x -> {
-        //set the owner of the country
-        x.setPlayer(player);
-        //set the amount of troops in the country
-        x.setTroops(countryElement.getAsJsonObject().get("troops").getAsInt());
-        //add the country to the players Array
-        x.getPlayer().getCountries().add(x);
-      });
+      countries.stream().filter(x -> x.getCountryName().toString().equals(countryName))
+          .forEach(x -> {
+            //set the owner of the country
+            x.setPlayer(player);
+            //set the amount of troops in the country
+            x.setTroops(countryElement.getAsJsonObject().get("troops").getAsInt());
+            //add the country to the players Array
+            x.getPlayer().getCountries().add(x);
+          });
 
     }
 
@@ -126,25 +136,12 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     Set<Continent> continents = gameState.getContinents();
     for (JsonElement continentElement : continentsArray) {
       String continentName = continentElement.getAsJsonObject().get("name").getAsString();
-      continents.stream().filter(x -> x.getContinentName().toString().equals(continentName)).forEach(x -> {
-        //add the continent to the players Array
-        player.getContinents().add(x);
-      });
+      continents.stream().filter(x -> x.getContinentName().toString().equals(continentName))
+          .forEach(x -> {
+            //add the continent to the players Array
+            player.getContinents().add(x);
+          });
     }
-    /*
-    if(continents.size()>0){
-      player.getContinents().addAll(continents);
-      continents.forEach((x) ->  player.getCountries().addAll(x.getCountries()));
-      //remove all countries from countries set that are already inside continents set
-      player.getContinents().forEach((x) -> countries.removeAll(x.getCountries()));
-    }
-
-    //add all remaining countries
-    player.getCountries().addAll(countries);
-    //add all countries from complete continents to the gamestate
-    //player.getContinents().forEach((x) -> player.getCountries().addAll(x.getCountries()));
-    */
-
     player.setCurrentPhase(currentPhase);
     player.setDeployableTroops(deployableTroops);
     player.setInitialTroops(initialTroops);

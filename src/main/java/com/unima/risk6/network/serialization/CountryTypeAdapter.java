@@ -1,16 +1,22 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
-
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserializer<Country>{
+public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserializer<Country> {
 
   @Override
   public JsonElement serialize(Country country, Type typeOfSrc, JsonSerializationContext context) {
@@ -47,7 +53,8 @@ public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserial
 
   @Override
 
-  public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+  public Country deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
 
     CountryName countryName = context.deserialize(jsonObject.get("countryName"), CountryName.class);
