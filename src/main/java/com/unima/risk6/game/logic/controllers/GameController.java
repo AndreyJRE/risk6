@@ -90,7 +90,7 @@ public class GameController implements GameStateObserver {
 
 
   public void addLastMove(Move move) {
-    gameState.setLastMove(move);
+    gameState.getLastMoves().add(move);
   }
 
   @Override
