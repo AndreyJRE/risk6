@@ -22,7 +22,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       String request = ((TextWebSocketFrame) frame).text();
       for (Channel ch : channels) {
         ch.writeAndFlush(
-                new TextWebSocketFrame(/*ctx.channel().attr("name") +*/ " has written: " + request));
+            new TextWebSocketFrame(/*ctx.channel().attr("name") + " has written: " + */request));
       }
       //System.out.println(channels.size());
       //ctx.channel().writeAndFlush(new TextWebSocketFrame(request));
