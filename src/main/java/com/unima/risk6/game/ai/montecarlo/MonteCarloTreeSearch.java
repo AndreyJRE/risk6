@@ -214,19 +214,16 @@ public class MonteCarloTreeSearch {
    * @param gameState The game state to be copied.
    * @return A deep copy of the given game state.
    */
-  private GameState copyGameState(GameState gameState) {
+  public GameState copyGameState(GameState gameState) {
     GameState copy = gson.fromJson(gson.toJson(gameState), gameState.getClass());
     // swap players
     Map<String, Player> playerMap = new HashMap<>();
-    int queueSize = copy.getActivePlayers().size();
-    for (int i = 0; i < queueSize; i++) {
-      Player player = copy.getActivePlayers().poll();
+    for (Player player : copy.getActivePlayers()) {
       // players/ hardbots may make different choices, assume others do as they usually do
       if (!(player instanceof EasyBot || player instanceof MediumBot)) {
         player = new MonteCarloBot(player);
       }
       playerMap.put(player.getUser(), player);
-      copy.getActivePlayers().add(player);
     }
     // make changes in countries and current player
     for (Country country : copy.getCountries()) {
