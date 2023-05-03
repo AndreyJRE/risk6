@@ -3,6 +3,7 @@ package com.unima.risk6.game.ai;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.Country;
 import java.util.List;
 
 /***
@@ -48,5 +49,8 @@ public interface AiBot {
    * @return A Reinforce object representing the claimed country with one troop placed on it.
    */
   Reinforce claimCountry();
+
   boolean attackAgain();
+
+  int getAttackTroops(Country attacker);
 }

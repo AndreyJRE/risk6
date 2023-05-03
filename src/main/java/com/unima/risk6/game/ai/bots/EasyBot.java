@@ -72,13 +72,18 @@ public class EasyBot extends Player implements AiBot {
       allAttacks.add(toAttack);
     }
     return allAttacks;
-}
+  }
 
   @Override
   public boolean attackAgain() {
     boolean answer = rng.nextDouble() < this.attackProbability;
     this.attackProbability *= 0.6;
     return answer;
+  }
+
+  @Override
+  public int getAttackTroops(Country attacker) {
+    return rng.nextInt(1, Math.min(4, attacker.getTroops()));
   }
 
   @Override
