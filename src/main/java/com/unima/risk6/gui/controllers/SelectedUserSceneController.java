@@ -1,9 +1,13 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
@@ -25,8 +29,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -48,25 +50,17 @@ public class SelectedUserSceneController {
   }
 
 
-  public void init(User user) {
-    this.user = user;
+  public void init() {
+    this.user = SessionManager.getUser();
     this.root = (BorderPane) selectedUserScene.getRoot();
-    userImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures"
-        + "/747376.png").toString()));
+    userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(200);
     userImage.setFitWidth(200);
 
     initUserStackPane();
     initElements();
 
-    Path arrow = new Path();
-    arrow.getElements().add(new MoveTo(10, 15));
-    arrow.getElements().add(new LineTo(30, 0));
-    arrow.getElements().add(new MoveTo(30, 30));
-    arrow.getElements().add(new LineTo(10, 15));
-    arrow.setStrokeWidth(3);
-    arrow.setStroke(Color.BLACK);
-    arrow.setFill(Color.TRANSPARENT);
+    Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
@@ -154,10 +148,7 @@ public class SelectedUserSceneController {
     loginButton.setPrefWidth(470);
     loginButton.setPrefHeight(40);
     loginButton.setAlignment(Pos.CENTER);
-    loginButton.setStyle(
-        "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF;"
-            + " -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect:"
-            + " dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    applyButtonStyle(loginButton);
     loginButton.setFont(new Font(18));
 
     welcomeBack = new Label("Welcome Back!");

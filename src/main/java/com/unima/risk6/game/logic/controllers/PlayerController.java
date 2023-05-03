@@ -4,6 +4,7 @@ import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
@@ -11,6 +12,9 @@ import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.network.client.GameClient;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
+import com.unima.risk6.network.message.StandardMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,23 +23,33 @@ public class PlayerController {
   private Player player;
   private final HandController handController;
 
+  private final GameClient gameClient;
 
   public PlayerController() {
     this.handController = new HandController();
+    this.gameClient = NetworkConfiguration.getGameClient();
 
   }
 
-  public Reinforce sendReinforce(Country reinforcedCountry, int troopNumber) {
-    return new Reinforce(reinforcedCountry, troopNumber);
+  public void sendReinforce(Country reinforcedCountry, int troopNumber) {
+    Reinforce reinforce = new Reinforce(reinforcedCountry, troopNumber);
+    gameClient.sendMessage(new StandardMessage<Reinforce>(reinforce));
   }
 
-  public Attack sendAttack(Country attackingCountry, Country defendingCountry, int troopNumber) {
-
-    return new Attack(attackingCountry, defendingCountry, troopNumber);
+  public void sendAttack(Country attackingCountry, Country defendingCountry, int troopNumber) {
+    Attack attack = new Attack(attackingCountry, defendingCountry, troopNumber);
+    gameClient.sendMessage(new StandardMessage<Attack>(attack));
   }
 
-  public Fortify sendFortify(Country outgoing, Country incoming, int troopNumber) {
-    return new Fortify(outgoing, incoming, troopNumber);
+  public void sendFortify(Country outgoing, Country incoming, int troopNumber) {
+    Fortify fortify = new Fortify(outgoing, incoming, troopNumber);
+    gameClient.sendMessage(new StandardMessage<Fortify>(fortify));
+  }
+
+
+  public void setEndPhase(GamePhase gamePhase) {
+    EndPhase endPhase = new EndPhase(gamePhase);
+    gameClient.sendMessage(new StandardMessage<EndPhase>(endPhase));
   }
 
   public void changeDeployableTroops(int diff) {
@@ -48,13 +62,10 @@ public class PlayerController {
       HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
       //removes Cards that were selected and can be exchanged
       handController.exchangeCards();
-      //TODO Send HandIn Move
-
+      gameClient.sendMessage(new StandardMessage<HandIn>(handIn));
     }
 
   }
-
-  //TODO have to implement which Continent is fully Occupied by Player
 
 
   public List<CountryPair> getValidFortifiesFromCountry(Country country) {

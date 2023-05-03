@@ -9,7 +9,7 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Deck;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class DeckControllerTest {
@@ -17,8 +17,9 @@ class DeckControllerTest {
   static DeckController deckController;
   static Deck deck;
 
-  @BeforeAll
-  static void setUp() {
+
+  @BeforeEach
+  void makeBlankDeck() {
     deck = new Deck();
     deckController = new DeckController(deck);
     deckController.initDeck();
@@ -31,6 +32,7 @@ class DeckControllerTest {
 
   @Test
   void numberOfCardsTest() {
+    deckController.getDeck().getDeckCards().clear();
     deckController.initDeck();
     assertEquals(44, deck.getDeckCards().size(), "Deck should have 44 cards after initialization");
   }

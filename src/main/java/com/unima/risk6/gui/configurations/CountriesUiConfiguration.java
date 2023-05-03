@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class CountriesUiConfiguration {
 
-  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUi.json";
+  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUI.json";
 
   private static Set<CountryUi> countriesUis;
 

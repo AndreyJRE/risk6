@@ -23,9 +23,7 @@ public class TroopsCounterUi extends Group {
     ellipseCounter.setStroke(Color.BLACK);
     ellipseCounter.setFill(Color.WHITE);
 
-    String counterText = Integer.toString((int) (Math.random() * 20));
-
-    text = new Text(counterText);
+    text = new Text("0");
     text.setFont(new Font("Arial", ellipseSize));
     text.setFill(Color.BLACK);
     text.setX(ellipseX - text.getLayoutBounds().getWidth() * 0.5);
@@ -42,5 +40,8 @@ public class TroopsCounterUi extends Group {
 
   public void setText(String counterText) {
     this.text.setText(counterText);
+    this.text.setX(this.getEllipseCounter().getCenterX() - text.getLayoutBounds().getWidth() * 0.5);
+    this.text.setY(
+        this.getEllipseCounter().getCenterY() + text.getLayoutBounds().getHeight() * 0.3);
   }
 }

@@ -200,6 +200,7 @@ public class CountryUi extends Group {
         isCountrySelectedToAttackOthers = false;
         GameSceneController.getPlayerController()
             .sendAttack(this.country, adjacentCountryUi.getCountry(), amountOfTroops);
+        //GameSceneController.animateFortify(animateFortify);
       });
 
       chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);

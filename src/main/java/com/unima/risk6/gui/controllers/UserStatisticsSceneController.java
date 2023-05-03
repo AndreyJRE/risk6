@@ -6,12 +6,13 @@ import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,8 +23,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -49,10 +48,11 @@ public class UserStatisticsSceneController {
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
   }
 
-  public void init(User user) {
-    this.user = user;
+  public void init() {
+    this.user = SessionManager.getUser();
     this.root = (BorderPane) userStatisticsScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"), 26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+        26);
     // Initialize elements
     initUserStackPane();
     initGridPane();
@@ -61,14 +61,7 @@ public class UserStatisticsSceneController {
 
   private void initElements() {
     // Back arrow
-    Path arrow = new Path();
-    arrow.getElements().add(new MoveTo(10, 15));
-    arrow.getElements().add(new LineTo(30, 0));
-    arrow.getElements().add(new MoveTo(30, 30));
-    arrow.getElements().add(new LineTo(10, 15));
-    arrow.setStrokeWidth(3);
-    arrow.setStroke(Color.BLACK);
-    arrow.setFill(Color.TRANSPARENT);
+    Path arrow = StyleConfiguration.generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
@@ -138,8 +131,7 @@ public class UserStatisticsSceneController {
   }
 
   private void initUserStackPane() {
-    userImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures"
-        + "/747376.png").toString()));
+    userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(150);
     userImage.setFitWidth(150);
 

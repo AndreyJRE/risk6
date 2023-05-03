@@ -1,23 +1,22 @@
 package com.unima.risk6.gui.controllers;
 
 
-import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.NotValidPasswordException;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -61,23 +60,20 @@ public class CreateAccountController implements Initializable {
     String checkPassword = checkPasswordField.getText();
 
     // Change the style of the button to simulate a press
-    loginButton.setStyle(
-        "-fx-background-color: linear-gradient(#FFA07A, #FFDAB9); "
-            + "-fx-text-fill: #FFFFFF; -fx-background-radius: 20;"
-            + " -fx-border-radius: 20; -fx-effect:"
-            + " dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    loginButton.setStyle("-fx-background-color: linear-gradient(#FFA07A, #FFDAB9); "
+        + "-fx-text-fill: #FFFFFF; -fx-background-radius: 20;"
+        + " -fx-border-radius: 20; -fx-effect:"
+        + " dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     // Change it back after 200 milliseconds
     PauseTransition pause = new PauseTransition(Duration.millis(200));
-    pause.setOnFinished(e -> loginButton.setStyle("-fx-background-color:"
-        + " linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF;"
-        + " -fx-background-radius: 20;"
-        + " -fx-border-radius: 20;"
-        + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);"));
+    pause.setOnFinished(e -> loginButton.setStyle(
+        "-fx-background-color:" + " linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF;"
+            + " -fx-background-radius: 20;" + " -fx-border-radius: 20;"
+            + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);"));
     pause.play();
 
     pause = new PauseTransition(Duration.millis(500));
-    User user = new User(username, password,
-        "src/main/resources/Pictures/AdobeStock_259394679.png");
+    User user = new User(username, password, "/com/unima/risk6/pictures/playerIcon.png");
     try {
       userService.saveUser(user);
       sceneController = SceneConfiguration.getSceneController();
@@ -90,18 +86,23 @@ public class CreateAccountController implements Initializable {
         scene.setController(selectedUserSceneController);
         sceneController.addScene(SceneName.SELECTED_USER, scene);
       }
-      scene.setUser(user);
+      SessionManager.setUser(user);
 
       sceneController.activate(SceneName.SELECTED_USER);
     } catch (IllegalArgumentException illegalArgumentException) {
-
-    } catch (UsernameNotUniqueException usernameNotUniqueException) {
-      System.out.println(usernameNotUniqueException.getMessage());
-    } catch (NotValidPasswordException notValidPasswordException) {
-      System.out.println(notValidPasswordException.getMessage());
+      showErrorDialog("Error", "Password and username should be non-empty!");
+    } catch (UsernameNotUniqueException | NotValidPasswordException validationException) {
+      showErrorDialog("Error", validationException.getMessage());
     }
   }
 
+  private void showErrorDialog(String title, String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
 
   @FXML
   private void handleMouseEntered(MouseEvent event) {

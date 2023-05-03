@@ -1,30 +1,46 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
-import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 public class TitleSceneController implements Initializable {
 
@@ -59,29 +75,30 @@ public class TitleSceneController implements Initializable {
   private Button quitButton;
 
   private SceneController sceneController;
-  private User user;
-  private List<User> activeUser;
-  private UserService userService;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-    userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setRadius(10.0);
+    dropShadow.setOffsetX(3.0);
+    dropShadow.setOffsetY(3.0);
+    dropShadow.setColor(Color.BLACK);
+    titleLabel.setEffect(dropShadow);
+    animateTitleLabel();
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefWidth(SceneConfiguration.getWidth());
     backgroundImageView.fitWidthProperty().bind(root.widthProperty());
     backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     // Set the style of the buttons
-    String buttonStyle = "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;";
-    singlePlayerButton.setStyle(buttonStyle);
-    multiPlayerButton.setStyle(buttonStyle);
-    optionsButton.setStyle(buttonStyle);
-    quitButton.setStyle(buttonStyle);
+    applyButtonStyle(singlePlayerButton);
+    applyButtonStyle(multiPlayerButton);
+    applyButtonStyle(optionsButton);
+    applyButtonStyle(quitButton);
     sceneController = SceneConfiguration.getSceneController();
-    activeUser = userService.getUsersByActive(true);
-    user = activeUser.get(0);
   }
+
 
   // Define the event handler for the single player button
   @FXML
@@ -97,9 +114,9 @@ public class TitleSceneController implements Initializable {
     users.add("John");
     List<AiBot> bots = new ArrayList<>();
     GameState gameState = GameConfiguration.configureGame(users, bots);
-    //TODO Use session management to get the user (For example hier the user with id 9 is used)
-    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(userService.getUserById(9L),
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(9L)));
+    User myUser = SessionManager.getUser();
+    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId())));
     GameConfiguration.setGameState(gameState);
     CountriesUiConfiguration.configureCountries(gameState.getCountries());
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
@@ -111,13 +128,26 @@ public class TitleSceneController implements Initializable {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
+    //TODO If we want to go full screen we can use this
+    pauseTitleSound();
+    sceneController.getStage().setFullScreen(true);
   }
 
 
   // Define the event handler for the multi player button
   @FXML
   private void handleMultiPlayer() {
-    // TODO: Implement the multi player game
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
     System.out.println("Multi player game started");
   }
 
@@ -132,13 +162,46 @@ public class TitleSceneController implements Initializable {
       scene.setController(userOptionsSceneController);
       sceneController.addScene(SceneName.USER_OPTION, scene);
     }
-    scene.setUser(user);
+    pauseTitleSound();
     sceneController.activate(SceneName.USER_OPTION);
   }
 
   @FXML
   private void handleQuitGame() {
-    SceneController sceneController = SceneConfiguration.getSceneController();
     sceneController.close();
+  }
+
+  private void animateTitleLabel() {
+    // Rotate animation
+    TranslateTransition movementTransition = new TranslateTransition(Duration.seconds(1),
+        titleLabel);
+    movementTransition.setByY(-10);
+    movementTransition.setCycleCount(Animation.INDEFINITE);
+    movementTransition.setAutoReverse(true);
+    // Scale animation
+    ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(1), titleLabel);
+    scaleTransition.setByX(0.1);
+    scaleTransition.setByY(0.1);
+    scaleTransition.setAutoReverse(true);
+    scaleTransition.setCycleCount(Animation.INDEFINITE);
+
+    // Color animation
+    ObjectProperty<Color> colorProperty = new SimpleObjectProperty<>(Color.WHITE);
+    colorProperty.addListener((observable, oldValue, newValue) -> titleLabel.setTextFill(newValue));
+
+    KeyValue keyValue1 = new KeyValue(colorProperty, Color.web("#0093ff"));
+    KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(1), keyValue1);
+
+    KeyValue keyValue2 = new KeyValue(colorProperty, Color.WHITE);
+    KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(2), keyValue2);
+
+    Timeline colorTimeline = new Timeline(keyFrame1, keyFrame2);
+    colorTimeline.setCycleCount(Animation.INDEFINITE);
+    colorTimeline.setAutoReverse(true);
+
+    // Play all animations together
+    ParallelTransition parallelTransition = new ParallelTransition(movementTransition,
+        scaleTransition, colorTimeline);
+    parallelTransition.play();
   }
 }

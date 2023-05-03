@@ -14,6 +14,7 @@ public class Card {
 
   private final CountryName country;
   private final boolean hasCountry;
+  private final long id;
 
   /**
    * Creates a card with a symbol and a country.
@@ -21,10 +22,11 @@ public class Card {
    * @param cardSymbol The symbol of the card.
    * @param country    The country represented by the card.
    */
-  public Card(CardSymbol cardSymbol, CountryName country) {
+  public Card(CardSymbol cardSymbol, CountryName country, int id) {
     this.cardSymbol = cardSymbol;
     this.country = country;
     this.hasCountry = true;
+    this.id = id;
   }
 
   /**
@@ -32,10 +34,12 @@ public class Card {
    *
    * @param cardSymbol The symbol of the card.
    */
-  public Card(CardSymbol cardSymbol) {
+  public Card(CardSymbol cardSymbol, int id) {
     this.cardSymbol = cardSymbol;
     this.country = null;
     this.hasCountry = false;
+    this.id = id;
+
   }
 
   /**
@@ -56,13 +60,35 @@ public class Card {
     return country;
   }
 
+  public long getId() {
+    return id;
+  }
+
   /**
    * Returns whether the card has a country or not.
    *
    * @return True if the card has a country, false otherwise.
    */
 
+
   public boolean isHasCountry() {
     return hasCountry;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Card)) {
+      return false;
+    }
+    return this.getId() == ((Card) obj).getId();
+
+  }
+
+  @Override
+  public String toString() {
+    return " Symbol:" + cardSymbol + " country " + country + "  id " + id;
   }
 }
