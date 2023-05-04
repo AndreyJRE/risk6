@@ -67,23 +67,10 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     List<Fortify> fortifyList = new LinkedList<>();
     this.sortContinentsByHighestRelativePower();
     Map<Country, Integer> allOwnedCountryDiffs = new HashMap<>();
-    for (Continent continent : this.getContinentsCopy()) {
-      allOwnedCountryDiffs.putAll(getCountryTroopDiffsByContinent(continent));
-    }
-    List<Country> countriesByHighestDiff = new ArrayList<>(allOwnedCountryDiffs.keySet());
-    countriesByHighestDiff.sort(
-        Comparator.comparing((Country country) -> allOwnedCountryDiffs.get(country)).reversed());
+    List<Country> countriesByHighestDiff = getCountriesByHighestDiff(
+        allOwnedCountryDiffs);
     for (Country country : countriesByHighestDiff) {
-      Country bestAdj = null;
-      for (Country adj : country.getAdjacentCountries()) {
-        if (this.equals(adj.getPlayer()) && adj.getTroops() >= country.getTroops()
-            && allOwnedCountryDiffs.get(adj) < 0) {
-          if (bestAdj == null || adj.getTroops() > bestAdj.getTroops()
-              || allOwnedCountryDiffs.get(adj) < allOwnedCountryDiffs.get(bestAdj)) {
-            bestAdj = adj;
-          }
-        }
-      }
+      Country bestAdj = this.findBestAdj(allOwnedCountryDiffs, country);
       if (bestAdj != null) {
         int diff = allOwnedCountryDiffs.get(bestAdj);
         int surrounding = diff < 0 ? -diff / 2 : new Random().nextInt(0, 2);
@@ -95,26 +82,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     return fortifyList.subList(0, Math.min(5, fortifyList.size()));
   }
 
-  private Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
-    Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
-    List<CountryPair> diffInfo = this.playerController.getAllValidCountryPairs(continent);
-    for (CountryPair countryPair : diffInfo) {
-      this.getCountryPairDiff(ownedCountryDiffs, countryPair);
-    }
-    return ownedCountryDiffs;
-  }
-
-  private void getCountryPairDiff(Map<Country, Integer> ownedCountryDiffs,
-      CountryPair countryPair) {
-    if (ownedCountryDiffs.get(countryPair.getOutgoing()) == null) {
-      ownedCountryDiffs.put(countryPair.getOutgoing(),
-          calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()));
-    } else {
-      ownedCountryDiffs.put(countryPair.getOutgoing(),
-          Math.max(calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()),
-              ownedCountryDiffs.get(countryPair.getOutgoing())));
-    }
-  }
 
   public void updateContinentsList() {
     this.continentsCopy = new ArrayList<>();

@@ -15,7 +15,7 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * The easy difficulty bot which makes all of its moves randomly
+ * The easy difficulty bot which makes all of its moves randomly.
  *
  * @author eameri
  */
@@ -113,7 +113,8 @@ public class EasyBot extends Player implements AiBot {
     List<Reinforce> reinforcements = new ArrayList<>();
     int reinforceTroopsCopy = this.getDeployableTroops();
     while (reinforceTroopsCopy > 0) {
-      int troopsSent = rng.nextInt(1, this.getDeployableTroops());
+      int troopsSent;
+      troopsSent = reinforceTroopsCopy == 1 ? 1 : rng.nextInt(1, reinforceTroopsCopy);
       Reinforce toAdd = this.createRandomReinforce(troopsSent);
       reinforcements.add(toAdd);
       reinforceTroopsCopy -= troopsSent;
@@ -133,7 +134,7 @@ public class EasyBot extends Player implements AiBot {
   }
 
   /**
-   * Randomly picks a country from a set of countries
+   * Randomly picks a country from a set of countries.
    *
    * @param countrySet A set of countries.
    * @return A randomly chosen country from the set.

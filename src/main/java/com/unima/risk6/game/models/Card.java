@@ -71,7 +71,7 @@ public class Card {
    */
 
 
-  public boolean isHasCountry() {
+  public boolean hasCountry() {
     return hasCountry;
   }
 

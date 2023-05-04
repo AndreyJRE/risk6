@@ -19,9 +19,9 @@ public class CardTypeAdapter implements JsonDeserializer<Card>, JsonSerializer<C
   public JsonElement serialize(Card src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.add("cardSymbol", context.serialize(src.getCardSymbol(), CardSymbol.class));
-    jsonObject.addProperty("hasCountry", src.isHasCountry());
+    jsonObject.addProperty("hasCountry", src.hasCountry());
 
-    if (src.isHasCountry()) {
+    if (src.hasCountry()) {
       jsonObject.add("country", context.serialize(src.getCountry(), CountryName.class));
     }
     jsonObject.addProperty("id", src.getId());

@@ -10,6 +10,12 @@ import com.unima.risk6.game.models.GameState;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * The Hard Bot, which uses the Monte Carlo Tree Search Algorithm to identify its moves during the
+ * game, and otherwise makes greedy decisions
+ *
+ * @author eameri
+ */
 public class HardBot extends GreedyBot implements AiBot {
 
   private List<Reinforce> reinforces;
@@ -24,7 +30,7 @@ public class HardBot extends GreedyBot implements AiBot {
   }
 
   public HardBot() {
-    super();
+    super("HardBot Default");
   }
 
   @Override

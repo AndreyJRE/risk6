@@ -33,9 +33,7 @@ public class GameState {
    * @param continents    the set of continents in the game
    * @param activePlayers the queue of players in the game
    */
-  public GameState(Set<Country> countries
-      , Set<Continent> continents
-      , Queue<Player> activePlayers) {
+  public GameState(Set<Country> countries, Set<Continent> continents, Queue<Player> activePlayers) {
     this.countries = countries;
     this.continents = continents;
     this.activePlayers = activePlayers;
@@ -72,8 +70,12 @@ public class GameState {
     return activePlayers;
   }
 
-  public void setNumberOfHandIns() {
+  public void incrementNumberOfHandIns() {
     this.numberOfHandIns += 1;
+  }
+
+  public void setNumberOfHandIns(int numberOfHandIns) {
+    this.numberOfHandIns = numberOfHandIns;
   }
 
   public int getNumberOfHandIns() {
@@ -108,10 +110,6 @@ public class GameState {
 
   public void setGameOver(boolean gameOver) {
     isGameOver = gameOver;
-  }
-
-  public void setNumberOfHandIns(int numberOfHandIns) {
-    this.numberOfHandIns = numberOfHandIns;
   }
 
 }

@@ -107,12 +107,9 @@ class GameControllerTest {
   @Test
   void generalPhaseFlowTest() {
     //Players should start in ORDER_PHASE
-    assertEquals(GamePhase.ORDER_PHASE, players[0].getCurrentPhase());
-    assertEquals(GamePhase.ORDER_PHASE, players[1].getCurrentPhase());
-    assertEquals(GamePhase.ORDER_PHASE, players[2].getCurrentPhase());
-    assertEquals(GamePhase.ORDER_PHASE, players[3].getCurrentPhase());
-    assertEquals(GamePhase.ORDER_PHASE, players[4].getCurrentPhase());
-    assertEquals(GamePhase.ORDER_PHASE, players[5].getCurrentPhase());
+    for (int i = 0; i < 6; i++) {
+      assertEquals(GamePhase.ORDER_PHASE, players[i].getCurrentPhase());
+    }
 
     HashMap<Player, Integer> diceRolls = new HashMap<>();
     diceRolls.put(players[0], 6);
@@ -125,20 +122,14 @@ class GameControllerTest {
     Queue<Player> playerQueue = gameController.getNewPlayerOrder(diceRolls);
     gameController.setNewPlayerOrder(playerQueue);
     assertEquals(players[0], gameState.getCurrentPlayer());
-    assertEquals(GamePhase.CLAIM_PHASE, players[0].getCurrentPhase());
-    assertEquals(GamePhase.NOT_ACTIVE, players[1].getCurrentPhase());
-    assertEquals(GamePhase.NOT_ACTIVE, players[2].getCurrentPhase());
-    assertEquals(GamePhase.NOT_ACTIVE, players[3].getCurrentPhase());
-    assertEquals(GamePhase.NOT_ACTIVE, players[4].getCurrentPhase());
-    assertEquals(GamePhase.NOT_ACTIVE, players[5].getCurrentPhase());
+    for (int i = 0; i < 6; i++) {
+      assertEquals(GamePhase.CLAIM_PHASE, players[0].getCurrentPhase());
+    }
 
     //Set the initialTroops according to the rulebook for 6 players.
-    players[0].setInitialTroops(20);
-    players[1].setInitialTroops(20);
-    players[2].setInitialTroops(20);
-    players[3].setInitialTroops(20);
-    players[4].setInitialTroops(20);
-    players[5].setInitialTroops(20);
+    for (int i = 0; i < 6; i++) {
+      players[i].setInitialTroops(20);
+    }
 
     gameController.nextPhase();
     assertEquals(players[1], gameState.getCurrentPlayer());
@@ -157,18 +148,17 @@ class GameControllerTest {
     assertEquals(players[5], gameState.getCurrentPlayer());
     assertEquals(GamePhase.CLAIM_PHASE, players[5].getCurrentPhase());
 
-    players[0].setInitialTroops(0);
-    players[1].setInitialTroops(0);
-    players[2].setInitialTroops(0);
-    players[3].setInitialTroops(0);
-    players[4].setInitialTroops(0);
-    players[5].setInitialTroops(0);
+    for (int i = 0; i < 6; i++) {
+      players[i].setInitialTroops(0);
+    }
 
     gameController.nextPhase();
 
     //Test a standard turn of Player 1
     assertEquals(players[0], gameState.getCurrentPlayer());
     assertEquals(GamePhase.REINFORCEMENT_PHASE, players[0].getCurrentPhase());
+    players[0].setDeployableTroops(0);
+
     gameController.nextPhase();
     assertEquals(players[0], gameState.getCurrentPlayer());
     assertEquals(GamePhase.ATTACK_PHASE, players[0].getCurrentPhase());
@@ -180,6 +170,8 @@ class GameControllerTest {
     //Should start the turn into Reinforcement_Phase
     assertEquals(players[1], gameState.getCurrentPlayer());
     assertEquals(GamePhase.REINFORCEMENT_PHASE, players[1].getCurrentPhase());
+    players[1].setDeployableTroops(0);
+
     gameController.nextPhase();
     assertEquals(players[1], gameState.getCurrentPlayer());
     assertEquals(GamePhase.ATTACK_PHASE, players[1].getCurrentPhase());
@@ -233,12 +225,9 @@ class GameControllerTest {
     Queue<Player> playerQueue = gameController.getNewPlayerOrder(diceRolls);
     gameController.setNewPlayerOrder(playerQueue);
 
-    players[0].setInitialTroops(1);
-    players[1].setInitialTroops(1);
-    players[2].setInitialTroops(1);
-    players[3].setInitialTroops(1);
-    players[4].setInitialTroops(1);
-    players[5].setInitialTroops(1);
+    for (int i = 0; i < 6; i++) {
+      players[i].setInitialTroops(1);
+    }
 
     gameController.nextPhase();
     assertEquals(players[1], gameState.getCurrentPlayer());
@@ -250,13 +239,6 @@ class GameControllerTest {
     gameController.removeLostPlayer(players[5]);
     gameController.nextPhase();
     assertEquals(players[0], gameState.getCurrentPlayer());
-
-    System.out.println(players[0].getCurrentPhase());
-    System.out.println(players[1].getCurrentPhase());
-    System.out.println(players[2].getCurrentPhase());
-    System.out.println(players[3].getCurrentPhase());
-    System.out.println(players[4].getCurrentPhase());
-    System.out.println(players[5].getCurrentPhase());
 
   }
 

@@ -96,9 +96,8 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
         }.getType());
     boolean isGameOver = jsonObject.get("isGameOver").getAsBoolean();
 
-    for (int j = 0; j < numberOfHandIns; j++) {
-      gameState.setNumberOfHandIns();
-    }
+    gameState.setNumberOfHandIns(numberOfHandIns);
+
     //TODO Testen, ob reihenfolge stimmt
     JsonArray jsonArray = jsonObject.get("lastMoves").getAsJsonArray();
     for (JsonElement element : jsonArray) {

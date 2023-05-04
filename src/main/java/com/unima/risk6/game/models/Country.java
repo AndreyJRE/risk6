@@ -71,13 +71,11 @@ public class Country {
   @Override
   public String toString() {
     return "Country{" +
-        "countryName=" + countryName +
-        ", player=" + player.getUser() +
-        ", hasPlayer=" + hasPlayer +
-        ", troops=" + troops +
-        //  ", adjacentCountries=" + adjacentCountries. +
-        ", continent=" + continent.getContinentName() +
-        '}';
+        "countryName=" + countryName
+        + ", player=" + player.getUser()
+        + ", hasPlayer=" + hasPlayer
+        + ", troops=" + troops
+        + ", continent=" + continent.getContinentName() + '}';
   }
 
   @Override
