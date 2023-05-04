@@ -93,7 +93,8 @@ public class PlayerController {
   }
 
   private int troopLimitPerPhase() {
-    return this.player.getCurrentPhase() == GamePhase.REINFORCEMENT_PHASE ? 1 : 2;
+    return this.player.getCurrentPhase() == GamePhase.REINFORCEMENT_PHASE
+        || this.player.getCurrentPhase() == GamePhase.CLAIM_PHASE ? 1 : 2;
   }
 
 

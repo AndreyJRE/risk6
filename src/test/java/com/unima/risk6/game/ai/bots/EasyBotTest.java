@@ -108,6 +108,7 @@ class EasyBotTest {
   void createAllReinforcementsTest() {
     Country middleEast = getCountryByName(CountryName.MIDDLE_EAST);
     botTestController.addCountry(middleEast);
+    middleEast.setTroops(1);
     List<Reinforce> reinforcements = easyBot.createAllReinforcements();
     // no deployable troops
     assertEquals(0, reinforcements.size());
@@ -115,6 +116,8 @@ class EasyBotTest {
     reinforcements = easyBot.createAllReinforcements();
     assertTrue(reinforcements.size() > 0);
     assertEquals(reinforcements.get(0).getCountry(), middleEast);
+    int sumOfTroops = reinforcements.stream().mapToInt(Reinforce::getToAdd).sum();
+    assertEquals(5, sumOfTroops);
   }
 
   static Country getCountryByName(CountryName countryName) {
