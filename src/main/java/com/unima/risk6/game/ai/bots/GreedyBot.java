@@ -79,11 +79,12 @@ public abstract class GreedyBot extends Player implements AiBot {
     // we can spare troops
     if (troopsAffordable < 0) {
       troopsAffordable *= -1;
-      return winPair.createFortify(-troopsAffordable);
-    } else { // else try to make it equal
       int outgoingTroops = winPair.getOutgoing().getTroops();
       int incomingTroops = winPair.getIncoming().getTroops();
-      return winPair.createFortify((outgoingTroops - incomingTroops) / 2);
+      int makeEqual = (outgoingTroops - incomingTroops) / 2;
+      return winPair.createFortify(Math.min(troopsAffordable / 2, makeEqual));
+    } else { // not worth it to fortify -> all surrounding enemy countries are stronger
+      return winPair.createFortify(0);
     }
   }
 

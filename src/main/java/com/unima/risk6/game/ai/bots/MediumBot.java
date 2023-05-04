@@ -211,7 +211,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       Country bestAdj = findBestAdj(allOwnedCountryDiffs, country);
       if (bestAdj != null) {
         fortify = new Fortify(bestAdj, country,
-            Math.max((bestAdj.getTroops() - country.getTroops()) / 2,
+            Math.min((bestAdj.getTroops() - country.getTroops()) / 2,
                 -allOwnedCountryDiffs.get(bestAdj) / 2));
         break;
       }

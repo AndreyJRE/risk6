@@ -2,7 +2,6 @@ package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.CountryPair;
@@ -17,7 +16,6 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -38,14 +36,9 @@ class MediumBotTest {
   static void setUp() {
     InputStream data = MediumBotTest.class.getResourceAsStream(
         "/com/unima/risk6/json/probabilities.json");
-    try {
-      assert data != null;
-      try (InputStreamReader fileReader = new InputStreamReader(data)) {
-        Probabilities.init(fileReader);
-      }
-    } catch (IOException e) {
-      fail("Probabilities could not be loaded");
-    }
+    assert data != null;
+    InputStreamReader fileReader = new InputStreamReader(data);
+    Probabilities.init(fileReader);
     mediumBot = new MediumBot("Sirius Black");
     botTestController = new PlayerController();
     botTestController.setPlayer((MediumBot) mediumBot);
@@ -76,6 +69,32 @@ class MediumBotTest {
 
   @Test
   void moveAfterAttack() {
+    Country westernAus = getCountryByName(CountryName.WESTERN_AUSTRALIA);
+    Country newGuinea = getCountryByName(CountryName.NEW_GUINEA);
+    CountryPair toMove = new CountryPair(westernAus, newGuinea);
+    botTestController.addCountry(westernAus);
+    westernAus.setTroops(1);
+    botTestController.addCountry(newGuinea);
+    newGuinea.setTroops(2);
+    Country adj1 = getCountryByName(CountryName.INDONESIA);
+    Country adj2 = getCountryByName(CountryName.EASTERN_AUSTRALIA);
+    enemyController.addCountry(adj1);
+    enemyController.addCountry(adj2);
+    adj1.setTroops(1);
+    adj2.setTroops(1);
+    Fortify move = mediumBot.moveAfterAttack(toMove);
+    assertEquals(0, move.getTroopsToMove());
+    westernAus.setTroops(2);
+    move = mediumBot.moveAfterAttack(toMove);
+    assertEquals(0, move.getTroopsToMove());
+    westernAus.setTroops(3);
+    move = mediumBot.moveAfterAttack(toMove);
+    assertEquals(0, move.getTroopsToMove());
+    westernAus.setTroops(8);
+    adj1.setTroops(4);
+    adj2.setTroops(6);
+    move = mediumBot.moveAfterAttack(toMove);
+    assertEquals(1, move.getTroopsToMove());
   }
 
   @Test
@@ -204,7 +223,10 @@ class MediumBotTest {
     Fortify fortify = mediumBot.createFortify();
     assertEquals(southAfrica, fortify.getOutgoing());
     assertEquals(congo, fortify.getIncoming());
-    assertEquals(5, fortify.getTroopsToMove());
+    assertEquals(4, fortify.getTroopsToMove());
+    southAfrica.setTroops(10);
+    fortify = mediumBot.createFortify();
+    assertEquals(2, fortify.getTroopsToMove());
   }
 
   @Test
