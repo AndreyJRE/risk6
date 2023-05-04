@@ -15,6 +15,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -62,7 +63,7 @@ public class JoinOnlineSceneController {
 
     AnchorPane anchorPane = new AnchorPane();
     anchorPane.setPrefSize(600, 495);
-    anchorPane.setPadding(new Insets(150, 250, 150, 250));
+    anchorPane.setPadding(new Insets(190, 270, 190, 270));
 
     VBox vBox = new VBox();
     vBox.setAlignment(Pos.CENTER);
@@ -80,22 +81,16 @@ public class JoinOnlineSceneController {
         "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
 
     TextField usernameField = new TextField();
-    usernameField.setPrefSize(470, 38);
+    usernameField.setPrefSize(330, 38);
     usernameField.setFont(Font.font(18));
     usernameField.setPromptText("Enter IP Adress");
     usernameField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
     PasswordField passwordField = new PasswordField();
-    passwordField.setPrefSize(470, 39);
+    passwordField.setPrefSize(330, 39);
     passwordField.setFont(Font.font(18));
     passwordField.setPromptText("Enter Port");
     passwordField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
-
-    PasswordField checkPasswordField = new PasswordField();
-    checkPasswordField.setPrefSize(470, 40);
-    checkPasswordField.setFont(Font.font(18));
-    checkPasswordField.setPromptText("Enter Password again");
-    checkPasswordField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
     Label passwordMismatchLabel = new Label();
     passwordMismatchLabel.setFont(Font.font(14));
@@ -103,22 +98,30 @@ public class JoinOnlineSceneController {
     passwordMismatchLabel.setPadding(new Insets(-10, 0, -10, 0));
 
     Button createButton = new Button("Join");
-    createButton.setPrefSize(470, 40);
+    createButton.setPrefSize(500, 40);
     createButton.setFont(Font.font(18));
     createButton.setStyle(
         "-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF; -fx-background-radius: 20; -fx-border-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
 
-    Label loginLabel = new Label("Login to existing account");
-    loginLabel.setFont(Font.font(24));
-    loginLabel.setStyle(
-        "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-text-fill: #BEBEBE; -fx-underline: true;");
-// Add event handlers for the loginLabel if necessary, e.g.:
-// loginLabel.setOnMouseClicked(event -> handleSkipToTitleScreen());
-// loginLabel.setOnMouseEntered(event -> handleMouseEntered());
-// loginLabel.setOnMouseExited(event -> handleMouseExited());
+    Label ipLabel = new Label("Enter IP Adress:");
+    ipLabel.setFont(Font.font(18));
+    ipLabel.setAlignment(Pos.CENTER_LEFT);
+
+    Label portLabel = new Label("Enter Port:");
+    portLabel.setFont(Font.font(18));
+    portLabel.setAlignment(Pos.CENTER_LEFT);
+
+    GridPane centerGrid = new GridPane();
+    centerGrid.add(ipLabel, 0, 0);
+    centerGrid.add(portLabel, 0, 1);
+    centerGrid.add(usernameField, 1, 0);
+    centerGrid.add(passwordField, 1, 1);
+    centerGrid.setHgap(20);
+    centerGrid.setVgap(15);
+
     vBox.getChildren()
-        .addAll(titleLabel, usernameField, passwordField, checkPasswordField, passwordMismatchLabel,
-            createButton, loginLabel);
+        .addAll(titleLabel, centerGrid, passwordMismatchLabel,
+            createButton);
     vBox.setPadding(new Insets(15, 15, 15, 15));
 
     anchorPane.getChildren().add(vBox);
