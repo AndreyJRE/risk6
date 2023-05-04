@@ -251,7 +251,7 @@ public class GameSceneController implements GameStateObserver {
     });
 
     ActivePlayerUi activePlayerUi = new ActivePlayerUi(40,
-        40, 280, 50, playerUis.peek());
+        40, 300, 75, playerUis.peek(), mockGamePhase);
     playerUis.offer(playerUis.poll());
 
     bottomPane.getChildren().add(activePlayerUi);
