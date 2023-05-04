@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * The medium difficulty bot, which makes only the best move in each round without analyzing
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 public class MediumBot extends GreedyBot implements AiBot {
 
+  private static final Random RNG = new Random();
   private int reinforceTroopsCopy;
   private int lastAttackSize;
 
@@ -106,6 +108,7 @@ public class MediumBot extends GreedyBot implements AiBot {
     Map<Country, Integer> ownedCountryDiffs = getCountryTroopDiffsByContinent(continent);
     List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountryDiffs.keySet());
     sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
+    ownedCountryDiffs.replaceAll((entry, diff) -> diff + RNG.nextInt(0, 3));
     return reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }
 
@@ -123,6 +126,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       List<Country> sortedCountryList) {
     List<Reinforce> listReinforce = new ArrayList<>();
     for (Country country : sortedCountryList) {
+      // TODO: remove check for diff > 0 and just fix maps earlier?
       if (this.reinforceTroopsCopy > 0 && ownedCountryDiffs.get(country) > 0) {
         int amountDeployed = Math.min(this.reinforceTroopsCopy, ownedCountryDiffs.get(country));
         listReinforce.add(new Reinforce(country, amountDeployed));

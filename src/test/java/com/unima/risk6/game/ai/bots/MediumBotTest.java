@@ -65,6 +65,8 @@ class MediumBotTest {
       c.setHasPlayer(false);
     });
     ((MediumBot) mediumBot).updateContinentsCopy(gameState.getContinents());
+    ((MediumBot) mediumBot).setInitialTroops(0);
+    ((MediumBot) mediumBot).setDeployableTroops(0);
   }
 
   @Test
@@ -143,10 +145,9 @@ class MediumBotTest {
     botTestController.addCountry(venezuela);
     venezuela.setTroops(4);
     westernAus.setTroops(17);
-    // should add two that's the max available to venezuela
-    reinforcements = mediumBot.createAllReinforcements();
-    assertEquals(2, reinforcements.size());
-    assertEquals(2, reinforcements.get(1).getToAdd());
+    reinforcements = mediumBot.createAllReinforcements(); // cant test content due to randomness
+    int sum = reinforcements.stream().mapToInt(Reinforce::getToAdd).sum();
+    assertEquals(((MediumBot) mediumBot).getDeployableTroops(), sum);
   }
 
   @Test
@@ -163,6 +164,7 @@ class MediumBotTest {
     // should reinforce middle east with everything
     List<Reinforce> reinforcements = mediumBot.createAllReinforcements();
     assertTrue(reinforcements.size() > 0);
+    reinforcements.forEach(r -> System.out.println(r.getCountry() + " " + r.getToAdd()));
     assertEquals(10, reinforcements.stream().mapToInt(Reinforce::getToAdd).sum());
   }
 
@@ -176,7 +178,7 @@ class MediumBotTest {
     botTestController.addCountry(westernAus);
     westernAus.setTroops(8);
     botTestController.addCountry(indonesia);
-    indonesia.setTroops(5);
+    indonesia.setTroops(4);
     enemyController.addCountry(easternAus);
     easternAus.setTroops(2);
     enemyController.addCountry(newGuinea);
