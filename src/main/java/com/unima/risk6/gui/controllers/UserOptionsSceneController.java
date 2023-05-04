@@ -1,13 +1,16 @@
 package com.unima.risk6.gui.controllers;
 
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
@@ -18,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
@@ -33,8 +37,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
@@ -44,11 +46,11 @@ public class UserOptionsSceneController {
 
   private final UserOptionsScene userOptions;
   private final SceneController sceneController;
+  private final UserService userService;
   private User user;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
-  private final UserService userService;
 
 
   public UserOptionsSceneController(UserOptionsScene userOptions) {
@@ -70,14 +72,7 @@ public class UserOptionsSceneController {
   private void initElements() {
     BooleanProperty enterPressed = new SimpleBooleanProperty(false);
     // Back arrow
-    Path arrow = new Path();
-    arrow.getElements().add(new MoveTo(10, 15));
-    arrow.getElements().add(new LineTo(30, 0));
-    arrow.getElements().add(new MoveTo(30, 30));
-    arrow.getElements().add(new LineTo(10, 15));
-    arrow.setStrokeWidth(3);
-    arrow.setStroke(Color.BLACK);
-    arrow.setFill(Color.TRANSPARENT);
+    Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
@@ -102,7 +97,7 @@ public class UserOptionsSceneController {
       if (event.getClickCount() == 2) {
         userNameField.setEditable(true);
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
-            + "-fx-font-size: 70px; -fx-background-color: lightgrey; "
+            + "-fx-font-size: 35px; -fx-background-color: lightgrey; "
             + "-fx-border-color: transparent;");
         userNameField.requestFocus();
       }
@@ -113,20 +108,7 @@ public class UserOptionsSceneController {
     userNameField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue && !enterPressed.get()) {
         userNameField.setEditable(false);
-
-        if (!user.getUsername().equals(userNameField.getText())) {
-          boolean confirm = showConfirmationDialog("Change username",
-              "Do you really want to change the name of your user?");
-          if (confirm) {
-            user.setUsername(userNameField.getText());
-            // Save the updated user name to the database
-          } else {
-            userNameField.setText(user.getUsername());
-          }
-        }
-        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
-            + "-fx-font-size: 70px; -fx-background-color: transparent; "
-            + "-fx-border-color: transparent;");
+        changeUsernameConfirmation(userNameField);
       }
     });
 
@@ -134,19 +116,7 @@ public class UserOptionsSceneController {
       if (event.getCode() == KeyCode.ENTER) {
         userNameField.setEditable(false);
         enterPressed.set(true);
-        if (!user.getUsername().equals(userNameField.getText())) {
-          boolean confirm = showConfirmationDialog("Change username",
-              "Do you really want to change the name of your user?");
-          if (confirm) {
-            user.setUsername(userNameField.getText());
-            userService.updateUser(user);
-          } else {
-            userNameField.setText(user.getUsername());
-          }
-        }
-        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
-            + "-fx-font-size: 70px; -fx-background-color: transparent; "
-            + "-fx-border-color: transparent;");
+        changeUsernameConfirmation(userNameField);
         userNameField.getParent().requestFocus(); // Move the focus to the parent
       }
       enterPressed.set(false);
@@ -171,6 +141,7 @@ public class UserOptionsSceneController {
         loginScene.setLoginSceneController(loginSceneController);
         sceneController.addScene(SceneName.LOGIN, loginScene);
       }
+      SessionManager.logout();
       sceneController.activate(SceneName.LOGIN);
     });
 
@@ -187,16 +158,18 @@ public class UserOptionsSceneController {
           .getSceneBySceneName(SceneName.USER_STATISTICS);
       if (scene == null) {
         scene = new UserStatisticsScene();
-        UserStatisticsSceneController userStatisticsSceneController = new UserStatisticsSceneController(
-            scene);
+        UserStatisticsSceneController userStatisticsSceneController =
+            new UserStatisticsSceneController(scene);
         scene.setController(userStatisticsSceneController);
         sceneController.addScene(SceneName.USER_STATISTICS, scene);
       }
       sceneController.activate(SceneName.USER_STATISTICS);
     });
 
+    Button changePasswordButton = createChangePasswordButton();
     // Create a VBox to hold the userNameField, userStackPane, and the labels
     VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
+        changePasswordButton,
         changeUserButton);
     centerVBox.setSpacing(20);
     centerVBox.setAlignment(Pos.CENTER);
@@ -205,6 +178,49 @@ public class UserOptionsSceneController {
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
     root.setCenter(centerVBox);
+  }
+
+  private Button createChangePasswordButton() {
+    Button changePasswordButton = new Button("Change Password");
+    changePasswordButton.setPrefWidth(470);
+    changePasswordButton.setPrefHeight(40);
+    changePasswordButton.setAlignment(Pos.CENTER);
+    applyButtonStyle(changePasswordButton);
+    changePasswordButton.setFont(new Font(18));
+
+    changePasswordButton.setOnAction(e -> {
+      ChangePasswordScene changePasswordScene = (ChangePasswordScene) sceneController
+          .getSceneBySceneName(SceneName.CHANGE_PASSWORD);
+      if (changePasswordScene == null) {
+        changePasswordScene = new ChangePasswordScene();
+        ChangePasswordSceneController changePasswordSceneController = new ChangePasswordSceneController(
+            changePasswordScene);
+        changePasswordScene.setController(changePasswordSceneController);
+        sceneController.addScene(SceneName.CHANGE_PASSWORD, changePasswordScene);
+      }
+      sceneController.activate(SceneName.CHANGE_PASSWORD);
+    });
+    return changePasswordButton;
+  }
+
+  private void changeUsernameConfirmation(TextField userNameField) {
+    if (!user.getUsername().equals(userNameField.getText())) {
+      boolean confirm = showConfirmationDialog("Change username",
+          "Do you really want to change the name of your user?");
+      if (confirm) {
+        user.setUsername(userNameField.getText());
+        try {
+          userService.updateUser(user);
+        } catch (UsernameNotUniqueException e) {
+          showErrorDialog("Error", e.getMessage());
+          userNameField.setText(user.getUsername());
+        }
+      } else {
+        userNameField.setText(user.getUsername());
+      }
+    }
+    userNameField.setStyle("-fx-font-size: 40; -fx-background-color: transparent; "
+        + "-fx-border-color: transparent;");
   }
 
   private void initUserStackPane() {
@@ -273,6 +289,14 @@ public class UserOptionsSceneController {
 
     Optional<ButtonType> result = alert.showAndWait();
     return result.isPresent() && result.get() == yesButton;
+  }
+
+  private void showErrorDialog(String title, String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 
 }

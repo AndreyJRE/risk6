@@ -1,6 +1,10 @@
 package com.unima.risk6.gui.configurations;
 
 import javafx.scene.control.Button;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 
 public class StyleConfiguration {
 
@@ -24,5 +28,17 @@ public class StyleConfiguration {
         button.setStyle(NORMAL_BUTTON_STYLE);
       }
     });
+  }
+
+  public static Path generateBackArrow() {
+    Path arrow = new Path();
+    arrow.getElements().add(new MoveTo(10, 15));
+    arrow.getElements().add(new LineTo(30, 0));
+    arrow.getElements().add(new MoveTo(30, 30));
+    arrow.getElements().add(new LineTo(10, 15));
+    arrow.setStrokeWidth(3);
+    arrow.setStroke(Color.BLACK);
+    arrow.setFill(Color.TRANSPARENT);
+    return arrow;
   }
 }

@@ -1,6 +1,7 @@
 module com.unima.risk6 {
   requires javafx.controls;
   requires javafx.fxml;
+  requires javafx.media;
   requires java.sql;
   requires io.netty.codec;
   requires io.netty.codec.http;

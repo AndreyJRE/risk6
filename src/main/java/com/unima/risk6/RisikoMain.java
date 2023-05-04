@@ -4,6 +4,7 @@ import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.LoginSceneController;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
@@ -27,10 +28,10 @@ public class RisikoMain extends Application {
 
     this.userService = DatabaseConfiguration.getUserService();
     this.users = userService.getAllUsers();
-    /*for(User tempUser: users){
+    for (User tempUser : users) {
       tempUser.setImagePath("/com/unima/risk6/pictures/playerIcon.png");
       userService.updateUser(tempUser);
-    }*/
+    }
     stage.setMinWidth(900);
     stage.setMinHeight(700);
     stage.setWidth(1080);
@@ -57,7 +58,10 @@ public class RisikoMain extends Application {
   @Override
   public void init() throws Exception {
 
-    Platform.runLater(() -> DatabaseConfiguration.startDatabaseConfiguration());
+    Platform.runLater(() -> {
+      DatabaseConfiguration.startDatabaseConfiguration();
+      SoundConfiguration.loadSounds();
+    });
 
     // updating of progress bar -> currently disabled for UI testing
 //    for (int i = 0; i < 100000; i++) {
