@@ -39,3 +39,4 @@ build/
 /out.html
 /logs/application.log
 /test.json
+/.idea/codeStyles/

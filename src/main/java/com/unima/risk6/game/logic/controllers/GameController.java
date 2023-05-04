@@ -19,7 +19,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-//TODO mach das kompatibel zu controller
+
 public class GameController implements GameStateObserver {
 
   private GameState gameState;
@@ -53,10 +53,15 @@ public class GameController implements GameStateObserver {
       //the Cards of the Players who lost get transferred to the Player who conquered them
       takeOverCardFromLostPlayer(loser);
     }
+    if (gameState.getActivePlayers().size() == 1) {
+      gameState.setGameOver(true);
+    }
   }
 
   public void takeOverCardFromLostPlayer(Player lostPlayer) {
     gameState.getCurrentPlayer().getHand().getCards().addAll(lostPlayer.getHand().getCards());
+    lostPlayer.getHand().getCards().clear();
+    lostPlayer.getHand().getSelectedCards().clear();
   }
 
   public void setNewPlayerOrder(Queue<Player> playerOrder) {
@@ -85,7 +90,7 @@ public class GameController implements GameStateObserver {
 
 
   public void addLastMove(Move move) {
-    gameState.setLastMove(move);
+    gameState.getLastMoves().add(move);
   }
 
   @Override
@@ -93,7 +98,6 @@ public class GameController implements GameStateObserver {
     this.gameState = gameState;
   }
 
-  //TODO Reinforcephase Automation in Process Reinforce IN SERVER
   public void nextPhase() {
     Player player = gameState.getCurrentPlayer();
     switch (player.getCurrentPhase()) {
@@ -196,7 +200,6 @@ public class GameController implements GameStateObserver {
     return gameState;
   }
 
-  //TODO Zum Testen.
   public void setGameState(GameState gameState) {
     this.gameState = gameState;
   }

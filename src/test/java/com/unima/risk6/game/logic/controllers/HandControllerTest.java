@@ -31,15 +31,14 @@ class HandControllerTest {
     handController.setHand(hand);
     //initialize some Cards to test with
     cards = new Card[8];
-    cards[0] = new Card(CardSymbol.CAVALRY, CountryName.ALASKA);
-    cards[1] = new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA);
-    cards[2] = new Card(CardSymbol.CAVALRY, CountryName.CONGO);
-    cards[3] = new Card(CardSymbol.CANNON, CountryName.WESTERN_EUROPE);
-    cards[4] = new Card(CardSymbol.CANNON, CountryName.VENEZUELA);
-    cards[5] = new Card(CardSymbol.WILDCARD);
-    cards[6] = new Card(CardSymbol.INFANTRY, CountryName.BRAZIL);
-    cards[7] = new Card(CardSymbol.WILDCARD);
-
+    cards[0] = new Card(CardSymbol.CAVALRY, CountryName.ALASKA, 1);
+    cards[1] = new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA, 2);
+    cards[2] = new Card(CardSymbol.CAVALRY, CountryName.CONGO, 3);
+    cards[3] = new Card(CardSymbol.CANNON, CountryName.WESTERN_EUROPE, 4);
+    cards[4] = new Card(CardSymbol.CANNON, CountryName.VENEZUELA, 5);
+    cards[5] = new Card(CardSymbol.WILDCARD, 6);
+    cards[6] = new Card(CardSymbol.INFANTRY, CountryName.BRAZIL, 7);
+    cards[7] = new Card(CardSymbol.WILDCARD, 8);
 
   }
 
@@ -53,6 +52,8 @@ class HandControllerTest {
     cardList.add(cards[1]);
     cardList.add(cards[2]);
     cardList.add(cards[3]);
+
+    handController.deselectAllCards();
 
 
   }
@@ -69,21 +70,21 @@ class HandControllerTest {
     //check if added successfully
     assertEquals(4, handController.getHand().getCards().size());
 
-    handController.selectCard(0);
+    handController.selectCardThroughIndex(0);
     assertEquals(1, handController.getHand().getSelectedCards().size());
     assertEquals(cards[0], handController.getHand().getSelectedCards().get(0),
         "Selected card should be the first one added into Hand");
 
     //Select another 2 cards
-    handController.selectCard(1);
+    handController.selectCardThroughIndex(1);
     assertEquals(2, handController.getHand().getSelectedCards().size());
     assertEquals(cards[1], handController.getHand().getSelectedCards().get(1));
-    handController.selectCard(2);
+    handController.selectCardThroughIndex(2);
     assertEquals(3, handController.getHand().getSelectedCards().size());
     assertEquals(cards[2], handController.getHand().getSelectedCards().get(2));
 
     //Should not add a forth Card
-    handController.selectCard(3);
+    handController.selectCardThroughIndex(3);
     assertFalse(handController.getHand().getSelectedCards().contains(cards[3]));
 
   }
@@ -92,29 +93,30 @@ class HandControllerTest {
   void cardDoubleSelectionTest() {
     //Should not select an already selected Card twice
 
-    handController.selectCard(0);
+    handController.selectCardThroughIndex(0);
     assertEquals(1, handController.getHand().getSelectedCards().size());
-    handController.selectCard(0);
+    handController.selectCardThroughIndex(0);
     assertEquals(1, handController.getHand().getSelectedCards().size());
   }
 
   @Test
   void maximalCardSelectionTest() {
     //Should not add a forth Card
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(2);
-    handController.selectCard(3);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(2);
+    handController.selectCardThroughIndex(3);
     assertFalse(handController.getHand().getSelectedCards().contains(cards[3]));
   }
 
   @Test
   void cardDeselectionTest() {
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(2);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(2);
     //Deselecting one card at a time
     handController.deselectCards(0);
+
     assertFalse(handController.getHand().getSelectedCards().contains(cards[0]));
     assertEquals(2, handController.getHand().getSelectedCards().size());
     handController.deselectCards(2);
@@ -125,9 +127,9 @@ class HandControllerTest {
     assertFalse(handController.getHand().getSelectedCards().contains(cards[1]));
 
     //Deselect all cards
-    handController.selectCard(1);
-    handController.selectCard(3);
-    handController.selectCard(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(3);
+    handController.selectCardThroughIndex(0);
 
     handController.deselectAllCards();
     assertEquals(0, handController.getHand().getSelectedCards().size());
@@ -152,47 +154,48 @@ class HandControllerTest {
     cardList.add(cards[7]);
 
     //Three of a kind should be exchangeable
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(2);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(2);
     assertTrue(handController.isExchangeable());
     handController.deselectAllCards();
 
     //Two of a kind with Wildcard should be exchangeable
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(5);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(5);
     assertTrue(handController.isExchangeable());
     handController.deselectAllCards();
 
     //Two of a kind and random other card should not be exchangeable
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(6);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(6);
     assertFalse(handController.isExchangeable());
     handController.deselectAllCards();
 
-    handController.selectCard(3);
-    handController.selectCard(4);
-    handController.selectCard(6);
+    handController.selectCardThroughIndex(3);
+    handController.selectCardThroughIndex(4);
+    handController.selectCardThroughIndex(6);
     assertFalse(handController.isExchangeable());
     handController.deselectAllCards();
     //2 wildcards with any other card should be exchangeable
-    handController.selectCard(0);
-    handController.selectCard(5);
-    handController.selectCard(7);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(5);
+    handController.selectCardThroughIndex(7);
+
     assertTrue(handController.isExchangeable());
     handController.deselectAllCards();
     //All symbols differ should be exchangeable
-    handController.selectCard(0);
-    handController.selectCard(4);
-    handController.selectCard(6);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(4);
+    handController.selectCardThroughIndex(6);
     assertTrue(handController.isExchangeable());
     handController.deselectAllCards();
     //Two different Cards with one wild Card should be exchangeable
-    handController.selectCard(0);
-    handController.selectCard(4);
-    handController.selectCard(7);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(4);
+    handController.selectCardThroughIndex(7);
     assertTrue(handController.isExchangeable());
     handController.deselectAllCards();
 
@@ -200,9 +203,9 @@ class HandControllerTest {
 
   @Test
   void exchangeCardsTest() {
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(2);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(2);
     assertEquals(4, handController.getHand().getCards().size());
     handController.exchangeCards();
 
@@ -232,11 +235,11 @@ class HandControllerTest {
     countries.add(congo);
     countries.add(china);
 
-    handController.selectCard(0);
-    handController.selectCard(1);
-    handController.selectCard(2);
+    handController.selectCardThroughIndex(0);
+    handController.selectCardThroughIndex(1);
+    handController.selectCardThroughIndex(2);
 
-    Set<Country> bonusCountries = handController.hasCountryBonus(countries);
+    Set<CountryName> bonusCountries = handController.getBonusCountries(countries);
     assertEquals(2, bonusCountries.size());
 
   }
@@ -280,13 +283,41 @@ class HandControllerTest {
     Random random = new Random();
     ArrayList<Card> cards = new ArrayList<>();
     for (int i = 0; i < 24; i++) {
-      cards.add(new Card(cardSymbols[random.nextInt(cardSymbols.length)]));
+      cards.add(new Card(cardSymbols[random.nextInt(cardSymbols.length)], i));
     }
 
     cardList.addAll(cards);
-    assertEquals(17, cardList.size());
+    assertEquals(24, cardList.size());
     handController.selectExchangeableCards();
     assertEquals(3, handController.getHand().getSelectedCards().size());
+
+
+  }
+
+  @Test
+  void selectCardsTest() {
+
+    Card alaskaCard = new Card(CardSymbol.CAVALRY, CountryName.ALASKA, 1);
+    Card wildcard1 = new Card(CardSymbol.WILDCARD, 6);
+    Card wildcard2 = new Card(CardSymbol.WILDCARD, 8);
+
+    ArrayList<Card> cardList = new ArrayList<>();
+    cardList.add(wildcard1);
+    cardList.add(alaskaCard);
+    cardList.add(wildcard2);
+
+    //Test if selectCards can select cards even if they are not the same reference
+    handController.addCard(cards[0]);// equal to alaskaCard
+    handController.addCard(cards[5]);//Equal to wildcard1
+    handController.addCard(cards[7]);//equal to wildcard2
+    handController.addCard(cards[1]);
+
+    handController.selectCardsFromCardList(cardList);
+    assertEquals(3, handController.getHand().getSelectedCards().size());
+
+    assertTrue(handController.getHand().getSelectedCards().contains(cards[0]));
+    assertTrue(handController.getHand().getSelectedCards().contains(cards[5]));
+    assertTrue(handController.getHand().getSelectedCards().contains(cards[7]));
 
 
   }

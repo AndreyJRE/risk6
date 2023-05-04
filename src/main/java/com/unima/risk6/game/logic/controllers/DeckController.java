@@ -10,6 +10,7 @@ import java.util.List;
 public class DeckController {
 
   private final Deck deck;
+  private int nextId = 1;
 
   public DeckController(Deck deck) {
     this.deck = deck;
@@ -32,11 +33,23 @@ public class DeckController {
         CountryName.URAL, CountryName.CHINA, CountryName.YAKUTSK, CountryName.KAMCHATKA,
         CountryName.INDONESIA, CountryName.NEW_GUINEA);
     List<Card> deckCards = deck.getDeckCards();
-    cannonCountries.forEach((country) -> deckCards.add(new Card(CardSymbol.CANNON, country)));
-    infantryCountries.forEach((country) -> deckCards.add(new Card(CardSymbol.INFANTRY, country)));
-    cavalryCountries.forEach((country) -> deckCards.add(new Card(CardSymbol.CAVALRY, country)));
-    deckCards.add(new Card(CardSymbol.WILDCARD));
-    deckCards.add(new Card(CardSymbol.WILDCARD));
+
+    for (CountryName c : cannonCountries) {
+      deckCards.add(new Card(CardSymbol.CANNON, c, nextId));
+      nextId++;
+    }
+    for (CountryName c : infantryCountries) {
+      deckCards.add(new Card(CardSymbol.INFANTRY, c, nextId));
+      nextId++;
+    }
+
+    for (CountryName c : cavalryCountries) {
+      deckCards.add(new Card(CardSymbol.CAVALRY, c, nextId));
+      nextId++;
+    }
+    deckCards.add(new Card(CardSymbol.WILDCARD, nextId));
+    nextId++;
+    deckCards.add(new Card(CardSymbol.WILDCARD, nextId));
     shuffleDeck();
 
   }

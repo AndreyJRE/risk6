@@ -20,6 +20,7 @@ public class Attack extends Move {
   private final ArrayList<Integer> attackDiceResult;
   private final ArrayList<Integer> defendDiceResult;
   private final int troopNumber;
+  private boolean hasConquered;
 
 
   /**
@@ -38,6 +39,8 @@ public class Attack extends Move {
     this.defendDiceResult = new ArrayList<>();
     attackerLosses = 0;
     defenderLosses = 0;
+    hasConquered = false;
+
   }
 
   /**
@@ -89,6 +92,10 @@ public class Attack extends Move {
       default -> {
       }
     }
+    if (defenderLosses >= defendingCountry.getTroops()) {
+      hasConquered = true;
+    }
+
 
   }
 
@@ -177,7 +184,8 @@ public class Attack extends Move {
     return troopNumber;
   }
 
-  public boolean hasConquered() {
-    return (defenderLosses >= defendingCountry.getTroops());
+  public boolean getHasConquered() {
+
+    return hasConquered;
   }
 }

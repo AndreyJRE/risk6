@@ -1,5 +1,10 @@
 package com.unima.risk6.network.client;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.network.serialization.Deserializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,8 +18,13 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
+import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
+
+  private final static Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
 
   private final WebSocketClientHandshaker handshaker;
   private ChannelPromise handshakeFuture;
@@ -39,7 +49,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) {
-    System.out.println("Client disconnected!");
+    LOGGER.info("Client disconnected");
   }
 
   @Override
@@ -48,10 +58,10 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     if (!handshaker.isHandshakeComplete()) {
       try {
         handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-        System.out.println("Connected Successfully!");
+        LOGGER.info("Connected successfully to Server!");
         handshakeFuture.setSuccess();
       } catch (WebSocketHandshakeException e) {
-        System.out.println("Failed to connect");
+        LOGGER.error("Failed to connect");
         handshakeFuture.setFailure(e);
       }
       return;
@@ -65,7 +75,29 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
     WebSocketFrame frame = (WebSocketFrame) msg;
     if (frame instanceof TextWebSocketFrame textFrame) {
-      System.out.println("Received message: " + textFrame.text());
+      JsonObject json = null;
+      try {
+        json = JsonParser.parseString(textFrame.text()).getAsJsonObject();
+        //TODO Error Handling
+      } catch (Exception e) {
+        LOGGER.debug("Not a JSON: " + textFrame.text() + "\n Exception: " + e);
+
+      }
+      if (json != null) {
+        LOGGER.debug(
+            "Client Received Message with ContentType: " + json.get("contentType").getAsString());
+        switch (json.get("contentType").getAsString()) {
+          case "GAME_STATE" -> {
+            LOGGER.debug("Overwrite GameState with new GameState from Server");
+            GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
+                GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
+            GameConfiguration.setGameState(g);
+
+          }
+          default -> LOGGER.debug("The Message received wasnt a gamestate");
+        }
+      }
+
     } else if (frame instanceof PongWebSocketFrame) {
       System.out.println("Received pong from Server");
     } else if (frame instanceof CloseWebSocketFrame) {

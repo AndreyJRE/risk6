@@ -1,7 +1,8 @@
 package com.unima.risk6.network.client;
 
+import com.unima.risk6.network.message.Message;
+import com.unima.risk6.network.serialization.Serializer;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -12,31 +13,32 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class GameClient implements Runnable {
 
+  private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
+
   private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
 
-  private String msg;
-  private boolean sended = true;
+  private Channel ch;
 
   public GameClient(String url) {
     URL = System.getProperty("url", url);
   }
 
-  public void sendMessage(String msg){
-    this.msg = msg;
-    sended = false;
+  public void sendMessage(Message message) {
+    String json = Serializer.serialize(message);
+    WebSocketFrame frame = new TextWebSocketFrame(json);
+    ch.writeAndFlush(frame);
+    LOGGER.debug("Sent Message: " + json);
   }
 
   public void run() {
@@ -61,11 +63,11 @@ public final class GameClient implements Runnable {
               }
             });
 
-        Channel ch = b.connect(uri.getHost(), port).sync().channel();
+        ch = b.connect(uri.getHost(), port).sync().channel();
         handler.handshakeFuture().sync();
 
         //BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
+        /*while (true) {
           //String msg = console.readLine();
           if (msg == null && !sended) {
             break;
@@ -83,13 +85,17 @@ public final class GameClient implements Runnable {
             WebSocketFrame frame = new TextWebSocketFrame(msg);
             ch.writeAndFlush(frame);
           }
+        }*/
+        //Nötig, damit Thread nicht terminiert.
+        while (true) {
+          Thread.sleep(10000);
         }
       } finally {
         group.shutdownGracefully();
       }
     } catch (Exception e) {
       //TODO Logger
-        System.out.println(e);
+      System.out.println(e);
     }
   }
 }

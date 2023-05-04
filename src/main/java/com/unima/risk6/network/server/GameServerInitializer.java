@@ -12,15 +12,14 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 
 public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
 
-  private String WEBSOCKET_PATH = "/game";
-  private ChannelGroup channels;
+  private static final String WEBSOCKET_PATH = "/game";
+  private static ChannelGroup channels;
+
   private MoveProcessor moveProcessor;
 
-  public GameServerInitializer(ChannelGroup channels, MoveProcessor moveProcessor, String WEBSOCKET_PATH) {
-    this.WEBSOCKET_PATH = WEBSOCKET_PATH;
-    this.channels = channels;
+  public GameServerInitializer(ChannelGroup channels, MoveProcessor moveProcessor) {
+    GameServerInitializer.channels = channels;
     this.moveProcessor = moveProcessor;
-
   }
 
   @Override
@@ -34,4 +33,3 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
   }
 
 }
-

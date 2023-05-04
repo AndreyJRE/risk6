@@ -1,14 +1,12 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.unima.risk6.game.ai.bots.EasyBot;
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.game.logic.controllers.GameController;
-import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
 import java.lang.reflect.Type;
-import java.util.Random;
 
 public class EasyBotTypeAdapter implements JsonSerializer<EasyBot>/*, JsonDeserializer<EasyBot>*/ {
 

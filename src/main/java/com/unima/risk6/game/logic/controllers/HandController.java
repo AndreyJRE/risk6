@@ -4,6 +4,7 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.enums.CardSymbol;
+import com.unima.risk6.game.models.enums.CountryName;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +26,22 @@ public class HandController {
 
   }
 
-
-  public void selectCard(int i) {
+  //TODO ANDrey Fragen ob man es braucht
+  public void selectCardThroughIndex(int i) {
     if (selectedCards.size() < 3 && !selectedCards.contains(cards.get(i))) {
       selectedCards.add(cards.get(i));
     }
+  }
+
+  public void selectCardThroughCardId(Card c) {
+    if (selectedCards.size() < 3 && !selectedCards.contains(c)) {
+      selectedCards.add(c);
+    }
+  }
+
+
+  public void selectCardsFromCardList(List<Card> cardsToSelect) {
+    cards.stream().filter(cardsToSelect::contains).forEach(this::selectCardThroughCardId);
   }
 
   public void deselectCards(int i) {
@@ -45,19 +57,16 @@ public class HandController {
   }
 
   public void exchangeCards() {
-    if (isExchangeable()) {
-      selectedCards.forEach(cards::remove);
-      deselectAllCards();
-    }
-
+    selectedCards.stream().filter(cards::contains).forEach(cards::remove);
+    deselectAllCards();
   }
 
-  public Set<Country> hasCountryBonus(Set<Country> countries) {
-    HashSet<Country> bonusCountries = new HashSet<>();
+  public Set<CountryName> getBonusCountries(Set<Country> countries) {
+    HashSet<CountryName> bonusCountries = new HashSet<>();
     countries.forEach(country -> selectedCards.forEach(card -> {
               if (card.isHasCountry()) {
                 if (card.getCountry().equals(country.getCountryName())) {
-                  bonusCountries.add(country);
+                  bonusCountries.add(country.getCountryName());
                 }
               }
             }
@@ -90,11 +99,11 @@ public class HandController {
       int border = cards.size() - 2;
       A:
       for (int i = 0; i < border; i++) {
-        selectCard(i);
+        selectCardThroughIndex(i);
         for (int j = i; j < border; j++) {
-          selectCard(j + 1);
+          selectCardThroughIndex(j + 1);
           for (int k = j; k < border; k++) {
-            selectCard(k + 2);
+            selectCardThroughIndex(k + 2);
             if (isExchangeable(selectedCards)) {
               break A;
             }

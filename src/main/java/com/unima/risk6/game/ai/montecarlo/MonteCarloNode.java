@@ -179,21 +179,6 @@ public class MonteCarloNode {
         Math.log(this.getVisits()) / child.getVisits());
   }
 
-  /**
-   * Returns a list of legal advantageous moves for the given player in the current game state.
-   *
-   * @param player The player for whom the legal moves are to be determined.
-   * @return A list of MoveTriplet representing the legal moves.
-   */
-  public List<MoveTriplet> getLegalMoves(Player player) {
-    List<MoveTriplet> legalMoves = new ArrayList<>();
-    if (this.playerIsMonteCarlo(player)) {
-      legalMoves = ((MonteCarloBot) player).getLegalMoves();
-    } else {
-//      legalMoves.add(((AiBot) player).makeMove());
-    }
-    return legalMoves;
-  }
 
   /**
    * Checks if the given player is an instance of MonteCarloBot.
