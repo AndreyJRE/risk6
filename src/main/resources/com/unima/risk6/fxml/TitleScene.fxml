@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/19"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17"
   fx:id="root"
   fx:controller="com.unima.risk6.gui.controllers.TitleSceneController">
   <children>
@@ -72,22 +72,10 @@
                 </Button>
                 <HBox alignment="CENTER">
                   <children>
-                    <Button
-                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;"
-                      mnemonicParsing="false" onAction="#handleOptions"
+                    <Button style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;" mnemonicParsing="false" onAction="#handleOptions"
                       prefHeight="35.0" prefWidth="300.0"
                       text="Options"
                       fx:id="optionsButton">
-                      <font>
-                        <Font size="25.0"/>
-                      </font>
-                    </Button>
-                    <Button
-                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
-                      mnemonicParsing="false" onAction="#handleQuitGame"
-                      prefHeight="35.0" prefWidth="300.0"
-                      text="Quit"
-                      fx:id="quitButton">
                       <font>
                         <Font size="25.0"/>
                       </font>
@@ -98,6 +86,14 @@
                         <Font name="BentonSans Bold" size="1.0"/>
                       </font>
                     </Label>
+                    <Button style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" mnemonicParsing="false" onAction="#handleQuitGame"
+                      prefHeight="35.0" prefWidth="300.0"
+                      text="Quit"
+                      fx:id="quitButton">
+                      <font>
+                        <Font size="25.0"/>
+                      </font>
+                    </Button>
                   </children>
                 </HBox>
                 <Label/>
@@ -120,8 +116,7 @@
         </VBox>
       </center>
     </BorderPane>
-    <ImageView AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+    <ImageView AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
       fitHeight="720.0" fitWidth="1080.0" opacity="0.39"
       fx:id="backgroundImageView">
       <image>

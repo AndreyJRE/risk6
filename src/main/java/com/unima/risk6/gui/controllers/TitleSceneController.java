@@ -6,35 +6,26 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.game.ai.AiBot;
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.game.models.UserDto;
-import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
+import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.animation.FillTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -129,15 +120,9 @@ public class TitleSceneController implements Initializable {
 
     translateAnimation.setNode(trigger);
     fillAnimation.setShape(background);
-    root.setOnMouseClicked(event -> {
-      boolean isOn = switchedOn.get();
-      switchedOn.set(!isOn);
-      translateAnimation.setToX(isOn ? 0 : 100 - 55);
-      fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
-      fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
-      animation.play();
-    });
-
+    background.setOnMouseClicked(event ->
+        toggleButtonClicked());
+    trigger.setOnMouseClicked(e -> toggleButtonClicked());
     switchedOn.addListener((obs, oldState, newState) -> {
       boolean isOn = newState.booleanValue();
       translateAnimation.setToX(isOn ? 100 - 55 : 0);
@@ -145,6 +130,15 @@ public class TitleSceneController implements Initializable {
       fillAnimation.setToValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
       animation.play();
     });
+  }
+
+  private void toggleButtonClicked() {
+    boolean isOn = switchedOn.get();
+    switchedOn.set(!isOn);
+    translateAnimation.setToX(isOn ? 0 : 100 - 55);
+    fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
+    fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
+    animation.play();
   }
 
 
@@ -169,6 +163,17 @@ public class TitleSceneController implements Initializable {
   @FXML
   private void handleMultiPlayer() {
     //TODO: Implement MultiPlayer
+    MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
+    if (scene == null) {
+      scene = new MultiplayerLobbyScene();
+      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+          scene);
+      scene.setController(multiplayerLobbySceneController);
+      sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
   }
 
   // Define the event handler for the options button
