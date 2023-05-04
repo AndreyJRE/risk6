@@ -4,38 +4,26 @@ import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSo
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
-import com.unima.risk6.game.ai.AiBot;
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.game.models.UserDto;
-import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
+import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
+import javafx.animation.FillTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.animation.FillTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -99,8 +87,6 @@ public class TitleSceneController implements Initializable {
 
 
   private SceneController sceneController;
-  private User user;
-  private List<User> activeUser;
   private UserService userService;
 
   @Override
@@ -125,8 +111,6 @@ public class TitleSceneController implements Initializable {
     applyButtonStyle(optionsButton);
     applyButtonStyle(quitButton);
     sceneController = SceneConfiguration.getSceneController();
-    activeUser = userService.getUsersByActive(true);
-    user = activeUser.get(0);
 
     translateAnimation.setNode(trigger);
     fillAnimation.setShape(background);
@@ -173,17 +157,19 @@ public class TitleSceneController implements Initializable {
   @FXML
   private void handleMultiPlayer() {
     //TODO: Implement MultiPlayer
-    MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
+
+    JoinOnlineScene scene = (JoinOnlineScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.JOIN_ONLINE);
     if (scene == null) {
-      scene = new MultiplayerLobbyScene();
-      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+      scene = new JoinOnlineScene();
+      JoinOnlineSceneController joinOnlineSceneController = new JoinOnlineSceneController(
           scene);
-      scene.setController(multiplayerLobbySceneController);
-      sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+      scene.setController(joinOnlineSceneController);
+      sceneController.addScene(SceneName.JOIN_ONLINE, scene);
     }
     pauseTitleSound();
-    sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+    sceneController.activate(SceneName.JOIN_ONLINE);
+
   }
 
   // Define the event handler for the options button

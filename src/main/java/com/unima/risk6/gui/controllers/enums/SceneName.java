@@ -11,7 +11,8 @@ public enum SceneName {
   USER_STATISTICS,
   SINGLE_PLAYER_SETTINGS,
   CHANGE_PASSWORD,
-  MULTIPLAYER_LOBBY
+  MULTIPLAYER_LOBBY,
+  JOIN_ONLINE
 
   // add more scene names as needed
 
