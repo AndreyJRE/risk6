@@ -15,13 +15,11 @@ import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Card;
-import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CardSymbol;
-import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.server.exceptions.InvalidMoveException;
@@ -37,7 +35,6 @@ class MoveProcessorTest {
 
   private static GameController gameController;
   private static GameState gameState;
-  private static GameConfiguration gameConfiguration;
   private static Player[] players;
   private static ArrayList<String> playerList;
   private static DeckController deckController;
@@ -48,7 +45,6 @@ class MoveProcessorTest {
   @BeforeAll
   static void setUp() {
     playerList = new ArrayList<>();
-    ArrayList<AiBot> bots = new ArrayList<>();
     playerList.add("P1");
     playerList.add("P2");
     playerList.add("P3");
@@ -193,6 +189,7 @@ class MoveProcessorTest {
       //and the third deployable troop
       moveProcessor.processReinforce(
           new Reinforce(getCountryByCountryName(CountryName.ALASKA), 1));
+      moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
       assertEquals(0, players[0].getDeployableTroops());
       assertEquals(GamePhase.ATTACK_PHASE, players[0].getCurrentPhase());
 
@@ -266,13 +263,13 @@ class MoveProcessorTest {
       defender = testAttack1.getDefendingCountry().getPlayer();
       attacker = testAttack1.getAttackingCountry().getPlayer();
       int originalTroopNumberOfAttackingCountry = testAttack1.getAttackingCountry().getTroops();
-      int originalTroopNumberOfDefendingCountry = testAttack1.getDefendingCountry().getTroops();
       moveProcessor.processAttack(testAttack1);
       if (testAttack1.getHasConquered()) {
         assertEquals(attacker, getCountryByCountryName(CountryName.ICELAND).getPlayer());
         //Automatic fortify should move 2 troops to Iceland if conquered.
         assertEquals(2, getCountryByCountryName(CountryName.ICELAND).getTroops());
-        //Should have 2 troops less as the troops used for the attack get moved to conquered country
+        //Should have 2 troops less than the troops used for the attack get moved to conquered
+        // country
         assertEquals(originalTroopNumberOfAttackingCountry - 2,
             getCountryByCountryName(CountryName.GREENLAND).getTroops());
       } else {
@@ -316,7 +313,7 @@ class MoveProcessorTest {
     } finally {
       System.out.println("Attacker Losses: " + testAttack3.getAttackerLosses() + "Defender Losses:"
           + testAttack3.getDefenderLosses() + " has Conquered:" + testAttack3.getHasConquered());
-      //Should not call calculateLosses() method in processAttack-->should not change gamestate.
+      //Should not call calculateLosses() method in processAttack-->should not change game state.
       assertEquals(0, testAttack3.getDefenderLosses());
       assertEquals(0, testAttack3.getAttackerLosses());
       assertFalse(testAttack3.getHasConquered());
@@ -334,21 +331,26 @@ class MoveProcessorTest {
       System.err.println(e.getMessage());
     } finally {
 
-      //Should not call calculateLosses() method in processAttack-->should not change gamestate.
+      //Should not call calculateLosses() method in processAttack-->should not change game state.
       assertEquals(0, testAttack4.getDefenderLosses());
       assertEquals(0, testAttack4.getAttackerLosses());
       assertFalse(testAttack3.getHasConquered());
     }
-    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+    try {
+      moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
 
-    //Should draw Card if turn is ended and hasConquered is true.
-    if (gameController.getCurrentPlayer().getHasConquered()) {
-      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-      assertEquals(1, players[0].getHand().getCards().size());
-    } else {
-      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+      //Should draw Card if turn is ended and hasConquered is true.
+      if (gameController.getCurrentPlayer().getHasConquered()) {
+        moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+        assertEquals(1, players[0].getHand().getCards().size());
+      } else {
+        moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+      }
+
+    } catch (InvalidMoveException e) {
+      System.out.println(e.getMessage());
+
     }
-
   }
 
   @Test
@@ -377,7 +379,13 @@ class MoveProcessorTest {
 
     players[0].setCurrentPhase(GamePhase.ATTACK_PHASE);
     while (!players[0].getHasConquered()) {
+      try {
+        moveProcessor.processAttack(new Attack(getCountryByCountryName(CountryName.CHINA),
+            getCountryByCountryName(CountryName.INDIA), 3));
+      } catch (InvalidMoveException e) {
+        System.err.println(e.getMessage());
 
+      }
     }
     assertFalse(gameState.getActivePlayers().contains(players[1]));
     assertTrue(gameState.getLostPlayers().contains(players[1]));
@@ -474,23 +482,6 @@ class MoveProcessorTest {
 
 
   }
-
-
-  Continent getContinentByContinentName(ContinentName continentName) {
-    final Continent[] continent = new Continent[1];
-    gameState.getContinents().stream().filter(n -> n.getContinentName().equals(continentName))
-        .forEach(n -> continent[0] = n);
-    return continent[0];
-
-  }
-
-  void clearCountries(Player player) {
-    player.getCountries().forEach(n -> n.setPlayer(null));
-    player.getCountries().clear();
-
-
-  }
-
 
   void addCountryToPlayer(CountryName countryName, Player player) {
 

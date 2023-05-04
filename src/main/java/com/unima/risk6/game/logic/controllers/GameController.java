@@ -37,7 +37,6 @@ public class GameController implements GameStateObserver {
     Player nextPlayer = players.peek();
     gameState.setCurrentPlayer(nextPlayer);
     nextPhase();
-    //if(gameState.getPhase) Wenn es Reinforcementphase ist, soll die Deployable troops berechnet werden
     players.add(lastPlayer);
     assert lastPlayer != null;
     lastPlayer.setHasConquered(false);

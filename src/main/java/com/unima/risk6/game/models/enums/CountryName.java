@@ -2,6 +2,7 @@ package com.unima.risk6.game.models.enums;
 
 /**
  * Enumeration of the country names in the game of Risk.
+ *
  * @author astoyano
  */
 public enum CountryName {
