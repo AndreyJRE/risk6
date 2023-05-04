@@ -25,7 +25,6 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
 
   public GameStateTypeAdapter(GameState gameState) {
     this.gameState = gameState;
-    System.out.println("GAmestateTypeAdapter");
   }
 
   public GameStateTypeAdapter() {
@@ -53,7 +52,13 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
 
     jsonObject.addProperty("numberOfHandIns", gameState.getNumberOfHandIns());
 
-    jsonObject.add("lastMove", context.serialize(gameState.getLastMove()));
+    JsonArray moveArray = new JsonArray();
+    for (Move move : gameState.getLastMoves()) {
+      moveArray.add(context.serialize(move));
+    }
+
+    jsonObject.add("lastMoves", moveArray);
+
     JsonArray deckJsonArray = new JsonArray();
     gameState.getDeck().getDeckCards()
         .forEach(x -> deckJsonArray.add(context.serialize(x))
@@ -94,9 +99,12 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     for (int j = 0; j < numberOfHandIns; j++) {
       gameState.setNumberOfHandIns();
     }
-
-    gameState.setLastMove(context.deserialize(jsonObject.get("lastMove"), Move.class));
-
+    //TODO Testen, ob reihenfolge stimmt
+    JsonArray jsonArray = jsonObject.get("lastMoves").getAsJsonArray();
+    for (JsonElement element : jsonArray) {
+      Move move = context.deserialize(element, Move.class);
+      gameState.getLastMoves().add(move);
+    }
     ArrayList<Card> currentDeck = gameState.getDeck().getDeckCards();
     currentDeck.addAll(deckArray);
 

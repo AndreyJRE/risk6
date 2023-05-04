@@ -24,6 +24,7 @@ public class CardTypeAdapter implements JsonDeserializer<Card>, JsonSerializer<C
     if (src.isHasCountry()) {
       jsonObject.add("country", context.serialize(src.getCountry(), CountryName.class));
     }
+    jsonObject.addProperty("id", src.getId());
 
     return jsonObject;
   }
@@ -34,12 +35,13 @@ public class CardTypeAdapter implements JsonDeserializer<Card>, JsonSerializer<C
     JsonObject jsonObject = json.getAsJsonObject();
     CardSymbol cardSymbol = context.deserialize(jsonObject.get("cardSymbol"), CardSymbol.class);
     boolean hasCountry = jsonObject.get("hasCountry").getAsBoolean();
+    int id = jsonObject.get("id").getAsInt();
 
     if (hasCountry) {
       CountryName country = context.deserialize(jsonObject.get("country"), CountryName.class);
-      return new Card(cardSymbol, country);
+      return new Card(cardSymbol, country, id);
     } else {
-      return new Card(cardSymbol);
+      return new Card(cardSymbol, id);
     }
   }
 }

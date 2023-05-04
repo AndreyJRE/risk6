@@ -38,6 +38,7 @@ public class SceneController {
     stage.setScene(scene);
     switch (name) {
       case TITLE -> SoundConfiguration.playTitleSound();
+      case GAME -> SoundConfiguration.playInGameMusic();
     }
     fadeIn(scene);
   }

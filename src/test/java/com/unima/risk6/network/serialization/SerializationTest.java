@@ -16,6 +16,8 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.network.message.ConnectionActions;
+import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -190,5 +192,11 @@ public class SerializationTest {
     String message2 = Serializer.serialize(new StandardMessage<GameState>(g2));
     //Failed wegen Hashcode
     assertTrue(message1.equals(message2));
+  }
+
+  @Test
+  void testConnectionMessageSerialization() {
+    ConnectionMessage message = new ConnectionMessage<>(ConnectionActions.JOIN_GAME, "Game1");
+    System.out.println(Serializer.serialize(message));
   }
 }

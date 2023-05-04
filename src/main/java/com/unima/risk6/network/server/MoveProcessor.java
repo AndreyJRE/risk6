@@ -254,6 +254,8 @@ public class MoveProcessor {
     gameController.getGameState().getLastMoves().clear();
   }
 
-
+  public GameController getGameController() {
+    return gameController;
+  }
 }
 

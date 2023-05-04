@@ -31,7 +31,6 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
 
   public PlayerTypeAdapter(GameState gameState) {
     this.gameState = gameState;
-    System.out.println("PlayerTypeAdapter");
   }
 
   public PlayerTypeAdapter() {
