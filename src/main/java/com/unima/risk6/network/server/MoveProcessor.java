@@ -66,7 +66,7 @@ public class MoveProcessor {
 
   }
 
-  public void processReinforce(Reinforce reinforce) throws InvalidMoveException {
+  public void processReinforce(Reinforce reinforce) {
     //TODO Schick gameState an Client
     Player currentPlayer = gameController.getCurrentPlayer();
     if (currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)
@@ -105,7 +105,7 @@ public class MoveProcessor {
     }
   }
 
-  public void processAttack(Attack attack) throws InvalidMoveException {
+  public void processAttack(Attack attack) {
     Country attackingCountry = getCountryByCountryName(
         attack.getAttackingCountry().getCountryName());
 
@@ -174,7 +174,7 @@ public class MoveProcessor {
     }
   }
 
-  public void processHandIn(HandIn handIn) throws InvalidMoveException {
+  public void processHandIn(HandIn handIn) {
     HandController handController = playerController.getHandController();
     handController.selectCardsFromCardList(handIn.getCards());
     //Checks if HandIn is valid.
@@ -219,7 +219,7 @@ public class MoveProcessor {
 
   }
 
-  public void processEndPhase(EndPhase endPhase) throws InvalidMoveException {
+  public void processEndPhase(EndPhase endPhase) {
     Player currentPlayer = gameController.getCurrentPlayer();
     if (currentPlayer.getHasConquered() && playerController.getPlayer().getCurrentPhase()
         .equals(ATTACK_PHASE)) {
