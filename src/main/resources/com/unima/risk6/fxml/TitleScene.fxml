@@ -72,7 +72,9 @@
                 </Button>
                 <HBox alignment="CENTER">
                   <children>
-                    <Button style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;" mnemonicParsing="false" onAction="#handleOptions"
+                    <Button
+                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;"
+                      mnemonicParsing="false" onAction="#handleOptions"
                       prefHeight="35.0" prefWidth="300.0"
                       text="Options"
                       fx:id="optionsButton">
@@ -80,7 +82,9 @@
                         <Font size="25.0"/>
                       </font>
                     </Button>
-                    <Button style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" mnemonicParsing="false" onAction="#handleQuitGame"
+                    <Button
+                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
+                      mnemonicParsing="false" onAction="#handleQuitGame"
                       prefHeight="35.0" prefWidth="300.0"
                       text="Quit"
                       fx:id="quitButton">
@@ -116,9 +120,10 @@
         </VBox>
       </center>
     </BorderPane>
-    <ImageView fx:id="backgroundImageView" fitHeight="720.0" fitWidth="1080.0" opacity="0.39"
-      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-      AnchorPane.topAnchor="0.0">
+    <ImageView AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+      fitHeight="720.0" fitWidth="1080.0" opacity="0.39"
+      fx:id="backgroundImageView">
       <image>
         <Image url="@../pictures/titleSceneBackground.png"/>
       </image>
