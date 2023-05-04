@@ -2,10 +2,17 @@ package com.unima.risk6.gui.controllers;
 
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
+import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +25,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -36,7 +42,6 @@ public class SinglePlayerSettingsSceneController {
   private final SceneController sceneController;
   private User user;
   private BorderPane root;
-  private GridPane statisticsGridPane;
   private HBox centralHBox;
 
 
@@ -86,6 +91,8 @@ public class SinglePlayerSettingsSceneController {
 
     HBox playButton = new HBox(play);
     playButton.setAlignment(Pos.CENTER);
+
+    play.setOnMouseClicked(e -> handlePlayButton());
 
     root.setBottom(playButton);
     root.setTop(titleBox);
@@ -270,5 +277,41 @@ public class SinglePlayerSettingsSceneController {
     removeBox.setSpacing(15);
 
     return removeBox;
+  }
+
+  private void handlePlayButton() {
+    // TODO: Implement the single player game
+
+    List<String> users = new ArrayList<>();
+    users.add(SessionManager.getUser().getUsername());
+    users.add("Jake");
+    users.add("Joel");
+    users.add("John");
+    List<AiBot> bots = new ArrayList<>();
+
+    /*//TODO: Initiallize AIBots Bot
+    while(centralHBox.getChildren().size() != 0){
+      StackPane stackPane = (StackPane) centralHBox.getChildren().remove(centralHBox.getChildren().size()-1);
+      Label label = (Label) stackPane.getChildren().remove(stackPane.getChildren().size());
+    }*/
+
+    GameState gameState = GameConfiguration.configureGame(users, bots);
+    User myUser = SessionManager.getUser();
+    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
+    );
+    GameConfiguration.setGameState(gameState);
+    CountriesUiConfiguration.configureCountries(gameState.getCountries());
+    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.GAME);
+    if (gameScene == null) {
+      gameScene = new GameScene();
+      GameSceneController gameSceneController = new GameSceneController(gameScene);
+      gameScene.setGameSceneController(gameSceneController);
+      sceneController.addScene(SceneName.GAME, gameScene);
+    }
+    sceneController.activate(SceneName.GAME);
+    //TODO If we want to go full screen we can use this
+    sceneController.getStage().setFullScreen(true);
   }
 }
