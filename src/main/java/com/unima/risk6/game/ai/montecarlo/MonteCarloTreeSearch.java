@@ -32,9 +32,15 @@ import com.unima.risk6.network.serialization.ContinentTypeAdapter;
 import com.unima.risk6.network.serialization.CountryTypeAdapter;
 import com.unima.risk6.network.serialization.Deserializer;
 import com.unima.risk6.network.serialization.EasyBotTypeAdapter;
+import com.unima.risk6.network.serialization.EndPhaseTypeAdapter;
+import com.unima.risk6.network.serialization.FortifyTypeAdapter;
 import com.unima.risk6.network.serialization.GameStateTypeAdapter;
 import com.unima.risk6.network.serialization.HandTypeAdapter;
+import com.unima.risk6.network.serialization.HardBotTypeAdapter;
+import com.unima.risk6.network.serialization.MediumBotTypeAdapter;
+import com.unima.risk6.network.serialization.MonteCarloBotTypeAdapter;
 import com.unima.risk6.network.serialization.PlayerTypeAdapter;
+import com.unima.risk6.network.serialization.ReinforceTypeAdapter;
 import com.unima.risk6.network.server.MoveProcessor;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -54,9 +60,14 @@ public class MonteCarloTreeSearch {
       .registerTypeAdapter(Hand.class, new HandTypeAdapter())
       .registerTypeAdapter(Player.class, new PlayerTypeAdapter())
       .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
-      .registerTypeAdapter(Attack.class, new AttackTypeAdapter()).create();
+      .registerTypeAdapter(MediumBot.class, new MediumBotTypeAdapter())
+      .registerTypeAdapter(HardBot.class, new HardBotTypeAdapter())
+      .registerTypeAdapter(MonteCarloBot.class, new MonteCarloBotTypeAdapter())
+      .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
+      .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
+      .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
+      .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter()).create();
   private final HardBot player;
-  private int treeDepth;
 
   /**
    * Constructor for MonteCarloTreeSearch.
@@ -156,32 +167,6 @@ public class MonteCarloTreeSearch {
   }
 
   /**
-   * Returns a list of legal moves for the given player during the simulation.
-   *
-   * @param player The player whose legal moves are to be retrieved.
-   * @return A list of legal moves for the given player.
-   */
-  private List<MoveTriplet> getSimulationMoves(Player player) {
-    List<MoveTriplet> legalMoves = new ArrayList<>();
-    if (this.isMonteCarlo(player)) {
-//      legalMoves = ((MonteCarloBot) player).getLegalMoves();
-    } else {
-      // legalMoves.add(((AiBot) player).makeMove());
-    }
-    return legalMoves;
-  }
-
-  /**
-   * Checks if the given player is an instance of MonteCarloBot.
-   *
-   * @param player The player to be checked.
-   * @return A boolean value indicating whether the player is an instance of MonteCarloBot.
-   */
-  private boolean isMonteCarlo(Player player) {
-    return !(player instanceof EasyBot || player instanceof MediumBot);
-  }
-
-  /**
    * Updates the wins and visits of the nodes in the Monte Carlo Tree based on the simulation
    * result.
    *
@@ -225,34 +210,26 @@ public class MonteCarloTreeSearch {
    * @return A deep copy of the given game state.
    */
   public GameState copyGameState(GameState gameState) {
-    List<AiBot> replacedPlayers = new ArrayList<>();
-    for (Player player : gameState.getActivePlayers()) {
-      if (!(player instanceof EasyBot || player instanceof MediumBot)) {
-        AiBot replacement = new MonteCarloBot(player);
-        replacedPlayers.add(replacement);
-      } else {
-        replacedPlayers.add((AiBot) player);
-      }
-    }
-    GameState empty = GameConfiguration.configureGame(new ArrayList<>(), replacedPlayers);
+    GameState empty = GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>());
     Message copy = Deserializer.deserialize(gson.toJson(new StandardMessage<>(gameState)), empty);
-    return (GameState) copy.getContent();
-  }
-
-  /**
-   * Retrieves the player object of the HardBot in the given game state.
-   *
-   * @param gameState The current game state.
-   * @return The player object of the HardBot in the given game state, or null if the player is no
-   * longer in the game.
-   */
-  private Player getPlayerAtGameState(GameState gameState) {
-    for (Player player : gameState.getActivePlayers()) {
-      if (player.equals(this.player)) {
-        return player;
+    GameState deepCopy = (GameState) copy.getContent();
+    deepCopy.getActivePlayers().clear();
+    int playerCount = gameState.getActivePlayers().size();
+    for (int i = 0; i < playerCount; i++) {
+      Player player = gameState.getActivePlayers().poll();
+      AiBot replacement;
+      if (!(player instanceof EasyBot || player instanceof MediumBot)) {
+        replacement = new MonteCarloBot(player);
+        for (Country c : player.getCountries()) {
+          c.setPlayer((Player) replacement);
+        }
+      } else {
+        replacement = ((AiBot) player);
       }
+      deepCopy.getActivePlayers().add((Player) replacement);
     }
-    return null; // signifies that player is no longer in game
+    deepCopy.setCurrentPlayer(deepCopy.getActivePlayers().peek());
+    return (GameState) copy.getContent();
   }
 
   public MoveTriplet playTurn(GameController simulationController,
@@ -261,17 +238,16 @@ public class MonteCarloTreeSearch {
     playerController.setPlayer((Player) current);
     HandController handController = playerController.getHandController();
     // TODO: add hand in to moveTriplet
-    if (handController.isExchangeable()) {
+    if (handController.holdsExchangeable()) {
       handController.selectExchangeableCards();
       HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
-//        handController.exchangeCards();
       moveProcessor.processHandIn(handIn);
     }
-    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
     List<Reinforce> allReinforcements = current.createAllReinforcements();
     for (Reinforce reinforce : allReinforcements) {
       moveProcessor.processReinforce(reinforce);
     }
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
     Queue<CountryPair> allAttacks = new LinkedList<>();
     do {
       CountryPair attacks = current.createAttack();
@@ -279,12 +255,19 @@ public class MonteCarloTreeSearch {
       if (attacks == null) {
         break;
       }
-      moveProcessor.processAttack(
-          attacks.createAttack(current.getAttackTroops(attacks.getOutgoing())));
+      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
+      moveProcessor.processAttack(toProcess);
+      if (toProcess.getHasConquered()) {
+        moveProcessor.processFortify(current.moveAfterAttack(attacks));
+      }
     } while (current.attackAgain());
-    // how to signal move after Attack?
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
     Fortify fortify = current.createFortify();
-    moveProcessor.processFortify(fortify);
+    if (fortify == null) {
+      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+    } else {
+      moveProcessor.processFortify(fortify);
+    }
     return new MoveTriplet(allReinforcements, allAttacks, fortify);
   }
 }

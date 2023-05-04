@@ -43,6 +43,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
         }
       }
     }
+    diffMap.replaceAll((country, diff) -> Math.min(diff + RNG.nextInt(0, 3), troopsAvailable));
 
     List<Country> reinforceList = diffMap.keySet().stream()
         .filter(c -> diffMap.get(c) > 0 && diffMap.get(c) <= troopsAvailable)
@@ -67,8 +68,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     List<Fortify> fortifyList = new LinkedList<>();
     this.sortContinentsByHighestRelativePower();
     Map<Country, Integer> allOwnedCountryDiffs = new HashMap<>();
-    List<Country> countriesByHighestDiff = getCountriesByHighestDiff(
-        allOwnedCountryDiffs);
+    List<Country> countriesByHighestDiff = getCountriesByHighestDiff(allOwnedCountryDiffs);
     for (Country country : countriesByHighestDiff) {
       Country bestAdj = this.findBestAdj(allOwnedCountryDiffs, country);
       if (bestAdj != null) {
@@ -110,12 +110,22 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
   public List<Reinforce> createAllReinforcements() {
     List<Reinforce> answer = new ArrayList<>();
     List<Reinforce> allPossibilities = this.getReinforceMoves();
+    List<Reinforce> allPossibilitiesCopy = new ArrayList<>(allPossibilities);
     int troopsAvailable = this.getDeployableTroops();
-    while (troopsAvailable > 0 && allPossibilities.size() > 0) {
-      Reinforce chosen = allPossibilities.get(RNG.nextInt(allPossibilities.size()));
+    while (troopsAvailable > 0 && allPossibilitiesCopy.size() > 0) {
+      Reinforce chosen = allPossibilitiesCopy.get(RNG.nextInt(allPossibilitiesCopy.size()));
       answer.add(chosen);
-      allPossibilities.remove(chosen);
+      allPossibilitiesCopy.remove(chosen);
       troopsAvailable -= chosen.getToAdd();
+    }
+
+    while (troopsAvailable > 0) {
+      Country randomCountry = allPossibilities.get(RNG.nextInt(allPossibilities.size()))
+          .getCountry();
+      int toReinforce = troopsAvailable > 1 ? RNG.nextInt(1, troopsAvailable) : 1;
+      Reinforce extra = new Reinforce(randomCountry, toReinforce);
+      answer.add(extra);
+      troopsAvailable -= extra.getToAdd();
     }
 
     return answer;
@@ -129,13 +139,13 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
    */
   @Override
   public CountryPair createAttack() {
-    return this.getAttackMoves().get(0);
+    return this.getAttackMoves().size() > 0 ? this.getAttackMoves().get(0) : null;
   }
 
   @Override
   public Fortify createFortify() {
     List<Fortify> fortifies = this.getFortifyMoves();
-    return fortifies.get(RNG.nextInt(fortifies.size()));
+    return fortifies.size() > 0 ? fortifies.get(RNG.nextInt(fortifies.size())) : null;
   }
 
 
