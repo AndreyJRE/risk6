@@ -6,8 +6,9 @@ import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Country;
 import java.util.List;
 
-/***
+/**
  * An interface representing an AI bot that can play in a Risk game.
+ *
  * @author eameri
  */
 public interface AiBot {

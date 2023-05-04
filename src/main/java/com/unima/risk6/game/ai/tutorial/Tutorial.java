@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class Tutorial {
 
-  private final Random RNG;
+  private final Random rng;
   private final Queue<String> messages;
   private final Queue<GameState> gameStateOrder;
   private final Queue<Reinforce> humanReinforcements;
@@ -50,7 +50,7 @@ public class Tutorial {
    * @param fileReader The InputStreamReader for the JSON file containing tutorial messages.
    */
   public Tutorial(String username, InputStreamReader fileReader) {
-    this.RNG = new Random();
+    this.rng = new Random();
     this.human = Collections.singletonList(username);
     this.bot = Collections.singletonList(new TutorialBot("Johnny Test"));
     this.gameStateOrder = this.createGameStates();
@@ -152,7 +152,7 @@ public class Tutorial {
             CountryName.PERU)) {
           country.setPlayer(humanPlayer);
         } else {
-          country.setPlayer(RNG.nextDouble() > 0.5 ? testBot : humanPlayer);
+          country.setPlayer(rng.nextDouble() > 0.5 ? testBot : humanPlayer);
         }
         country.setTroops(1);
       }
@@ -210,9 +210,9 @@ public class Tutorial {
       }
     }
     for (Country country : gameState.getCountries()) {
-      Player toSet = RNG.nextDouble() > 0.5 ? tutBot : person;
+      Player toSet = rng.nextDouble() > 0.5 ? tutBot : person;
       country.setPlayer(toSet);
-      country.setTroops(RNG.nextInt(1, 10));
+      country.setTroops(rng.nextInt(1, 10));
     }
   }
 

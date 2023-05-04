@@ -154,12 +154,12 @@ public class MonteCarloNode {
    */
   public MonteCarloNode getBestChild() {
     MonteCarloNode bestChild = null;
-    double maxUCTValue = Double.NEGATIVE_INFINITY;
+    double maxUctValue = Double.NEGATIVE_INFINITY;
 
     for (MonteCarloNode child : children) {
-      double uctValue = calculateUCTValue(child);
-      if (uctValue > maxUCTValue) {
-        maxUCTValue = uctValue;
+      double uctValue = calculateUctValue(child);
+      if (uctValue > maxUctValue) {
+        maxUctValue = uctValue;
         bestChild = child;
       }
     }
@@ -174,7 +174,7 @@ public class MonteCarloNode {
    * @param child The child node for which the UCT value is to be calculated.
    * @return The calculated UCT value.
    */
-  private double calculateUCTValue(MonteCarloNode child) { // what happens when visits are zero :(
+  private double calculateUctValue(MonteCarloNode child) { // what happens when visits are zero :(
     return (double) child.getWins() / child.getVisits() + EXPLORATION_PARAMETER * Math.sqrt(
         Math.log(this.getVisits()) / child.getVisits());
   }

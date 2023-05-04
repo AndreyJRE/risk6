@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * The TutorialBot class represents an AI bot specifically designed for the game tutorial mode by
- * only performing deterministic moves
+ * only performing deterministic moves.
  *
  * @author eameri
  */
