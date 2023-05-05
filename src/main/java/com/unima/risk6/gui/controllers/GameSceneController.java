@@ -254,9 +254,33 @@ public class GameSceneController implements GameStateObserver {
         40, 300, 75, playerUis.peek(), mockGamePhase);
     playerUis.offer(playerUis.poll());
 
-    bottomPane.getChildren().add(activePlayerUi);
-    bottomPane.getChildren().add(chatButton);
+    Button nextPhaseButton = new Button();
+    ImageView rightArrowIcon = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
+    rightArrowIcon.setFitWidth(50);
+    rightArrowIcon.setFitHeight(50);
+    nextPhaseButton.setGraphic(rightArrowIcon);
+    nextPhaseButton.setStyle("-fx-background-radius: 15px;");
+    nextPhaseButton.setFocusTraversable(false);
+    nextPhaseButton.setOnAction(event -> {
+      //TODO: CHANGE ACTIVE PLAYER HERE IN FORTIFY CASE, AS NEW PLAYER TURN BEGINS
+      switch (mockGamePhase) {
+        case REINFORCEMENT_PHASE:
+          mockGamePhase = GamePhase.ATTACK_PHASE;
+          break;
+        case ATTACK_PHASE:
+          mockGamePhase = GamePhase.FORTIFY_PHASE;
+          break;
+        case FORTIFY_PHASE:
+          mockGamePhase = GamePhase.REINFORCEMENT_PHASE;
+          break;
+      }
+      activePlayerUi.changePhase();
+    });
+
+    bottomPane.getChildren().addAll(activePlayerUi, nextPhaseButton, chatButton);
     bottomPane.setAlignment(Pos.CENTER);
+    bottomPane.setMargin(nextPhaseButton, new Insets(0, 0, 0, 450));
     bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
     bottomPane.setMargin(chatButton, new Insets(0, 10, 0, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));

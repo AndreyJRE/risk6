@@ -2,6 +2,7 @@ package com.unima.risk6.gui.uiModels;
 
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.gui.controllers.GameSceneController;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -22,6 +23,14 @@ public class ActivePlayerUi extends Group {
   private Rectangle rectangle;
 
   private PlayerUi playerUi;
+
+  private Label phaseLabel;
+
+  private Rectangle reinforcementRectangle;
+
+  private Rectangle attackRectangle;
+
+  private Rectangle fortifyRectangle;
 
   public ActivePlayerUi(double radiusX, double radiusY,
       double rectangleWidth, double rectangleHeight, PlayerUi playerUi, GamePhase mockGamePhase) {
@@ -47,13 +56,13 @@ public class ActivePlayerUi extends Group {
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
 
     if (mockGamePhase == GamePhase.CLAIM_PHASE) {
-      Label claimLabel = new Label("Claim a Territory!");
-      claimLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-      iconsPane.getChildren().add(claimLabel);
-      iconsPane.setAlignment(claimLabel, Pos.CENTER);
+      phaseLabel = new Label("Claim a Territory!");
+      phaseLabel.setStyle(
+          "-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold;");
+      iconsPane.getChildren().add(phaseLabel);
+      iconsPane.setAlignment(phaseLabel, Pos.CENTER);
       getChildren().addAll(rectangle, ellipse, iconsPane);
     } else {
-      String phaseString = "";
       Image reinforcementImage = new Image(
           getClass().getResource("/com/unima/risk6/pictures/reinforcement.png").toString());
       ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
@@ -66,26 +75,26 @@ public class ActivePlayerUi extends Group {
           getClass().getResource("/com/unima/risk6/pictures/fortify.png").toString());
       ImagePattern fortifyImagePattern = new ImagePattern(fortifyImage);
 
-      Rectangle reinforcementRectangle = new Rectangle(radiusX, radiusY);
+      reinforcementRectangle = new Rectangle(radiusX, radiusY);
       reinforcementRectangle.setFill(reinforcementImagePattern);
-      Rectangle attackRectangle = new Rectangle(radiusX, radiusY);
+      attackRectangle = new Rectangle(radiusX, radiusY);
       attackRectangle.setFill(attackImagePattern);
-      Rectangle fortifyRectangle = new Rectangle(radiusX, radiusY);
+      fortifyRectangle = new Rectangle(radiusX, radiusY);
       fortifyRectangle.setFill(fortifyImagePattern);
 
       switch (mockGamePhase) {
         case REINFORCEMENT_PHASE:
-          phaseString = "Reinforcement";
+          phaseLabel = new Label("Reinforcement");
           attackRectangle.setOpacity(0.5);
           fortifyRectangle.setOpacity(0.5);
           break;
         case ATTACK_PHASE:
-          phaseString = "Attack";
+          phaseLabel = new Label("Attack");
           reinforcementRectangle.setOpacity(0.5);
           fortifyRectangle.setOpacity(0.5);
           break;
         case FORTIFY_PHASE:
-          phaseString = "Fortify";
+          phaseLabel = new Label("Fortify");
           attackRectangle.setOpacity(0.5);
           reinforcementRectangle.setOpacity(0.5);
           break;
@@ -93,14 +102,14 @@ public class ActivePlayerUi extends Group {
 
       VBox iconsAndNameBox = new VBox();
       iconsAndNameBox.setAlignment(Pos.CENTER);
-      Label claimLabel = new Label(phaseString);
-      claimLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+      phaseLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: "
+          + "bold;");
 
       HBox iconsHBox = new HBox();
       iconsHBox.getChildren().addAll(reinforcementRectangle, attackRectangle, fortifyRectangle);
       iconsHBox.setSpacing(25);
       iconsHBox.setAlignment(Pos.CENTER);
-      iconsAndNameBox.getChildren().addAll(iconsHBox, claimLabel);
+      iconsAndNameBox.getChildren().addAll(iconsHBox, phaseLabel);
 
       iconsPane.getChildren().add(iconsAndNameBox);
       getChildren().addAll(rectangle, ellipse, iconsPane);
@@ -116,4 +125,28 @@ public class ActivePlayerUi extends Group {
     ellipse.setStroke(playerUi.getPlayerColor());
     rectangle.setStroke(playerUi.getPlayerColor());
   }
+
+  public void changePhase() {
+    switch (GameSceneController.mockGamePhase) {
+      case REINFORCEMENT_PHASE:
+        phaseLabel.setText("Reinforcement");
+        reinforcementRectangle.setOpacity(1);
+        attackRectangle.setOpacity(0.5);
+        fortifyRectangle.setOpacity(0.5);
+        break;
+      case ATTACK_PHASE:
+        phaseLabel.setText("Attack");
+        attackRectangle.setOpacity(1);
+        reinforcementRectangle.setOpacity(0.5);
+        fortifyRectangle.setOpacity(0.5);
+        break;
+      case FORTIFY_PHASE:
+        phaseLabel.setText("Fortify");
+        fortifyRectangle.setOpacity(1);
+        attackRectangle.setOpacity(0.5);
+        reinforcementRectangle.setOpacity(0.5);
+        break;
+    }
+  }
+
 }
