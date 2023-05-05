@@ -32,6 +32,7 @@ public class TroopsCounterUi extends Group {
     this.getChildren().add(ellipseCounter);
 
     this.getChildren().add(text);
+    this.setMouseTransparent(true);
   }
 
   public Ellipse getEllipseCounter() {

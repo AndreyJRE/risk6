@@ -76,7 +76,10 @@ public class GameSceneController implements GameStateObserver {
   private final SceneController sceneController;
 
   public static GamePhase mockGamePhase;
+
   private static PlayerUi myPlayerUi;
+
+  private TimeUi timeUi;
 
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
 
@@ -181,7 +184,7 @@ public class GameSceneController implements GameStateObserver {
 
   private StackPane initializeTimePane() {
     StackPane timePane = new StackPane();
-    TimeUi timeUi = new TimeUi(40, 40);
+    timeUi = new TimeUi(120, 120);
     timePane.getChildren().add(timeUi);
     timePane.setAlignment(Pos.CENTER);
     timePane.setPadding(new Insets(0, 15, 0, 0));
@@ -260,7 +263,7 @@ public class GameSceneController implements GameStateObserver {
     rightArrowIcon.setFitWidth(50);
     rightArrowIcon.setFitHeight(50);
     nextPhaseButton.setGraphic(rightArrowIcon);
-    nextPhaseButton.setStyle("-fx-background-radius: 15px;");
+    nextPhaseButton.setStyle("-fx-background-radius: 25px;");
     nextPhaseButton.setFocusTraversable(false);
     nextPhaseButton.setOnAction(event -> {
       //TODO: CHANGE ACTIVE PLAYER HERE IN FORTIFY CASE, AS NEW PLAYER TURN BEGINS
@@ -278,11 +281,69 @@ public class GameSceneController implements GameStateObserver {
       activePlayerUi.changePhase();
     });
 
-    bottomPane.getChildren().addAll(activePlayerUi, nextPhaseButton, chatButton);
+    Button cardsButton = new Button();
+    ImageView cardsGroup = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
+    cardsGroup.setFitWidth(150);
+    cardsGroup.setFitHeight(80);
+    cardsButton.setGraphic(cardsGroup);
+    cardsButton.setStyle("-fx-background-radius: 15px;");
+    cardsButton.setFocusTraversable(false);
+
+    Button closeCardsButton = new Button();
+    closeCardsButton.setPrefSize(20, 20);
+    ImageView closeCardIcon = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeCardIcon.setFitWidth(40);
+    closeCardIcon.setFitHeight(40);
+    closeCardsButton.setGraphic(closeCardIcon);
+    closeCardsButton.setStyle("-fx-background-radius: 15px;");
+    closeCardsButton.setFocusTraversable(false);
+
+    BorderPane cardsPane = new BorderPane();
+    cardsPane.setTop(closeCardsButton);
+    cardsPane.setAlignment(closeCardsButton, Pos.TOP_RIGHT);
+
+    VBox cardsBox = new VBox();
+    Label cardTitleLabel = new Label("This is cards popup.");
+    cardTitleLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+    cardsBox.getChildren().addAll(cardTitleLabel);
+
+    cardsPane.setCenter(cardsBox);
+
+    cardsPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+
+    Popup cardsPopup = new Popup();
+    cardsPopup.getContent().add(cardsPane);
+
+    closeCardsButton.setOnAction(event -> cardsPopup.hide());
+
+    cardsPane.setEffect(dropShadow);
+    cardsButton.setOnAction(event -> {
+      cardsPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
+
+      Bounds rootBounds = root.localToScreen(root.getBoundsInLocal());
+
+      double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+      double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+
+      // Get the width and height of the popup
+      double popupWidth = cardsPane.getPrefWidth();
+      double popupHeight = cardsPane.getPrefHeight();
+
+      // Set the position of the chat popup to center it in the root Scene
+      cardsPopup.setX(centerX - popupWidth / 2);
+      cardsPopup.setY(centerY - popupHeight / 2);
+      cardsPopup.show(cardsButton.getScene().getWindow());
+    });
+
+    bottomPane.getChildren().addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton);
     bottomPane.setAlignment(Pos.CENTER);
     bottomPane.setMargin(nextPhaseButton, new Insets(0, 0, 0, 450));
+    bottomPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
+    bottomPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
     bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
-    bottomPane.setMargin(chatButton, new Insets(0, 10, 0, 0));
+    bottomPane.setMargin(chatButton, new Insets(0, 15, 0, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));
     return bottomPane;
   }

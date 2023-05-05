@@ -1,32 +1,80 @@
 package com.unima.risk6.gui.uiModels;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 public class TimeUi extends Group {
 
+  private int turnTime = 60;
+
+  private int currentTimer;
+
+  private Label timerLabel = new Label();
+
+  private Timeline timeline = null;
+
   public TimeUi(double rectangleWidth, double rectangleHeight) {
+    //TODO: ADAPT TURNTIME DEPENDING ON LOBBY SETTINGS AND IF MULTIPLAYER
+    turnTime = 60;
+
+    VBox timerBox = new VBox();
+    timerBox.setAlignment(Pos.CENTER);
 
     Image reinforcementImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/sandUhr.png").toString());
+        getClass().getResource("/com/unima/risk6/pictures/hourglass.gif").toString());
     ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
+    Rectangle hourglassRectangle = new Rectangle(rectangleWidth, rectangleHeight);
+    hourglassRectangle.setFill(reinforcementImagePattern);
 
-    Rectangle icon1 = new Rectangle(rectangleWidth, rectangleHeight);
-    icon1.setFill(reinforcementImagePattern);
+    Rectangle timerRectangle = new Rectangle(80, 30);
+    timerRectangle.setFill(Color.WHITE);
+    timerRectangle.setArcWidth(30.0);
+    timerRectangle.setArcHeight(30.0);
+    timerRectangle.setStroke(Color.BLACK);
 
-    StackPane iconsPane = new StackPane();
-    iconsPane.setPrefSize(rectangleWidth - 60, rectangleHeight - 10);
-    iconsPane.setAlignment(Pos.CENTER);
-    iconsPane.setLayoutX(50);
-    iconsPane.setLayoutY(5 - rectangleHeight / 2);
+    StackPane stackPane = new StackPane(timerRectangle, timerLabel);
+    stackPane.setPadding(new Insets(5));
 
-    iconsPane.getChildren().addAll(icon1);
-    StackPane.setAlignment(icon1, Pos.CENTER);
+    currentTimer = turnTime;
 
-    getChildren().addAll(iconsPane);
+    timerLabel.setText(String.format("%02d:%02d", currentTimer / 60, currentTimer % 60));
+    timerLabel.setTextFill(Color.BLACK);
+    timerLabel.setStyle(
+        "-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold;");
+
+    timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+      currentTimer--;
+      if (currentTimer <= 0) {
+        timeline.stop();
+      } else {
+        timerLabel.setText(String.format("%02d:%02d", currentTimer / 60, currentTimer % 60));
+      }
+    }));
+    timeline.setCycleCount(Timeline.INDEFINITE);
+
+    timerLabel.setText(String.format("%02d:%02d", currentTimer / 60, currentTimer % 60));
+    timerLabel.setTextFill(Color.BLACK);
+
+    timeline.play();
+
+    timerBox.getChildren().addAll(hourglassRectangle, stackPane);
+
+    getChildren().addAll(timerBox);
   }
+
+  public void restartTimer() {
+    currentTimer = turnTime;
+  }
+
 }
