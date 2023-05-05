@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -24,6 +25,8 @@ import java.util.Set;
  * @author eameri
  */
 public abstract class GreedyBot extends Player implements AiBot {
+
+  protected static final Random RNG = new Random();
 
   private List<Continent> continentsCopy;
   protected final PlayerController playerController;

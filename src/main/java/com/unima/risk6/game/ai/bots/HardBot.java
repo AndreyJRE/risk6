@@ -31,7 +31,7 @@ public class HardBot extends GreedyBot implements AiBot {
   }
 
   public HardBot() {
-    super("HardBot Default");
+    this("HardBot #" + RNG.nextInt(1000));
   }
 
   @Override

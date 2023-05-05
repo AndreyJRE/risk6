@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * The medium difficulty bot, which makes only the best move in each round without analyzing
@@ -22,7 +21,6 @@ import java.util.Random;
  */
 public class MediumBot extends GreedyBot implements AiBot {
 
-  private static final Random RNG = new Random();
   private int reinforceTroopsCopy;
   private int lastAttackSize;
 
@@ -32,7 +30,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   }
 
   public MediumBot() {
-    this("MediumBot Default");
+    this("MediumBot #" + RNG.nextInt(1000));
   }
 
   @Override
