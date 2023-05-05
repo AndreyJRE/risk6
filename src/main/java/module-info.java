@@ -24,7 +24,7 @@ module com.unima.risk6 {
   exports com.unima.risk6.gui.controllers;
   opens com.unima.risk6.gui.controllers to javafx.fxml;
   exports com.unima.risk6.game.models;
-  opens com.unima.risk6.game.models to javafx.fxml;
+  opens com.unima.risk6.game.models to javafx.fxml, com.google.gson;
   exports com.unima.risk6.game.logic;
   opens com.unima.risk6.game.logic to javafx.fxml;
   exports com.unima.risk6.gui.controllers.enums;

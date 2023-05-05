@@ -1,35 +1,40 @@
 package com.unima.risk6.network.configurations;
 
-import com.unima.risk6.network.client.GameClient;
+import com.unima.risk6.game.models.ServerLobby;
+import com.unima.risk6.network.server.GameServer;
+import com.unima.risk6.network.server.MoveProcessor;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 /**
- * This class is used to configure the network client.
+ * This class is used to configure the network.
  *
  * @author astoyano
  */
 public class NetworkConfiguration {
 
-  private static GameClient gameClient;
+  private static Thread gameServerThread;
+  private static ServerLobby serverLobby;
 
-  /**
-   * This method is used to configure the network client.
-   *
-   * @param hostIp Server Host IP
-   * @param port   Server Port
-   * @return GameClient
-   */
-  public static GameClient configureGameClient(String hostIp, int port) {
-    String url = "ws://" + hostIp + ":" + port + "/game";
-    gameClient = new GameClient(url);
-    return gameClient;
+  public static void startGameServer() {
+    GameServer gameServer = new GameServer(new MoveProcessor());
+    serverLobby = new ServerLobby("Andrey's server");
+    gameServerThread = new Thread(gameServer);
+    try {
+      System.out.println(Inet4Address.getLocalHost());
+    } catch (UnknownHostException e) {
+      throw new RuntimeException(e);
+    }
+    gameServerThread.start();
+
   }
 
-  /**
-   * This method is used to get the game client.
-   *
-   * @return GameClient
-   */
-  public static GameClient getGameClient() {
-    return gameClient;
+  public static void stopGameServer() {
+    serverLobby = null;
+    gameServerThread.interrupt();
+  }
+
+  public static ServerLobby getServerLobby() {
+    return serverLobby;
   }
 }

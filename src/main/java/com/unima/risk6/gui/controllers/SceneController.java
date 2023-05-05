@@ -8,8 +8,10 @@ import java.util.HashMap;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class SceneController {
@@ -35,7 +37,9 @@ public class SceneController {
     if (scene instanceof InitializableScene scene1) {
       scene1.init();
     }
+
     stage.setScene(scene);
+    stage.setOnCloseRequest((WindowEvent event) -> close());
     switch (name) {
       case TITLE -> SoundConfiguration.playTitleSound();
       case GAME -> SoundConfiguration.playInGameMusic();
@@ -46,6 +50,7 @@ public class SceneController {
   public void close() {
     DatabaseConfiguration.closeDatabaseConnectionAndServices();
     stage.close();
+    Platform.exit();
   }
 
   private void fadeIn(Scene scene) {

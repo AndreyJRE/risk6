@@ -3,10 +3,15 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -79,7 +84,7 @@ public class JoinOnlineSceneController {
     titleLabel.setFont(Font.font("BentonSans Bold", 41));
     titleLabel.setStyle(
         "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
-
+    //TODO Change to normal names, not username and password
     TextField usernameField = new TextField();
     usernameField.setPrefSize(330, 38);
     usernameField.setFont(Font.font(18));
@@ -119,14 +124,13 @@ public class JoinOnlineSceneController {
     centerGrid.setHgap(20);
     centerGrid.setVgap(15);
 
-    vBox.getChildren()
-        .addAll(titleLabel, centerGrid, passwordMismatchLabel,
-            createButton);
+    vBox.getChildren().addAll(titleLabel, centerGrid, passwordMismatchLabel, createButton);
     vBox.setPadding(new Insets(15, 15, 15, 15));
 
     anchorPane.getChildren().add(vBox);
 
-    createButton.setOnMouseClicked(e -> handleCreate());
+    createButton.setOnMouseClicked(
+        e -> handleCreate(usernameField.getText(), Integer.parseInt(passwordField.getText())));
 
     return anchorPane;
   }
@@ -135,7 +139,13 @@ public class JoinOnlineSceneController {
 // private void handleMouseEntered() { /* ... */ }
 // private void handleMouseExited() { /* ... */ }
 
-  private void handleCreate() {
+  private void handleCreate(String host, int port) {
+    LobbyConfiguration.configureGameClient(host, port);
+    LobbyConfiguration.startGameClient();
+    UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
+        DatabaseConfiguration.getGameStatisticService()
+            .getAllStatisticsByUserId(SessionManager.getUser().getId()));
+    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {
