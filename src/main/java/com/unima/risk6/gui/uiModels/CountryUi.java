@@ -1,18 +1,21 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
-import javafx.concurrent.Task;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -28,7 +31,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -50,9 +52,9 @@ public class CountryUi extends Group {
 
   private TroopsCounterUi troopsCounterUi;
 
-  private int amountOfTroops = 0;
-
   private static boolean isCountrySelectedToAttackOthers = false;
+
+  private Attack lastAttack;
 
 
   public CountryUi(Country country, String SVGPath) {
@@ -64,15 +66,7 @@ public class CountryUi extends Group {
     this.countryPath.setFill(Color.WHITE);
     this.countryPath.setStroke(Color.BLACK);
     this.getChildren().add(new Group(this.countryPath));
-
-    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.1), countryPath,
-        Color.WHITE, Color.RED);
-    highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
-    FillTransition reverseTransition = new FillTransition(Duration.seconds(0.15), countryPath,
-        Color.RED, Color.WHITE);
-    reverseTransition.setInterpolator(Interpolator.EASE_BOTH);
     glowEffect = new DropShadow();
-    glowEffect.setColor(Color.RED);
 
   }
 
@@ -105,26 +99,37 @@ public class CountryUi extends Group {
 
   public void initMouseListener() {
     setOnMouseEntered((MouseEvent event) -> {
-      this.setCursor(Cursor.CROSSHAIR);
+
+      if (checkIfCountryIsMine(country)) {
+        this.setCursor(Cursor.CROSSHAIR);
+      } else {
+        this.setCursor(Cursor.DEFAULT);
+      }
     });
     setOnMouseClicked(event -> {
       Group countriesGroup = (Group) this.getParent();
-      //TODO Handle for the player who is playing
-      // switch(GameSceneController.getMyPlayerUi().getPlayer().getCurrentPhase()) like this
-      // animation for another users would be happening only when it game state is updated
-      switch (GameSceneController.mockGamePhase) {
-        case CLAIM_PHASE:
-          if (this.countryPath.getFill() == Color.WHITE) {
-            BorderPane currentRoot = (BorderPane) this.getParent().getParent().getParent();
-            StackPane bottomPane = (StackPane) currentRoot.getBottom();
-            ActivePlayerUi activePlayerUi = (ActivePlayerUi) bottomPane.lookup("#activePlayerUi");
-            this.countryPath.setFill(activePlayerUi.getPlayerUi().getPlayerColor());
-            GameSceneController.checkIfAllCountriesOccupied(countriesGroup);
+      switch (GameSceneController.getPlayerController().getPlayer().getCurrentPhase()) {
+        case CLAIM_PHASE -> {
+          if (!this.country.hasPlayer()) {
+            GameSceneController.getPlayerController().sendReinforce(this.country, 1);
           }
-          break;
-        case ATTACK_PHASE:
-          animateAttackPhase(countriesGroup);
-          break;
+        }
+        case ATTACK_PHASE -> {
+          if (checkIfCountryIsMine(country)) {
+            animateAttackPhase(countriesGroup);
+          }
+        }
+        case FORTIFY_PHASE -> {
+          if (checkIfCountryIsMine(country)) {
+            animateFortifyPhase(countriesGroup);
+          }
+        }
+        case REINFORCEMENT_PHASE -> {
+          if (checkIfCountryIsMine(country)) {
+            animateReinforcementPhase(countriesGroup);
+          }
+        }
+
         // add more cases for other enum values
       }
 
@@ -144,276 +149,9 @@ public class CountryUi extends Group {
   }
 
   public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath,
-      CountryUi adjacentCountryUi) {
-    adjacentCountryPath.setOnMouseClicked(event -> {
-      switch (GameSceneController.mockGamePhase) {
-        //TODO: Resizing window should resize components
-        case ATTACK_PHASE: {
-          BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-          BorderPane dicePane = new BorderPane();
-
-          Label winningChanceLabel = new Label("Winning Chance:" + amountOfTroops);
-          winningChanceLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-
-          Button closeButton = new Button();
-          closeButton.setPrefSize(15, 15);
-          ImageView closeIcon = new ImageView(
-              new Image(
-                  getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
-          closeIcon.setFitWidth(15);
-          closeIcon.setFitHeight(15);
-          closeButton.setGraphic(closeIcon);
-          closeButton.setStyle("-fx-background-radius: 15px;");
-          closeButton.setFocusTraversable(false);
-
-          dicePane.setTop(closeButton);
-          dicePane.setAlignment(closeButton, Pos.TOP_RIGHT);
-
-          HBox diceHBox = new HBox();
-          diceHBox.setAlignment(Pos.CENTER);
-          diceHBox.setSpacing(20);
-
-          Popup dicePopup = new Popup();
-          closeButton.setOnAction(closeEvent -> dicePopup.hide());
-
-          //MOCKUP OF ATTACK DIALOG WITH DICE
-
-          VBox attackerBox = new VBox();
-          DiceUi dice2 = new DiceUi(true);
-          DiceUi dice3 = new DiceUi(true);
-          attackerBox.getChildren().addAll(dice2, dice3);
-          attackerBox.setAlignment(Pos.CENTER);
-
-          VBox defenderBox = new VBox();
-          DiceUi dice1 = new DiceUi(false);
-          defenderBox.getChildren().add(dice1);
-          defenderBox.setAlignment(Pos.CENTER);
-
-          List<DiceUi> diceUis = new ArrayList<>();
-          diceUis.add(dice1);
-          diceUis.add(dice2);
-          diceUis.add(dice3);
-
-          diceHBox.getChildren().addAll(attackerBox, winningChanceLabel, defenderBox);
-
-          HBox confirmBox = new HBox();
-          confirmBox.setSpacing(15);
-          Button confirmButton = new Button("Roll the Dice!");
-          confirmBox.setAlignment(Pos.CENTER);
-          confirmButton.setStyle("-fx-background-radius: 15px;");
-          confirmButton.setFocusTraversable(false);
-          confirmBox.getChildren().add(confirmButton);
-          confirmButton.setOnMouseClicked((confirmDiceRollEvent) -> {
-            for (DiceUi dice : diceUis) {
-              dice.rollDice();
-            }
-            //TODO: Evaluate if dice of attackers has been successful
-            //Using mocked boolean to say that attacker won and show popup, that he can move troops
-            boolean mockedWin = true;
-
-            if (mockedWin) {
-              PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
-              delayTransition.setOnFinished(delayTransitionEvent -> {
-                dicePopup.hide();
-                BorderPane moveTroopsPane = new BorderPane();
-                Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
-                chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-
-                HBox chatBox = new HBox();
-                chatBox.setAlignment(Pos.CENTER);
-                chatBox.setSpacing(15);
-
-                Popup chatPopup = new Popup();
-
-                Circle leftCircle = new Circle(25);
-                Image leftImage = new Image(
-                    getClass().getResource("/com/unima/risk6/pictures/minusIcon.png").toString());
-                leftCircle.setFill(new ImagePattern(leftImage));
-                leftCircle.setOnMouseClicked(minusEvent -> {
-                  if (amountOfTroops > 0) {
-                    amountOfTroops--;
-                    chatLabel.setText("Amount of Troops: " + amountOfTroops);
-                  }
-                });
-
-                Circle rightCircle = new Circle(25);
-                Image rightImage = new Image(
-                    getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString());
-                rightCircle.setFill(new ImagePattern(rightImage));
-                rightCircle.setOnMouseClicked(plusEvent -> {
-                  amountOfTroops++;
-                  chatLabel.setText("Amount of Troops: " + amountOfTroops);
-                });
-
-                Circle confirmCircle = new Circle(25);
-                Image confirmImage = new Image(
-                    getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png").toString());
-                confirmCircle.setFill(new ImagePattern(confirmImage));
-                confirmCircle.setOnMouseClicked(confirmEvent -> {
-                  chatPopup.hide();
-                  Group countriesGroup = (Group) this.getParent();
-                  countriesGroup.getChildren().removeIf(
-                      countriesGroupNode -> countriesGroupNode instanceof Line
-                          || countriesGroupNode instanceof SVGPath);
-                  isCountrySelectedToAttackOthers = false;
-                  adjacentCountryUi.animateAttackPhase(countriesGroup);
-                  setCursor(Cursor.DEFAULT);
-                  GameSceneController.getPlayerController()
-                      .sendAttack(this.country, adjacentCountryUi.getCountry(), amountOfTroops);
-                });
-
-                chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
-                chatBox.setHgrow(confirmCircle, Priority.ALWAYS);
-
-                moveTroopsPane.setCenter(chatBox);
-                moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
-                moveTroopsPane.setStyle(
-                    "-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-                DropShadow dropShadow = new DropShadow();
-                dropShadow.setColor(Color.BLACK);
-                dropShadow.setRadius(10);
-                moveTroopsPane.setEffect(dropShadow);
-
-                Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
-
-                double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
-                double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
-
-                double popupWidth = moveTroopsPane.getPrefWidth();
-                double popupHeight = moveTroopsPane.getPrefHeight();
-
-                chatPopup.getContent().add(moveTroopsPane);
-
-                chatPopup.setX(centerX - popupWidth / 2);
-                chatPopup.setY(centerY - popupHeight / 2);
-                chatPopup.show(gamePane.getScene().getWindow());
-              });
-              delayTransition.play();
-            }
-          });
-          dicePane.setBottom(confirmBox);
-          dicePane.setAlignment(confirmBox, Pos.BOTTOM_CENTER);
-
-          dicePane.setCenter(diceHBox);
-          dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
-          dicePane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-          DropShadow dropShadow = new DropShadow();
-          dropShadow.setColor(Color.BLACK);
-          dropShadow.setRadius(10);
-          dicePane.setEffect(dropShadow);
-
-          Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
-
-          double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
-          double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
-
-          double popupWidth = dicePane.getPrefWidth();
-          double popupHeight = dicePane.getPrefHeight();
-
-          dicePopup.getContent().add(dicePane);
-
-          dicePopup.setX(centerX - popupWidth / 2);
-          dicePopup.setY(centerY - popupHeight / 2);
-          dicePopup.show(gamePane.getScene().getWindow());
-        }
-        break;
-        case FORTIFY_PHASE: {
-          BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-          BorderPane chatBoxPane = new BorderPane();
-
-          Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
-          chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-
-          Button closeButton = new Button();
-          closeButton.setPrefSize(15, 15);
-          ImageView closeIcon = new ImageView(
-              new Image(
-                  getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
-          closeIcon.setFitWidth(15);
-          closeIcon.setFitHeight(15);
-          closeButton.setGraphic(closeIcon);
-          closeButton.setStyle("-fx-background-radius: 15px;");
-          closeButton.setFocusTraversable(false);
-
-          chatBoxPane.setTop(closeButton);
-          chatBoxPane.setAlignment(closeButton, Pos.TOP_RIGHT);
-
-          HBox chatBox = new HBox();
-          chatBox.setAlignment(Pos.CENTER);
-          chatBox.setSpacing(15);
-
-          Popup chatPopup = new Popup();
-          closeButton.setOnAction(closeEvent -> chatPopup.hide());
-
-          Circle leftCircle = new Circle(25);
-          Image leftImage = new Image(
-              getClass().getResource("/com/unima/risk6/pictures/minusIcon.png").toString());
-          leftCircle.setFill(new ImagePattern(leftImage));
-          leftCircle.setOnMouseClicked(minusEvent -> {
-            if (amountOfTroops > 0) {
-              amountOfTroops--;
-              chatLabel.setText("Amount of Troops: " + amountOfTroops);
-            }
-          });
-
-          Circle rightCircle = new Circle(25);
-          Image rightImage = new Image(
-              getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString());
-          rightCircle.setFill(new ImagePattern(rightImage));
-          rightCircle.setOnMouseClicked(plusEvent -> {
-            amountOfTroops++;
-            chatLabel.setText("Amount of Troops: " + amountOfTroops);
-          });
-
-          Circle confirmCircle = new Circle(25);
-          Image confirmImage = new Image(
-              getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png").toString());
-          confirmCircle.setFill(new ImagePattern(confirmImage));
-          confirmCircle.setOnMouseClicked(confirmEvent -> {
-            chatPopup.hide();
-            Group countriesGroup = (Group) this.getParent();
-            countriesGroup.getChildren().removeIf(
-                countriesGroupNode -> countriesGroupNode instanceof Line
-                    || countriesGroupNode instanceof SVGPath);
-            setCursor(Cursor.DEFAULT);
-            isCountrySelectedToAttackOthers = false;
-            GameSceneController.getPlayerController()
-                .sendAttack(this.country, adjacentCountryUi.getCountry(), amountOfTroops);
-            //GameSceneController.animateFortify(animateFortify);
-          });
-
-          chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
-          chatBox.setHgrow(confirmCircle, Priority.ALWAYS);
-
-          chatBoxPane.setCenter(chatBox);
-          chatBoxPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
-          chatBoxPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-          DropShadow dropShadow = new DropShadow();
-          dropShadow.setColor(Color.BLACK);
-          dropShadow.setRadius(10);
-          chatBoxPane.setEffect(dropShadow);
-
-          Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
-
-          double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
-          double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
-
-          double popupWidth = chatBoxPane.getPrefWidth();
-          double popupHeight = chatBoxPane.getPrefHeight();
-
-          chatPopup.getContent().add(chatBoxPane);
-
-          chatPopup.setX(centerX - popupWidth / 2);
-          chatPopup.setY(centerY - popupHeight / 2);
-          chatPopup.show(gamePane.getScene().getWindow());
-        }
-        break;
-      }
-
-    });
-    adjacentCountryPath.setOnMouseEntered(event -> {
-      adjacentCountryPath.setCursor(Cursor.HAND);
-    });
+      CountryUi adjacentCountryUi, GamePhase gamePhase) {
+    adjacentCountryPath.setOnMouseClicked(
+        event -> showAmountOfTroopsPopUp(this.country.getTroops(), adjacentCountryUi, gamePhase));
   }
 
   public void animateAttackPhase(Group countriesGroup) {
@@ -425,18 +163,216 @@ public class CountryUi extends Group {
 
     } else {
       for (CountryUi adjacentCountryUi : adjacentCountryUis) {
-        Line arrow = createArrowAndAnimateAdjacentCountries(countriesGroup, adjacentCountryUi);
-        animateArrow(adjacentCountryUi, arrow);
+        if (!checkIfCountryIsMine(adjacentCountryUi.getCountry())) {
+          Line arrow = createArrowAndAnimateAdjacentCountries(countriesGroup, adjacentCountryUi,
+              GamePhase.ATTACK_PHASE);
+          animateArrow(adjacentCountryUi, arrow);
+        }
+
       }
       isCountrySelectedToAttackOthers = true;
     }
   }
 
+  private void animateReinforcementPhase(Group countriesGroup) {
+    showAmountOfTroopsPopUp(
+        GameSceneController.getPlayerController().getPlayer().getDeployableTroops(), null,
+        GamePhase.REINFORCEMENT_PHASE);
+  }
+
+  private void animateFortifyPhase(Group countriesGroup) {
+    for (CountryUi adjacentCountryUi : adjacentCountryUis) {
+      if (checkIfCountryIsMine(adjacentCountryUi.getCountry())) {
+        Line arrow = createArrowAndAnimateAdjacentCountries(countriesGroup, adjacentCountryUi,
+            GamePhase.FORTIFY_PHASE);
+        animateArrow(adjacentCountryUi, arrow);
+      }
+    }
+  }
+
+  public void showAmountOfTroopsPopUp(int troopBound, CountryUi adjacentCountryUi,
+      GamePhase gamePhase) {
+    AtomicInteger amountOfTroops = new AtomicInteger(1);
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+    BorderPane moveTroopsPane = new BorderPane();
+    Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
+    chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+
+    HBox chatBox = new HBox();
+    chatBox.setAlignment(Pos.CENTER);
+    chatBox.setSpacing(15);
+
+    Popup popUp = new Popup();
+
+    Circle leftCircle = new Circle(25);
+    Image leftImage = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/minusIcon.png").toString());
+    leftCircle.setFill(new ImagePattern(leftImage));
+    leftCircle.setOnMouseClicked(minusEvent -> {
+      if (amountOfTroops.get() > 1) {
+        amountOfTroops.getAndDecrement();
+        chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+      }
+    });
+
+    Circle rightCircle = new Circle(25);
+    Image rightImage = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString());
+    rightCircle.setFill(new ImagePattern(rightImage));
+    rightCircle.setOnMouseClicked(plusEvent -> {
+      if (amountOfTroops.get() < troopBound) {
+        amountOfTroops.getAndIncrement();
+        chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+      }
+    });
+
+    Circle confirmCircle = new Circle(25);
+    Image confirmImage = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png").toString());
+    confirmCircle.setFill(new ImagePattern(confirmImage));
+    confirmCircle.setOnMouseClicked(confirmEvent -> {
+      //TODO fortify or attack depending
+      popUp.hide();
+      if (gamePhase == GamePhase.FORTIFY_PHASE) {
+        GameSceneController.getPlayerController()
+            .sendFortify(this.country, adjacentCountryUi.getCountry(), amountOfTroops.get());
+      } else if (gamePhase == GamePhase.ATTACK_PHASE) {
+        GameSceneController.getPlayerController()
+            .sendAttack(this.country, adjacentCountryUi.getCountry(), amountOfTroops.get());
+        Platform.runLater(this::showAttackDicePopUp);
+        Group countriesGroup = (Group) this.getParent();
+        countriesGroup.getChildren().removeIf(
+            countriesGroupNode -> countriesGroupNode instanceof Line
+                || countriesGroupNode instanceof SVGPath);
+        isCountrySelectedToAttackOthers = false;
+      } else if (gamePhase == GamePhase.REINFORCEMENT_PHASE) {
+        GameSceneController.getPlayerController().sendReinforce(this.country, amountOfTroops.get());
+      }
+
+    });
+
+    chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
+    chatBox.setHgrow(confirmCircle, Priority.ALWAYS);
+
+    moveTroopsPane.setCenter(chatBox);
+    moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
+    moveTroopsPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setColor(Color.BLACK);
+    dropShadow.setRadius(10);
+    moveTroopsPane.setEffect(dropShadow);
+
+    Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
+
+    double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+    double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+
+    double popupWidth = moveTroopsPane.getPrefWidth();
+    double popupHeight = moveTroopsPane.getPrefHeight();
+
+    popUp.getContent().add(moveTroopsPane);
+
+    popUp.setX(centerX - popupWidth / 2);
+    popUp.setY(centerY - popupHeight / 2);
+    popUp.show(gamePane.getScene().getWindow());
+  }
+
+  private void showAttackDicePopUp() {
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+    BorderPane dicePane = new BorderPane();
+
+    Label winningChanceLabel = new Label("Winning Chance:" + 1);
+    winningChanceLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+
+    Button closeButton = new Button();
+    closeButton.setPrefSize(15, 15);
+    ImageView closeIcon = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeIcon.setFitWidth(15);
+    closeIcon.setFitHeight(15);
+    closeButton.setGraphic(closeIcon);
+    closeButton.setStyle("-fx-background-radius: 15px;");
+    closeButton.setFocusTraversable(false);
+
+    dicePane.setTop(closeButton);
+    dicePane.setAlignment(closeButton, Pos.TOP_RIGHT);
+
+    HBox diceHBox = new HBox();
+    diceHBox.setAlignment(Pos.CENTER);
+    diceHBox.setSpacing(20);
+
+    Popup dicePopup = new Popup();
+    closeButton.setOnAction(closeEvent -> dicePopup.hide());
+
+    //MOCKUP OF ATTACK DIALOG WITH DICE
+
+    List<DiceUi> diceUis = new ArrayList<>();
+    VBox attackerBox = new VBox();
+    for (int i = 0; i < lastAttack.getAttackDiceResult().size(); i++) {
+      DiceUi dice = new DiceUi(true, lastAttack.getAttackDiceResult().get(i));
+      attackerBox.getChildren().add(dice);
+      diceUis.add(dice);
+    }
+    attackerBox.setAlignment(Pos.CENTER);
+    VBox defenderBox = new VBox();
+    for (int i = 0; i < lastAttack.getDefendDiceResult().size(); i++) {
+      DiceUi dice = new DiceUi(false, lastAttack.getDefendDiceResult().get(i));
+      defenderBox.getChildren().add(dice);
+      diceUis.add(dice);
+    }
+    defenderBox.setAlignment(Pos.CENTER);
+    diceHBox.getChildren().addAll(attackerBox, winningChanceLabel, defenderBox);
+
+    HBox confirmBox = new HBox();
+    confirmBox.setSpacing(15);
+    Button confirmButton = new Button("Roll the Dice!");
+    confirmBox.setAlignment(Pos.CENTER);
+    confirmButton.setStyle("-fx-background-radius: 15px;");
+    confirmButton.setFocusTraversable(false);
+    confirmBox.getChildren().add(confirmButton);
+    confirmButton.setOnMouseClicked(confirmDiceRollEvent -> {
+      for (DiceUi dice : diceUis) {
+        dice.rollDice();
+      }
+      PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
+      delayTransition.setOnFinished(delayTransitionEvent -> {
+        //TODO Popup for more troops and send fortify to server
+        dicePopup.hide();
+      });
+      delayTransition.play();
+
+    });
+    dicePane.setBottom(confirmBox);
+    dicePane.setAlignment(confirmBox, Pos.BOTTOM_CENTER);
+
+    dicePane.setCenter(diceHBox);
+    dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
+    dicePane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setColor(Color.BLACK);
+    dropShadow.setRadius(10);
+    dicePane.setEffect(dropShadow);
+
+    Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
+
+    double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+    double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+
+    double popupWidth = dicePane.getPrefWidth();
+    double popupHeight = dicePane.getPrefHeight();
+
+    dicePopup.getContent().add(dicePane);
+
+    dicePopup.setX(centerX - popupWidth / 2);
+    dicePopup.setY(centerY - popupHeight / 2);
+    dicePopup.show(gamePane.getScene().getWindow());
+  }
+
   private Line createArrowAndAnimateAdjacentCountries(Group countriesGroup,
-      CountryUi adjacentCountryUi) {
+      CountryUi adjacentCountryUi, GamePhase gamePhase) {
     SVGPath adjacentCountryPath = svgPathClone(adjacentCountryUi.getCountryPath());
     adjacentCountryPath.setEffect(adjacentCountryUi.getGlowEffect());
-    addEventHandlersToAdjacentCountryPath(adjacentCountryPath, adjacentCountryUi);
+    addEventHandlersToAdjacentCountryPath(adjacentCountryPath, adjacentCountryUi, gamePhase);
     Line arrow = new Line();
     arrow.setStroke(Color.RED);
     int index = 0;
@@ -477,6 +413,30 @@ public class CountryUi extends Group {
     timeline.setCycleCount(1);
     timeline.setAutoReverse(false);
     timeline.play();
+  }
+
+  public void update(ActivePlayerUi activePlayerUi, Move move) {
+    if (move instanceof Attack attack) {
+      if (activePlayerUi.getPlayerUi().getPlayer()
+          .equals(GameSceneController.getMyPlayerUi().getPlayer())) {
+        lastAttack = attack;
+      }
+    }
+    troopsCounterUi.update(country.getTroops());
+    Color playerColor = activePlayerUi.getPlayerUi().getPlayerColor();
+    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.1), countryPath,
+        (Color) this.getCountryPath().getFill(), playerColor);
+    highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
+    glowEffect.setColor(playerColor);
+    highlightTransition.play();
+
+  }
+
+  public boolean checkIfCountryIsMine(Country country) {
+    if (country.getPlayer() == null) {
+      return false;
+    }
+    return country.getPlayer().equals(GameSceneController.getPlayerController().getPlayer());
   }
 
   public SVGPath getCountryPath() {

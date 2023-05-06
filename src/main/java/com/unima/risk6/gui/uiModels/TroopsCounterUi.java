@@ -45,4 +45,8 @@ public class TroopsCounterUi extends Group {
     this.text.setY(
         this.getEllipseCounter().getCenterY() + text.getLayoutBounds().getHeight() * 0.3);
   }
+
+  public void update(int troops) {
+    this.setText(String.valueOf(troops));
+  }
 }

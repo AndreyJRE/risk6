@@ -1,12 +1,10 @@
 package com.unima.risk6.gui.uiModels;
 
-import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.models.enums.GamePhase;
-import com.unima.risk6.gui.controllers.GameSceneController;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -32,8 +30,8 @@ public class ActivePlayerUi extends Group {
 
   private Rectangle fortifyRectangle;
 
-  public ActivePlayerUi(double radiusX, double radiusY,
-      double rectangleWidth, double rectangleHeight, PlayerUi playerUi, GamePhase mockGamePhase) {
+  public ActivePlayerUi(double radiusX, double radiusY, double rectangleWidth,
+      double rectangleHeight, PlayerUi playerUi) {
     this.setId("activePlayerUi");
     this.playerUi = playerUi;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
@@ -55,7 +53,7 @@ public class ActivePlayerUi extends Group {
     iconsPane.setLayoutX(50);
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
 
-    if (mockGamePhase == GamePhase.CLAIM_PHASE) {
+    if (this.playerUi.getPlayer().getCurrentPhase() == GamePhase.CLAIM_PHASE) {
       phaseLabel = new Label("Claim a Territory!");
       phaseLabel.setStyle(
           "-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold;");
@@ -81,29 +79,35 @@ public class ActivePlayerUi extends Group {
       attackRectangle.setFill(attackImagePattern);
       fortifyRectangle = new Rectangle(radiusX, radiusY);
       fortifyRectangle.setFill(fortifyImagePattern);
-
-      switch (mockGamePhase) {
-        case REINFORCEMENT_PHASE:
+      System.out.println(this.playerUi.getPlayer().getCurrentPhase());
+      switch (this.playerUi.getPlayer().getCurrentPhase()) {
+        case REINFORCEMENT_PHASE -> {
           phaseLabel = new Label("Reinforcement");
           attackRectangle.setOpacity(0.5);
           fortifyRectangle.setOpacity(0.5);
-          break;
-        case ATTACK_PHASE:
+        }
+        case ATTACK_PHASE -> {
           phaseLabel = new Label("Attack");
           reinforcementRectangle.setOpacity(0.5);
           fortifyRectangle.setOpacity(0.5);
-          break;
-        case FORTIFY_PHASE:
+        }
+        case FORTIFY_PHASE -> {
           phaseLabel = new Label("Fortify");
           attackRectangle.setOpacity(0.5);
           reinforcementRectangle.setOpacity(0.5);
-          break;
+        }
+        case ORDER_PHASE -> {
+          phaseLabel = new Label("Order");
+          attackRectangle.setOpacity(0.5);
+          reinforcementRectangle.setOpacity(0.5);
+          fortifyRectangle.setOpacity(0.5);
+        }
       }
 
       VBox iconsAndNameBox = new VBox();
       iconsAndNameBox.setAlignment(Pos.CENTER);
-      phaseLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: "
-          + "bold;");
+      phaseLabel.setStyle(
+          "-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: " + "bold;");
 
       HBox iconsHBox = new HBox();
       iconsHBox.getChildren().addAll(reinforcementRectangle, attackRectangle, fortifyRectangle);
@@ -126,27 +130,28 @@ public class ActivePlayerUi extends Group {
     rectangle.setStroke(playerUi.getPlayerColor());
   }
 
-  public void changePhase() {
-    switch (GameSceneController.mockGamePhase) {
-      case REINFORCEMENT_PHASE:
-        phaseLabel.setText("Reinforcement");
-        reinforcementRectangle.setOpacity(1);
-        attackRectangle.setOpacity(0.5);
-        fortifyRectangle.setOpacity(0.5);
-        break;
-      case ATTACK_PHASE:
+  public void changePhase(EndPhase endPhase) {
+    switch (endPhase.getPhaseToEnd()) {
+      case REINFORCEMENT_PHASE -> {
         phaseLabel.setText("Attack");
         attackRectangle.setOpacity(1);
         reinforcementRectangle.setOpacity(0.5);
         fortifyRectangle.setOpacity(0.5);
-        break;
-      case FORTIFY_PHASE:
+      }
+      case ATTACK_PHASE -> {
         phaseLabel.setText("Fortify");
         fortifyRectangle.setOpacity(1);
         attackRectangle.setOpacity(0.5);
         reinforcementRectangle.setOpacity(0.5);
-        break;
+      }
+      case FORTIFY_PHASE -> {
+       /* phaseLabel.setText("Reinforcement");
+        reinforcementRectangle.setOpacity(1);
+        attackRectangle.setOpacity(0.5);
+        fortifyRectangle.setOpacity(0.5);
+        */
+
+      }
     }
   }
-
 }

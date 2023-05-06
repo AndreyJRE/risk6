@@ -47,7 +47,7 @@ public class PlayerController {
   }
 
 
-  public void setEndPhase(GamePhase gamePhase) {
+  public void sendEndPhase(GamePhase gamePhase) {
     EndPhase endPhase = new EndPhase(gamePhase);
     gameClient.sendMessage(new StandardMessage<EndPhase>(endPhase));
   }
