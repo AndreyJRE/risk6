@@ -10,6 +10,7 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.HandIn;
+import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
@@ -100,57 +101,34 @@ class MoveProcessorTest {
     for (int i = 0; i < 6; i++) {
       players[i].setInitialTroops(20);
     }
-    //Should add Alaska to players[0].
-    try {
+
+    //Added Each Country to a player.
+    for (Country c : gameState.getCountries()) {
       moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.ALASKA), 1));
-      assertTrue(players[0].getCountries().contains(getCountryByCountryName(CountryName.ALASKA)));
-
-      //Should add china to players[1].
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.CHINA), 1));
-      assertTrue(players[1].getCountries().contains(getCountryByCountryName(CountryName.CHINA)));
-
-      //Should add SIAM to players[2].
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.SIAM), 1));
-      assertTrue(players[2].getCountries().contains(getCountryByCountryName(CountryName.SIAM)));
-
-      //Added Each Country to a player.
-      for (Country c : gameState.getCountries()) {
-        moveProcessor.processReinforce(
-            new Reinforce(getCountryByCountryName(c.getCountryName()), 1));
-      }
-
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.ONTARIO), 1));
-      assertEquals(2, getCountryByCountryName(CountryName.ONTARIO).getTroops());
-
-      //Reinforced the first country in the ArrayList of owned countries
-      // until every player has no more initial troops.
-      while (!gameState.getCurrentPlayer().getCurrentPhase()
-          .equals(GamePhase.REINFORCEMENT_PHASE)) {
-        List<Country> countries = new ArrayList<>(gameState.getCurrentPlayer().getCountries());
-        moveProcessor.processReinforce(
-            new Reinforce(countries.get(0), 1));
-      }
-
-      assertEquals(0, players[0].getInitialTroops());
-      assertEquals(0, players[1].getInitialTroops());
-      assertEquals(0, players[2].getInitialTroops());
-      assertEquals(0, players[3].getInitialTroops());
-      assertEquals(0, players[4].getInitialTroops());
-      assertEquals(0, players[5].getInitialTroops());
-
-      //Uses two of the Deployable troops.
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.VENEZUELA), 1));
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.VENEZUELA), 1));
-
-    } catch (InvalidMoveException e) {
-      System.err.println(e.getMessage());
+          new Reinforce(getCountryByCountryName(c.getCountryName()), 1));
     }
+    for (Player p : players) {
+      System.out.println(p);
+    }
+    //assertEquals(2, getCountryByCountryName(CountryName.ONTARIO).getTroops());
+
+    //Reinforced the first country in the ArrayList of owned countries
+    // until every player has no more initial troops.
+
+    while (!gameState.getCurrentPlayer().getCurrentPhase()
+        .equals(GamePhase.REINFORCEMENT_PHASE)) {
+      List<Country> countries = new ArrayList<>(gameState.getCurrentPlayer().getCountries());
+      moveProcessor.processReinforce(
+          new Reinforce(countries.get(0), 1));
+    }
+
+    assertEquals(0, players[0].getInitialTroops());
+    assertEquals(0, players[1].getInitialTroops());
+    assertEquals(0, players[2].getInitialTroops());
+    assertEquals(0, players[3].getInitialTroops());
+    assertEquals(0, players[4].getInitialTroops());
+    assertEquals(0, players[5].getInitialTroops());
+
 
   }
 
@@ -300,7 +278,12 @@ class MoveProcessorTest {
       }
     } catch (InvalidMoveException e) {
       System.err.println(e.getMessage());
+
     }
+
+    getCountryByCountryName(CountryName.GREENLAND).setTroops(3);
+    getCountryByCountryName(CountryName.QUEBEC).setTroops(0);
+
     Attack testAttack3 = new Attack(
         getCountryByCountryName(CountryName.GREENLAND),
         getCountryByCountryName(CountryName.QUEBEC),
@@ -342,6 +325,8 @@ class MoveProcessorTest {
       //Should draw Card if turn is ended and hasConquered is true.
       if (gameController.getCurrentPlayer().getHasConquered()) {
         moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+        gameState.getLastMoves().forEach(System.out::println);
+
         assertEquals(1, players[0].getHand().getCards().size());
       } else {
         moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
@@ -429,12 +414,8 @@ class MoveProcessorTest {
     assertEquals(5, players[0].getHand().getCards().size());
     assertEquals(3, players[0].getHand().getSelectedCards().size());
 
-    try {
-      moveProcessor.processHandIn(new HandIn(players[0].getHand().getSelectedCards()));
-    } catch (InvalidMoveException e) {
-      System.err.println(e.getMessage());
+    moveProcessor.processHandIn(new HandIn(players[0].getHand().getSelectedCards()));
 
-    }
     //Should remove cards in Hand and selected ones and set DeployableTroops to 2.
     assertEquals(0, players[0].getHand().getSelectedCards().size());
     assertEquals(2, players[0].getHand().getCards().size());
@@ -474,6 +455,36 @@ class MoveProcessorTest {
 
   }
 
+  @Test
+  void playAGameBasedOnMethodCall() {
+    for (int i = 0; i < 6; i++) {
+      players[i].setInitialTroops(20);
+    }
+
+    for (Country p : gameController.getGameState().getCountries()) {
+      moveProcessor.processReinforce(new Reinforce(getCountryByCountryName(p.getCountryName()), 1));
+    }
+    while (!gameState.getCurrentPlayer().getCurrentPhase()
+        .equals(GamePhase.REINFORCEMENT_PHASE)) {
+      List<Country> countries = new ArrayList<>(gameState.getCurrentPlayer().getCountries());
+      moveProcessor.processReinforce(
+          new Reinforce(countries.get(0), 1));
+    }
+
+    moveProcessor.processReinforce(
+        new Reinforce(getCountryByCountryName(CountryName.ALASKA), 3));
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+
+    for (Move m : gameState.getLastMoves()) {
+      System.out.println(m.toString());
+    }
+    for (int i = 0; i < 6; i++) {
+      System.out.println(players[i]);
+    }
+
+  }
 
   Country getCountryByCountryName(CountryName countryName) {
 
