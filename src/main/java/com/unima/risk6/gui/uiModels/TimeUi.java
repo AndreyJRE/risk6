@@ -24,6 +24,8 @@ public class TimeUi extends Group {
 
   private Timeline timeline = null;
 
+  private Rectangle timerRectangle = new Rectangle(80, 30);
+
   public TimeUi(double rectangleWidth, double rectangleHeight) {
     //TODO: ADAPT TURNTIME DEPENDING ON LOBBY SETTINGS AND IF MULTIPLAYER
     turnTime = 60;
@@ -37,7 +39,6 @@ public class TimeUi extends Group {
     Rectangle hourglassRectangle = new Rectangle(rectangleWidth, rectangleHeight);
     hourglassRectangle.setFill(reinforcementImagePattern);
 
-    Rectangle timerRectangle = new Rectangle(80, 30);
     timerRectangle.setFill(Color.WHITE);
     timerRectangle.setArcWidth(30.0);
     timerRectangle.setArcHeight(30.0);
