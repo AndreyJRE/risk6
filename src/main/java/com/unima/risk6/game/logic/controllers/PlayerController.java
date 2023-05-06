@@ -3,6 +3,7 @@ package com.unima.risk6.game.logic.controllers;
 import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 
 import com.unima.risk6.game.ai.models.CountryPair;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
@@ -13,7 +14,6 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.client.GameClient;
-import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.StandardMessage;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class PlayerController {
 
   public PlayerController() {
     this.handController = new HandController();
-    this.gameClient = NetworkConfiguration.getGameClient();
+    this.gameClient = LobbyConfiguration.getGameClient();
 
   }
 

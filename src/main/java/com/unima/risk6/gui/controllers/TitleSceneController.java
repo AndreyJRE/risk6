@@ -10,6 +10,7 @@ import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
@@ -114,11 +115,15 @@ public class TitleSceneController implements Initializable {
 
     translateAnimation.setNode(trigger);
     fillAnimation.setShape(background);
-    background.setOnMouseClicked(event ->
-        toggleButtonClicked());
+    background.setOnMouseClicked(event -> toggleButtonClicked());
     trigger.setOnMouseClicked(e -> toggleButtonClicked());
     switchedOn.addListener((obs, oldState, newState) -> {
       boolean isOn = newState.booleanValue();
+      if (isOn) {
+        NetworkConfiguration.startGameServer();
+      } else {
+        NetworkConfiguration.stopGameServer();
+      }
       translateAnimation.setToX(isOn ? 100 - 55 : 0);
       fillAnimation.setFromValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
       fillAnimation.setToValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
@@ -162,8 +167,7 @@ public class TitleSceneController implements Initializable {
         .getSceneBySceneName(SceneName.JOIN_ONLINE);
     if (scene == null) {
       scene = new JoinOnlineScene();
-      JoinOnlineSceneController joinOnlineSceneController = new JoinOnlineSceneController(
-          scene);
+      JoinOnlineSceneController joinOnlineSceneController = new JoinOnlineSceneController(scene);
       scene.setController(joinOnlineSceneController);
       sceneController.addScene(SceneName.JOIN_ONLINE, scene);
     }
