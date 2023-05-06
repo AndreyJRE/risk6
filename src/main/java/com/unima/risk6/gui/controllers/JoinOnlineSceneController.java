@@ -1,9 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
-
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.UserDto;
@@ -17,17 +13,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
+
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 public class JoinOnlineSceneController {
 
@@ -84,16 +78,16 @@ public class JoinOnlineSceneController {
     Label titleLabel = new Label("Join Online");
     titleLabel.setFont(Font.font("BentonSans Bold", 41));
     titleLabel.setStyle(
-        "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+            "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
 
     TextField ipAdressTextField = new TextField();
-    ipAdressTextField.setPrefSize(330, 38);
+    ipAdressTextField.setPrefSize(800, 40);
     ipAdressTextField.setFont(Font.font(18));
     ipAdressTextField.setPromptText("Enter IP Adress");
     ipAdressTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
-    PasswordField portTextField = new PasswordField();
-    portTextField.setPrefSize(330, 39);
+    TextField portTextField = new TextField();
+    portTextField.setPrefSize(800, 40);
     portTextField.setFont(Font.font(18));
     portTextField.setPromptText("Enter Port");
     portTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
@@ -104,15 +98,17 @@ public class JoinOnlineSceneController {
     serverNotFoundLabel.setPadding(new Insets(-10, 0, -10, 0));
 
     Button joinButton = new Button("Join");
-    joinButton.setPrefSize(500, 40);
+    joinButton.setPrefSize(1080, 40);
     joinButton.setFont(Font.font(18));
     applyButtonStyle(joinButton);
 
     Label ipLabel = new Label("Enter IP Adress:");
+    ipLabel.setMinWidth(130);
     ipLabel.setFont(Font.font(18));
     ipLabel.setAlignment(Pos.CENTER_LEFT);
 
     Label portLabel = new Label("Enter Port:");
+    portLabel.setMinWidth(130);
     portLabel.setFont(Font.font(18));
     portLabel.setAlignment(Pos.CENTER_LEFT);
 
