@@ -40,4 +40,10 @@ public class Reinforce extends Move {
   public int getToAdd() {
     return toAdd;
   }
+
+  @Override
+  public String toString() {
+
+    return "this is a Reinforce";
+  }
 }

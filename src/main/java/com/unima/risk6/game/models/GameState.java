@@ -70,10 +70,6 @@ public class GameState {
     return activePlayers;
   }
 
-  public void incrementNumberOfHandIns() {
-    this.numberOfHandIns += 1;
-  }
-
   public void setNumberOfHandIns(int numberOfHandIns) {
     this.numberOfHandIns = numberOfHandIns;
   }
