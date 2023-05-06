@@ -184,6 +184,11 @@ public class Attack extends Move {
     return troopNumber;
   }
 
+  /**
+   * Returns wether the attack conquers the defending country
+   *
+   * @return wether the attack conquers the defending country
+   */
   public boolean getHasConquered() {
 
     return hasConquered;

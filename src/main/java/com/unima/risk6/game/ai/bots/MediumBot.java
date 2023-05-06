@@ -5,7 +5,6 @@ import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
-import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import java.util.ArrayList;
@@ -22,14 +21,11 @@ import java.util.Map;
  */
 public class MediumBot extends GreedyBot implements AiBot {
 
-  private final PlayerController playerController;
   private int reinforceTroopsCopy;
   private int lastAttackSize;
 
   public MediumBot(String username) {
     super(username);
-    playerController = new PlayerController();
-    playerController.setPlayer(this);
     this.lastAttackSize = 0;
   }
 
@@ -40,7 +36,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   @Override
   public List<Reinforce> createAllReinforcements() {
     List<Reinforce> allReinforcements = new ArrayList<>();
-    this.reinforceTroopsCopy = this.getDeployableTroops();
+    this.reinforceTroopsCopy = this.getDeployableTroops() + this.getInitialTroops();
     sortContinentsByHighestRelativePower();
     // reinforce defensively
     for (Continent continent : this.getContinentsCopy()) {
@@ -60,13 +56,19 @@ public class MediumBot extends GreedyBot implements AiBot {
       }
     }
 
+    if (this.reinforceTroopsCopy > 0) {
+      Reinforce repeat = allReinforcements.get(0);
+      Reinforce extra = new Reinforce(repeat.getCountry(), this.reinforceTroopsCopy);
+      allReinforcements.add(extra);
+    }
+
     return allReinforcements;
   }
 
   /**
-   * Aggressive reinforcement - finds the strongest country on the continent and reinforces it as
-   * much as possible. This would make the country be the best choice for an attack move in the next
-   * phase
+   * Aggressive reinforcement - finds the strongest country on the continent in priority order and
+   * reinforces it as much as possible. This would make the country be the best choice for an attack
+   * move in the next phase.
    *
    * @param continent The continent on which the reinforce move is being made
    */
@@ -76,13 +78,16 @@ public class MediumBot extends GreedyBot implements AiBot {
     sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
     // now the country earliest in list is the one with the highest chance of winning.
     // order works, need to invert values to make them positive
+    // there shouldn't be any diffs less than 0, since they would have been cleared in step before
     ownedCountryDiffs.replaceAll((country, diff) -> -diff);
+    // adjust to make win probability >70%
+    ownedCountryDiffs.replaceAll((country, diff) -> Math.max(diff, 2));
     return reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }
 
   /**
    * Sorts the local list of continents in a descending manner based off of how much total control/
-   * presence the bot has over a continent
+   * presence the bot has over a continent.
    */
   public void sortContinentsByHighestRelativePower() {
     this.getContinentsCopy().sort(Comparator.comparing(
@@ -93,7 +98,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   /**
    * Makes the countries of a continent more likely to survive an attack by attempting to reinforce
    * each country by an amount necessary to even out the number of troops of the current country
-   * with that of the most powerful adjacent enemy country
+   * with that of the most powerful adjacent enemy country.
    *
    * @param continent The continent to be reinforced
    */
@@ -107,7 +112,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   /**
    * Reinforces countries in the given order by the highest of either the amount of troops that can
    * be deployed or the amount of troops needed to even out the country in comparison to its
-   * neighbours
+   * neighbours.
    *
    * @param ownedCountryDiffs A mapping of each country to the amount of troops it needs to be
    *                          reinforced with
@@ -131,7 +136,7 @@ public class MediumBot extends GreedyBot implements AiBot {
 
   /**
    * Sorts a list of countries in an ascending manner based off of the amount of troops defined by
-   * the mapping given to the method
+   * the mapping given to the method.
    *
    * @param ownedCountryDiffs A mapping of countries to the amount of troops needed to even out the
    *                          troop number with that of the strongest neighbouring enemy
@@ -142,44 +147,16 @@ public class MediumBot extends GreedyBot implements AiBot {
     listToSort.sort(Comparator.comparing(ownedCountryDiffs::get));
   }
 
-  /**
-   * Creates a mapping of countries from a continent to the amount of additional troops needed in
-   * order to balance out their strength with that of their strongest enemy country
-   *
-   * @param continent The continent whose countries are being tested
-   * @return A map of countries to the additionally necessary amount of troops. Countries without an
-   * enemy adjacent country are not included in this map
-   */
-  private Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
-    Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
-    List<CountryPair> diffInfo = this.playerController.getAllValidCountryPairs(continent);
-    for (CountryPair countryPair : diffInfo) {
-      this.getCountryPairDiff(ownedCountryDiffs, countryPair);
-    }
-    return ownedCountryDiffs;
-  }
-
-  private void getCountryPairDiff(Map<Country, Integer> ownedCountryDiffs,
-      CountryPair countryPair) {
-    if (ownedCountryDiffs.get(countryPair.getOutgoing()) == null) {
-      ownedCountryDiffs.put(countryPair.getOutgoing(),
-          calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()));
-    } else {
-      ownedCountryDiffs.put(countryPair.getOutgoing(),
-          Math.max(calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()),
-              ownedCountryDiffs.get(countryPair.getOutgoing())));
-    }
-  }
 
   @Override
-  public List<CountryPair> createAllAttacks() {
+  public CountryPair createAttack() {
     List<CountryPair> allAttacks = new ArrayList<>();
     sortContinentsByHighestRelativePower();
     for (Continent continent : this.getContinentsCopy()) {
       allAttacks.addAll(makeBestAttackInContinent(continent));
     }
     this.lastAttackSize = allAttacks.size();
-    return allAttacks;
+    return allAttacks.get(0);
   }
 
   @Override
@@ -195,8 +172,7 @@ public class MediumBot extends GreedyBot implements AiBot {
    */
   private List<CountryPair> makeBestAttackInContinent(Continent continent) {
     List<CountryPair> attacksToReturn = new ArrayList<>();
-    List<CountryPair> allPossibleAttacks = this.playerController.getAllValidCountryPairs(
-        continent);
+    List<CountryPair> allPossibleAttacks = this.playerController.getAllValidCountryPairs(continent);
     sortAttacksByProbability(allPossibleAttacks);
     for (CountryPair attackPair : allPossibleAttacks) {
       if (attackPair.getWinningProbability() > 70) {
@@ -210,7 +186,7 @@ public class MediumBot extends GreedyBot implements AiBot {
 
   /**
    * Sorts a list of pairs of countries descending by the probability of the attacking country
-   * (first entry) winning a battle against the defending country (second entry)
+   * (first entry) winning a battle against the defending country (second entry).
    *
    * @param unsortedPairs The general unsorted list of possible attack moves
    */
@@ -229,24 +205,10 @@ public class MediumBot extends GreedyBot implements AiBot {
     Fortify fortify = null;
     sortContinentsByHighestRelativePower();
     Map<Country, Integer> allOwnedCountryDiffs = new HashMap<>();
-    for (Continent continent : this.getContinentsCopy()) {
-      allOwnedCountryDiffs.putAll(getCountryTroopDiffsByContinent(continent));
-    }
-    List<Country> countriesByHighestDiff = new ArrayList<>(allOwnedCountryDiffs.keySet());
-    countriesByHighestDiff.sort(
-        Comparator.comparing((Country country) -> allOwnedCountryDiffs.get(country)).reversed());
+    List<Country> countriesByHighestDiff = getCountriesByHighestDiff(allOwnedCountryDiffs);
 
     for (Country country : countriesByHighestDiff) {
-      Country bestAdj = null;
-      for (Country adj : country.getAdjacentCountries()) {
-        if (this.equals(adj.getPlayer()) && adj.getTroops() >= country.getTroops()
-            && allOwnedCountryDiffs.get(adj) < 0) {
-          if (bestAdj == null || adj.getTroops() > bestAdj.getTroops()
-              || allOwnedCountryDiffs.get(adj) < allOwnedCountryDiffs.get(bestAdj)) {
-            bestAdj = adj;
-          }
-        }
-      }
+      Country bestAdj = findBestAdj(allOwnedCountryDiffs, country);
       if (bestAdj != null) {
         fortify = new Fortify(bestAdj, country,
             Math.max((bestAdj.getTroops() - country.getTroops()) / 2,
@@ -256,4 +218,6 @@ public class MediumBot extends GreedyBot implements AiBot {
     }
     return fortify;
   }
+
+
 }

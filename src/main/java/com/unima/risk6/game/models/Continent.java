@@ -62,12 +62,6 @@ public class Continent {
   }
 
   /**
-   * Sets the bonus troops awarded for owning this continent.
-   *
-   * @param bonusTroops the bonus troops to set
-   */
-
-  /**
    * Returns a String representation of this continent.
    *
    * @return Returns a String representation of this continent
@@ -75,8 +69,7 @@ public class Continent {
   @Override
   public String toString() {
     return "Continent{" +
-        ", continentName=" + continentName +
-        ", bonusTroops=" + bonusTroops +
-        '}';
+        ", continentName=" + continentName
+        + ", bonusTroops=" + bonusTroops + '}';
   }
 }

@@ -11,12 +11,26 @@ import javafx.util.Duration;
 public class DiceUi extends Pane {
 
   private ImageView diceView;
+
   private Random random;
 
-  public DiceUi() {
+  private int result;
+
+  private boolean isAttackingDice;
+
+  public DiceUi(boolean isAttackingDice) {
     random = new Random();
-    diceView = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/dice1.png").toString()));
+    this.isAttackingDice = isAttackingDice;
+    if (isAttackingDice) {
+      diceView = new ImageView(
+          new Image(
+              getClass().getResource("/com/unima/risk6/pictures/attackDicePreview.png")
+                  .toString()));
+    } else {
+      diceView = new ImageView(
+          new Image(
+              getClass().getResource("/com/unima/risk6/pictures/dicePreview.png").toString()));
+    }
     diceView.setPreserveRatio(true);
     diceView.setFitWidth(100);
     diceView.setFitHeight(100);
@@ -24,21 +38,37 @@ public class DiceUi extends Pane {
   }
 
   public void rollDice() {
-    int rollDuration = 1000 + random.nextInt(2000);
+    int rollDuration = 1000 + random.nextInt(1000);
     showRollingGif();
     SoundConfiguration.playRollDiceSound();
     PauseTransition pauseTransition = new PauseTransition(Duration.millis(rollDuration));
-    pauseTransition.setOnFinished(e -> showDiceResult(random.nextInt(6) + 1));
+    this.result = random.nextInt(6) + 1;
+    pauseTransition.setOnFinished(e -> showDiceResult(result));
     pauseTransition.play();
   }
 
   public void showRollingGif() {
-    diceView.setImage(new Image(
-        getClass().getResource("/com/unima/risk6/pictures/diceRollAnimation.gif").toString()));
+    if (this.isAttackingDice) {
+      diceView.setImage(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/attackDiceRollAnimation.gif")
+              .toString()));
+    } else {
+      diceView.setImage(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/diceRollAnimation.gif").toString()));
+    }
+
   }
 
   private void showDiceResult(int result) {
-    diceView.setImage(new Image(
-        getClass().getResource("/com/unima/risk6/pictures/dice" + result + ".png").toString()));
+    if (this.isAttackingDice) {
+      diceView.setImage(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/attackDice" + result + ".png")
+              .toString()));
+    } else {
+      diceView.setImage(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/dice" + result + ".png").toString()));
+    }
   }
+
+
 }

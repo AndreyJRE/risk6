@@ -20,10 +20,10 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
-import java.util.ArrayList;
+import com.unima.risk6.network.server.exceptions.InvalidMoveException;
 import java.util.Set;
 
-//TODO @FUNG zurückklauen
+
 public class MoveProcessor {
 
   private GameController gameController;
@@ -38,7 +38,11 @@ public class MoveProcessor {
     this.playerController = playerController;
   }
 
-  public void processFortify(Fortify fortify) {
+  public MoveProcessor() {
+  }
+
+
+  public void processFortify(Fortify fortify) throws InvalidMoveException {
     //TODO Unterscheiden ob in Fortify Phase
 
     //Validate if the fortify is legal
@@ -57,7 +61,7 @@ public class MoveProcessor {
         processEndPhase(new EndPhase(FORTIFY_PHASE));
       }
     } else {
-      //TODO throw invalid move exception.
+      throw new InvalidMoveException("The Fortify is not valid");
     }
 
   }
@@ -65,11 +69,8 @@ public class MoveProcessor {
   public void processReinforce(Reinforce reinforce) {
     //TODO Schick gameState an Client
     Player currentPlayer = gameController.getCurrentPlayer();
-
     if (currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)
         || currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
-      gameController.addLastMove(reinforce);
-
       //Should process a Reinforce during the ClaimPhase differently
       Country countryToReinforce = getCountryByCountryName(reinforce.getCountry().getCountryName());
       if (currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
@@ -77,23 +78,30 @@ public class MoveProcessor {
           countryToReinforce.setPlayer(currentPlayer);
           playerController.addCountry(countryToReinforce);
         }
-        //TODO Schick gameState an Client
         currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
         countryToReinforce.setTroops(countryToReinforce.getTroops() + 1);
+
         this.processEndPhase(new EndPhase(CLAIM_PHASE));
 
 
       } else {
+        //Add armies to country to reinforce.
         countryToReinforce.setTroops(countryToReinforce.getTroops() + reinforce.getToAdd());
         currentPlayer.setDeployableTroops(
             currentPlayer.getDeployableTroops() - reinforce.getToAdd());
-        if (currentPlayer.getDeployableTroops() == 0) {
-          //TODO Schick gameState an Client
-          processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+        //TODO think about if we should even have a automatic phase change
+        /*
+        //If the player has placed all deployable troops and cannot hand any of his cards:
+        //The Reinforce is automatically ended.
+        if (!playerController.getHandController().holdsExchangeable()
+            && gameController.getCurrentPlayer().getDeployableTroops() == 0) {
+
         }
+         */
       }
+      gameController.addLastMove(reinforce);
     } else {
-      //TODO Throw invalid move Exception
+      throw new InvalidMoveException("The Reinforce is not valid");
     }
   }
 
@@ -114,7 +122,7 @@ public class MoveProcessor {
       attack.calculateLosses();
 
       gameController.addLastMove(attack);
-      //TODO Schick gameState an Client
+
       attackingCountry.changeTroops(-attack.getAttackerLosses());
       defendingCountry.changeTroops(-attack.getDefenderLosses());
       //Increase statistics
@@ -152,7 +160,7 @@ public class MoveProcessor {
       }
       playerController.setPlayer(attacker);
     } else {
-      //TODO Throw MoveNotValid Exception
+      throw new InvalidMoveException("The Attack is not valid");
 
     }
 
@@ -168,57 +176,68 @@ public class MoveProcessor {
 
   public void processHandIn(HandIn handIn) {
     HandController handController = playerController.getHandController();
-    ArrayList<Card> cardsOfPlayer = new ArrayList<>();
     handController.selectCardsFromCardList(handIn.getCards());
     //Checks if HandIn is valid.
     if (gameController.getCurrentPlayer().getCurrentPhase().equals(REINFORCEMENT_PHASE)
         && handController.isExchangeable()) {
 
-      //TODO SEND Process/ gamestate
       gameController.addLastMove(handIn);
 
-      Set<Country> countries = playerController.getPlayer().getCountries();
-      if (!handController.getBonusCountries(countries).isEmpty()) {
-        handController.getBonusCountries(countries).forEach(n -> {
-          //TODO SEND process/ GameState
-          playerController.changeDeployableTroops(2);
-          System.out.println("yeet");
-          this.processReinforce(new Reinforce(getCountryByCountryName(n), 2));
-        });
-
-      }
       int numberOfHandIn = gameController.getGameState().getNumberOfHandIns();
-      int diff = 0;
+      int diff;
       if (numberOfHandIn > 5) {
         diff = 15 + 5 * (numberOfHandIn - 6);
       } else {
         diff = 2 + 2 * (numberOfHandIn);
       }
       playerController.changeDeployableTroops(diff);
+
+      Set<CountryName> bonusCountries = handController.getBonusCountries(
+          playerController.getPlayer().getCountries());
+      if (!bonusCountries.isEmpty()) {
+        for (CountryName c : bonusCountries) {
+          playerController.changeDeployableTroops(2);
+          try {
+            this.processReinforce(new Reinforce(getCountryByCountryName(c), 2));
+          } catch (InvalidMoveException e) {
+            System.err.println("Wrong Reinforce in HandIn. Should not throw this exception");
+          }
+        }
+      }
+
       //Increase troopsGained statistic according to troops gotten through card Exchange
       Statistic statisticOfCurrentPlayer = playerController.getPlayer().getStatistic();
       statisticOfCurrentPlayer.setTroopsGained(
           statisticOfCurrentPlayer.getTroopsGained() + diff);
 
-      gameController.getGameState().setNumberOfHandIns(numberOfHandIn + 1);
+      gameController.getGameState().incrementNumberOfHandIns();
       handController.exchangeCards();
     } else {
       handController.deselectAllCards();
-      System.out.println("Karte geht nicht");
+      throw new InvalidMoveException("The HandIn is not valid");
     }
 
   }
 
   public void processEndPhase(EndPhase endPhase) {
     Player currentPlayer = gameController.getCurrentPlayer();
-    if (currentPlayer.getHasConquered() && endPhase.getPhaseToEnd().equals(ATTACK_PHASE)) {
+    if (currentPlayer.getHasConquered() && playerController.getPlayer().getCurrentPhase()
+        .equals(ATTACK_PHASE)) {
       this.drawCard();
       currentPlayer.setHasConquered(false);
     }
 
-    gameController.addLastMove(endPhase);
-    gameController.nextPhase();
-    playerController.setPlayer(gameController.getCurrentPlayer());
+    if (currentPlayer.getDeployableTroops() == 0 || !playerController.getPlayer().getCurrentPhase()
+        .equals(REINFORCEMENT_PHASE)) {
+      gameController.addLastMove(endPhase);
+      gameController.nextPhase();
+      playerController.setPlayer(gameController.getCurrentPlayer());
+
+
+    } else {
+      //Throw invalid move exception
+      throw new InvalidMoveException("Cannot End Phase yet");
+    }
 
   }
 

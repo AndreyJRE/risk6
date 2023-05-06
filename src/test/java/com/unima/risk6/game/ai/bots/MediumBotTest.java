@@ -1,6 +1,7 @@
 package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.unima.risk6.game.ai.AiBot;
@@ -15,6 +16,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.GamePhase;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,8 +38,11 @@ class MediumBotTest {
   static void setUp() {
     InputStream data = MediumBotTest.class.getResourceAsStream(
         "/com/unima/risk6/json/probabilities.json");
-    try (InputStreamReader fileReader = new InputStreamReader(data)) {
-      Probabilities.init(fileReader);
+    try {
+      assert data != null;
+      try (InputStreamReader fileReader = new InputStreamReader(data)) {
+        Probabilities.init(fileReader);
+      }
     } catch (IOException e) {
       fail("Probabilities could not be loaded");
     }
@@ -74,7 +79,7 @@ class MediumBotTest {
   }
 
   @Test
-  void calculateTroopWeakness() {
+  void calculateTroopWeaknessTest() {
     Country mongolia = getCountryByName(CountryName.MONGOLIA);
     Country china = getCountryByName(CountryName.CHINA);
     mongolia.setTroops(3);
@@ -83,7 +88,7 @@ class MediumBotTest {
   }
 
   @Test
-  void claimCountry() {
+  void claimCountryTest() {
     Continent australia = getCountryByName(CountryName.WESTERN_AUSTRALIA).getContinent();
     // prioritizes australia
     Reinforce first = mediumBot.claimCountry();
@@ -97,7 +102,7 @@ class MediumBotTest {
   }
 
   @Test
-  void createAllReinforcements() {
+  void createAllReinforcementsTest1() {
     ((MediumBot) mediumBot).setDeployableTroops(15);
     Country indonesia = getCountryByName(CountryName.INDONESIA);
     Country newGuinea = getCountryByName(CountryName.NEW_GUINEA);
@@ -126,7 +131,24 @@ class MediumBotTest {
   }
 
   @Test
-  void createAllAttacks() {
+  void createAllReinforcementsTest2() {
+    ((MediumBot) mediumBot).setCurrentPhase(GamePhase.CLAIM_PHASE);
+    ((MediumBot) mediumBot).setInitialTroops(10);
+    Country middleEast = getCountryByName(CountryName.MIDDLE_EAST);
+    botTestController.addCountry(middleEast);
+    middleEast.setTroops(1);
+    for (Country adj : middleEast.getAdjacentCountries()) {
+      enemyController.addCountry(adj);
+      adj.setTroops(1);
+    }
+    // should reinforce middle east with everything
+    List<Reinforce> reinforcements = mediumBot.createAllReinforcements();
+    assertTrue(reinforcements.size() > 0);
+    assertEquals(10, reinforcements.stream().mapToInt(Reinforce::getToAdd).sum());
+  }
+
+  @Test
+  void createAllAttacksTest() {
     Country westernAus = getCountryByName(CountryName.WESTERN_AUSTRALIA);
     Country easternAus = getCountryByName(CountryName.EASTERN_AUSTRALIA);
     Country newGuinea = getCountryByName(CountryName.NEW_GUINEA);
@@ -142,9 +164,14 @@ class MediumBotTest {
     newGuinea.setTroops(5);
     enemyController.addCountry(siam);
     siam.setTroops(1);
-    List<CountryPair> attacks = mediumBot.createAllAttacks();
-    assertEquals(3, attacks.size());
-    assertEquals(indonesia, attacks.get(0).getOutgoing());
+    CountryPair attack = mediumBot.createAttack();
+    assertEquals(new CountryPair(westernAus, easternAus), attack);
+    easternAus.setTroops(6);
+    attack = mediumBot.createAttack();
+    assertEquals(new CountryPair(indonesia, siam), attack);
+    siam.setTroops(8);
+    attack = mediumBot.createAttack();
+    assertEquals(new CountryPair(westernAus, newGuinea), attack);
   }
 
   @Test

@@ -3,10 +3,12 @@ package com.unima.risk6.game.ai;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.Country;
 import java.util.List;
 
-/***
+/**
  * An interface representing an AI bot that can play in a Risk game.
+ *
  * @author eameri
  */
 public interface AiBot {
@@ -24,7 +26,7 @@ public interface AiBot {
    *
    * @return A list of CountryPair objects representing all attacks.
    */
-  List<CountryPair> createAllAttacks();
+  CountryPair createAttack();
 
   /**
    * Creates a Fortify move for a country pair after a successful attack.
@@ -48,5 +50,8 @@ public interface AiBot {
    * @return A Reinforce object representing the claimed country with one troop placed on it.
    */
   Reinforce claimCountry();
+
   boolean attackAgain();
+
+  int getAttackTroops(Country attacker);
 }

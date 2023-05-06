@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * The TutorialBot class represents an AI bot specifically designed for the game tutorial mode by
- * only performing deterministic moves
+ * only performing deterministic moves.
  *
  * @author eameri
  */
@@ -113,10 +113,8 @@ public class TutorialBot extends Player implements AiBot {
   }
 
   @Override
-  public List<CountryPair> createAllAttacks() {
-    List<CountryPair> nextAttack = new LinkedList<>();
-    nextAttack.add(this.deterministicAttacks.poll());
-    return nextAttack;
+  public CountryPair createAttack() {
+    return this.deterministicAttacks.poll();
   }
 
   @Override
@@ -152,4 +150,10 @@ public class TutorialBot extends Player implements AiBot {
   public boolean attackAgain() { // we always know what will happen in the tutorial
     return false;
   }
+
+  @Override
+  public int getAttackTroops(Country attacker) {
+    return 3;
+  }
+
 }

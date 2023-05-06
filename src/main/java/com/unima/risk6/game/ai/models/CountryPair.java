@@ -6,7 +6,7 @@ import com.unima.risk6.game.models.Country;
 import java.util.Objects;
 
 /**
- * A class to provide a data object for a pair of countries involved in a move
+ * A class to provide a data object for a pair of countries involved in a move.
  *
  * @author eameri
  */
@@ -85,13 +85,12 @@ public class CountryPair {
     if (!(o instanceof CountryPair that)) {
       return false;
     }
-    return Objects.equals(getOutgoing(), that.getOutgoing()) && Objects.equals(
-        getIncoming(), that.getIncoming());
+    return Objects.equals(getOutgoing(), that.getOutgoing()) && Objects.equals(getIncoming(),
+        that.getIncoming());
   }
 
   @Override
   public String toString() {
-    return "outgoing:" + outgoing.getCountryName() +
-        ", incoming=" + incoming.getCountryName();
+    return "outgoing:" + outgoing.getCountryName() + ", incoming=" + incoming.getCountryName();
   }
 }

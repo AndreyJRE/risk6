@@ -4,12 +4,14 @@ import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +23,10 @@ import java.util.Set;
  *
  * @author eameri
  */
-abstract class GreedyBot extends Player implements AiBot {
+public abstract class GreedyBot extends Player implements AiBot {
 
   private List<Continent> continentsCopy;
+  protected final PlayerController playerController;
 
   /**
    * Retrieves a copy of the list of continents.
@@ -44,19 +47,23 @@ abstract class GreedyBot extends Player implements AiBot {
     this.continentsCopy.addAll(continents);
   }
 
-  public GreedyBot(String username) {
-    super(username);
+  public GreedyBot(Player player) {
+    super(player);
+    playerController = new PlayerController();
+    playerController.setPlayer(this);
     this.continentsCopy = new ArrayList<>();
   }
 
-  public GreedyBot() {
-    super();
+  public GreedyBot(String username) {
+    super(username);
+    playerController = new PlayerController();
+    playerController.setPlayer(this);
     this.continentsCopy = new ArrayList<>();
   }
 
   public abstract List<Reinforce> createAllReinforcements();
 
-  public abstract List<CountryPair> createAllAttacks();
+  public abstract CountryPair createAttack();
 
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
@@ -176,5 +183,63 @@ abstract class GreedyBot extends Player implements AiBot {
       }
     }
     return owned / totalSize;
+  }
+
+  public int getAttackTroops(Country attacker) {
+    return Math.min(3, attacker.getTroops() - 1);
+  }
+
+  /**
+   * Creates a mapping of countries from a continent to the amount of additional troops needed in
+   * order to balance out their strength with that of their strongest enemy country
+   *
+   * @param continent The continent whose countries are being tested
+   * @return A map of countries to the additionally necessary amount of troops. Countries without an
+   * enemy adjacent country are not included in this map
+   */
+  protected Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
+    Map<Country, Integer> ownedCountryDiffs = new HashMap<>();
+    List<CountryPair> diffInfo = this.playerController.getAllValidCountryPairs(continent);
+    for (CountryPair countryPair : diffInfo) {
+      this.getCountryPairDiff(ownedCountryDiffs, countryPair);
+    }
+    return ownedCountryDiffs;
+  }
+
+
+  protected void getCountryPairDiff(Map<Country, Integer> ownedCountryDiffs,
+      CountryPair countryPair) {
+    if (ownedCountryDiffs.get(countryPair.getOutgoing()) == null) {
+      ownedCountryDiffs.put(countryPair.getOutgoing(),
+          calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()));
+    } else {
+      ownedCountryDiffs.put(countryPair.getOutgoing(),
+          Math.max(calculateTroopWeakness(countryPair.getOutgoing(), countryPair.getIncoming()),
+              ownedCountryDiffs.get(countryPair.getOutgoing())));
+    }
+  }
+
+  protected Country findBestAdj(Map<Country, Integer> allOwnedCountryDiffs, Country country) {
+    Country bestAdj = null;
+    for (Country adj : country.getAdjacentCountries()) {
+      if (this.equals(adj.getPlayer()) && adj.getTroops() >= country.getTroops()
+          && allOwnedCountryDiffs.get(adj) < 0) {
+        if (bestAdj == null || adj.getTroops() > bestAdj.getTroops()
+            || allOwnedCountryDiffs.get(adj) < allOwnedCountryDiffs.get(bestAdj)) {
+          bestAdj = adj;
+        }
+      }
+    }
+    return bestAdj;
+  }
+
+  protected List<Country> getCountriesByHighestDiff(Map<Country, Integer> allOwnedCountryDiffs) {
+    for (Continent continent : this.getContinentsCopy()) {
+      allOwnedCountryDiffs.putAll(getCountryTroopDiffsByContinent(continent));
+    }
+    List<Country> countriesByHighestDiff = new ArrayList<>(allOwnedCountryDiffs.keySet());
+    countriesByHighestDiff.sort(
+        Comparator.comparing((Country country) -> allOwnedCountryDiffs.get(country)).reversed());
+    return countriesByHighestDiff;
   }
 }

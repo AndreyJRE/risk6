@@ -37,7 +37,10 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -98,7 +101,13 @@ public class GameSceneController implements GameStateObserver {
   }
 
   private void initializeGameScene() {
-    root.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
+    Image waterImage = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/flowingWater.gif").toString());
+    BackgroundImage backgroundImage = new BackgroundImage(waterImage,
+        BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+        BackgroundSize.DEFAULT);
+
+    root.setBackground(new Background(backgroundImage));
     StackPane playerPane = initializePlayersPane();
     root.setLeft(playerPane);
     StackPane countriesPane = initializeCountriesPane();

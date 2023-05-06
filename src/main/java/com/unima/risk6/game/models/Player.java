@@ -45,6 +45,7 @@ public class Player {
     this.initialTroops = toCopy.getInitialTroops();
     this.statistic = null;
     this.currentPhase = toCopy.getCurrentPhase();
+    this.hasConquered = toCopy.getHasConquered();
   }
 
   public Set<Continent> getContinents() {
