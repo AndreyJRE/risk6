@@ -26,13 +26,13 @@
   </appender>
 
   <!-- Define loggers -->
-  <logger name="com.unima.risk6" level="INFO" additivity="false">
+  <logger additivity="false" level="DEBUG" name="com.unima.risk6">
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="FILE"/>
   </logger>
 
   <!-- Root logger -->
-  <root level="WARN">
+  <root level="INFO">
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="FILE"/>
   </root>
