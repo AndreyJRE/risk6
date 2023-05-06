@@ -1,7 +1,9 @@
 package com.unima.risk6.network.message;
 
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
 
@@ -36,6 +38,10 @@ public abstract class Message<MessageType> {
       contentType = ContentType.GAME_STATE;
     } else if (content.getClass().equals(Reinforce.class)) {
       contentType = ContentType.REINFORCE;
+    } else if (content.getClass().equals(HandIn.class)) {
+      contentType = ContentType.HAND_IN;
+    } else if (content.getClass().equals(EndPhase.class)) {
+      contentType = ContentType.END_PHASE;
     }
   }
 
