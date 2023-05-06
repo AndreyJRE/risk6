@@ -4,10 +4,15 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 import com.unima.risk6.database.models.User;
+import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -24,12 +29,15 @@ public class SelectMultiplayerLobbySceneController {
   private final SceneController sceneController;
   private User user;
   private BorderPane root;
+  List<GameLobby> gameLobbies = new ArrayList<>();
+  ServerLobby serverLobby;
 
 
   public SelectMultiplayerLobbySceneController(
       SelectMultiplayerLobbyScene selectMultiplayerLobbyScene) {
     this.selectMultiplayerLobbyScene = selectMultiplayerLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
+    this.serverLobby = NetworkConfiguration.getServerLobby();
   }
 
   public void init() {
@@ -76,6 +84,7 @@ public class SelectMultiplayerLobbySceneController {
 
   private void initGameLobbys() {
     //TODO: get all GameLobbys and show them on the screen
+    gameLobbies = serverLobby.getGameLobbies();
   }
 
   private void initChat() {
