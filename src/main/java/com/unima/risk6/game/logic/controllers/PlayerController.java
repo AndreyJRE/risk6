@@ -52,6 +52,12 @@ public class PlayerController {
     gameClient.sendMessage(new StandardMessage<EndPhase>(endPhase));
   }
 
+  /**
+   * Changes the number of deployable troops of the player by the amount stated in diff
+   *
+   * @param diff the number of troops that should be added or subtracted from players troops that
+   *             can be deployed
+   */
   public void changeDeployableTroops(int diff) {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
@@ -123,15 +129,31 @@ public class PlayerController {
     return countriesAttackable;
   }
 
+  /**
+   * Removes the country given from the set of owned countries.
+   *
+   * @param countryToRemove the country that should be removed from the players set of owned
+   *                        countries
+   */
   public void removeCountry(Country countryToRemove) {
     player.getCountries().remove(countryToRemove);
   }
 
+  /**
+   * Adds the country given from the set of owned countries. And sets the player of the countries
+   *
+   * @param countryToAdd the country that should be added to the set of owned countries
+   */
   public void addCountry(Country countryToAdd) {
     player.getCountries().add(countryToAdd);
     countryToAdd.setPlayer(player);
   }
 
+  /**
+   * Changes the player object to be managed by the player controller
+   *
+   * @param player the player that the PlayerController should now manage.
+   */
   public void setPlayer(Player player) {
     this.player = player;
     this.handController.setHand(player.getHand());

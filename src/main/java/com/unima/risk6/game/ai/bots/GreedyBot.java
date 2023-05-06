@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -25,7 +26,9 @@ import java.util.Set;
  */
 public abstract class GreedyBot extends Player implements AiBot {
 
-  private List<Continent> continentsCopy;
+  protected static final Random RNG = new Random();
+
+  protected List<Continent> continentsCopy;
   protected final PlayerController playerController;
 
   /**
@@ -42,8 +45,7 @@ public abstract class GreedyBot extends Player implements AiBot {
    *
    * @param continents the set of continents.
    */
-  protected void updateContinentsCopy(Set<Continent> continents) {
-    this.continentsCopy = new ArrayList<>();
+  protected void setContinentsCopy(Set<Continent> continents) {
     this.continentsCopy.addAll(continents);
   }
 
@@ -79,11 +81,12 @@ public abstract class GreedyBot extends Player implements AiBot {
     // we can spare troops
     if (troopsAffordable < 0) {
       troopsAffordable *= -1;
-      return winPair.createFortify(-troopsAffordable);
-    } else { // else try to make it equal
       int outgoingTroops = winPair.getOutgoing().getTroops();
       int incomingTroops = winPair.getIncoming().getTroops();
-      return winPair.createFortify((outgoingTroops - incomingTroops) / 2);
+      int makeEqual = (outgoingTroops - incomingTroops) / 2;
+      return winPair.createFortify(Math.min(troopsAffordable / 2, makeEqual));
+    } else { // not worth it to fortify -> all surrounding enemy countries are stronger
+      return winPair.createFortify(0);
     }
   }
 

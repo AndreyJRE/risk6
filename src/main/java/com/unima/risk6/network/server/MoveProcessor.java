@@ -43,21 +43,23 @@ public class MoveProcessor {
 
 
   public void processFortify(Fortify fortify) throws InvalidMoveException {
-    //TODO Unterscheiden ob in Fortify Phase
 
-    //Validate if the fortify is legal
+    //Gets the reference of the country of the server side game state
+    // from the CountryName of fortify.
     Country incoming = getCountryByCountryName(fortify.getIncoming().getCountryName());
-
     Country outgoing = getCountryByCountryName(fortify.getOutgoing().getCountryName());
+
+    //Validate if the fortify is legal//Validate if the fortify is legal.
     if (fortify.getTroopsToMove() < outgoing.getTroops() && outgoing
         .getPlayer().equals(incoming.getPlayer()) && incoming
         .getAdjacentCountries().contains(outgoing)) {
+
       incoming.changeTroops(fortify.getTroopsToMove());
       outgoing.changeTroops(-fortify.getTroopsToMove());
       gameController.addLastMove(fortify);
 
-      Player currentPlayer = gameController.getCurrentPlayer();
-      if (currentPlayer.getCurrentPhase().equals(GamePhase.FORTIFY_PHASE)) {
+      //Automatic next phase ending if player is in fortify phase.
+      if (gameController.getCurrentPlayer().getCurrentPhase().equals(GamePhase.FORTIFY_PHASE)) {
         processEndPhase(new EndPhase(FORTIFY_PHASE));
       }
     } else {
@@ -67,20 +69,30 @@ public class MoveProcessor {
   }
 
   public void processReinforce(Reinforce reinforce) {
-    //TODO Schick gameState an Client
     Player currentPlayer = gameController.getCurrentPlayer();
+    Country countryToReinforce = getCountryByCountryName(reinforce.getCountry().getCountryName());
+
     if (currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)
+        && countryToReinforce.getPlayer().equals(currentPlayer)
+        && reinforce.getToAdd() <= currentPlayer.getDeployableTroops()
         || currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
+
       //Should process a Reinforce during the ClaimPhase differently
-      Country countryToReinforce = getCountryByCountryName(reinforce.getCountry().getCountryName());
+
       if (currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
+        //If the country doesn't have an owner, owner is assigned to currentPlayer, if it does
+        //check if the Country actually belongs to player
         if (!countryToReinforce.hasPlayer()) {
-          countryToReinforce.setPlayer(currentPlayer);
           playerController.addCountry(countryToReinforce);
         }
-        currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
-        countryToReinforce.setTroops(countryToReinforce.getTroops() + 1);
+        if (countryToReinforce.getPlayer().equals(currentPlayer)) {
+          currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
+          countryToReinforce.setTroops(countryToReinforce.getTroops() + 1);
+        } else {
+          throw new InvalidMoveException("The Reinforce is not valid");
+        }
 
+        //After a reinforce in claim phase the turn of the player should end.
         this.processEndPhase(new EndPhase(CLAIM_PHASE));
 
 
@@ -116,15 +128,19 @@ public class MoveProcessor {
     Player defender = defendingCountry.getPlayer();
 
     //check if attack is legal.
-    if (attacker.equals(gameController.getCurrentPlayer()) && !attacker.equals(defender)
+    Player currentPlayer = gameController.getCurrentPlayer();
+    if (attacker.equals(currentPlayer) && !attacker.equals(defender)
+        && currentPlayer.getCurrentPhase().equals(ATTACK_PHASE)
         && defendingCountry.getAdjacentCountries().contains(attackingCountry)
-        && attack.getTroopNumber() <= attackingCountry.getTroops() - 1) {
+        && attack.getTroopNumber() <= attackingCountry.getTroops() - 1
+        && attack.getTroopNumber() < 4 && attack.getTroopNumber() > 0) {
       attack.calculateLosses();
 
       gameController.addLastMove(attack);
 
       attackingCountry.changeTroops(-attack.getAttackerLosses());
       defendingCountry.changeTroops(-attack.getDefenderLosses());
+
       //Increase statistics
       Statistic attackerStatistic = attacker.getStatistic();
       Statistic defenderStatistic = defender.getStatistic();
@@ -134,8 +150,9 @@ public class MoveProcessor {
       defenderStatistic.setTroopsLost(
           defenderStatistic.getTroopsLost() + attack.getDefenderLosses());
 
+      //Take over a country if the attack has wiped out the troops on the defending country
       if (attack.getHasConquered()) {
-        gameController.getCurrentPlayer().setHasConquered(true);
+        currentPlayer.setHasConquered(true);
         defendingCountry.setPlayer(attacker);
 
         playerController.addCountry(defendingCountry);
@@ -182,7 +199,7 @@ public class MoveProcessor {
         && handController.isExchangeable()) {
 
       gameController.addLastMove(handIn);
-
+      //Adds the deployable troops according to the number of hand in.
       int numberOfHandIn = gameController.getGameState().getNumberOfHandIns();
       int diff;
       if (numberOfHandIn > 5) {
@@ -192,16 +209,15 @@ public class MoveProcessor {
       }
       playerController.changeDeployableTroops(diff);
 
+      //Sends the bonus troops if countries are the same.
       Set<CountryName> bonusCountries = handController.getBonusCountries(
           playerController.getPlayer().getCountries());
       if (!bonusCountries.isEmpty()) {
         for (CountryName c : bonusCountries) {
           playerController.changeDeployableTroops(2);
-          try {
-            this.processReinforce(new Reinforce(getCountryByCountryName(c), 2));
-          } catch (InvalidMoveException e) {
-            System.err.println("Wrong Reinforce in HandIn. Should not throw this exception");
-          }
+
+          this.processReinforce(new Reinforce(getCountryByCountryName(c), 2));
+
         }
       }
 
@@ -210,7 +226,8 @@ public class MoveProcessor {
       statisticOfCurrentPlayer.setTroopsGained(
           statisticOfCurrentPlayer.getTroopsGained() + diff);
 
-      gameController.getGameState().incrementNumberOfHandIns();
+      gameController.getGameState()
+          .setNumberOfHandIns(gameController.getGameState().getNumberOfHandIns() + 1);
       handController.exchangeCards();
     } else {
       handController.deselectAllCards();
@@ -229,7 +246,7 @@ public class MoveProcessor {
 
     if (currentPlayer.getDeployableTroops() == 0 || !playerController.getPlayer().getCurrentPhase()
         .equals(REINFORCEMENT_PHASE)) {
-      gameController.addLastMove(endPhase);
+      gameController.addLastMove(new EndPhase(gameController.getCurrentPlayer().getCurrentPhase()));
       gameController.nextPhase();
       playerController.setPlayer(gameController.getCurrentPlayer());
 
