@@ -22,6 +22,9 @@ public class ReinforceTypeAdapter implements JsonSerializer<Reinforce>,
     this.gameState = gameState;
   }
 
+  public ReinforceTypeAdapter() {
+  }
+
 
   @Override
   public JsonElement serialize(Reinforce reinforce, Type typeOfSrc,

@@ -21,6 +21,10 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
     this.gameState = gameState;
   }
 
+  public FortifyTypeAdapter() {
+
+  }
+
   @Override
   public JsonElement serialize(Fortify fortify, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject jsonObject = new JsonObject();

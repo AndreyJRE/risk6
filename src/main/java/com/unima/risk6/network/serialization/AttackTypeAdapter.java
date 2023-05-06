@@ -23,6 +23,10 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
     this.gameState = gameState;
   }
 
+  public AttackTypeAdapter() {
+
+  }
+
 
   @Override
   public JsonElement serialize(Attack src, Type typeOfSrc, JsonSerializationContext context) {
