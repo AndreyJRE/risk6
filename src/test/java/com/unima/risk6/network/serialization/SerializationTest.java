@@ -160,8 +160,7 @@ public class SerializationTest {
     StandardMessage<Fortify> message = new StandardMessage<>(a);
     System.out.println("Fortify Serialization:\n" + Serializer.serialize(message));
     assertTrue(Serializer.serialize(message).equals(
-        "{\"statusCode\":-1,\"content\":{\"outgoing\":{\"countryName\":\"ALASKA\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"incoming\":{\"countryName\":\"ICELAND\",\"hasPlayer\":false,\"troops\":0,\"adjacentCountries\":[],\"continent\":\"AFRICA\"},\"troopsToMove\":69},\"contentType\":\"FORTIFY\"}"));
-
+        "{\"statusCode\":-1,\"content\":{\"outgoing\":{\"countryName\":\"ALASKA\",\"hasPlayer\":false,\"troops\":0},\"incoming\":{\"countryName\":\"ICELAND\",\"hasPlayer\":false,\"troops\":0},\"troopsToMove\":69},\"contentType\":\"FORTIFY\"}"));
   }
 
   @Test
@@ -181,15 +180,30 @@ public class SerializationTest {
     ArrayList<String> users = new ArrayList<String>(Arrays.asList(""));
     ArrayList<AiBot> bots = new ArrayList<AiBot>(Arrays.asList(new MediumBot(), new EasyBot()));
     GameState gamestate = GameConfiguration.configureGame(users, bots);
+    Country c1 = new Country(CountryName.ALASKA);
+    c1.setContinent(new Continent(ContinentName.AFRICA));
+
+    Reinforce a = new Reinforce(c1, 69);
+    gamestate.getLastMoves().add(a);
+
+    Country c2 = new Country(CountryName.ALASKA);
+    c1.setContinent(new Continent(ContinentName.AFRICA));
+    Country c3 = new Country(CountryName.ICELAND);
+    c2.setContinent(new Continent(ContinentName.AFRICA));
+
+    Fortify f = new Fortify(c2, c3, 69);
+    gamestate.getLastMoves().add(f);
 
     StandardMessage<GameState> message = new StandardMessage<>(gamestate);
-    System.out.println("GameState Serialization:\n" + Serializer.serialize(message));
+
     StandardMessage<GameState> m2 = (StandardMessage<GameState>) Deserializer.deserialize(
         Serializer.serialize(message),
         GameConfiguration.configureGame(new ArrayList<String>(), new ArrayList<AiBot>()));
     GameState g2 = m2.getContent();
     String message1 = Serializer.serialize(message);
     String message2 = Serializer.serialize(new StandardMessage<GameState>(g2));
+    System.out.println("GameState Serialization:\n" + message1);
+    System.out.println("GameState Serialization:\n" + message2);
     //Failed wegen Hashcode
     assertTrue(message1.equals(message2));
   }

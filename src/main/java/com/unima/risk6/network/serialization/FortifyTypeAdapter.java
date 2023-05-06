@@ -27,6 +27,7 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
   public Fortify deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
+    //TODO referenzen
     Country outgoing = context.deserialize(jsonObject.get("outgoing"), Country.class);
     Country incoming = context.deserialize(jsonObject.get("incoming"), Country.class);
     int troopsToMove = jsonObject.get("troopsToMove").getAsInt();

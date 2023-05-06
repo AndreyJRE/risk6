@@ -36,6 +36,7 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
 
+    //TODO referenzen
     Country attackingCountry = context.deserialize(jsonObject.get("attackingCountry"),
         Country.class);
     Country defendingCountry = context.deserialize(jsonObject.get("defendingCountry"),

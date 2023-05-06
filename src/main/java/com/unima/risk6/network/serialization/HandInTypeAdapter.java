@@ -36,7 +36,7 @@ public class HandInTypeAdapter implements JsonSerializer<HandIn>, JsonDeserializ
     JsonObject jsonObject = json.getAsJsonObject();
     JsonArray cardsArray = jsonObject.getAsJsonArray("cards");
     List<Card> cards = new ArrayList<>();
-
+    //TODO Vielleicht Referenzen????
     for (JsonElement cardElement : cardsArray) {
       cards.add(context.deserialize(cardElement, Card.class));
     }

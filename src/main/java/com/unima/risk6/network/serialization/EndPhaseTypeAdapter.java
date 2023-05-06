@@ -28,7 +28,6 @@ public class EndPhaseTypeAdapter implements JsonSerializer<EndPhase>, JsonDeseri
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
     GamePhase phaseToEnd = context.deserialize(jsonObject.get("phaseToEnd"), GamePhase.class);
-
     return new EndPhase(phaseToEnd);
   }
 }
