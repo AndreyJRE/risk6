@@ -6,6 +6,9 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBack
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.HardBot;
+import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.UserDto;
@@ -41,6 +44,7 @@ public class MultiplayerLobbySceneController {
   private User user;
   private BorderPane root;
   private HBox centralHBox;
+  private List<AiBot> aiBots = new ArrayList<>();
 
 
   public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
@@ -66,7 +70,7 @@ public class MultiplayerLobbySceneController {
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
     // Initialize the username TextField
-    Label title = new Label("Single Player Settings");
+    Label title = new Label("Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
     title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px;");
 
@@ -213,16 +217,22 @@ public class MultiplayerLobbySceneController {
     String difficulty = "";
     switch (difficultyNumber) {
       case 0:
-        difficulty = "Easy Bot";
         botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
+        EasyBot easyBot = new EasyBot();
+        aiBots.add(easyBot);
+        difficulty = easyBot.getUser();
         break;
       case 1:
-        difficulty = "Medium Bot";
         botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
+        MediumBot mediumBot = new MediumBot();
+        aiBots.add(mediumBot);
+        difficulty = mediumBot.getUser();
         break;
       case 2:
-        difficulty = "Hard Bot";
         botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
+        HardBot hardBot = new HardBot();
+        aiBots.add(hardBot);
+        difficulty = hardBot.getUser();
         break;
     }
     Label userName = new Label(difficulty);
@@ -278,15 +288,8 @@ public class MultiplayerLobbySceneController {
     users.add("Jake");
     users.add("Joel");
     users.add("John");
-    List<AiBot> bots = new ArrayList<>();
 
-    /*//TODO: Initiallize AIBots Bot
-    while(centralHBox.getChildren().size() != 0){
-      StackPane stackPane = (StackPane) centralHBox.getChildren().remove(centralHBox.getChildren().size()-1);
-      Label label = (Label) stackPane.getChildren().remove(stackPane.getChildren().size());
-    }*/
-
-    GameState gameState = GameConfiguration.configureGame(users, bots);
+    GameState gameState = GameConfiguration.configureGame(users, aiBots);
     User myUser = SessionManager.getUser();
     GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
         DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
