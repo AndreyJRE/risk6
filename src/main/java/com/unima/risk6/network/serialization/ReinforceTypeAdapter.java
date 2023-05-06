@@ -28,6 +28,7 @@ public class ReinforceTypeAdapter implements JsonSerializer<Reinforce>,
   public Reinforce deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
+    //TODO referencen
     Country country = context.deserialize(jsonObject.get("country"), Country.class);
     int toAdd = jsonObject.get("toAdd").getAsInt();
     return new Reinforce(country, toAdd);

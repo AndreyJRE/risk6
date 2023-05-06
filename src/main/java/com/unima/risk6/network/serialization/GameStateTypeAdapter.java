@@ -9,7 +9,12 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Move;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
@@ -101,8 +106,24 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     //TODO Testen, ob reihenfolge stimmt
     JsonArray jsonArray = jsonObject.get("lastMoves").getAsJsonArray();
     for (JsonElement element : jsonArray) {
-      Move move = context.deserialize(element, Move.class);
-      gameState.getLastMoves().add(move);
+
+      if (element.getAsJsonObject().has("attackingCountry")) {
+        //Attack
+        gameState.getLastMoves().add(context.deserialize(element, Attack.class));
+      } else if (element.getAsJsonObject().has("phaseToEnd")) {
+        //EndPhase
+        gameState.getLastMoves().add(context.deserialize(element, EndPhase.class));
+      } else if (element.getAsJsonObject().has("outgoing")) {
+        //Fortify
+        gameState.getLastMoves().add(context.deserialize(element, Fortify.class));
+      } else if (element.getAsJsonObject().has("cards")) {
+        //HandIn
+        gameState.getLastMoves().add(context.deserialize(element, HandIn.class));
+      } else if (element.getAsJsonObject().has("toAdd")) {
+        //Reinforce
+        gameState.getLastMoves().add(context.deserialize(element, Reinforce.class));
+      }
+
     }
     ArrayList<Card> currentDeck = gameState.getDeck().getDeckCards();
     currentDeck.addAll(deckArray);
