@@ -169,8 +169,10 @@ public class GameController implements GameStateObserver {
         currentPlayer.getDeployableTroops() + x.getBonusTroops()));
     //Add the DeployableTroops to the statistic as troopsGained
     Statistic statisticOfCurrentPlayer = currentPlayer.getStatistic();
-    statisticOfCurrentPlayer.setTroopsGained(
-        statisticOfCurrentPlayer.getTroopsGained() + currentPlayer.getDeployableTroops());
+    if (statisticOfCurrentPlayer != null) { // a bot doesn't have statistics
+      statisticOfCurrentPlayer.setTroopsGained(
+          statisticOfCurrentPlayer.getTroopsGained() + currentPlayer.getDeployableTroops());
+    }
   }
 
   /**

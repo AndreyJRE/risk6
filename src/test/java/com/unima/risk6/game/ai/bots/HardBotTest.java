@@ -1,8 +1,12 @@
 package com.unima.risk6.game.ai.bots;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -62,7 +66,7 @@ class HardBotTest {
       c.setPlayer(null);
       c.setHasPlayer(false);
     });
-    ((HardBot) hardBot).updateContinentsCopy(gameState.getContinents());
+    ((HardBot) hardBot).setContinentsCopy(gameState.getContinents());
   }
 
   @Test
@@ -76,8 +80,12 @@ class HardBotTest {
       adj.setTroops(1);
     }
     ((Player) hardBot).setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
+    enemy.setCurrentPhase(GamePhase.NOT_ACTIVE);
     ((HardBot) hardBot).setCurrentGameState(gameState);
-    hardBot.createAllReinforcements();
+    List<Reinforce> decisions = hardBot.createAllReinforcements();
+    assertEquals(4, decisions.stream().mapToInt(Reinforce::getToAdd).sum());
+    List<CountryPair> attacks = new ArrayList<>();
+    CountryPair attack = hardBot.createAttack();
   }
 
   @Test

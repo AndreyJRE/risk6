@@ -51,8 +51,8 @@ import java.util.Random;
 public class MonteCarloTreeSearch {
 
 
-  private static final int SIMULATION_COUNT = 200;
-  private static final int SIMULATION_TIME_LIMIT = 500; // see how much time a human has?
+  private static final int SIMULATION_COUNT = 1;
+  private static final int SIMULATION_TIME_LIMIT = 30; // see how much time a human has?
   private static final Random RNG = new Random();
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
@@ -160,9 +160,9 @@ public class MonteCarloTreeSearch {
     DeckController deckController = new DeckController(simulation.getDeck());
     MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
         deckController);
-    while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
+//    while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
       this.playTurn(simulationController, playerController, moveProcessor);
-    }
+//    }
     return Probabilities.findStrongestPlayer(simulation);
   }
 
@@ -213,21 +213,23 @@ public class MonteCarloTreeSearch {
     GameState empty = GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>());
     Message copy = Deserializer.deserialize(gson.toJson(new StandardMessage<>(gameState)), empty);
     GameState deepCopy = (GameState) copy.getContent();
-    deepCopy.getActivePlayers().clear();
-    int playerCount = gameState.getActivePlayers().size();
-    for (int i = 0; i < playerCount; i++) {
-      Player player = gameState.getActivePlayers().poll();
+    int queueSize = deepCopy.getActivePlayers().size();
+    for (int i = 0; i < queueSize; i++) {
+      Player toSwap = deepCopy.getActivePlayers().poll();
       AiBot replacement;
-      if (!(player instanceof EasyBot || player instanceof MediumBot)) {
-        replacement = new MonteCarloBot(player);
-        for (Country c : player.getCountries()) {
+      if (!(toSwap instanceof EasyBot || toSwap instanceof MediumBot
+          || toSwap instanceof MonteCarloBot)) {
+        replacement = new MonteCarloBot(toSwap);
+        for (Country c : toSwap.getCountries()) {
           c.setPlayer((Player) replacement);
         }
       } else {
-        replacement = ((AiBot) player);
+        replacement = (AiBot) toSwap;
       }
       deepCopy.getActivePlayers().add((Player) replacement);
+
     }
+
     deepCopy.setCurrentPlayer(deepCopy.getActivePlayers().peek());
     return (GameState) copy.getContent();
   }
@@ -235,7 +237,7 @@ public class MonteCarloTreeSearch {
   public MoveTriplet playTurn(GameController simulationController,
       PlayerController playerController, MoveProcessor moveProcessor) {
     AiBot current = (AiBot) simulationController.getCurrentPlayer();
-    playerController.setPlayer((Player) current);
+//    playerController.setPlayer((Player) current);
     HandController handController = playerController.getHandController();
     // TODO: add hand in to moveTriplet
     if (handController.holdsExchangeable()) {
@@ -249,25 +251,27 @@ public class MonteCarloTreeSearch {
     }
     moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
     Queue<CountryPair> allAttacks = new LinkedList<>();
-    do {
-      CountryPair attacks = current.createAttack();
-      // while not (one country has lost)
-      if (attacks == null) {
-        break;
-      }
-      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
-      moveProcessor.processAttack(toProcess);
-      if (toProcess.getHasConquered()) {
-        moveProcessor.processFortify(current.moveAfterAttack(attacks));
-      }
-    } while (current.attackAgain());
+//    do {
+//      CountryPair attacks = current.createAttack();
+//      // while not (one country has lost)
+//      if (attacks == null) {
+//        break;
+//      }
+//      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
+//      allAttacks.add(attacks);
+//      moveProcessor.processAttack(toProcess);
+//      if (toProcess.getHasConquered()) {
+//        moveProcessor.processFortify(current.moveAfterAttack(attacks));
+//      }
+//    } while (current.attackAgain());
     moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
     Fortify fortify = current.createFortify();
-    if (fortify == null) {
-      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-    } else {
-      moveProcessor.processFortify(fortify);
-    }
+//    if (fortify == null) {
+//      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+//    } else {
+//      moveProcessor.processFortify(fortify);
+//    }
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
     return new MoveTriplet(allReinforcements, allAttacks, fortify);
   }
 }

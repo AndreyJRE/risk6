@@ -64,7 +64,7 @@ class MediumBotTest {
       c.setPlayer(null);
       c.setHasPlayer(false);
     });
-    ((MediumBot) mediumBot).updateContinentsCopy(gameState.getContinents());
+    ((MediumBot) mediumBot).setContinentsCopy(gameState.getContinents());
     ((MediumBot) mediumBot).setInitialTroops(0);
     ((MediumBot) mediumBot).setDeployableTroops(0);
   }

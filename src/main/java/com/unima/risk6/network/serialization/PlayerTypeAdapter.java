@@ -11,6 +11,7 @@ import com.google.gson.JsonSerializer;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.ai.montecarlo.MonteCarloBot;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -92,19 +93,21 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     GamePhase currentPhase = context.deserialize(jsonObject.get("currentPhase"), GamePhase.class);
     int deployableTroops = jsonObject.get("deployableTroops").getAsInt();
     int initialTroops = jsonObject.get("initialTroops").getAsInt();
-
     switch (jsonObject.get("type").getAsString()) {
       case "Player":
         player = new Player(user);
         break;
       case "EasyBot":
-        player = new EasyBot();
+        player = new EasyBot(user);
         break;
       case "MediumBot":
-        player = new MediumBot();
+        player = new MediumBot(user);
         break;
       case "HardBot":
-        player = new HardBot();
+        player = new HardBot(user);
+        break;
+      case "MonteCarloBot":
+        player = new MonteCarloBot(user);
         break;
       default:
         player = new Player();

@@ -28,7 +28,7 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   protected static final Random RNG = new Random();
 
-  private List<Continent> continentsCopy;
+  protected List<Continent> continentsCopy;
   protected final PlayerController playerController;
 
   /**
@@ -45,8 +45,7 @@ public abstract class GreedyBot extends Player implements AiBot {
    *
    * @param continents the set of continents.
    */
-  protected void updateContinentsCopy(Set<Continent> continents) {
-    this.continentsCopy = new ArrayList<>();
+  protected void setContinentsCopy(Set<Continent> continents) {
     this.continentsCopy.addAll(continents);
   }
 
