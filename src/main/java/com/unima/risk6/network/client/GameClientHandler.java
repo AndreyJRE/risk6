@@ -3,7 +3,9 @@ package com.unima.risk6.network.client;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.network.serialization.Deserializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -92,7 +94,12 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
-
+          }
+          case "CONNECTION" -> {
+            LobbyConfiguration.setServerLobby(
+                (ServerLobby) Deserializer.deserialize(textFrame.text()).getContent());
+            LobbyConfiguration.getServerLobby().getUsers()
+                .forEach(user -> System.out.println(user.getUsername()));
           }
           default -> LOGGER.debug("The Message received wasnt a gamestate");
         }

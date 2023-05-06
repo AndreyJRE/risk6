@@ -14,11 +14,11 @@ public class DiceUi extends Pane {
 
   private Random random;
 
-  private int result;
+  private final int result;
 
   private boolean isAttackingDice;
 
-  public DiceUi(boolean isAttackingDice) {
+  public DiceUi(boolean isAttackingDice, int result) {
     random = new Random();
     this.isAttackingDice = isAttackingDice;
     if (isAttackingDice) {
@@ -31,6 +31,7 @@ public class DiceUi extends Pane {
           new Image(
               getClass().getResource("/com/unima/risk6/pictures/dicePreview.png").toString()));
     }
+    this.result = result;
     diceView.setPreserveRatio(true);
     diceView.setFitWidth(100);
     diceView.setFitHeight(100);
@@ -42,7 +43,6 @@ public class DiceUi extends Pane {
     showRollingGif();
     SoundConfiguration.playRollDiceSound();
     PauseTransition pauseTransition = new PauseTransition(Duration.millis(rollDuration));
-    this.result = random.nextInt(6) + 1;
     pauseTransition.setOnFinished(e -> showDiceResult(result));
     pauseTransition.play();
   }

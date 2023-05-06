@@ -6,7 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.network.message.ContentType;
@@ -39,6 +41,14 @@ public class StandardMessageAdapter implements JsonDeserializer<StandardMessage>
       case REINFORCE:
         Reinforce reinforce = context.deserialize(jsonObject.get("content"), Reinforce.class);
         message = new StandardMessage<Reinforce>(reinforce, statusCode);
+        break;
+      case HAND_IN:
+        HandIn handin = context.deserialize(jsonObject.get("content"), HandIn.class);
+        message = new StandardMessage<HandIn>(handin, statusCode);
+        break;
+      case END_PHASE:
+        EndPhase endPhase = context.deserialize(jsonObject.get("content"), EndPhase.class);
+        message = new StandardMessage<EndPhase>(endPhase, statusCode);
         break;
       case DEFAULT:
         String defaultContent = context.deserialize(jsonObject.get("content"), String.class);

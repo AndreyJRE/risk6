@@ -3,7 +3,9 @@ package com.unima.risk6.gui.controllers;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
@@ -76,9 +78,13 @@ public class GameSceneController implements GameStateObserver {
   private final SceneController sceneController;
 
   public static GamePhase mockGamePhase;
+
   private static PlayerUi myPlayerUi;
 
+  private TimeUi timeUi;
+
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
+  private ActivePlayerUi activePlayerUi;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -93,9 +99,9 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.chatBoxPane = new BorderPane();
+    this.initializeGameScene();
     mockGamePhase = GamePhase.ATTACK_PHASE;
     GameConfiguration.addObserver(this);
-    this.initializeGameScene();
 
     this.addListeners();
   }
@@ -166,6 +172,7 @@ public class GameSceneController implements GameStateObserver {
       if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi = playerUi;
         PLAYER_CONTROLLER.setPlayer(player);
+        System.out.println("My player: " + playerUi.getPlayer().getUser());
       }
       colorIndex++;
     }
@@ -181,7 +188,7 @@ public class GameSceneController implements GameStateObserver {
 
   private StackPane initializeTimePane() {
     StackPane timePane = new StackPane();
-    TimeUi timeUi = new TimeUi(40, 40);
+    timeUi = new TimeUi(120, 120);
     timePane.getChildren().add(timeUi);
     timePane.setAlignment(Pos.CENTER);
     timePane.setPadding(new Insets(0, 15, 0, 0));
@@ -250,15 +257,86 @@ public class GameSceneController implements GameStateObserver {
       chatPopup.show(chatButton.getScene().getWindow());
     });
 
-    ActivePlayerUi activePlayerUi = new ActivePlayerUi(40,
-        40, 280, 50, playerUis.peek());
-    playerUis.offer(playerUis.poll());
+    activePlayerUi = new ActivePlayerUi(40,
+        40, 300, 75, getMyPlayerUi());
+    Button nextPhaseButton = new Button();
+    ImageView rightArrowIcon = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
+    rightArrowIcon.setFitWidth(50);
+    rightArrowIcon.setFitHeight(50);
+    nextPhaseButton.setGraphic(rightArrowIcon);
+    nextPhaseButton.setStyle("-fx-background-radius: 25px;");
+    nextPhaseButton.setFocusTraversable(false);
+    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe());
+    nextPhaseButton.setOnAction(event -> {
+      GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
+      PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+    });
 
-    bottomPane.getChildren().add(activePlayerUi);
-    bottomPane.getChildren().add(chatButton);
+    Button cardsButton = new Button();
+    ImageView cardsGroup = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
+    cardsGroup.setFitWidth(150);
+    cardsGroup.setFitHeight(80);
+    cardsButton.setGraphic(cardsGroup);
+    cardsButton.setStyle("-fx-background-radius: 15px;");
+    cardsButton.setFocusTraversable(false);
+
+    Button closeCardsButton = new Button();
+    closeCardsButton.setPrefSize(20, 20);
+    ImageView closeCardIcon = new ImageView(new Image(
+        getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeCardIcon.setFitWidth(40);
+    closeCardIcon.setFitHeight(40);
+    closeCardsButton.setGraphic(closeCardIcon);
+    closeCardsButton.setStyle("-fx-background-radius: 15px;");
+    closeCardsButton.setFocusTraversable(false);
+
+    BorderPane cardsPane = new BorderPane();
+    cardsPane.setTop(closeCardsButton);
+    cardsPane.setAlignment(closeCardsButton, Pos.TOP_RIGHT);
+
+    VBox cardsBox = new VBox();
+    Label cardTitleLabel = new Label("This is cards popup.");
+    cardTitleLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+    cardsBox.getChildren().addAll(cardTitleLabel);
+
+    cardsPane.setCenter(cardsBox);
+
+    cardsPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+
+    Popup cardsPopup = new Popup();
+    cardsPopup.getContent().add(cardsPane);
+
+    closeCardsButton.setOnAction(event -> cardsPopup.hide());
+    //TODO Use this for show the cards
+    //PLAYER_CONTROLLER.getHandController().getHand().getCards();
+    cardsPane.setEffect(dropShadow);
+    cardsButton.setOnAction(event -> {
+      cardsPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
+
+      Bounds rootBounds = root.localToScreen(root.getBoundsInLocal());
+
+      double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+      double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+
+      // Get the width and height of the popup
+      double popupWidth = cardsPane.getPrefWidth();
+      double popupHeight = cardsPane.getPrefHeight();
+
+      // Set the position of the chat popup to center it in the root Scene
+      cardsPopup.setX(centerX - popupWidth / 2);
+      cardsPopup.setY(centerY - popupHeight / 2);
+      cardsPopup.show(cardsButton.getScene().getWindow());
+    });
+
+    bottomPane.getChildren().addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton);
     bottomPane.setAlignment(Pos.CENTER);
+    bottomPane.setMargin(nextPhaseButton, new Insets(0, 0, 0, 450));
+    bottomPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
+    bottomPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
     bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
-    bottomPane.setMargin(chatButton, new Insets(0, 10, 0, 0));
+    bottomPane.setMargin(chatButton, new Insets(0, 15, 0, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));
     return bottomPane;
   }
@@ -303,18 +381,24 @@ public class GameSceneController implements GameStateObserver {
     Queue<Move> lastMoves = gameState.getLastMoves();
     Iterator<Move> iterator = lastMoves.iterator();
     updateReferencesFromGameState();
+    updateActivePlayerUi();
     while (iterator.hasNext()) {
       Move lastMove = iterator.next();
       if (lastMove instanceof Fortify fortify) {
-        animateFortify(fortify);
+        animateTroopsMovement(fortify);
       } else if (lastMove instanceof Attack attack) {
         animateAttack(attack);
       } else if (lastMove instanceof Reinforce reinforce) {
         animateReinforce(reinforce);
+      } else if (lastMove instanceof HandIn handIn) {
+        animateHandIn(handIn);
+      } else if (lastMove instanceof EndPhase endPhase) {
+        animateEndPhase(endPhase);
       }
       iterator.remove();
     }
   }
+
 
   private void updateReferencesFromGameState() {
     //TODO Update all references to the new gameState
@@ -355,7 +439,7 @@ public class GameSceneController implements GameStateObserver {
         .findFirst().get();
   }
 
-  public void animateFortify(Fortify fortify) {
+  public void animateTroopsMovement(Fortify fortify) {
     double maxOffsetX = 10;
     double maxOffsetY = 10;
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
@@ -397,17 +481,56 @@ public class GameSceneController implements GameStateObserver {
       pathTransition.play();
       countriesGroup.getChildren().add(imageView);
     }
+    CountryUi countryUi1 = getCountryUiByCountry(fortify.getIncoming());
+    CountryUi countryUi = getCountryUiByCountry(fortify.getOutgoing());
+    countryUi.update(activePlayerUi, fortify);
+    countryUi1.update(activePlayerUi, fortify);
   }
 
   private void animateAttack(Attack attack) {
+    CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
+    CountryUi countryUi1 = getCountryUiByCountry(attack.getDefendingCountry());
+    countryUi.update(activePlayerUi, attack);
+    countryUi1.update(activePlayerUi, attack);
+
   }
 
   private void animateReinforce(Reinforce reinforce) {
+    CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
+    countryUi.update(activePlayerUi, reinforce);
+
+  }
+
+  private void animateEndPhase(EndPhase endPhase) {
+    activePlayerUi.changePhase(endPhase);
+  }
+
+  private void animateHandIn(HandIn handIn) {
   }
 
   public static PlayerController getPlayerController() {
     return PLAYER_CONTROLLER;
   }
 
+  public PlayerUi getPlayerUiByCurrentPlayer() {
+    return playerUis.stream()
+        .filter(playerUi -> gameState.getCurrentPlayer().equals(playerUi.getPlayer()))
+        .findFirst().get();
+
+  }
+
+  public boolean checkIfCurrentPlayerIsMe() {
+    return gameState.getCurrentPlayer().getUser()
+        .equals(GameConfiguration.getMyGameUser().getUsername());
+  }
+
+  public void updateActivePlayerUi() {
+    Player currentPlayer = gameState.getCurrentPlayer();
+    if (!currentPlayer.equals(activePlayerUi.getPlayerUi().getPlayer())) {
+      activePlayerUi.changeActivePlayerUi(playerUis.stream()
+          .filter(playerUi -> currentPlayer.equals(playerUi.getPlayer()))
+          .findFirst().get());
+    }
+  }
 }
 
