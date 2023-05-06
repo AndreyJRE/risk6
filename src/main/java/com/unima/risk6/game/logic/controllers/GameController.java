@@ -84,6 +84,7 @@ public class GameController implements GameStateObserver {
   public void setNewPlayerOrder(Queue<Player> playerOrder) {
     gameState.getActivePlayers().clear();
     playerOrder.forEach(n -> gameState.getActivePlayers().add(n));
+    gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
   }
 
   /**
@@ -221,14 +222,27 @@ public class GameController implements GameStateObserver {
     return numberOfCountries;
   }
 
+  /**
+   * Returns the player whose turn it is.
+   *
+   * @return current player of the game state.
+   */
   public Player getCurrentPlayer() {
     return gameState.getCurrentPlayer();
   }
 
+  /**
+   * Returns the game state that is managed by the game controller.
+   *
+   * @return the game state that is managed by the game controller.
+   */
   public GameState getGameState() {
     return gameState;
   }
 
+  /**
+   * Changes the game state that is managed by the game controller into the given game state
+   */
   public void setGameState(GameState gameState) {
     this.gameState = gameState;
   }
