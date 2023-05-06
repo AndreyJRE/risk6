@@ -37,12 +37,12 @@ public class TutorialBot extends Player implements AiBot {
    */
   public TutorialBot(String username) {
     super(username);
+    this.countryMap = this.initalizeMap();
     this.deterministicClaims = this.createDeterministicClaims();
     this.deterministicReinforces = this.createDeterministicReinforces();
     this.deterministicAttacks = this.createDeterministicAttacks();
     this.deterministicAfterAttacks = this.createDeterministicAfterAttacks();
     this.deterministicFortifies = this.createDeterministicFortifies();
-    this.countryMap = this.initalizeMap();
   }
 
   /**
@@ -64,9 +64,8 @@ public class TutorialBot extends Player implements AiBot {
    */
   private Queue<Fortify> createDeterministicFortifies() {
     Queue<Fortify> fortifies = new LinkedList<>();
-    fortifies.add(
-        new Fortify(this.countryMap.get(CountryName.PERU), this.countryMap.get(CountryName.BRAZIL),
-            2));
+    fortifies.add(new Fortify(this.countryMap.get(CountryName.BRAZIL),
+        this.countryMap.get(CountryName.VENEZUELA), 25));
     return fortifies;
   }
 
@@ -77,8 +76,8 @@ public class TutorialBot extends Player implements AiBot {
    */
   private Queue<CountryPair> createDeterministicAttacks() {
     Queue<CountryPair> attacks = new LinkedList<>();
-    attacks.add(new CountryPair(this.countryMap.get(CountryName.VENEZUELA),
-        this.countryMap.get(CountryName.PERU)));
+    attacks.add(new CountryPair(this.countryMap.get(CountryName.BRAZIL),
+        this.countryMap.get(CountryName.VENEZUELA)));
     return attacks;
   }
 
@@ -89,7 +88,8 @@ public class TutorialBot extends Player implements AiBot {
    */
   private Queue<Reinforce> createDeterministicReinforces() {
     Queue<Reinforce> reinforces = new LinkedList<>();
-    reinforces.add(new Reinforce(this.countryMap.get(CountryName.VENEZUELA), 3));
+    reinforces.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 40));
+    reinforces.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 4));
     return reinforces;
   }
 
@@ -142,7 +142,7 @@ public class TutorialBot extends Player implements AiBot {
    */
   private Queue<Reinforce> createDeterministicClaims() {
     Queue<Reinforce> claims = new LinkedList<>();
-    claims.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 1));
+    claims.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 1));
     return claims;
   }
 

@@ -7,15 +7,28 @@ import com.unima.risk6.game.models.enums.CountryName;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This class represents the deck controller for the Risk game.
+ *
+ * @author wphung
+ */
 public class DeckController {
 
   private final Deck deck;
   private int nextId = 1;
 
+  /**
+   * Constructs a new DeckController with the given deck.
+   *
+   * @param deck The deck to be managed by this controller.
+   */
   public DeckController(Deck deck) {
     this.deck = deck;
   }
 
+  /**
+   * Initializes the deck by creating and adding cards based on country names and symbols.
+   */
   public void initDeck() {
     List<CountryName> cannonCountries = List.of(CountryName.NORTH_WEST_TERRITORY,
         CountryName.QUEBEC, CountryName.EASTERN_UNITED_STATES, CountryName.VENEZUELA,
@@ -54,18 +67,37 @@ public class DeckController {
 
   }
 
+  /**
+   * Shuffles the deck cards.
+   */
+
   public void shuffleDeck() {
     Collections.shuffle(deck.getDeckCards());
   }
 
+  /**
+   * Checks if the deck is empty.
+   *
+   * @return true if the deck is empty, false otherwise.
+   */
   public boolean isEmpty() {
     return deck.getDeckCards().isEmpty();
   }
 
+  /**
+   * Returns the deck managed by this controller.
+   *
+   * @return The deck.
+   */
   public Deck getDeck() {
     return deck;
   }
 
+  /**
+   * Removes and returns the card on top of the deck.
+   *
+   * @return The removed card.
+   */
   public Card removeCardOnTop() {
     return deck.getDeckCards().remove(0);
   }

@@ -70,11 +70,17 @@ public class Card {
    * @return True if the card has a country, false otherwise.
    */
 
-
   public boolean hasCountry() {
     return hasCountry;
   }
 
+  /**
+   * Compares the card to the given object for equality. Returns true if and only if the argument is
+   * an object of the same type or has the same id as this card.
+   *
+   * @param obj the object to compare this card against
+   * @return true if the given object represents a value equivalent to this object, false otherwise
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
