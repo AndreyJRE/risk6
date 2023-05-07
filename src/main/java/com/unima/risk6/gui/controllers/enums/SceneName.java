@@ -13,7 +13,8 @@ public enum SceneName {
   CHANGE_PASSWORD,
   MULTIPLAYER_LOBBY,
   JOIN_ONLINE,
-  SELECT_LOBBY
+  SELECT_LOBBY,
+  CREATE_LOBBY
 
   // add more scene names as needed
 

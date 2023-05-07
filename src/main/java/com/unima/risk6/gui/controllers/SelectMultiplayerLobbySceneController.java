@@ -10,13 +10,12 @@ import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -38,11 +37,12 @@ public class SelectMultiplayerLobbySceneController {
 
   private final SelectMultiplayerLobbyScene selectMultiplayerLobbyScene;
   private final SceneController sceneController;
+  private final ServerLobby serverLobby;
+  private final SplitPane lobbyChatSplit = new SplitPane();
+  private final ListView<String> lobbyList = new ListView<>();
   private User user;
   private BorderPane root;
   private List<GameLobby> gameLobbies = new ArrayList<>();
-  private ServerLobby serverLobby;
-  private SplitPane lobbyChatSplit = new SplitPane();
 
 
   public SelectMultiplayerLobbySceneController(
@@ -77,40 +77,57 @@ public class SelectMultiplayerLobbySceneController {
 
     Button join = new Button("Join Lobby");
     applyButtonStyle(join);
-    join.setPrefWidth(470);
+    join.setPrefWidth(400);
     join.setPrefHeight(40);
     join.setAlignment(Pos.CENTER);
     join.setFont(new Font(18));
 
-    HBox joinLobbyButton = new HBox(join);
-    joinLobbyButton.setAlignment(Pos.CENTER);
-
     join.setOnMouseClicked(e -> handleJoinButton());
+
+    Button create = new Button("Create Lobby");
+    applyButtonStyle(create);
+    create.setPrefWidth(400);
+    create.setPrefHeight(40);
+    create.setAlignment(Pos.CENTER);
+    create.setFont(new Font(18));
+
+    create.setOnMouseClicked(e -> handleCreateButton());
+
+    Label seperator = new Label(".......");
+    seperator.setStyle("-fx-font-size: 1px");
+    seperator.setPrefWidth(100);
+
+    HBox bottomBox = new HBox(create, seperator, join);
+    bottomBox.setAlignment(Pos.CENTER);
 
     initSplitPane();
 
     root.setLeft(backButton);
     root.setTop(titleBox);
-    root.setBottom(joinLobbyButton);
+    root.setBottom(bottomBox);
     root.setCenter(lobbyChatSplit);
 
-    BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
-    BorderPane.setMargin(joinLobbyButton, new Insets(10, 20, 20, 10));
+    BorderPane.setMargin(backButton, new Insets(10, 10, 10, 10));
+    BorderPane.setMargin(bottomBox, new Insets(10, 20, 20, 10));
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
   }
 
   private void initGameLobbys() {
     //TODO: get all GameLobbys and save them to listview
-    gameLobbies = serverLobby.getGameLobbies();
+    /*gameLobbies = serverLobby.getGameLobbies();
+    ObservableList<String> lobbys = FXCollections.observableArrayList();
+    for (GameLobby gameLobby : gameLobbies) {
+      String temp = gameLobby.getLobbyName() + " hosted by " + gameLobby.getName() + " "
+          + gameLobby.getUsers().size() + "/" + gameLobby.getMaxPlayers();
+      lobbys.add(temp);
+    }
+    lobbys.addAll("Lobby 1", "Lobby 2", "Lobby 3");
+    lobbyList.setItems(lobbys);*/
   }
 
   private void initSplitPane() {
 
-    ListView<String> lobbyList = new ListView<>();
-    ObservableList<String> items = FXCollections.observableArrayList();
-
-    items.addAll("Lobby 1", "Lobby 2", "Lobby 3");
-    lobbyList.setItems(items);
+    initGameLobbys();
 
     TextArea chatArea = new TextArea();
     chatArea.setEditable(false);
@@ -150,5 +167,20 @@ public class SelectMultiplayerLobbySceneController {
     pauseTitleSound();
     lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
     sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+  }
+
+  private void handleCreateButton() {
+    //TODO: Create Lobby Scene hinzufügen
+    CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.CREATE_LOBBY);
+    if (scene == null) {
+      scene = new CreateLobbyScene();
+      CreateLobbySceneController createLobbySceneController = new CreateLobbySceneController(scene);
+      scene.setController(createLobbySceneController);
+      sceneController.addScene(SceneName.CREATE_LOBBY, scene);
+    }
+    pauseTitleSound();
+    lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+    sceneController.activate(SceneName.CREATE_LOBBY);
   }
 }

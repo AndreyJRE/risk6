@@ -20,7 +20,7 @@ public class SoundConfiguration {
 
 
   public static void playTitleSound() {
-    titleSound.play();
+    //titleSound.play();
   }
 
   public static void loadSounds() {
@@ -42,7 +42,7 @@ public class SoundConfiguration {
   }
 
   public static void playInGameMusic() {
-    inGameMusic.play();
+    // inGameMusic.play();
   }
 
   public static void pauseTitleSound() {

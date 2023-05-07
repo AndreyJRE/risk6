@@ -19,19 +19,15 @@ import javafx.stage.Stage;
 
 public class RisikoMain extends Application {
 
-  private List<User> users;
-
-  private UserService userService;
-
   @Override
   public void start(Stage stage) throws IOException {
 
-    this.userService = DatabaseConfiguration.getUserService();
-    this.users = userService.getAllUsers();
-    for (User tempUser : users) {
+    UserService userService = DatabaseConfiguration.getUserService();
+    List<User> users = userService.getAllUsers();
+    /*for (User tempUser : users) {
       tempUser.setImagePath("/com/unima/risk6/pictures/playerIcon.png");
       userService.updateUser(tempUser);
-    }
+    }*/
     stage.setMinWidth(900);
     stage.setMinHeight(700);
     stage.setWidth(1080);
