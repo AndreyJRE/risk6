@@ -22,6 +22,7 @@ import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.server.exceptions.InvalidMoveException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class MoveProcessor {
@@ -61,8 +62,17 @@ public class MoveProcessor {
       if (currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
         //If the country doesn't have an owner, owner is assigned to currentPlayer, if it does
         //check if the Country actually belongs to player
-        if (!countryToReinforce.hasPlayer()) {
-          playerController.addCountry(countryToReinforce);
+
+        int numberOfNeutralCountries = gameController.getGameState().getCountries().stream()
+            .filter(n -> n.hasPlayer()).collect(Collectors.toSet()).size();
+        if (numberOfNeutralCountries > 0) {
+          if (!countryToReinforce.hasPlayer()) {
+            playerController.addCountry(countryToReinforce);
+          } else {
+            throw new InvalidMoveException("Cannot claim a claimed country");
+          }
+        } else {
+          throw new InvalidMoveException("Cannot reinforce own countries yet");
         }
         if (countryToReinforce.getPlayer().equals(currentPlayer)) {
           currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
@@ -175,9 +185,10 @@ public class MoveProcessor {
     Country outgoing = getCountryByCountryName(fortify.getOutgoing().getCountryName());
 
     //Validate if the fortify is legal
-    if (fortify.getTroopsToMove() < outgoing.getTroops() && outgoing
-        .getPlayer().equals(incoming.getPlayer()) && incoming
-        .getAdjacentCountries().contains(outgoing)) {
+    if (fortify.getTroopsToMove() < outgoing.getTroops()
+        && outgoing.getPlayer().equals(incoming.getPlayer())
+        && incoming.getAdjacentCountries().contains(outgoing)
+        && fortify.getTroopsToMove() >= 0) {
 
       incoming.changeTroops(fortify.getTroopsToMove());
       outgoing.changeTroops(-fortify.getTroopsToMove());
