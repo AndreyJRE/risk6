@@ -1,37 +1,57 @@
 [
   [
-    "Welcome to Risk Tutorial mode! This game mode intends to teach you the basics of the game and",
+    "Welcome to RISK Tutorial mode! This game mode intends to teach you the basics of the game and",
     "provide an understanding of how to play a match of risk. We start with the claim phase, each",
-    "player takes turns placing one troop on one unclaimed country. Watch how the bot does it",
-    "and try it out by clicking on the highlighted country."
+    "player takes turns placing one troop on one unclaimed country. Try it out by clicking on the",
+    "highlighted country."
+  ],
+  [
+    "Once all countries are claimed, each player gets an additional amount of troops depending on",
+    "the amount of players in the game which they can use to strengthen their countries. Notice",
+    "how the other player has almost taken over South America. Try to prevent the bot from",
+    "succeeding, but also get ready to take over Argentina. Owning entire continents nets you more",
+    "troops per round!"
   ],
   [
     "Now the game can begin! There are three phases each round: Reinforce, Attack, Fortify. Let's",
     "check them out. At the beginning of each reinforce phase, you get a certain amount of troops",
-    "and can place them on any of the countries that belong to you"
+    "and can place them on any of the countries that belong to you. Let's prepare to take over",
+    "Australia."
   ],
   [
     "Now we get to the attack phase: Select a country you own, then select one of the adjacent",
     "enemy territories and choose with how many troops you want to attack. You then roll dice to",
     "decide a winner. If the attacker wins, they must choose an amount of troops to move to the",
-    "defeated country"
+    "defeated country. Here, it would make sense to move fewer troops, as Indonesia is the only",
+    "bordering country protecting the continent."
   ],
   [
     "Finally, the fortify phase: The player has the ability to pick exactly one country and",
-    "move some of its troops to an adjacent country"
+    "move some of its troops to an adjacent country. Sometimes, retreating is the better choice.",
+    "Seeing as how South America will be lost soon move your troops back towards North America to",
+    "reduce your total troop loss."
   ],
   [
-    "Now your turn! For simplicity, your moves have been highlighted in order to give you a feel",
-    "of how to play a turn. This is the tutorial after all!"
+    "Notice how the enemy has split his troops almost evenly between Venezuela and Brazil. These",
+    "two countries are important as they are the borders of the continent. Having a high amount of",
+    "troops on such countries gives you a higher chance of defending the continent successfully.",
+    "Especially important, since the enemy now has control over South America!"
   ],
   [
-    "If you conquer a country during the attack phase, you will receive a random card from the",
-    "deck at the end of your turn. According to the rulebook, at the beginning of a turn you have",
-    "the ability to swap 3 cards which match specific rules and get extra troops in return for",
+    "Over the course of the game, if you conquer a country during the attack phase you will",
+    "receive a random card at the end of your turn. At the beginning of a turn you have",
+    "the ability to swap 3 cards, which match specific rules, and get extra troops in return for",
     "your reinforce phase. Right now, you have the chance to try out swapping cards. Make sure",
     "to read the rulebook for an explanation of the card-swapping rules."
   ],
-  ["That's all for the tutorial, now you can choose to continue the game from this state against a",
-  "bot of your choosing or leave the tutorial. Remember to read the rulebook if you need",
-  "clarification on anything!"]
+  [
+    "In addition to the extra amount of troops, which is now even higher since you own Australia,",
+    "which you receive at the beginning of each round, you automatically get more troops on the",
+    "countries represented on the cards you swapped in and get an additional amount of troops to",
+    "distribute as you choose."
+  ],
+  [
+    "That's all for our introduction to the game RISK. You can now play this specific match further",
+    "with a bot of your chosen difficulty or practice matches"
+  ]
 ]

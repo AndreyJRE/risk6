@@ -119,7 +119,7 @@ public class SelectMultiplayerLobbySceneController {
 
   private void initGameLobbys() {
     //TODO: get all GameLobbys and save them to listview
-    gameLobbies = serverLobby.getGameLobbies();
+    /*gameLobbies = serverLobby.getGameLobbies();
     ObservableList<String> lobbys = FXCollections.observableArrayList();
     for (GameLobby gameLobby : gameLobbies) {
       String temp = gameLobby.getLobbyName() + " hosted by " + gameLobby.getName() + " "
@@ -154,6 +154,7 @@ public class SelectMultiplayerLobbySceneController {
       }
     });
 
+    lobbyList.setItems(lobbys);*/
   }
 
   private void initSplitPane() {

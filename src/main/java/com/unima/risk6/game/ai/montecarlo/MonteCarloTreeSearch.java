@@ -13,12 +13,12 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
+import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -28,35 +28,46 @@ import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.AttackTypeAdapter;
+import com.unima.risk6.network.serialization.CardTypeAdapter;
 import com.unima.risk6.network.serialization.ContinentTypeAdapter;
 import com.unima.risk6.network.serialization.CountryTypeAdapter;
 import com.unima.risk6.network.serialization.Deserializer;
 import com.unima.risk6.network.serialization.EasyBotTypeAdapter;
+import com.unima.risk6.network.serialization.EndPhaseTypeAdapter;
+import com.unima.risk6.network.serialization.FortifyTypeAdapter;
 import com.unima.risk6.network.serialization.GameStateTypeAdapter;
 import com.unima.risk6.network.serialization.HandTypeAdapter;
+import com.unima.risk6.network.serialization.HardBotTypeAdapter;
+import com.unima.risk6.network.serialization.MediumBotTypeAdapter;
+import com.unima.risk6.network.serialization.MonteCarloBotTypeAdapter;
 import com.unima.risk6.network.serialization.PlayerTypeAdapter;
+import com.unima.risk6.network.serialization.ReinforceTypeAdapter;
 import com.unima.risk6.network.server.MoveProcessor;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 
 public class MonteCarloTreeSearch {
 
 
-  private static final int SIMULATION_COUNT = 200;
+  private static final int SIMULATION_COUNT = 40;
   private static final int SIMULATION_TIME_LIMIT = 500; // see how much time a human has?
-  private static final Random RNG = new Random();
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
       .registerTypeAdapter(Hand.class, new HandTypeAdapter())
       .registerTypeAdapter(Player.class, new PlayerTypeAdapter())
       .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
-      .registerTypeAdapter(Attack.class, new AttackTypeAdapter()).create();
+      .registerTypeAdapter(MediumBot.class, new MediumBotTypeAdapter())
+      .registerTypeAdapter(HardBot.class, new HardBotTypeAdapter())
+      .registerTypeAdapter(MonteCarloBot.class, new MonteCarloBotTypeAdapter())
+      .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
+      .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
+      .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
+      .registerTypeAdapter(Card.class, new CardTypeAdapter())
+      .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter()).create();
   private final HardBot player;
-  private int treeDepth;
 
   /**
    * Constructor for MonteCarloTreeSearch.
@@ -76,6 +87,7 @@ public class MonteCarloTreeSearch {
   public MoveTriplet getBestMove(GameState game) {
     MonteCarloNode root = new MonteCarloNode(game, null);
     for (int i = 0; i < SIMULATION_COUNT; i++) {
+      System.out.println(i);
       // does reassigning node in select mess up root?
       MonteCarloNode node = select(root);
       Player result = null;
@@ -156,32 +168,6 @@ public class MonteCarloTreeSearch {
   }
 
   /**
-   * Returns a list of legal moves for the given player during the simulation.
-   *
-   * @param player The player whose legal moves are to be retrieved.
-   * @return A list of legal moves for the given player.
-   */
-  private List<MoveTriplet> getSimulationMoves(Player player) {
-    List<MoveTriplet> legalMoves = new ArrayList<>();
-    if (this.isMonteCarlo(player)) {
-//      legalMoves = ((MonteCarloBot) player).getLegalMoves();
-    } else {
-      // legalMoves.add(((AiBot) player).makeMove());
-    }
-    return legalMoves;
-  }
-
-  /**
-   * Checks if the given player is an instance of MonteCarloBot.
-   *
-   * @param player The player to be checked.
-   * @return A boolean value indicating whether the player is an instance of MonteCarloBot.
-   */
-  private boolean isMonteCarlo(Player player) {
-    return !(player instanceof EasyBot || player instanceof MediumBot);
-  }
-
-  /**
    * Updates the wins and visits of the nodes in the Monte Carlo Tree based on the simulation
    * result.
    *
@@ -225,52 +211,63 @@ public class MonteCarloTreeSearch {
    * @return A deep copy of the given game state.
    */
   public GameState copyGameState(GameState gameState) {
-    List<AiBot> replacedPlayers = new ArrayList<>();
-    for (Player player : gameState.getActivePlayers()) {
-      if (!(player instanceof EasyBot || player instanceof MediumBot)) {
-        AiBot replacement = new MonteCarloBot(player);
-        replacedPlayers.add(replacement);
-      } else {
-        replacedPlayers.add((AiBot) player);
-      }
-    }
-    GameState empty = GameConfiguration.configureGame(new ArrayList<>(), replacedPlayers);
+    GameState empty = GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>());
     Message copy = Deserializer.deserialize(gson.toJson(new StandardMessage<>(gameState)), empty);
-    return (GameState) copy.getContent();
-  }
-
-  /**
-   * Retrieves the player object of the HardBot in the given game state.
-   *
-   * @param gameState The current game state.
-   * @return The player object of the HardBot in the given game state, or null if the player is no
-   * longer in the game.
-   */
-  private Player getPlayerAtGameState(GameState gameState) {
-    for (Player player : gameState.getActivePlayers()) {
-      if (player.equals(this.player)) {
-        return player;
+    GameState deepCopy = (GameState) copy.getContent();
+    int queueSize = deepCopy.getActivePlayers().size();
+    for (int i = 0; i < queueSize; i++) {
+      Player toSwap = deepCopy.getActivePlayers().poll();
+      AiBot replacement;
+      if (!(toSwap instanceof EasyBot || toSwap instanceof MediumBot
+          || toSwap instanceof MonteCarloBot)) {
+        replacement = new MonteCarloBot(toSwap);
+        for (Country c : toSwap.getCountries()) {
+          c.setPlayer((Player) replacement);
+        }
+      } else {
+        replacement = (AiBot) toSwap;
       }
+      if (replacement instanceof MonteCarloBot) {
+        ((MonteCarloBot) replacement).setContinentsCopy(deepCopy.getContinents());
+        // find cleaner solution for following
+      } else if (replacement instanceof EasyBot) {
+        ((EasyBot) replacement).setCurrentGameState(deepCopy);
+      }
+      deepCopy.getActivePlayers().add((Player) replacement);
+
     }
-    return null; // signifies that player is no longer in game
+    deepCopy.setCurrentPlayer(deepCopy.getActivePlayers().peek());
+    return (GameState) copy.getContent();
   }
 
   public MoveTriplet playTurn(GameController simulationController,
       PlayerController playerController, MoveProcessor moveProcessor) {
     AiBot current = (AiBot) simulationController.getCurrentPlayer();
-    playerController.setPlayer((Player) current);
+    boolean tooMuch = !simulationController.getGameState().getCountries().stream()
+        .filter(c -> c.getTroops() <= 0).toList().isEmpty();
+    if (tooMuch) {
+      System.out.println("BEFORE ALL");
+      simulationController.getGameState().getCountries().stream().filter(c -> c.getTroops() <= 0)
+          .forEach(System.out::println);
+    }
     HandController handController = playerController.getHandController();
     // TODO: add hand in to moveTriplet
-    if (handController.isExchangeable()) {
+    if (handController.holdsExchangeable()) {
       handController.selectExchangeableCards();
-      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
-//        handController.exchangeCards();
-      moveProcessor.processHandIn(handIn);
+//      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+//      moveProcessor.processHandIn(handIn);
     }
-    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
     List<Reinforce> allReinforcements = current.createAllReinforcements();
     for (Reinforce reinforce : allReinforcements) {
       moveProcessor.processReinforce(reinforce);
+    }
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+    tooMuch = !simulationController.getGameState().getCountries().stream()
+        .filter(c -> c.getTroops() <= 0).toList().isEmpty();
+    if (tooMuch) {
+      System.out.println("REINFORCED");
+      simulationController.getGameState().getCountries().stream().filter(c -> c.getTroops() <= 0)
+          .forEach(System.out::println);
     }
     Queue<CountryPair> allAttacks = new LinkedList<>();
     do {
@@ -279,12 +276,24 @@ public class MonteCarloTreeSearch {
       if (attacks == null) {
         break;
       }
-      moveProcessor.processAttack(
-          attacks.createAttack(current.getAttackTroops(attacks.getOutgoing())));
+      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
+      allAttacks.add(attacks);
+      moveProcessor.processAttack(toProcess);
+      if (simulationController.getGameState().isGameOver()) {
+        return null;
+      }
+      if (toProcess.getHasConquered()) {
+        moveProcessor.processFortify(current.moveAfterAttack(attacks));
+      }
     } while (current.attackAgain());
-    // how to signal move after Attack?
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+
     Fortify fortify = current.createFortify();
-    moveProcessor.processFortify(fortify);
+    if (fortify == null) {
+      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+    } else {
+      moveProcessor.processFortify(fortify);
+    }
     return new MoveTriplet(allReinforcements, allAttacks, fortify);
   }
 }

@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -25,7 +26,9 @@ import java.util.Set;
  */
 public abstract class GreedyBot extends Player implements AiBot {
 
-  private List<Continent> continentsCopy;
+  protected static final Random RNG = new Random();
+
+  protected List<Continent> continentsCopy;
   protected final PlayerController playerController;
 
   /**
@@ -42,7 +45,7 @@ public abstract class GreedyBot extends Player implements AiBot {
    *
    * @param continents the set of continents.
    */
-  protected void updateContinentsCopy(Set<Continent> continents) {
+  public void setContinentsCopy(Set<Continent> continents) {
     this.continentsCopy = new ArrayList<>();
     this.continentsCopy.addAll(continents);
   }
@@ -67,7 +70,7 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
-    int troopsAffordable = Integer.MIN_VALUE;
+    int troopsAffordable = 0;
     for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
       if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
         int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
@@ -79,11 +82,12 @@ public abstract class GreedyBot extends Player implements AiBot {
     // we can spare troops
     if (troopsAffordable < 0) {
       troopsAffordable *= -1;
-      return winPair.createFortify(-troopsAffordable);
-    } else { // else try to make it equal
       int outgoingTroops = winPair.getOutgoing().getTroops();
       int incomingTroops = winPair.getIncoming().getTroops();
-      return winPair.createFortify((outgoingTroops - incomingTroops) / 2);
+      int makeEqual = (outgoingTroops - incomingTroops) / 2;
+      return winPair.createFortify(Math.min(troopsAffordable / 2, makeEqual));
+    } else { // not worth it to fortify -> all surrounding enemy countries are stronger
+      return winPair.createFortify(0);
     }
   }
 
@@ -223,7 +227,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     Country bestAdj = null;
     for (Country adj : country.getAdjacentCountries()) {
       if (this.equals(adj.getPlayer()) && adj.getTroops() >= country.getTroops()
-          && allOwnedCountryDiffs.get(adj) < 0) {
+          && allOwnedCountryDiffs.getOrDefault(adj, 0) < 0) {
         if (bestAdj == null || adj.getTroops() > bestAdj.getTroops()
             || allOwnedCountryDiffs.get(adj) < allOwnedCountryDiffs.get(bestAdj)) {
           bestAdj = adj;

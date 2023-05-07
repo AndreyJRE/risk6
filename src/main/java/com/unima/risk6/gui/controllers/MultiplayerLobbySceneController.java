@@ -3,6 +3,9 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
@@ -10,6 +13,7 @@ import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.UserDto;
@@ -19,6 +23,10 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javafx.application.Platform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -310,12 +318,15 @@ public class MultiplayerLobbySceneController {
     users.add("Joel");
     users.add("John");
 
-    GameState gameState = GameConfiguration.configureGame(users, aiBots);
+    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser()));
+
+    /*GameState gameState = GameConfiguration.configureGame(users, aiBots);
     User myUser = SessionManager.getUser();
     GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId())));
-    GameConfiguration.setGameState(gameState);
-    CountriesUiConfiguration.configureCountries(gameState.getCountries());
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
+    );
+    GameConfiguration.setGameState(gameState);*/
+    CountriesUiConfiguration.configureCountries(GameConfiguration.getGameState().getCountries());
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
     if (gameScene == null) {
@@ -324,6 +335,7 @@ public class MultiplayerLobbySceneController {
       gameScene.setGameSceneController(gameSceneController);
       sceneController.addScene(SceneName.GAME, gameScene);
     }
+    System.out.println("Game started");
     sceneController.activate(SceneName.GAME);
     //TODO If we want to go full screen we can use this
     sceneController.getStage().setFullScreen(true);

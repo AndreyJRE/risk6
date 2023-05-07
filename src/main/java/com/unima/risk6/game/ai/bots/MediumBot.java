@@ -30,7 +30,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   }
 
   public MediumBot() {
-    this("MediumBot Default");
+    this("MediumBot #" + RNG.nextInt(1000));
   }
 
   @Override
@@ -106,6 +106,7 @@ public class MediumBot extends GreedyBot implements AiBot {
     Map<Country, Integer> ownedCountryDiffs = getCountryTroopDiffsByContinent(continent);
     List<Country> countriesByLowestReinforce = new ArrayList<>(ownedCountryDiffs.keySet());
     sortCountriesByLowestDiffs(ownedCountryDiffs, countriesByLowestReinforce);
+    ownedCountryDiffs.replaceAll((entry, diff) -> diff + RNG.nextInt(0, 3));
     return reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }
 
@@ -123,6 +124,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       List<Country> sortedCountryList) {
     List<Reinforce> listReinforce = new ArrayList<>();
     for (Country country : sortedCountryList) {
+      // TODO: remove check for diff > 0 and just fix maps earlier?
       if (this.reinforceTroopsCopy > 0 && ownedCountryDiffs.get(country) > 0) {
         int amountDeployed = Math.min(this.reinforceTroopsCopy, ownedCountryDiffs.get(country));
         listReinforce.add(new Reinforce(country, amountDeployed));
@@ -211,7 +213,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       Country bestAdj = findBestAdj(allOwnedCountryDiffs, country);
       if (bestAdj != null) {
         fortify = new Fortify(bestAdj, country,
-            Math.max((bestAdj.getTroops() - country.getTroops()) / 2,
+            Math.min((bestAdj.getTroops() - country.getTroops()) / 2,
                 -allOwnedCountryDiffs.get(bestAdj) / 2));
         break;
       }

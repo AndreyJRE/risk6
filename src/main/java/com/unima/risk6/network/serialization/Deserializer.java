@@ -33,9 +33,9 @@ public class Deserializer {
         .registerTypeAdapter(Player.class, new PlayerTypeAdapter(gameState))
         //.registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
 
-        .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
-        .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
-        .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
+        .registerTypeAdapter(Attack.class, new AttackTypeAdapter(gameState))
+        .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter(gameState))
+        .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter(gameState))
         .registerTypeAdapter(HandIn.class, new HandInTypeAdapter())
         .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter())
         .create()

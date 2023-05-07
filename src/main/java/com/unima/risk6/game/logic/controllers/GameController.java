@@ -6,8 +6,6 @@ import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -20,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
-public class GameController implements GameStateObserver {
+public class GameController {
 
   private GameState gameState;
 
@@ -29,9 +27,11 @@ public class GameController implements GameStateObserver {
   public GameController(GameState gameState) {
     this.gameState = gameState;
     this.players = gameState.getActivePlayers();
-    GameConfiguration.addObserver(this);
   }
 
+  /**
+   * Moves on to the next player and updates the game state accordingly.
+   */
   public void nextPlayer() {
     Player lastPlayer = players.poll();
     Player nextPlayer = players.peek();
@@ -45,6 +45,11 @@ public class GameController implements GameStateObserver {
     }
   }
 
+  /**
+   * Removes the given player from the active player queue and adds them to the lost player list.
+   *
+   * @param loser the player who lost the game
+   */
   public void removeLostPlayer(Player loser) {
     players.remove(loser);
     gameState.getLostPlayers().add(loser);
@@ -57,18 +62,34 @@ public class GameController implements GameStateObserver {
     }
   }
 
+  /**
+   * Transfers the cards of the lost player to the current player.
+   *
+   * @param lostPlayer the player who lost the game
+   */
   public void takeOverCardFromLostPlayer(Player lostPlayer) {
     gameState.getCurrentPlayer().getHand().getCards().addAll(lostPlayer.getHand().getCards());
     lostPlayer.getHand().getCards().clear();
     lostPlayer.getHand().getSelectedCards().clear();
   }
 
+  /**
+   * Sets the active player queue to the given player order.
+   *
+   * @param playerOrder the new player order
+   */
   public void setNewPlayerOrder(Queue<Player> playerOrder) {
     gameState.getActivePlayers().clear();
     playerOrder.forEach(n -> gameState.getActivePlayers().add(n));
+    gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
   }
 
-
+  /**
+   * Returns the player order based on the given dice rolls.
+   *
+   * @param diceRolls a HashMap containing the players and their corresponding dice rolls
+   * @return the player order based on the dice rolls
+   */
   public Queue<Player> getNewPlayerOrder(HashMap<Player, Integer> diceRolls) {
     Set<Entry<Player, Integer>> entrySet = diceRolls.entrySet();
     Queue<Player> order = new ConcurrentLinkedQueue<>();
@@ -79,7 +100,6 @@ public class GameController implements GameStateObserver {
           order.add(entry.getKey());
         }
       }
-
     }
     order.forEach(n -> n.setCurrentPhase(NOT_ACTIVE));
     assert order.peek() != null;
@@ -87,16 +107,18 @@ public class GameController implements GameStateObserver {
     return order;
   }
 
-
+  /**
+   * Adds the given move to the last moves queue in the game state.
+   *
+   * @param move the last move that was made.
+   */
   public void addLastMove(Move move) {
     gameState.getLastMoves().add(move);
   }
 
-  @Override
-  public void update(GameState gameState) {
-    this.gameState = gameState;
-  }
-
+  /**
+   * Moves on to the next game phase of the current player or even
+   */
   public void nextPhase() {
     Player player = gameState.getCurrentPlayer();
     switch (player.getCurrentPhase()) {
@@ -122,6 +144,11 @@ public class GameController implements GameStateObserver {
     }
   }
 
+  /**
+   * Calculates and sets the troops the player can deploy according to the occupied countries and
+   * continents.
+   */
+
   public void calculateDeployableTroops() {
     Player currentPlayer = gameState.getCurrentPlayer();
     this.updateContinentsOfPlayer(currentPlayer);
@@ -134,10 +161,17 @@ public class GameController implements GameStateObserver {
         currentPlayer.getDeployableTroops() + x.getBonusTroops()));
     //Add the DeployableTroops to the statistic as troopsGained
     Statistic statisticOfCurrentPlayer = currentPlayer.getStatistic();
-    statisticOfCurrentPlayer.setTroopsGained(
-        statisticOfCurrentPlayer.getTroopsGained() + currentPlayer.getDeployableTroops());
+    if (statisticOfCurrentPlayer != null) { // a bot doesn't have statistics
+      statisticOfCurrentPlayer.setTroopsGained(
+          statisticOfCurrentPlayer.getTroopsGained() + currentPlayer.getDeployableTroops());
+    }
   }
 
+  /**
+   * Updates the Set of Continents which is fully occupied by the given player.
+   *
+   * @param player the player whose continents should be updated
+   */
   public void updateContinentsOfPlayer(Player player) {
     player.getContinents().clear();
     gameState.getContinents().forEach((n) -> {
@@ -149,56 +183,57 @@ public class GameController implements GameStateObserver {
 
   }
 
-  //Adds all full continents of a Player to the List
+  /**
+   * Updates the Sets of continents of all players. calls updateContinentsOfPlayer for each
+   * activePlayer
+   */
   public void updateContinentsForAll() {
     gameState.getActivePlayers().forEach(this::updateContinentsOfPlayer);
   }
 
-  //TODO MOVE TO UI, used by UI
-  /*
-  public Set<Country> getCountriesToAttackFrom() {
-    return gameState.getCurrentPlayer().getCountries().stream().filter(n -> n.getTroops() > 1)
-        .collect(
-            Collectors.toSet());
+  //TODO MOVE TO UI can be used by UI.
+  public HashMap<Player, Integer> countTroops() {
+    HashMap<Player, Integer> totalTroopsOfPlayers = new HashMap<>();
+    for (Player player : players) {
+      int troopNumber = 0;
+      for (Country country : player.getCountries()) {
+        troopNumber += country.getTroops();
+      }
+      totalTroopsOfPlayers.put(player, troopNumber);
+    }
+    return totalTroopsOfPlayers;
   }
 
-  public Set<Country> getOwnedCountries() {
-    return gameState.getCurrentPlayer().getCountries();
+  public HashMap<Player, Integer> countCountries() {
+    HashMap<Player, Integer> numberOfCountries = new HashMap<>();
+    for (Player player : players) {
+      numberOfCountries.put(player, player.getCountries().size());
 
+    }
+    return numberOfCountries;
   }
 
-  public Set<Country> getCountriesToFortifyFrom() {
-    return gameState.getCurrentPlayer().getCountries().stream().filter(n -> n.getTroops() > 1)
-        .collect(
-            Collectors.toSet());
-  }
-
-  public Set<Country> getCountriesToFortify(Country country) {
-    return country.getAdjacentCountries().stream()
-        .filter(n -> n.getPlayer().equals(country.getPlayer())).collect(
-            Collectors.toSet());
-  }
-
-  public Set<Country> getCountriesToAttack(Country country) {
-    return country.getAdjacentCountries().stream()
-        .filter(n -> !n.getPlayer().equals(country.getPlayer())).collect(
-            Collectors.toSet());
-
-  }
-
-  public Set<Country> getCountriesToClaim() {
-    return gameState.getCountries().stream().filter(country -> !country.hasPlayer()).collect(
-        Collectors.toSet());
-  }
-*/
+  /**
+   * Returns the player whose turn it is.
+   *
+   * @return current player of the game state.
+   */
   public Player getCurrentPlayer() {
     return gameState.getCurrentPlayer();
   }
 
+  /**
+   * Returns the game state that is managed by the game controller.
+   *
+   * @return the game state that is managed by the game controller.
+   */
   public GameState getGameState() {
     return gameState;
   }
 
+  /**
+   * Changes the game state that is managed by the game controller into the given game state
+   */
   public void setGameState(GameState gameState) {
     this.gameState = gameState;
   }
