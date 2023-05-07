@@ -19,6 +19,15 @@ import java.util.Map;
  */
 public class Probabilities {
 
+  /**
+   * Return the initialized probability array object, strictly for testing purposes
+   *
+   * @return the win probability array
+   */
+  public static Integer[][] getWinProbabilityArray() {
+    return winProbability;
+  }
+
   private static Integer[][] winProbability;
 
   /**
@@ -69,8 +78,15 @@ public class Probabilities {
    */
   public static int getWinProbability(int attackerTotal, int defenderTotal) {
     // attacker always needs to have at least 1 troop
-    int attackerIndex = Math.min(attackerTotal - 2, 19);
+    int attackerAvailable = attackerTotal - 1;
+    while (attackerAvailable > 20 && defenderTotal > 20) {
+      attackerAvailable -= 20;
+      defenderTotal -= 20;
+    }
+    int attackerIndex = Math.min(attackerAvailable - 1, 19);
     int defenderIndex = Math.min(defenderTotal - 1, 19);
+    System.out.print(attackerIndex < 0 ? "Attacker" : "");
+
     return winProbability[attackerIndex][defenderIndex];
   }
 
@@ -92,7 +108,7 @@ public class Probabilities {
     Player strongest = null;
     double strongestPercent = 0.0;
     double currentPercent;
-    // total troop count can't be 0 during the times where this method is called
+    // total troop count can't be 0 when this method is called
     for (Player player : playerTroopCount.keySet()) {
       if ((currentPercent = playerTroopCount.get(player) / totalTroopCount) > strongestPercent) {
         strongestPercent = currentPercent;

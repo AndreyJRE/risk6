@@ -26,4 +26,10 @@ public class EndPhase extends Move {
   public GamePhase getPhaseToEnd() {
     return phaseToEnd;
   }
+
+  @Override
+  public String toString() {
+
+    return phaseToEnd.toString();
+  }
 }

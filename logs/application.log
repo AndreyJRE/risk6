@@ -1,82 +1,33 @@
-2023-04-29 14:01:37.636 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 14:01:37.653 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 15:25:07.073 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 15:25:07.083 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 15:37:41.348 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 15:37:41.360 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:04:43.861 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:04:43.870 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:17:11.412 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:17:11.422 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:20:47.802 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:20:47.810 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:22:31.590 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:22:31.598 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:49:52.260 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:49:52.267 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:50:33.665 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:50:33.673 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:54:31.347 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:54:31.354 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:56:05.028 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:56:05.037 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 16:57:14.291 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 16:57:14.300 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 17:00:15.443 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 17:00:15.453 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 17:01:29.518 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 17:01:29.527 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 17:01:53.267 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 17:01:53.275 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 18:59:43.244 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 18:59:43.252 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:11:25.257 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:11:25.267 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:19:08.700 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:19:08.710 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:20:34.101 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:20:34.110 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:21:53.338 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:21:53.345 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:22:13.424 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:22:13.432 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:24:02.111 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:24:02.119 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:24:46.342 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:24:46.350 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:27:49.563 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:27:49.571 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:30:01.411 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:30:01.419 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:30:49.973 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:30:49.981 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:32:03.116 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:32:03.125 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:32:47.687 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:32:47.695 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:35:22.952 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:35:22.960 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:37:47.863 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:37:47.871 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:38:09.809 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:38:09.817 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:39:45.111 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:39:45.119 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:40:47.677 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:40:47.686 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:41:47.571 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:41:47.580 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:42:07.308 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:42:07.316 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 19:43:28.803 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 19:43:28.811 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 20:37:02.889 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 20:37:02.896 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 20:42:01.094 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 20:42:01.102 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 21:03:31.238 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 21:03:31.249 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 21:04:31.069 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 21:04:31.078 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
-2023-04-29 21:07:28.682 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
-2023-04-29 21:07:28.690 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-02 18:54:27.389 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-02 18:54:27.398 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-02 18:55:35.699 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-02 18:55:35.717 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-02 18:56:09.522 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with username {Mohammad} was saved in the database
+2023-05-02 18:56:42.379 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-02 18:56:42.385 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-02 18:58:09.244 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-02 18:58:09.249 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-03 13:37:53.867 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-03 13:37:53.879 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-03 13:38:04.619 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with username {Test} was saved in the database
+2023-05-03 13:38:39.841 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-03 13:38:39.861 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-03 13:38:56.988 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-03 13:38:57.023 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-06 13:37:24.305 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-06 13:37:24.319 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-06 13:37:33.532 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with username {Eliya} was saved in the database
+2023-05-06 13:37:51.351 [nioEventLoopGroup-2-1] INFO  c.u.r.n.client.GameClientHandler - Connected successfully to Server!
+2023-05-06 13:39:49.525 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-06 13:39:49.548 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-06 13:39:49.822 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with id {1} was updated in the database
+2023-05-06 13:40:03.036 [nioEventLoopGroup-2-1] INFO  c.u.r.n.client.GameClientHandler - Connected successfully to Server!
+2023-05-06 13:44:57.214 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-06 13:44:57.218 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-06 13:44:57.405 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with id {1} was updated in the database
+2023-05-06 13:47:59.809 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-06 13:47:59.814 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-06 13:47:59.946 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with id {1} was updated in the database
+2023-05-06 13:51:21.622 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+2023-05-06 13:51:21.628 [JavaFX Application Thread] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+2023-05-06 13:51:21.752 [JavaFX Application Thread] INFO  c.u.r.database.services.UserService - User with id {1} was updated in the database

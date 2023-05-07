@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 /**
  * This class is used to configure the network.

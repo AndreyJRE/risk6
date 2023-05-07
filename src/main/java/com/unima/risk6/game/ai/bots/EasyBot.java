@@ -21,7 +21,7 @@ import java.util.Set;
  */
 public class EasyBot extends Player implements AiBot {
 
-  private final Random rng;
+  private static final Random RNG = new Random();
   private final PlayerController playerController;
   private GameState currentGameState;
   private double attackProbability;
@@ -33,7 +33,6 @@ public class EasyBot extends Player implements AiBot {
    */
   public EasyBot(String username) {
     super(username);
-    rng = new Random();
     playerController = new PlayerController();
     playerController.setPlayer(this);
     this.attackProbability = 0.8;
@@ -43,7 +42,7 @@ public class EasyBot extends Player implements AiBot {
    * Constructs an EasyBot with a default username.
    */
   public EasyBot() {
-    this("EasyBot Default");
+    this("EasyBot #" + RNG.nextInt(1000));
   }
 
   /**
@@ -55,7 +54,7 @@ public class EasyBot extends Player implements AiBot {
   public Reinforce claimCountry() {
     List<Country> unclaimed = this.currentGameState.getCountries().stream()
         .filter(country -> !country.hasPlayer()).toList();
-    return new Reinforce(unclaimed.get(rng.nextInt(unclaimed.size())), 1);
+    return new Reinforce(unclaimed.get(RNG.nextInt(unclaimed.size())), 1);
   }
 
   @Override
@@ -69,14 +68,14 @@ public class EasyBot extends Player implements AiBot {
 
   @Override
   public boolean attackAgain() {
-    boolean answer = rng.nextDouble() < this.attackProbability;
+    boolean answer = RNG.nextDouble() < this.attackProbability;
     this.attackProbability *= 0.6;
     return answer;
   }
 
   @Override
   public int getAttackTroops(Country attacker) {
-    return rng.nextInt(1, Math.min(4, attacker.getTroops()));
+    return RNG.nextInt(1, Math.min(4, attacker.getTroops()));
   }
 
   @Override
@@ -84,20 +83,20 @@ public class EasyBot extends Player implements AiBot {
     // the automatic move will have already been made
     int maxAvailable = winPair.getOutgoing().getTroops();
     // nextInt automatically chooses any number while always leaving at least one troop behind
-    return winPair.createFortify(rng.nextInt(maxAvailable));
+    return winPair.createFortify(RNG.nextInt(maxAvailable));
   }
 
 
   @Override
   public Fortify createFortify() {
     this.attackProbability = 0.8;
-    if (rng.nextDouble() < 0.25) {
+    if (RNG.nextDouble() < 0.25) {
       return null;
     }
     List<CountryPair> decisions = this.playerController.getAllValidFortifies();
     CountryPair toFortify = this.getRandomCountryPair(decisions);
     if (toFortify != null) {
-      int troopsToMove = rng.nextInt(1, toFortify.getOutgoing().getTroops());
+      int troopsToMove = RNG.nextInt(1, toFortify.getOutgoing().getTroops());
       return toFortify.createFortify(troopsToMove);
     }
     // return end phase
@@ -114,7 +113,7 @@ public class EasyBot extends Player implements AiBot {
     int reinforceTroopsCopy = this.getDeployableTroops();
     while (reinforceTroopsCopy > 0) {
       int troopsSent;
-      troopsSent = reinforceTroopsCopy == 1 ? 1 : rng.nextInt(1, reinforceTroopsCopy);
+      troopsSent = reinforceTroopsCopy == 1 ? 1 : RNG.nextInt(1, reinforceTroopsCopy);
       Reinforce toAdd = this.createRandomReinforce(troopsSent);
       reinforcements.add(toAdd);
       reinforceTroopsCopy -= troopsSent;
@@ -140,7 +139,7 @@ public class EasyBot extends Player implements AiBot {
    * @return A randomly chosen country from the set.
    */
   private Country getRandomCountryFromSet(Set<Country> countrySet) {
-    int stopIndex = rng.nextInt(this.playerController.getNumberOfCountries());
+    int stopIndex = RNG.nextInt(this.playerController.getNumberOfCountries());
     int counter = 0;
     for (Country country : countrySet) {
       if (counter == stopIndex) {
@@ -161,7 +160,7 @@ public class EasyBot extends Player implements AiBot {
     if (decision.size() == 0) {
       return null;
     } else {
-      return decision.get(rng.nextInt(decision.size()));
+      return decision.get(RNG.nextInt(decision.size()));
     }
   }
 

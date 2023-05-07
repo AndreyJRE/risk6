@@ -85,6 +85,15 @@ class ProbabilitiesTest {
     assertEquals(player, Probabilities.findStrongestPlayer(gameState));
   }
 
+  @Test
+  void initTest() {
+    assertEquals(20, Probabilities.getWinProbabilityArray().length);
+    for (int i = 0; i < Probabilities.getWinProbabilityArray().length; i++) {
+      assertEquals(20, Probabilities.getWinProbabilityArray()[i].length,
+          "Position " + (i + 1) + " not correct");
+    }
+  }
+
   static Country getCountryByName(CountryName countryName) {
     return gameState.getCountries().stream().filter(n -> n.getCountryName().equals(countryName))
         .findFirst().orElse(null);

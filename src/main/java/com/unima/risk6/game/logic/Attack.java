@@ -52,6 +52,10 @@ public class Attack extends Move {
       case 1 -> {
         attackDiceResult.add(Dice.rollDice());
         defendDiceResult.add(Dice.rollDice());
+        if (defendingCountry.getTroops() > 1) {
+          defendDiceResult.add(Dice.rollDice());
+          sortDicelist();
+        }
         sortDicelist();
         compareDice(0);
       }
@@ -192,5 +196,24 @@ public class Attack extends Move {
   public boolean getHasConquered() {
 
     return hasConquered;
+  }
+
+  @Override
+  public String toString() {
+
+    return "this is an Attack";
+  }
+
+
+  public void setAttackerLosses(int attackerLosses) {
+    this.attackerLosses = attackerLosses;
+  }
+
+  public void setDefenderLosses(int defenderLosses) {
+    this.defenderLosses = defenderLosses;
+  }
+
+  public void setHasConquered(boolean hasConquered) {
+    this.hasConquered = hasConquered;
   }
 }

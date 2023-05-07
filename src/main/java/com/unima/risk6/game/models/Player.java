@@ -104,6 +104,8 @@ public class Player {
         + initialTroops + "\n" + this.currentPhase + "| ");
     countries.stream()
         .forEach(n -> s.append(n.getCountryName() + ": " + n.getTroops() + "| "));
+    getHand().getCards().forEach(s::append);
+
     s.append("\n--------------");
 
     return s.toString();

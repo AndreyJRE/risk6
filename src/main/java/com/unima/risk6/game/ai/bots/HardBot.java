@@ -7,6 +7,7 @@ import com.unima.risk6.game.ai.montecarlo.MonteCarloTreeSearch;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.List;
 import java.util.Queue;
 
@@ -30,11 +31,14 @@ public class HardBot extends GreedyBot implements AiBot {
   }
 
   public HardBot() {
-    super("HardBot Default");
+    this("HardBot #" + RNG.nextInt(1000));
   }
 
   @Override
   public List<Reinforce> createAllReinforcements() {
+    if (this.getCurrentPhase() == GamePhase.CLAIM_PHASE) {
+      // do other strategy
+    }
     updateBestMoves();
     return this.reinforces;
   }
@@ -46,6 +50,7 @@ public class HardBot extends GreedyBot implements AiBot {
 
   @Override
   public Fortify createFortify() {
+    // MODIFY FORTIFY TO readjust numbers
     return this.fortifies;
   }
 
