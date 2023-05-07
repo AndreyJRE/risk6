@@ -217,7 +217,7 @@ public class MoveProcessor {
   public void processHandIn(HandIn handIn) {
     HandController handController = playerController.getHandController();
     handController.selectCardsFromCardList(handIn.getCards());
-    System.out.println(handController.getHand().toString());
+//    System.out.println(handController.getHand().toString());
     //Checks if HandIn is valid.
     if (gameController.getCurrentPlayer().getCurrentPhase().equals(REINFORCEMENT_PHASE)
         && handController.isExchangeable()) {

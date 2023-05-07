@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.GreedyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.CountryPair;
@@ -53,8 +54,8 @@ public class MonteCarloTreeSearch {
 
 
   private static int counter = 0;
-  private static final int SIMULATION_COUNT = 100;
-  private static final int SIMULATION_TIME_LIMIT = 500; // see how much time a human has?
+  private static final int SIMULATION_COUNT = 10;
+  private static final int SIMULATION_TIME_LIMIT = 50;
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -97,9 +98,9 @@ public class MonteCarloTreeSearch {
         node = expand(node);
         result = simulate(node.getGameState());
       }
+      counter = 0;
       backpropagate(node, result);
     }
-    System.out.println(counter);
     return chooseBestMove(root);
   }
 
@@ -229,9 +230,9 @@ public class MonteCarloTreeSearch {
       } else {
         replacement = (AiBot) toSwap;
       }
-      if (replacement instanceof MonteCarloBot) {
-        ((MonteCarloBot) replacement).setContinentsCopy(deepCopy.getContinents());
-        // find cleaner solution for following
+      if (replacement instanceof GreedyBot) {
+        ((GreedyBot) replacement).setContinentsCopy(deepCopy.getContinents());
+        // find cleaner solution for following - AiBot method with gamestate parameter?
       } else if (replacement instanceof EasyBot) {
         ((EasyBot) replacement).setCurrentGameState(deepCopy);
       }
@@ -264,9 +265,12 @@ public class MonteCarloTreeSearch {
       if (attacks == null) {
         break;
       }
-      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
-      allAttacks.add(attacks);
-      moveProcessor.processAttack(toProcess);
+      Attack toProcess;
+      do {
+        toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
+        allAttacks.add(attacks);
+        moveProcessor.processAttack(toProcess);
+      } while (!toProcess.getHasConquered() && toProcess.getAttackingCountry().getTroops() >= 2);
       if (simulationController.getGameState().isGameOver()) {
         return null;
       }
