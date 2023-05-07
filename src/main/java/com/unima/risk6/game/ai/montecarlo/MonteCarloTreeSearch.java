@@ -13,6 +13,7 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
@@ -51,7 +52,8 @@ import java.util.Queue;
 public class MonteCarloTreeSearch {
 
 
-  private static final int SIMULATION_COUNT = 40;
+  private static int counter = 0;
+  private static final int SIMULATION_COUNT = 100;
   private static final int SIMULATION_TIME_LIMIT = 500; // see how much time a human has?
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
@@ -87,7 +89,6 @@ public class MonteCarloTreeSearch {
   public MoveTriplet getBestMove(GameState game) {
     MonteCarloNode root = new MonteCarloNode(game, null);
     for (int i = 0; i < SIMULATION_COUNT; i++) {
-      System.out.println(i);
       // does reassigning node in select mess up root?
       MonteCarloNode node = select(root);
       Player result = null;
@@ -98,6 +99,7 @@ public class MonteCarloTreeSearch {
       }
       backpropagate(node, result);
     }
+    System.out.println(counter);
     return chooseBestMove(root);
   }
 
@@ -242,33 +244,19 @@ public class MonteCarloTreeSearch {
 
   public MoveTriplet playTurn(GameController simulationController,
       PlayerController playerController, MoveProcessor moveProcessor) {
+    counter++;
     AiBot current = (AiBot) simulationController.getCurrentPlayer();
-    boolean tooMuch = !simulationController.getGameState().getCountries().stream()
-        .filter(c -> c.getTroops() <= 0).toList().isEmpty();
-    if (tooMuch) {
-      System.out.println("BEFORE ALL");
-      simulationController.getGameState().getCountries().stream().filter(c -> c.getTroops() <= 0)
-          .forEach(System.out::println);
-    }
     HandController handController = playerController.getHandController();
-    // TODO: add hand in to moveTriplet
-    if (handController.holdsExchangeable()) {
+    if (handController.holdsExchangeable()) { // hand in will be redone by server
       handController.selectExchangeableCards();
-//      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
-//      moveProcessor.processHandIn(handIn);
+      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+      moveProcessor.processHandIn(handIn);
     }
     List<Reinforce> allReinforcements = current.createAllReinforcements();
     for (Reinforce reinforce : allReinforcements) {
       moveProcessor.processReinforce(reinforce);
     }
     moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
-    tooMuch = !simulationController.getGameState().getCountries().stream()
-        .filter(c -> c.getTroops() <= 0).toList().isEmpty();
-    if (tooMuch) {
-      System.out.println("REINFORCED");
-      simulationController.getGameState().getCountries().stream().filter(c -> c.getTroops() <= 0)
-          .forEach(System.out::println);
-    }
     Queue<CountryPair> allAttacks = new LinkedList<>();
     do {
       CountryPair attacks = current.createAttack();
@@ -283,7 +271,10 @@ public class MonteCarloTreeSearch {
         return null;
       }
       if (toProcess.getHasConquered()) {
-        moveProcessor.processFortify(current.moveAfterAttack(attacks));
+        Fortify afterAttack = current.moveAfterAttack(attacks);
+        if (afterAttack != null) {
+          moveProcessor.processFortify(afterAttack);
+        }
       }
     } while (current.attackAgain());
     moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
