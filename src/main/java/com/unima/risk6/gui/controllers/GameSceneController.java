@@ -405,21 +405,22 @@ public class GameSceneController implements GameStateObserver {
     this.gameState = gameState;
     Queue<Move> lastMoves = gameState.getLastMoves();
     Iterator<Move> iterator = lastMoves.iterator();
-
     updateReferencesFromGameState();
     while (iterator.hasNext()) {
       Move lastMove = iterator.next();
-      System.out.println("Class of move " + lastMove.getClass());
       if (lastMove instanceof Fortify fortify) {
-        animateTroopsMovement(fortify);
+        System.out.println(fortify);
+        Platform.runLater(() -> animateTroopsMovement(fortify));
       } else if (lastMove instanceof Attack attack) {
-        animateAttack(attack);
+        System.out.println(attack);
+        Platform.runLater(() -> animateAttack(attack));
       } else if (lastMove instanceof Reinforce reinforce) {
-        animateReinforce(reinforce);
+        System.out.println(reinforce);
+        Platform.runLater(() -> animateReinforce(reinforce));
       } else if (lastMove instanceof HandIn handIn) {
-        animateHandIn(handIn);
+        Platform.runLater(() -> animateHandIn(handIn));
       } else if (lastMove instanceof EndPhase endPhase) {
-        animateEndPhase(endPhase);
+        Platform.runLater(() -> animateEndPhase(endPhase));
       }
       iterator.remove();
     }
@@ -513,8 +514,7 @@ public class GameSceneController implements GameStateObserver {
   private void animateAttack(Attack attack) {
     CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
     CountryUi countryUi1 = getCountryUiByCountry(attack.getDefendingCountry());
-    countryUi.update(activePlayerUi, attack);
-    countryUi1.update(activePlayerUi, attack);
+    countryUi.updateAfterAttack(activePlayerUi, attack, countryUi, countryUi1);
 
   }
 
@@ -551,7 +551,7 @@ public class GameSceneController implements GameStateObserver {
   }
 
   public void updateActivePlayerUi() {
-    Platform.runLater(() -> activePlayerUi.changeActivePlayerUi(getCurrentPlayerUi()));
+    activePlayerUi.changeActivePlayerUi(getCurrentPlayerUi());
   }
 
   public PlayerUi getCurrentPlayerUi() {

@@ -2,7 +2,6 @@ package com.unima.risk6.network.server;
 
 import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.CLAIM_PHASE;
-import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
 import com.unima.risk6.game.logic.Attack;
@@ -19,7 +18,6 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.CountryName;
-import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.server.exceptions.InvalidMoveException;
 import java.util.Set;
 
@@ -32,7 +30,6 @@ public class MoveProcessor {
 
   public MoveProcessor(PlayerController playerController, GameController gameController,
       DeckController deckController) {
-
     this.gameController = gameController;
     this.deckController = deckController;
     this.playerController = playerController;
@@ -59,9 +56,9 @@ public class MoveProcessor {
       gameController.addLastMove(fortify);
 
       //Automatic next phase ending if player is in fortify phase.
-      if (gameController.getCurrentPlayer().getCurrentPhase().equals(GamePhase.FORTIFY_PHASE)) {
+     /* if (gameController.getCurrentPlayer().getCurrentPhase().equals(GamePhase.FORTIFY_PHASE)) {
         processEndPhase(new EndPhase(FORTIFY_PHASE));
-      }
+      } */
     } else {
       throw new InvalidMoveException("The Fortify is not valid");
     }
@@ -114,6 +111,7 @@ public class MoveProcessor {
     } else {
       throw new InvalidMoveException("The Reinforce is not valid");
     }
+
   }
 
   public void processAttack(Attack attack) {
@@ -164,9 +162,9 @@ public class MoveProcessor {
         defenderStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
 
         //Forced Fortify after attack and takeover
-        Fortify forcedFortify = new Fortify(attackingCountry, defendingCountry,
+        /*Fortify forcedFortify = new Fortify(attackingCountry, defendingCountry,
             attack.getTroopNumber());
-        processFortify(forcedFortify);
+        processFortify(forcedFortify);*/
         //TODO OPTIONAL Fortify NOW Attack has won HOW TO SIGNAL?
 
       }
@@ -277,6 +275,10 @@ public class MoveProcessor {
 
   public PlayerController getPlayerController() {
     return playerController;
+  }
+
+  public DeckController getDeckController() {
+    return deckController;
   }
 }
 

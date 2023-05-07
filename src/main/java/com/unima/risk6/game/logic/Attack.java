@@ -200,10 +200,17 @@ public class Attack extends Move {
 
   @Override
   public String toString() {
-
-    return "this is an Attack";
+    return "Attack{" +
+        "attackingCountry=" + attackingCountry +
+        ", defendingCountry=" + defendingCountry +
+        ", attackerLosses=" + attackerLosses +
+        ", defenderLosses=" + defenderLosses +
+        ", attackDiceResult=" + attackDiceResult +
+        ", defendDiceResult=" + defendDiceResult +
+        ", troopNumber=" + troopNumber +
+        ", hasConquered=" + hasConquered +
+        '}';
   }
-
 
   public void setAttackerLosses(int attackerLosses) {
     this.attackerLosses = attackerLosses;
