@@ -1,5 +1,9 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
@@ -10,22 +14,24 @@ import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
-import javafx.scene.shape.Path;
-import javafx.scene.text.Font;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
 
 public class SelectMultiplayerLobbySceneController {
 
@@ -108,7 +114,7 @@ public class SelectMultiplayerLobbySceneController {
 
   private void initGameLobbys() {
     //TODO: get all GameLobbys and save them to listview
-    gameLobbies = serverLobby.getGameLobbies();
+    /*gameLobbies = serverLobby.getGameLobbies();
     ObservableList<String> lobbys = FXCollections.observableArrayList();
     for (GameLobby gameLobby : gameLobbies) {
       String temp = gameLobby.getLobbyName() + " hosted by " + gameLobby.getName() + " "
@@ -116,7 +122,7 @@ public class SelectMultiplayerLobbySceneController {
       lobbys.add(temp);
     }
     lobbys.addAll("Lobby 1", "Lobby 2", "Lobby 3");
-    lobbyList.setItems(lobbys);
+    lobbyList.setItems(lobbys);*/
   }
 
   private void initSplitPane() {

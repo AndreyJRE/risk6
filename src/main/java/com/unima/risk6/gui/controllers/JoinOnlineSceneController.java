@@ -1,6 +1,11 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -8,20 +13,21 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 public class JoinOnlineSceneController {
 
@@ -78,7 +84,7 @@ public class JoinOnlineSceneController {
     Label titleLabel = new Label("Join Online");
     titleLabel.setFont(Font.font("BentonSans Bold", 41));
     titleLabel.setStyle(
-            "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+        "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
 
     TextField ipAdressTextField = new TextField();
     ipAdressTextField.setPrefSize(800, 40);
@@ -132,12 +138,25 @@ public class JoinOnlineSceneController {
   }
 
   private void handleJoin(String host, int port) {
-    LobbyConfiguration.configureGameClient(host, port);
-    LobbyConfiguration.startGameClient();
+    Task<Void> task = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        LobbyConfiguration.configureGameClient(host, port);
+        LobbyConfiguration.startGameClient();
+        while (LobbyConfiguration.getGameClient() == null) {
+          Thread.sleep(100);
+        }
+        return null;
+      }
+    };
+    Thread thread = new Thread(task);
+    thread.start();
     UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
         DatabaseConfiguration.getGameStatisticService()
             .getAllStatisticsByUserId(SessionManager.getUser().getId()));
-    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
+    GameConfiguration.setMyGameUser(userDto);
+    //TODO
+    //Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
     SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SELECT_LOBBY);
     if (scene == null) {
