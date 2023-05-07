@@ -98,6 +98,7 @@ public class MonteCarloTreeSearch {
         node = expand(node);
         result = simulate(node.getGameState());
       }
+      System.out.println(result);
       counter = 0;
       backpropagate(node, result);
     }
@@ -284,11 +285,10 @@ public class MonteCarloTreeSearch {
     moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
 
     Fortify fortify = current.createFortify();
-    if (fortify == null) {
-      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-    } else {
+    if (fortify != null) {
       moveProcessor.processFortify(fortify);
     }
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
     return new MoveTriplet(allReinforcements, allAttacks, fortify);
   }
 }
