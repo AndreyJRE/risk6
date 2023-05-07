@@ -19,6 +19,15 @@ import java.util.Map;
  */
 public class Probabilities {
 
+  /**
+   * Return the initialized probability array object, strictly for testing purposes
+   *
+   * @return the win probability array
+   */
+  public static Integer[][] getWinProbabilityArray() {
+    return winProbability;
+  }
+
   private static Integer[][] winProbability;
 
   /**
@@ -70,12 +79,17 @@ public class Probabilities {
   public static int getWinProbability(int attackerTotal, int defenderTotal) {
     // attacker always needs to have at least 1 troop
     int attackerAvailable = attackerTotal - 1;
-    if (attackerAvailable > 20 && defenderTotal > 20) {
-      attackerAvailable %= 20;
-      defenderTotal %= 20;
+    while (attackerAvailable > 20 && defenderTotal > 20) {
+      attackerAvailable -= 20;
+      defenderTotal -= 20;
     }
     int attackerIndex = Math.min(attackerAvailable - 1, 19);
     int defenderIndex = Math.min(defenderTotal - 1, 19);
+    System.out.print(attackerIndex < 0 ? "Attacker" : "");
+    if (defenderIndex < 0 || attackerIndex < 0) {
+      System.out.println("Defender");
+    }
+
     return winProbability[attackerIndex][defenderIndex];
   }
 

@@ -45,7 +45,8 @@ public abstract class GreedyBot extends Player implements AiBot {
    *
    * @param continents the set of continents.
    */
-  protected void setContinentsCopy(Set<Continent> continents) {
+  public void setContinentsCopy(Set<Continent> continents) {
+    this.continentsCopy = new ArrayList<>();
     this.continentsCopy.addAll(continents);
   }
 
@@ -69,7 +70,7 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
-    int troopsAffordable = Integer.MIN_VALUE;
+    int troopsAffordable = 0;
     for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
       if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
         int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
@@ -226,7 +227,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     Country bestAdj = null;
     for (Country adj : country.getAdjacentCountries()) {
       if (this.equals(adj.getPlayer()) && adj.getTroops() >= country.getTroops()
-          && allOwnedCountryDiffs.get(adj) < 0) {
+          && allOwnedCountryDiffs.getOrDefault(adj, 0) < 0) {
         if (bestAdj == null || adj.getTroops() > bestAdj.getTroops()
             || allOwnedCountryDiffs.get(adj) < allOwnedCountryDiffs.get(bestAdj)) {
           bestAdj = adj;

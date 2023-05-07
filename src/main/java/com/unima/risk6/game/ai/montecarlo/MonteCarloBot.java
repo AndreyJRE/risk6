@@ -49,7 +49,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
 
   public List<CountryPair> getAttackMoves() {
     List<CountryPair> attackPairs = new ArrayList<>();
-    for (Continent continent : this.getContinents()) {
+    for (Continent continent : this.getContinentsCopy()) {
       attackPairs.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
     // TODO: shuffle moves or let it play by best chances?
@@ -72,11 +72,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
       }
     }
     return fortifyList.subList(0, Math.min(5, fortifyList.size()));
-  }
-
-
-  public List<Continent> getContinentsCopy() {
-    return continentsCopy;
   }
 
   public void sortContinentsByHighestRelativePower() {
@@ -152,7 +147,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
   @Override
   public boolean attackAgain() {
     this.attackProbability *= 0.9;
-    return RNG.nextDouble() < this.attackProbability;
+    return this.getAttackMoves().size() > 0 && RNG.nextDouble() < this.attackProbability;
   }
 
 }

@@ -90,7 +90,8 @@ public class PlayerController {
     List<CountryPair> attackable = new ArrayList<>();
     if (country.getTroops() >= troopLimitPerPhase()) {
       for (Country adjacentCountry : country.getAdjacentCountries()) {
-        if (!this.player.equals(adjacentCountry.getPlayer()) && adjacentCountry.hasPlayer()) {
+        if (!this.player.equals(adjacentCountry.getPlayer()) && adjacentCountry.hasPlayer()
+            && adjacentCountry.getTroops() >= 1) {
           attackable.add(new CountryPair(country, adjacentCountry));
         }
       }

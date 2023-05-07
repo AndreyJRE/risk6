@@ -7,6 +7,7 @@ import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -42,9 +43,12 @@ class HardBotTest {
     enemy = new Player();
     List<AiBot> bots = new ArrayList<>();
     List<String> humans = new ArrayList<>();
-    humans.add("Pedro the guy");
+//    humans.add("Pedro the guy");
     bots.add(hardBot);
+    bots.add(new EasyBot("Pedro the guy"));
     gameState = GameConfiguration.configureGame(humans, bots);
+    DeckController deckController = new DeckController(gameState.getDeck());
+    deckController.initDeck();
     for (Player p : gameState.getActivePlayers()) {
       if (p.getUser().equals("Pedro the guy")) {
         enemy = p;
@@ -57,6 +61,7 @@ class HardBotTest {
       gameState.getActivePlayers().add(enemy);
       gameState.setCurrentPlayer((Player) hardBot);
     }
+    ((EasyBot) enemy).setCurrentGameState(gameState);
   }
 
   @BeforeEach
@@ -70,15 +75,16 @@ class HardBotTest {
   }
 
   @Test
-  void createAllReinforcements() {
+  void getBestMovesTest() {
+    gameState.getCountries().stream()
+        .filter(c -> !c.getCountryName().equals(CountryName.MIDDLE_EAST)).forEach(c -> {
+          enemyController.addCountry(c);
+          c.setTroops(1);
+        });
     Country middleEast = getCountryByName(CountryName.MIDDLE_EAST);
     botTestController.addCountry(middleEast);
     middleEast.setTroops(2);
     botTestController.changeDeployableTroops(4);
-    for (Country adj : middleEast.getAdjacentCountries()) {
-      enemyController.addCountry(adj);
-      adj.setTroops(1);
-    }
     ((Player) hardBot).setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
     enemy.setCurrentPhase(GamePhase.NOT_ACTIVE);
     ((HardBot) hardBot).setCurrentGameState(gameState);
@@ -86,14 +92,6 @@ class HardBotTest {
     assertEquals(4, decisions.stream().mapToInt(Reinforce::getToAdd).sum());
     List<CountryPair> attacks = new ArrayList<>();
     CountryPair attack = hardBot.createAttack();
-  }
-
-  @Test
-  void createAttack() {
-  }
-
-  @Test
-  void createFortify() {
   }
 
   static Country getCountryByName(CountryName countryName) {

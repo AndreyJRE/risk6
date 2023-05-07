@@ -19,6 +19,7 @@ import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
+import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -28,6 +29,7 @@ import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.AttackTypeAdapter;
+import com.unima.risk6.network.serialization.CardTypeAdapter;
 import com.unima.risk6.network.serialization.ContinentTypeAdapter;
 import com.unima.risk6.network.serialization.CountryTypeAdapter;
 import com.unima.risk6.network.serialization.Deserializer;
@@ -46,14 +48,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 
 public class MonteCarloTreeSearch {
 
 
-  private static final int SIMULATION_COUNT = 1;
-  private static final int SIMULATION_TIME_LIMIT = 30; // see how much time a human has?
-  private static final Random RNG = new Random();
+  private static final int SIMULATION_COUNT = 200;
+  private static final int SIMULATION_TIME_LIMIT = 500; // see how much time a human has?
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -66,6 +66,7 @@ public class MonteCarloTreeSearch {
       .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
       .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
       .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
+      .registerTypeAdapter(Card.class, new CardTypeAdapter())
       .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter()).create();
   private final HardBot player;
 
@@ -160,9 +161,9 @@ public class MonteCarloTreeSearch {
     DeckController deckController = new DeckController(simulation.getDeck());
     MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
         deckController);
-//    while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
+    while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
       this.playTurn(simulationController, playerController, moveProcessor);
-//    }
+    }
     return Probabilities.findStrongestPlayer(simulation);
   }
 
@@ -226,10 +227,15 @@ public class MonteCarloTreeSearch {
       } else {
         replacement = (AiBot) toSwap;
       }
+      if (replacement instanceof MonteCarloBot) {
+        ((MonteCarloBot) replacement).setContinentsCopy(deepCopy.getContinents());
+        // find cleaner solution for following
+      } else if (replacement instanceof EasyBot) {
+        ((EasyBot) replacement).setCurrentGameState(deepCopy);
+      }
       deepCopy.getActivePlayers().add((Player) replacement);
 
     }
-
     deepCopy.setCurrentPlayer(deepCopy.getActivePlayers().peek());
     return (GameState) copy.getContent();
   }
@@ -237,7 +243,13 @@ public class MonteCarloTreeSearch {
   public MoveTriplet playTurn(GameController simulationController,
       PlayerController playerController, MoveProcessor moveProcessor) {
     AiBot current = (AiBot) simulationController.getCurrentPlayer();
-//    playerController.setPlayer((Player) current);
+    boolean tooMuch = !simulationController.getGameState().getCountries().stream()
+        .filter(c -> c.getTroops() <= 0).toList().isEmpty();
+    if (tooMuch) {
+      System.out.println("BEFORE ALL");
+      simulationController.getGameState().getCountries().stream().filter(c -> c.getTroops() <= 0)
+          .forEach(System.out::println);
+    }
     HandController handController = playerController.getHandController();
     // TODO: add hand in to moveTriplet
     if (handController.holdsExchangeable()) {
@@ -250,28 +262,35 @@ public class MonteCarloTreeSearch {
       moveProcessor.processReinforce(reinforce);
     }
     moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+    tooMuch = !simulationController.getGameState().getCountries().stream()
+        .filter(c -> c.getTroops() <= 0).toList().isEmpty();
+    if (tooMuch) {
+      System.out.println("REINFORCED");
+      simulationController.getGameState().getCountries().stream().filter(c -> c.getTroops() <= 0)
+          .forEach(System.out::println);
+    }
     Queue<CountryPair> allAttacks = new LinkedList<>();
-//    do {
-//      CountryPair attacks = current.createAttack();
-//      // while not (one country has lost)
-//      if (attacks == null) {
-//        break;
-//      }
-//      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
-//      allAttacks.add(attacks);
-//      moveProcessor.processAttack(toProcess);
-//      if (toProcess.getHasConquered()) {
-//        moveProcessor.processFortify(current.moveAfterAttack(attacks));
-//      }
-//    } while (current.attackAgain());
+    do {
+      CountryPair attacks = current.createAttack();
+      // while not (one country has lost)
+      if (attacks == null) {
+        break;
+      }
+      Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
+      allAttacks.add(attacks);
+      moveProcessor.processAttack(toProcess);
+      if (toProcess.getHasConquered()) {
+        moveProcessor.processFortify(current.moveAfterAttack(attacks));
+      }
+    } while (current.attackAgain());
     moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+
     Fortify fortify = current.createFortify();
-//    if (fortify == null) {
-//      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-//    } else {
-//      moveProcessor.processFortify(fortify);
-//    }
-    moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+    if (fortify == null) {
+      moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+    } else {
+      moveProcessor.processFortify(fortify);
+    }
     return new MoveTriplet(allReinforcements, allAttacks, fortify);
   }
 }
