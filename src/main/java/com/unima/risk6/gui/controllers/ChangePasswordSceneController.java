@@ -19,8 +19,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -50,13 +51,11 @@ public class ChangePasswordSceneController {
     Path arrow = StyleConfiguration.generateBackArrow();
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(event -> sceneController.activate(SceneName.USER_OPTION));
-    VBox vBox = createNewPasswordFields();
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(25);
+    AnchorPane anchorPane = createNewPasswordFields();
 
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
-    root.setCenter(vBox);
+    root.setCenter(anchorPane);
     root.setLeft(backButton);
 
 
@@ -64,7 +63,7 @@ public class ChangePasswordSceneController {
 
   private Button createConfirmButton() {
     Button confirmButton = new Button("Confirm");
-    confirmButton.setPrefWidth(470);
+    confirmButton.setPrefWidth(800);
     confirmButton.setPrefHeight(40);
     confirmButton.setAlignment(Pos.CENTER);
     applyButtonStyle(confirmButton);
@@ -72,10 +71,23 @@ public class ChangePasswordSceneController {
     return confirmButton;
   }
 
-  private VBox createNewPasswordFields() {
+  private AnchorPane createNewPasswordFields() {
+    AnchorPane anchorPane = new AnchorPane();
+    anchorPane.setPrefSize(600, 495);
+    anchorPane.setPadding(new Insets(150, 200, 150, 200));
+
     VBox vBox = new VBox();
-    Label selectUser = new Label("Change password");
-    selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 65px; "
+    vBox.setAlignment(Pos.CENTER);
+    vBox.setSpacing(22);
+    vBox.setStyle(
+        "-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    AnchorPane.setTopAnchor(vBox, 0.0);
+    AnchorPane.setRightAnchor(vBox, 0.0);
+    AnchorPane.setBottomAnchor(vBox, 0.0);
+    AnchorPane.setLeftAnchor(vBox, 0.0);
+
+    Label selectUser = new Label("Change Password");
+    selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 41px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
     PasswordField newPasswordField = new PasswordField();
     PasswordField confirmPasswordField = new PasswordField();
@@ -90,7 +102,7 @@ public class ChangePasswordSceneController {
 
     Label errorMessage = new Label();
     errorMessage.setTextFill(Color.RED);
-    errorMessage.setStyle("-fx-font-size: 20; -fx-font-weight: bold;");
+    errorMessage.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
     Button confirmButton = createConfirmButton();
     confirmButton.setDisable(true); // Disable the button initially
 
@@ -120,16 +132,30 @@ public class ChangePasswordSceneController {
     });
     newPasswordField.textProperty().addListener(passwordFieldChangeListener);
     confirmPasswordField.textProperty().addListener(passwordFieldChangeListener);
-    HBox newPasswordBox = new HBox(newPasswordField);
-    newPasswordBox.setAlignment(Pos.CENTER);
-    HBox confirmPasswordBox = new HBox(confirmPasswordField);
-    VBox errorMessageBox = new VBox(confirmPasswordBox, errorMessage);
     vBox.setAlignment(Pos.CENTER);
-    errorMessageBox.setSpacing(10);
-    errorMessageBox.setAlignment(Pos.CENTER);
-    confirmPasswordBox.setAlignment(Pos.CENTER);
-    vBox.getChildren().addAll(selectUser, newPasswordBox, errorMessageBox, confirmButton);
-    return vBox;
+
+    Label enterNewPassword = new Label("Enter new password:");
+    Label confirmPassword = new Label("Confirm new password:");
+    enterNewPassword.setFont(Font.font(18));
+    confirmPassword.setFont(Font.font(18));
+    enterNewPassword.setAlignment(Pos.CENTER_LEFT);
+    confirmPassword.setAlignment(Pos.CENTER_LEFT);
+    enterNewPassword.setMinWidth(200);
+    confirmPassword.setMinWidth(200);
+
+    GridPane centerGrid = new GridPane();
+    centerGrid.add(enterNewPassword, 0, 0);
+    centerGrid.add(confirmPassword, 0, 1);
+    centerGrid.add(newPasswordField, 1, 0);
+    centerGrid.add(confirmPasswordField, 1, 1);
+    centerGrid.setHgap(20);
+    centerGrid.setVgap(15);
+
+    vBox.getChildren().addAll(selectUser, centerGrid, errorMessage, confirmButton);
+    vBox.setPadding(new Insets(15, 20, 15, 20));
+
+    anchorPane.getChildren().add(vBox);
+    return anchorPane;
   }
 
   private void showErrorDialog(String title, String message) {

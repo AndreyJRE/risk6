@@ -1,5 +1,9 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
@@ -10,22 +14,27 @@ import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 public class SelectMultiplayerLobbySceneController {
 
@@ -37,6 +46,7 @@ public class SelectMultiplayerLobbySceneController {
   private User user;
   private BorderPane root;
   private List<GameLobby> gameLobbies = new ArrayList<>();
+  private boolean initialized = false;
 
 
   public SelectMultiplayerLobbySceneController(
@@ -93,8 +103,9 @@ public class SelectMultiplayerLobbySceneController {
 
     HBox bottomBox = new HBox(create, seperator, join);
     bottomBox.setAlignment(Pos.CENTER);
-
-    initSplitPane();
+    if (!initialized) {
+      initSplitPane();
+    }
 
     root.setLeft(backButton);
     root.setTop(titleBox);
@@ -117,10 +128,36 @@ public class SelectMultiplayerLobbySceneController {
     }
     lobbys.addAll("Lobby 1", "Lobby 2", "Lobby 3");
     lobbyList.setItems(lobbys);
+    String listViewStyle = "-fx-background-color: transparent;" // Hintergrundfarbe der ListView
+        + "-fx-control-inner-background: #f0f0f0;" // Hintergrundfarbe der Zellen
+        + "-fx-control-inner-background-alt: #e0e0e0;" // Alternierende Hintergrundfarbe der Zellen
+        + "-fx-font-size: 20;" // Schriftgröße
+        + "-fx-border-color: #cccccc;" // Randfarbe der ListView
+        + "-fx-border-radius: 10;" // Randradius der ListView
+        + "-fx-background-radius: 10;" // Hintergrundradius der ListView
+        + "-fx-cell-size: 80;"; // Zellengröße, um mehr Platz zwischen den Einträgen zu schaffen
+
+    lobbyList.setStyle(listViewStyle);
+
+    lobbyList.setCellFactory(param -> new ListCell<String>() {
+      @Override
+      protected void updateItem(String item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || item == null) {
+          setText(null);
+          setGraphic(null);
+        } else {
+          setText(item);
+          setPadding(new Insets(20, 30, 20, 30)); // Padding für die Zellen
+        }
+      }
+    });
+
   }
 
   private void initSplitPane() {
-
+    initialized = true;
     initGameLobbys();
 
     TextArea chatArea = new TextArea();
@@ -149,18 +186,23 @@ public class SelectMultiplayerLobbySceneController {
 
 
   private void handleJoinButton() {
-    MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-    if (scene == null) {
-      scene = new MultiplayerLobbyScene();
-      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-          scene);
-      scene.setController(multiplayerLobbySceneController);
-      sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+    if (lobbyList.getSelectionModel().getSelectedIndex() == -1) {
+      //TODO: Error Message anzeigen: Keine Lobby Ausgewählt
+    } else {
+      GameLobby gameLobby = gameLobbies.get(lobbyList.getSelectionModel().getSelectedIndex());
+      MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
+          .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
+      if (scene == null) {
+        scene = new MultiplayerLobbyScene();
+        MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+            scene, gameLobby);
+        scene.setController(multiplayerLobbySceneController);
+        sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+      }
+      pauseTitleSound();
+      lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+      sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
     }
-    pauseTitleSound();
-    lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-    sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
   }
 
   private void handleCreateButton() {

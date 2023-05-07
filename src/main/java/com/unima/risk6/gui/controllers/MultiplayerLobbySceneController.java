@@ -1,5 +1,8 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
@@ -7,6 +10,7 @@ import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
@@ -15,6 +19,9 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -31,13 +38,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
-
 public class MultiplayerLobbySceneController {
 
   private final MultiplayerLobbyScene multiplayerLobbyScene;
@@ -47,11 +47,14 @@ public class MultiplayerLobbySceneController {
   private HBox centralHBox;
   private final List<AiBot> aiBots = new ArrayList<>();
   private StackPane plus;
+  private final GameLobby gameLobby;
 
 
-  public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
+  public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene,
+      GameLobby gameLobby) {
     this.multiplayerLobbyScene = multiplayerLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
+    this.gameLobby = gameLobby;
   }
 
   public void init() {

@@ -3,7 +3,9 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
+import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
@@ -17,10 +19,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -30,8 +34,14 @@ public class CreateLobbySceneController {
   private final CreateLobbyScene createLobbyScene;
   private final SceneController sceneController;
   private final String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
+  ComboBox<String> turnTimeBox;
+  ComboBox<String> maxPlayers;
+  ComboBox<String> minElo;
+  CheckBox chatCheck;
+  TextField lobbyNameTextField;
   private BorderPane root;
   private GridPane centerGridPane;
+  private GameLobby gameLobby;
 
 
   public CreateLobbySceneController(CreateLobbyScene createLobbyScene) {
@@ -58,7 +68,7 @@ public class CreateLobbySceneController {
     Label multiplayerSettings = new Label("Multiplayer Settings");
     multiplayerSettings.setAlignment(Pos.CENTER);
     multiplayerSettings.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px;");
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 40px;");
 
     HBox multiplayerSettingsContainer = new HBox(multiplayerSettings);
     multiplayerSettingsContainer.setAlignment(Pos.CENTER);
@@ -69,12 +79,16 @@ public class CreateLobbySceneController {
     applyButtonStyle(createLobby);
 
     createLobby.setOnMouseClicked(e -> {
+      gameLobby = new GameLobby(lobbyNameTextField.getText(),
+          Integer.parseInt(maxPlayers.getValue()),
+          SessionManager.getUser().getUsername(), chatCheck.isSelected(),
+          Integer.parseInt(minElo.getValue()), Integer.parseInt(turnTimeBox.getValue()));
       MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
           .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
       if (scene == null) {
         scene = new MultiplayerLobbyScene();
         MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-            scene);
+            scene, gameLobby);
         scene.setController(multiplayerLobbySceneController);
         sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
       }
@@ -82,27 +96,44 @@ public class CreateLobbySceneController {
       sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
     });
 
-    createLobby.setPrefSize(600, 44);
+    createLobby.setPrefSize(1080, 44);
     createLobby.setFont(new Font(20));
 
     HBox createLobbyContainer = new HBox(createLobby);
     createLobbyContainer.setAlignment(Pos.CENTER);
 
-    root.setCenter(centerGridPane);
+    VBox vBox = new VBox(multiplayerSettings, centerGridPane, createLobbyContainer);
+    vBox.setAlignment(Pos.CENTER);
+    vBox.setSpacing(30);
+
+    AnchorPane anchorPane = new AnchorPane();
+    anchorPane.setPrefSize(900, 600);
+    anchorPane.setPadding(new Insets(80, 100, 80, 100));
+
+    vBox.setStyle(
+        "-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    AnchorPane.setTopAnchor(vBox, 0.0);
+    AnchorPane.setRightAnchor(vBox, 0.0);
+    AnchorPane.setBottomAnchor(vBox, 0.0);
+    AnchorPane.setLeftAnchor(vBox, 0.0);
+
+    vBox.setPadding(new Insets(15, 30, 15, 30));
+
+    anchorPane.getChildren().add(vBox);
+
+    root.setCenter(anchorPane);
     root.setLeft(backButton);
-    root.setTop(multiplayerSettingsContainer);
-    root.setBottom(createLobbyContainer);
+    //root.setTop(multiplayerSettingsContainer);
+    //root.setBottom(createLobbyContainer);
 
     BorderPane.setMargin(backButton, new Insets(10, 10, 10, 10));
-    BorderPane.setMargin(centerGridPane, new Insets(0, 0, 0, -60));
+    /*BorderPane.setMargin(centerGridPane, new Insets(0, 0, 0, -60));
     BorderPane.setMargin(createLobbyContainer, new Insets(10, 20, 20, 50));
-    BorderPane.setMargin(multiplayerSettingsContainer, new Insets(10, 20, 20, 10));
+    BorderPane.setMargin(multiplayerSettingsContainer, new Insets(10, 20, 20, 10));*/
 
   }
 
   private void initGridpane() {
-    //TODO: AnchorPane darum machen für schöneres Design
-
     centerGridPane = new GridPane();
 
     Label maxAmountOfPlayers = new Label("Max. Amount of Players: ");
@@ -120,26 +151,59 @@ public class CreateLobbySceneController {
     Label matchMakingElo = new Label("Min. required Elo:");
     matchMakingElo.setStyle(labelStyle);
 
-    ComboBox<String> turnTimeBox = new ComboBox<>();
+    maxAmountOfPlayers.setMinWidth(350);
+    lobbyName.setMinWidth(350);
+    isChatEnabled.setMinWidth(350);
+    turnTime.setMinWidth(350);
+    matchMakingElo.setMinWidth(350);
+
+    turnTimeBox = new ComboBox<>();
     ObservableList<String> turnTimes = FXCollections.observableArrayList();
     turnTimes.addAll("60 Seconds ", "90 Seconds", "120 Seconds", "150 Seconds", "180 Seconds",
         "300 Seconds");
     turnTimeBox.setItems(turnTimes);
+    turnTimeBox.setPrefWidth(800);
 
-    ComboBox<String> maxPlayers = new ComboBox<>();
+    maxPlayers = new ComboBox<>();
     ObservableList<String> maxPlayersList = FXCollections.observableArrayList();
     maxPlayersList.addAll("2", "3", "4", "5", "6");
     maxPlayers.setItems(maxPlayersList);
+    maxPlayers.setPrefWidth(800);
 
-    ComboBox<String> minElo = new ComboBox<>();
+    minElo = new ComboBox<>();
     ObservableList<String> minEloList = FXCollections.observableArrayList();
     minEloList.addAll("0", "500", "1000", "1500", "2000");
-    minElo.setItems(maxPlayersList);
+    minElo.setItems(minEloList);
+    minElo.setPrefWidth(800);
 
-    CheckBox chatCheck = new CheckBox();
+    chatCheck = new CheckBox();
 
-    TextField lobbyNameTextField = new TextField();
+    lobbyNameTextField = new TextField();
     lobbyNameTextField.setPromptText("Enter Lobby Name");
+    lobbyNameTextField.setStyle(
+        "-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");
+
+    // ComboBox styling
+    String comboBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: " +
+        "#cccccc; -fx-border-radius: 20; -fx-background-radius: 20;";
+    turnTimeBox.setStyle(comboBoxStyle);
+    maxPlayers.setStyle(comboBoxStyle);
+    minElo.setStyle(comboBoxStyle);
+
+// CheckBox styling
+    String checkBoxBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: " +
+        "#cccccc; -fx-border-radius: 3; -fx-background-radius: 3;";
+    String checkBoxSelectedBoxStyle = "-fx-font-size: 20; -fx-background-color: #93d2f8; " +
+        "-fx-border-color: #7fc6fd; -fx-border-radius: 3; -fx-background-radius: 3;";
+
+    chatCheck.setStyle(checkBoxBoxStyle);
+    chatCheck.selectedProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue) {
+        chatCheck.lookup(".box").setStyle(checkBoxSelectedBoxStyle);
+      } else {
+        chatCheck.lookup(".box").setStyle(checkBoxBoxStyle);
+      }
+    });
 
     centerGridPane.add(lobbyName, 0, 0);
     centerGridPane.add(maxAmountOfPlayers, 0, 1);
