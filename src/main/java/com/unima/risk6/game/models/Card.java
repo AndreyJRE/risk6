@@ -2,6 +2,7 @@ package com.unima.risk6.game.models;
 
 import com.unima.risk6.game.models.enums.CardSymbol;
 import com.unima.risk6.game.models.enums.CountryName;
+import java.util.Objects;
 
 /**
  * A class representing a Risk card that can either have a country or not.
@@ -93,16 +94,21 @@ public class Card {
     return getId() == card.getId();
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId());
+  }
 
   @Override
   public String toString() {
-    StringBuffer sbuf = new StringBuffer();
-    sbuf.append(cardSymbol.toString() + " ");
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(cardSymbol.toString()).append(" ");
     if (hasCountry) {
-      sbuf.append(country.toString() + " ");
+      assert country != null;
+      stringBuilder.append(country.toString()).append(" ");
     }
-    sbuf.append(id);
+    stringBuilder.append(id);
 
-    return sbuf.toString();
+    return stringBuilder.toString();
   }
 }

@@ -23,17 +23,17 @@ public class Hand {
 
   @Override
   public String toString() {
-    StringBuffer sbuf = new StringBuffer();
-    sbuf.append("Cards: ");
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("Cards: ");
     for (Card c : cards) {
-      sbuf.append(c.toString() + "||");
+      stringBuilder.append(c.toString()).append("||");
     }
-    sbuf.append("\n");
-    sbuf.append("Selected: ");
+    stringBuilder.append("\n");
+    stringBuilder.append("Selected: ");
     for (Card c : selectedCards) {
-      sbuf.append(c.toString() + "||");
+      stringBuilder.append(c.toString()).append("||");
     }
-    return sbuf.toString();
+    return stringBuilder.toString();
   }
 
 }

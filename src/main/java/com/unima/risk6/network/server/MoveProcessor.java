@@ -84,7 +84,6 @@ public class MoveProcessor {
         //After a reinforce in claim phase the turn of the player should end.
         this.processEndPhase(new EndPhase(CLAIM_PHASE));
 
-
       } else {
         //Add armies to country to reinforce.
         countryToReinforce.setTroops(countryToReinforce.getTroops() + reinforce.getToAdd());
@@ -211,7 +210,7 @@ public class MoveProcessor {
 
     playerController.getHandController().addCard(drawnCard);
     if (deckController.isEmpty()) {
-      deckController.initDeck();
+      deckController.refillDeck();
     }
   }
 
@@ -222,7 +221,7 @@ public class MoveProcessor {
     //Checks if HandIn is valid.
     if (gameController.getCurrentPlayer().getCurrentPhase().equals(REINFORCEMENT_PHASE)
         && handController.isExchangeable()) {
-
+      deckController.addHandIn(handIn.getCards());
       gameController.addLastMove(handIn);
       //Adds the deployable troops according to the number of hand in.
       int numberOfHandIn = gameController.getGameState().getNumberOfHandIns();

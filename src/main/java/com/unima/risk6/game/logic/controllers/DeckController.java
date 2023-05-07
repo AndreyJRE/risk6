@@ -15,6 +15,7 @@ import java.util.List;
 public class DeckController {
 
   private final Deck deck;
+  private final Deck handedIn;
   private int nextId = 1;
 
   /**
@@ -24,6 +25,12 @@ public class DeckController {
    */
   public DeckController(Deck deck) {
     this.deck = deck;
+    this.handedIn = new Deck();
+  }
+
+  public DeckController(Deck deck, Deck handedIn) {
+    this.deck = deck;
+    this.handedIn = handedIn;
   }
 
   /**
@@ -105,4 +112,17 @@ public class DeckController {
     return deck.getDeckCards().remove(0);
   }
 
+  public Deck getHandedIn() {
+    return handedIn;
+  }
+
+  public void addHandIn(List<Card> handInCards) {
+    this.handedIn.getDeckCards().addAll(handInCards);
+  }
+
+  public void refillDeck() {
+    deck.getDeckCards().addAll(handedIn.getDeckCards());
+    handedIn.getDeckCards().clear();
+    shuffleDeck();
+  }
 }
