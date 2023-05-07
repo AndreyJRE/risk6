@@ -17,7 +17,7 @@ import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
+import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,24 +37,24 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+public class MultiplayerLobbySceneController {
 
-public class SinglePlayerSettingsSceneController {
-
-  private final SinglePlayerSettingsScene singlePlayerSettingsScene;
+  private final MultiplayerLobbyScene multiplayerLobbyScene;
   private final SceneController sceneController;
   private User user;
   private BorderPane root;
   private HBox centralHBox;
   private List<AiBot> aiBots = new ArrayList<>();
 
-  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
-    this.singlePlayerSettingsScene = singlePlayerSettingsScene;
+
+  public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
+    this.multiplayerLobbyScene = multiplayerLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
   }
 
   public void init() {
     this.user = SessionManager.getUser();
-    this.root = (BorderPane) singlePlayerSettingsScene.getRoot();
+    this.root = (BorderPane) multiplayerLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
@@ -70,7 +70,7 @@ public class SinglePlayerSettingsSceneController {
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
     // Initialize the username TextField
-    Label title = new Label("Single Player Settings");
+    Label title = new Label("Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
     title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px;");
 
@@ -285,11 +285,15 @@ public class SinglePlayerSettingsSceneController {
 
     List<String> users = new ArrayList<>();
     users.add(SessionManager.getUser().getUsername());
+    users.add("Jake");
+    users.add("Joel");
+    users.add("John");
 
     GameState gameState = GameConfiguration.configureGame(users, aiBots);
     User myUser = SessionManager.getUser();
     GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId())));
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
+    );
     GameConfiguration.setGameState(gameState);
     CountriesUiConfiguration.configureCountries(gameState.getCountries());
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()

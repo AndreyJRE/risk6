@@ -10,16 +10,27 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import java.lang.reflect.Type;
 
 public class ReinforceTypeAdapter implements JsonSerializer<Reinforce>,
     JsonDeserializer<Reinforce> {
 
+  private GameState gameState;
+
+  public ReinforceTypeAdapter(GameState gameState) {
+    this.gameState = gameState;
+  }
+
+  public ReinforceTypeAdapter() {
+  }
+
+
   @Override
   public JsonElement serialize(Reinforce reinforce, Type typeOfSrc,
       JsonSerializationContext context) {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.add("country", context.serialize(reinforce.getCountry()));
+    jsonObject.addProperty("country", reinforce.getCountry().getCountryName().toString());
     jsonObject.addProperty("toAdd", reinforce.getToAdd());
     return jsonObject;
   }
@@ -28,8 +39,11 @@ public class ReinforceTypeAdapter implements JsonSerializer<Reinforce>,
   public Reinforce deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
-    //TODO referencen
-    Country country = context.deserialize(jsonObject.get("country"), Country.class);
+    //TODO referencen tesetn
+    Country country = gameState.getCountries().stream()
+        .filter(x -> x.getCountryName().toString().equals(jsonObject.get("country").getAsString()))
+        .findFirst()
+        .get();
     int toAdd = jsonObject.get("toAdd").getAsInt();
     return new Reinforce(country, toAdd);
   }

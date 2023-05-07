@@ -57,11 +57,10 @@ public class LoginSceneController {
     dropShadow.setColor(Color.LIGHTSKYBLUE.darker());
     Pagination usersPagination = initializeUsersPagination();
     Button createButton = createCustomCreateButton();
-    Button skipButton = createSkipButton();
     Label selectUser = new Label("Select User Profile");
     selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
-    root.getChildren().addAll(selectUser, usersPagination, createButton, skipButton);
+    root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(75);
   }
@@ -190,40 +189,6 @@ public class LoginSceneController {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-
-  }
-
-  private Button createSkipButton() {
-    Button skipButton = new Button("Skip to Title Screen (TESTING)");
-    // set the button's properties
-    skipButton.setAlignment(Pos.CENTER);
-    skipButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #000000; "
-        + "-fx-font-style: italic; -fx-font-size: 24; -fx-underline: false");
-
-// Hinzufügen von Hover-Style für Textfarbe und Unterstreichung
-    skipButton.setOnMouseEntered(e -> skipButton.setStyle("-fx-background-color: transparent;"
-        + " -fx-text-fill: #0000FF; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
-        + "24"));
-    skipButton.setOnMouseExited(e -> skipButton.setStyle("-fx-background-color: transparent; "
-        + "-fx-text-fill: #000000; -fx-underline: false; -fx-font-style: italic;  -fx-font-size: "
-        + "24"));
-
-    // add an event handler for the button
-    skipButton.setOnAction(event -> handleSkipButton());
-    return skipButton;
-  }
-
-  private void handleSkipButton() {
-    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene.fxml"));
-    Scene scene = null;
-    try {
-      scene = new Scene(fxmlLoader.load());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    SceneController sceneController = SceneConfiguration.getSceneController();
-    sceneController.addScene(SceneName.TITLE, scene);
-    sceneController.activate(SceneName.TITLE);
 
   }
 

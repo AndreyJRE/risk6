@@ -7,6 +7,10 @@ import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.ServerLobby;
+import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
+import com.unima.risk6.network.message.ConnectionActions;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.serialization.Deserializer;
@@ -89,6 +93,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
           case "CONNECTION" -> {
             LOGGER.debug("The server received a connection message");
+            //TODO Connection problem
             ConnectionMessage connectionMessage = null;
             try {
               connectionMessage = (ConnectionMessage) Deserializer.deserialize(
@@ -102,8 +107,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case GET_GAMES -> {
                 }
                 case JOIN_SERVER_LOBBY -> {
+                  //TODO Make it work properly
+                  System.out.println(connectionMessage.getContent().getClass());
+                  UserDto userDto = (UserDto) connectionMessage.getContent();
+                  NetworkConfiguration.getServerLobby().getUsers().add(userDto);
+                  sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
+
                 }
                 case JOIN_GAME -> {
                 }
@@ -144,6 +155,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       ch.writeAndFlush(
           new TextWebSocketFrame(Serializer.serialize(
               new StandardMessage(moveProcessor.getGameController().getGameState()))));
+    }
+  }
+
+  private void sendServerLobby(ServerLobby serverLobby) {
+    for (Channel ch : channels) {
+      LOGGER.debug("Send new gamestate to: " + ch.id());
+      ch.writeAndFlush(
+          new TextWebSocketFrame(Serializer.serialize(
+              new ConnectionMessage<ServerLobby>(ConnectionActions.JOIN_SERVER_LOBBY,
+                  serverLobby))));
     }
   }
 
