@@ -50,6 +50,7 @@ public class HardBot extends GreedyBot implements AiBot {
 
   @Override
   public Fortify createFortify() {
+    // MODIFY FORTIFY TO readjust numbers
     return this.fortifies;
   }
 

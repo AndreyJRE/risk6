@@ -6,8 +6,6 @@ import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.configurations.GameStateObserver;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -20,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
-public class GameController implements GameStateObserver {
+public class GameController {
 
   private GameState gameState;
 
@@ -29,7 +27,6 @@ public class GameController implements GameStateObserver {
   public GameController(GameState gameState) {
     this.gameState = gameState;
     this.players = gameState.getActivePlayers();
-    GameConfiguration.addObserver(this);
   }
 
   /**
@@ -118,12 +115,6 @@ public class GameController implements GameStateObserver {
   public void addLastMove(Move move) {
     gameState.getLastMoves().add(move);
   }
-
-  @Override
-  public void update(GameState gameState) {
-    this.gameState = gameState;
-  }
-
 
   /**
    * Moves on to the next game phase of the current player or even

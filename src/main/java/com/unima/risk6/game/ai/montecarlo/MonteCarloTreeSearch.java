@@ -13,7 +13,6 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
@@ -52,7 +51,7 @@ import java.util.Queue;
 public class MonteCarloTreeSearch {
 
 
-  private static final int SIMULATION_COUNT = 200;
+  private static final int SIMULATION_COUNT = 40;
   private static final int SIMULATION_TIME_LIMIT = 500; // see how much time a human has?
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
@@ -88,6 +87,7 @@ public class MonteCarloTreeSearch {
   public MoveTriplet getBestMove(GameState game) {
     MonteCarloNode root = new MonteCarloNode(game, null);
     for (int i = 0; i < SIMULATION_COUNT; i++) {
+      System.out.println(i);
       // does reassigning node in select mess up root?
       MonteCarloNode node = select(root);
       Player result = null;
@@ -254,8 +254,8 @@ public class MonteCarloTreeSearch {
     // TODO: add hand in to moveTriplet
     if (handController.holdsExchangeable()) {
       handController.selectExchangeableCards();
-      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
-      moveProcessor.processHandIn(handIn);
+//      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+//      moveProcessor.processHandIn(handIn);
     }
     List<Reinforce> allReinforcements = current.createAllReinforcements();
     for (Reinforce reinforce : allReinforcements) {
@@ -279,6 +279,9 @@ public class MonteCarloTreeSearch {
       Attack toProcess = attacks.createAttack(current.getAttackTroops(attacks.getOutgoing()));
       allAttacks.add(attacks);
       moveProcessor.processAttack(toProcess);
+      if (simulationController.getGameState().isGameOver()) {
+        return null;
+      }
       if (toProcess.getHasConquered()) {
         moveProcessor.processFortify(current.moveAfterAttack(attacks));
       }

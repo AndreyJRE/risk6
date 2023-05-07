@@ -86,9 +86,6 @@ public class Probabilities {
     int attackerIndex = Math.min(attackerAvailable - 1, 19);
     int defenderIndex = Math.min(defenderTotal - 1, 19);
     System.out.print(attackerIndex < 0 ? "Attacker" : "");
-    if (defenderIndex < 0 || attackerIndex < 0) {
-      System.out.println("Defender");
-    }
 
     return winProbability[attackerIndex][defenderIndex];
   }
