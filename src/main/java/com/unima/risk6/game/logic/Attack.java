@@ -203,4 +203,17 @@ public class Attack extends Move {
 
     return "this is an Attack";
   }
+
+
+  public void setAttackerLosses(int attackerLosses) {
+    this.attackerLosses = attackerLosses;
+  }
+
+  public void setDefenderLosses(int defenderLosses) {
+    this.defenderLosses = defenderLosses;
+  }
+
+  public void setHasConquered(boolean hasConquered) {
+    this.hasConquered = hasConquered;
+  }
 }
