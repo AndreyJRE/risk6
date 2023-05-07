@@ -21,4 +21,19 @@ public class Hand {
     return selectedCards;
   }
 
+  @Override
+  public String toString() {
+    StringBuffer sbuf = new StringBuffer();
+    sbuf.append("Cards: ");
+    for (Card c : cards) {
+      sbuf.append(c.toString() + "||");
+    }
+    sbuf.append("\n");
+    sbuf.append("Selected: ");
+    for (Card c : selectedCards) {
+      sbuf.append(c.toString() + "||");
+    }
+    return sbuf.toString();
+  }
+
 }

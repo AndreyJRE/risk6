@@ -64,6 +64,7 @@ public class Card {
     return id;
   }
 
+
   /**
    * Returns whether the card has a country or not.
    *
@@ -78,23 +79,30 @@ public class Card {
    * Compares the card to the given object for equality. Returns true if and only if the argument is
    * an object of the same type or has the same id as this card.
    *
-   * @param obj the object to compare this card against
+   * @param o the object to compare this card against
    * @return true if the given object represents a value equivalent to this object, false otherwise
    */
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
+  public boolean equals(Object o) {
+    if (this == o) {
       return true;
     }
-    if (!(obj instanceof Card)) {
+    if (!(o instanceof Card card)) {
       return false;
     }
-    return this.getId() == ((Card) obj).getId();
-
+    return getId() == card.getId();
   }
+
 
   @Override
   public String toString() {
-    return " Symbol:" + cardSymbol + " country " + country + "  id " + id;
+    StringBuffer sbuf = new StringBuffer();
+    sbuf.append(cardSymbol.toString() + " ");
+    if (hasCountry) {
+      sbuf.append(country.toString() + " ");
+    }
+    sbuf.append(id);
+
+    return sbuf.toString();
   }
 }
