@@ -98,6 +98,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
               case "ACCEPT_USER_LOBBY" -> {
+                LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 LobbyConfiguration.setServerLobby(
                     (ServerLobby) Deserializer.deserialize(textFrame.text()).getContent());
                 LobbyConfiguration.getServerLobby().getUsers()
@@ -110,13 +111,12 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
                     .getContent();
                 GameConfiguration.setGameState(g);
-                //TODO
               }
               case "DROP_USER_LOBBY" -> {
-                //TODO
+                //TODO Error Messsage
               }
               case "DROP_USER_GAME" -> {
-                //TODO
+                //TODO Error Message
               }
 
             }
