@@ -15,9 +15,7 @@ import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.application.Platform;
+import java.util.Iterator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -44,11 +42,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   private final SceneController sceneController;
   private ServerLobby serverLobby;
   private final SplitPane lobbyChatSplit = new SplitPane();
-  private final ListView<String> lobbyList = new ListView<>();
+  private final ListView<GameLobby> lobbyList = new ListView<>();
   private BorderPane root;
-  private List<GameLobby> gameLobbies = new ArrayList<>();
 
   private UserDto user;
+  private ObservableList<GameLobby> lobbies;
 
 
   public SelectMultiplayerLobbySceneController(
@@ -59,11 +57,10 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   public void init() {
-    //TODO server
+    this.serverLobby = LobbyConfiguration.getServerLobby();
     this.user = GameConfiguration.getMyGameUser();
-    this.gameLobbies = serverLobby.getGameLobbies();
     this.root = (BorderPane) selectMultiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     for (int i = lobbyChatSplit.getItems().size(); i > 0; i--) {
       lobbyChatSplit.getItems().remove(i - 1);
@@ -125,16 +122,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
   }
 
-
   private void initGameLobbys() {
-    ObservableList<String> lobbys = FXCollections.observableArrayList();
-    for (GameLobby gameLobby : gameLobbies) {
-      String temp = gameLobby.getLobbyName() + " hosted by " + gameLobby.getName() + " "
-          + gameLobby.getUsers().size() + "/" + gameLobby.getMaxPlayers();
-      lobbys.add(temp);
-    }
-    lobbys.addAll("Lobby 1", "Lobby 2", "Lobby 3");
-    lobbyList.setItems(lobbys);
+    //TODO: get all GameLobbys and save them to listview
+
+    lobbies = FXCollections.observableArrayList();
+    lobbies.addAll(serverLobby.getGameLobbies());
     String listViewStyle = "-fx-background-color: transparent;" // Hintergrundfarbe der ListView
         + "-fx-control-inner-background: #f0f0f0;" // Hintergrundfarbe der Zellen
         + "-fx-control-inner-background-alt: #e0e0e0;" // Alternierende Hintergrundfarbe der Zellen
@@ -143,23 +135,22 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         + "-fx-cell-size: 80;"; // Zellengröße, um mehr Platz zwischen den Einträgen zu schaffen
 
     lobbyList.setStyle(listViewStyle);
-
-    lobbyList.setCellFactory(param -> new ListCell<String>() {
+    lobbyList.setCellFactory(param -> new ListCell<GameLobby>() {
       @Override
-      protected void updateItem(String item, boolean empty) {
+      protected void updateItem(GameLobby item, boolean empty) {
         super.updateItem(item, empty);
 
         if (empty || item == null) {
           setText(null);
           setGraphic(null);
         } else {
-          setText(item);
+          setText(item.getLobbyName());
           setPadding(new Insets(20, 30, 20, 30)); // Padding für die Zellen
         }
       }
     });
 
-    lobbyList.setItems(lobbys);
+    lobbyList.setItems(lobbies);
   }
 
   private void initSplitPane() {
@@ -210,9 +201,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
     }*/
     //TODO For test purposes
-    Platform.runLater(
-        () -> LobbyConfiguration.sendJoinLobby(
-            gameLobbies.get(lobbyList.getSelectionModel().getSelectedIndex())));
+    LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {
@@ -245,8 +234,12 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   @Override
   public void updateServerLobby(ServerLobby serverLobby) {
     this.serverLobby = serverLobby;
-    this.gameLobbies = serverLobby.getGameLobbies();
-    lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-    initSplitPane();
+    Iterator<GameLobby> iterator = lobbies.listIterator();
+    while (iterator.hasNext()) {
+      iterator.remove();
+    }
+
+    lobbies.addAll(serverLobby.getGameLobbies());
+
   }
 }

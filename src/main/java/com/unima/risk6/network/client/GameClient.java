@@ -98,4 +98,8 @@ public final class GameClient implements Runnable {
       System.out.println(e);
     }
   }
+
+  public Channel getCh() {
+    return ch;
+  }
 }

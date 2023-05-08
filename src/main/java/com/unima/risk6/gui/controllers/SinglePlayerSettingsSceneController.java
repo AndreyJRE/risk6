@@ -1,5 +1,8 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
@@ -15,6 +18,9 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -30,13 +36,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 
 public class SinglePlayerSettingsSceneController {
@@ -57,7 +56,7 @@ public class SinglePlayerSettingsSceneController {
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) singlePlayerSettingsScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
     initHBox();
@@ -150,7 +149,8 @@ public class SinglePlayerSettingsSceneController {
     int botIndex = aiBots.indexOf(botToRemove);
 
     boolean full =
-        (centralHBox.getChildren().size() == 6) && (!centralHBox.getChildren().get(centralHBox.getChildren().size() - 1).equals(plus));
+        (centralHBox.getChildren().size() == 6) && (!centralHBox.getChildren()
+            .get(centralHBox.getChildren().size() - 1).equals(plus));
     System.out.println(full);
 
     // Remove the VBox containing the bot and the remove button from the centralHBox

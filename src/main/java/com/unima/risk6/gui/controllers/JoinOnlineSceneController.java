@@ -13,7 +13,6 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -42,8 +41,7 @@ public class JoinOnlineSceneController {
 
   public void init() {
     this.root = (BorderPane) joinOnlineScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     initElements();
   }
 
@@ -138,25 +136,30 @@ public class JoinOnlineSceneController {
   }
 
   private void handleJoin(String host, int port) {
-    Task<Void> task = new Task<Void>() {
-      @Override
-      protected Void call() throws Exception {
-        LobbyConfiguration.configureGameClient(host, port);
-        LobbyConfiguration.startGameClient();
-        while (LobbyConfiguration.getGameClient() == null) {
-          Thread.sleep(100);
-        }
-        return null;
+
+    LobbyConfiguration.configureGameClient(host, port);
+    LobbyConfiguration.startGameClient();
+    while (LobbyConfiguration.getGameClient().getCh() == null) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
       }
-    };
-    Thread thread = new Thread(task);
-    thread.start();
+    }
+
     UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
         DatabaseConfiguration.getGameStatisticService()
             .getAllStatisticsByUserId(SessionManager.getUser().getId()));
     GameConfiguration.setMyGameUser(userDto);
-    //TODO Auskommentieren
-    //Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
+    LobbyConfiguration.sendJoinServer(userDto);
+
+    while (LobbyConfiguration.getServerLobby() == null) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
     SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SELECT_LOBBY);
     if (scene == null) {

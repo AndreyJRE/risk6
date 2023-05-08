@@ -9,7 +9,6 @@ import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameLobby;
-import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Lobby;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
@@ -117,7 +116,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case JOIN_SERVER_LOBBY -> {
                   //TODO Make it work properly
-                  //TODO MAximale größe beachten
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
                   if (users.containsKey(userDto)) {
@@ -130,7 +128,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 }
                 case JOIN_GAME_LOBBY -> {
                   //TODO Maximale Größe beachten
-                  LOGGER.debug("At JOIN_GAME_LOBBY" + connectionMessage.getContent().getClass());
+                  LOGGER.debug("At JOIN_GAME_LOBBY " + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   //TODO Muss der Nutzer aus der ServerLobby entfernt werden? Letzter Stand Nein
                   gameChannels.get(NetworkConfiguration.getServerLobby()).remove(ctx.channel());
@@ -165,6 +163,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case CREATE_GAME_LOBBY -> {
                   LOGGER.debug("At CREATE_GAME_LOBBY" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  //TODO Maybe create a channelgroup for the gamelobby and add the creator to it
                   NetworkConfiguration.getServerLobby().getGameLobbies().add(gameLobby);
                   sendServerLobby(NetworkConfiguration.getServerLobby());
 
@@ -202,7 +201,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void sendFirstGamestate() {
     String message = Serializer.serialize(
-        new ConnectionMessage<GameState>(ConnectionActions.START_GAME,
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_START_GAME,
             moveProcessor.getGameController().getGameState()));
     LOGGER.debug(message);
     for (Channel ch : channels) {
@@ -217,17 +216,19 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       LOGGER.debug("Send new server lobby to: " + ch.id());
       ch.writeAndFlush(
           new TextWebSocketFrame(Serializer.serialize(
-              new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_USER_LOBBY,
+              new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_SERVER_LOBBY,
                   serverLobby))));
     }
   }
 
   private void sendGameLobby(GameLobby gameLobby) {
+    //TODO It is not working properly list is maybe empty
     for (Channel ch : gameChannels.get(gameLobby)) {
-      LOGGER.debug("Send new server lobby to: " + ch.id());
+      System.out.println("Test");
+      LOGGER.debug("Send a game lobby to: " + ch.id());
       ch.writeAndFlush(
           new TextWebSocketFrame(Serializer.serialize(
-              new ConnectionMessage<GameLobby>(ConnectionActions.ACCEPT_USER_GAME,
+              new ConnectionMessage<GameLobby>(ConnectionActions.ACCEPT_JOIN_LOBBY,
                   gameLobby))));
     }
   }

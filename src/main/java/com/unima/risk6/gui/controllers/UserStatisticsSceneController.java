@@ -51,7 +51,7 @@ public class UserStatisticsSceneController {
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) userStatisticsScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
     initUserStackPane();

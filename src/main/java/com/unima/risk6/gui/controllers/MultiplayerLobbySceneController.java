@@ -55,7 +55,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.user = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
     initHBox();

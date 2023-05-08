@@ -12,7 +12,6 @@ import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -54,7 +53,7 @@ public class CreateLobbySceneController {
 
   public void init() {
     this.root = (BorderPane) createLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
     initElements();
@@ -129,7 +128,9 @@ public class CreateLobbySceneController {
         SessionManager.getUser().getUsername(), chatCheck.isSelected(),
         Integer.parseInt(minElo.getValue()), Integer.parseInt(turnTimeBox.getValue()),
         GameConfiguration.getMyGameUser());
-    Platform.runLater(() -> LobbyConfiguration.sendCreateLobby(gameLobby));
+
+    LobbyConfiguration.sendCreateLobby(gameLobby);
+    LobbyConfiguration.setGameLobby(gameLobby);
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {

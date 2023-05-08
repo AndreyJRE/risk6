@@ -2,14 +2,12 @@ package com.unima.risk6.game.configurations;
 
 import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
 import com.unima.risk6.game.configurations.observers.ServerLobbyObserver;
-import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.client.GameClient;
 import com.unima.risk6.network.message.ConnectionActions;
 import com.unima.risk6.network.message.ConnectionMessage;
-import com.unima.risk6.network.message.StandardMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,10 +54,8 @@ public class LobbyConfiguration {
   }
 
   public static void sendJoinServer(UserDto userDto) {
-    //TODO After testing
-    /*gameClient.sendMessage(
-        new ConnectionMessage<UserDto>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));*/
-    gameClient.sendMessage(new StandardMessage<HandIn>(new HandIn(List.of())));
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));
 
   }
 
@@ -71,7 +67,7 @@ public class LobbyConfiguration {
 
   public static void sendCreateLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
-        new ConnectionMessage<>(ConnectionActions.CREATE_GAME, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.CREATE_GAME_LOBBY, gameLobby));
   }
 
   public static void sendJoinLobby(GameLobby gameLobby) {
@@ -116,5 +112,6 @@ public class LobbyConfiguration {
 
   public static void setGameLobby(GameLobby gameLobby) {
     LobbyConfiguration.gameLobby = gameLobby;
+    notifyGameLobbyObservers();
   }
 }

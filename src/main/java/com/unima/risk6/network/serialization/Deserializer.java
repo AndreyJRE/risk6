@@ -13,6 +13,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.message.StandardMessage;
 
@@ -46,7 +47,6 @@ public class Deserializer {
   public static Message deserialize(String json) {
     return new GsonBuilder()
         .registerTypeAdapter(StandardMessage.class, new StandardMessageAdapter())
-
         .registerTypeAdapter(GameState.class, new GameStateTypeAdapter())
 
         .registerTypeAdapter(Country.class, new CountryTypeAdapter())
@@ -62,5 +62,22 @@ public class Deserializer {
         .create()
         .fromJson(json, StandardMessage.class);
     //return new Gson().fromJson(json, StandardMessage.class);
+  }
+
+  public static Message deserializeConnectionMessage(String json) {
+    return new GsonBuilder()
+        .registerTypeAdapter(ConnectionMessage.class, new ConnectionMessageAdapter())
+        .registerTypeAdapter(GameState.class, new GameStateTypeAdapter())
+        .registerTypeAdapter(Country.class, new CountryTypeAdapter())
+        .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
+        .registerTypeAdapter(Card.class, new CardTypeAdapter())
+        .registerTypeAdapter(Hand.class, new HandTypeAdapter())
+        .registerTypeAdapter(Player.class, new PlayerTypeAdapter())
+        .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
+        .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
+        .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
+        .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())
+        .create()
+        .fromJson(json, ConnectionMessage.class);
   }
 }

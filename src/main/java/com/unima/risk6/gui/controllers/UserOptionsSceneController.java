@@ -1,5 +1,8 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
@@ -11,13 +14,19 @@ import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
+import java.util.Optional;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -31,11 +40,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-
-import java.util.Optional;
-
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 
 public class UserOptionsSceneController {
@@ -58,7 +62,7 @@ public class UserOptionsSceneController {
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) userOptions.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
     initUserStackPane();

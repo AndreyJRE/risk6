@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.network.serialization.Deserializer;
@@ -97,14 +98,15 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
-              case "ACCEPT_USER_LOBBY" -> {
+              case "ACCEPT_SERVER_LOBBY", "ACCEPT_CREATE_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 LobbyConfiguration.setServerLobby(
-                    (ServerLobby) Deserializer.deserialize(textFrame.text()).getContent());
+                    (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent());
                 LobbyConfiguration.getServerLobby().getUsers()
                     .forEach(user -> System.out.println(user.getUsername()));
               }
-              case "ACCEPT_USER_GAME" -> {
+              case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
                     "Got first Gamestate: Overwrite GameState with new GameState from Server");
                 GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
@@ -112,12 +114,19 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                     .getContent();
                 GameConfiguration.setGameState(g);
               }
+              case "ACCEPT_JOIN_LOBBY" -> {
+                LOGGER.debug("Got a Lobby, overwrite game lobby");
+                LobbyConfiguration.setGameLobby(
+                    (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent());
+              }
               case "DROP_USER_LOBBY" -> {
                 //TODO Error Messsage
               }
               case "DROP_USER_GAME" -> {
                 //TODO Error Message
               }
+
 
             }
           }
