@@ -20,6 +20,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -40,9 +42,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
   private final SelectMultiplayerLobbyScene selectMultiplayerLobbyScene;
   private final SceneController sceneController;
-  private ServerLobby serverLobby;
   private final SplitPane lobbyChatSplit = new SplitPane();
   private final ListView<GameLobby> lobbyList = new ListView<>();
+  private ServerLobby serverLobby;
   private BorderPane root;
 
   private UserDto user;
@@ -123,8 +125,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   private void initGameLobbys() {
-    //TODO: get all GameLobbys and save them to listview
-
     lobbies = FXCollections.observableArrayList();
     lobbies.addAll(serverLobby.getGameLobbies());
     String listViewStyle = "-fx-background-color: transparent;" // Hintergrundfarbe der ListView
@@ -132,7 +132,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         + "-fx-control-inner-background-alt: #e0e0e0;" // Alternierende Hintergrundfarbe der Zellen
         + "-fx-font-size: 20;" // Schriftgröße
         + "-fx-border-color: #cccccc;" // Randfarbe der ListView
-        + "-fx-cell-size: 80;"; // Zellengröße, um mehr Platz zwischen den Einträgen zu schaffen
+        + "-fx-cell-size: 80;" // Zellengröße, um mehr Platz zwischen den Einträgen zu schaffen
+        + "-fx-wrap-text: true";
 
     lobbyList.setStyle(listViewStyle);
     lobbyList.setCellFactory(param -> new ListCell<GameLobby>() {
@@ -144,7 +145,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
           setText(null);
           setGraphic(null);
         } else {
-          setText(item.getLobbyName());
+          setText(
+              item.getLobbyName() + "  hosted by " + item.getName() + "              "
+                  + item.getUsers().size()
+                  + "/" + item.getMaxPlayers() + " Players" + "              min. Elo: "
+                  + item.getMatchMakingElo());
           setPadding(new Insets(20, 30, 20, 30)); // Padding für die Zellen
         }
       }
@@ -201,20 +206,33 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
     }*/
     //TODO For test purposes
-    LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
-    MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-    if (scene == null) {
-      scene = new MultiplayerLobbyScene();
-      //TODO Overwrite game lobby owner
-      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-          scene);
-      scene.setController(multiplayerLobbySceneController);
-      sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+    if (lobbyList.getSelectionModel().getSelectedItem() != null) {
+      LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
+      //lobbyList.getSelectionModel().getSelectedItem().addUser(GameConfiguration.getMyGameUser());
+      MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
+          .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
+      if (scene == null) {
+        scene = new MultiplayerLobbyScene();
+        //TODO Overwrite game lobby owner
+        MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+            scene);
+        scene.setController(multiplayerLobbySceneController);
+        sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+      }
+      pauseTitleSound();
+      lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+      sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+    } else {
+      showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
     }
-    pauseTitleSound();
-    lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-    sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+  }
+
+  private void showErrorDialog(String title, String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
   }
 
   private void handleCreateButton() {
@@ -236,10 +254,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     this.serverLobby = serverLobby;
     Iterator<GameLobby> iterator = lobbies.listIterator();
     while (iterator.hasNext()) {
+      iterator.next();
       iterator.remove();
     }
-
     lobbies.addAll(serverLobby.getGameLobbies());
-
   }
 }

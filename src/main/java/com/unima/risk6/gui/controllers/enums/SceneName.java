@@ -14,7 +14,8 @@ public enum SceneName {
   MULTIPLAYER_LOBBY,
   JOIN_ONLINE,
   SELECT_LOBBY,
-  CREATE_LOBBY
+  CREATE_LOBBY,
+  LOBBY_USER_STATISTIC
 
   // add more scene names as needed
 

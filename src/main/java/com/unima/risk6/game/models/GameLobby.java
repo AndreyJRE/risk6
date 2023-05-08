@@ -59,4 +59,12 @@ public class GameLobby extends Lobby {
   public List<UserDto> getUsers() {
     return users;
   }
+/*
+  public void addUser(UserDto user){
+    users.add(user);
+  }
+
+  public void removeUser(UserDto user){
+    users.remove(user);
+  }*/
 }

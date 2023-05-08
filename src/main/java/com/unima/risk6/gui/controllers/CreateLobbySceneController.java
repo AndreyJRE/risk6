@@ -131,6 +131,7 @@ public class CreateLobbySceneController {
 
     LobbyConfiguration.sendCreateLobby(gameLobby);
     LobbyConfiguration.setGameLobby(gameLobby);
+    //gameLobby.addUser(GameConfiguration.getMyGameUser());
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {
@@ -183,7 +184,7 @@ public class CreateLobbySceneController {
 
     minElo = new ComboBox<>();
     ObservableList<String> minEloList = FXCollections.observableArrayList();
-    minEloList.addAll("0", "0.5", "1", "1.5", "2", "2.5", "3", "4", "5");
+    minEloList.addAll("0", "1", "2", "3", "4", "5");
     minElo.setItems(minEloList);
     minElo.setPrefWidth(800);
 

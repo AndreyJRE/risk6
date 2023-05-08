@@ -73,6 +73,7 @@ public class LobbyConfiguration {
   public static void sendJoinLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, gameLobby));
+    //setGameLobby(gameLobby);
   }
 
   /**
