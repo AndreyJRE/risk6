@@ -8,6 +8,7 @@ import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
@@ -16,8 +17,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -120,17 +119,9 @@ public class SelectedUserSceneController {
         throw new RuntimeException(ex);
       }
     } else {
-      showErrorDialog("Incorrect Password",
+      StyleConfiguration.showErrorDialog("Incorrect Password",
           "The password you entered is incorrect. Please try again.");
     }
-  }
-
-  private void showErrorDialog(String title, String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
   }
 
 

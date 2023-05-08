@@ -2,6 +2,7 @@ package com.unima.risk6.gui.controllers;
 
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showConfirmationDialog;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
@@ -9,22 +10,18 @@ import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
-import java.util.Optional;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -218,7 +215,7 @@ public class UserOptionsSceneController {
         try {
           userService.updateUser(user);
         } catch (UsernameNotUniqueException e) {
-          showErrorDialog("Error", e.getMessage());
+          StyleConfiguration.showErrorDialog("Error", e.getMessage());
           userNameField.setText(user.getUsername());
         }
       } else {
@@ -251,59 +248,6 @@ public class UserOptionsSceneController {
     // create a stack pane to place the circle and image on top of each other
     userStackPane = new StackPane();
     userStackPane.getChildren().addAll(circle, userImage);
-  }
-
-  private boolean showConfirmationDialog(String title, String message) {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-
-    // Set custom button types
-    ButtonType yesButton = new ButtonType("Yes");
-    ButtonType noButton = new ButtonType("No");
-    alert.getButtonTypes().setAll(noButton, yesButton);
-
-    // Set styles directly in JavaFX
-    DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.setStyle("-fx-background-color: linear-gradient(to top, #ffffff, #f2f2f2);"
-        + " -fx-border-color: #bbb;"
-        + " -fx-border-width: 1;"
-        + " -fx-border-style: solid;");
-    dialogPane.lookup(".label").setStyle("-fx-font-size: 14;"
-        + " -fx-font-weight: bold;"
-        + " -fx-text-fill: #444;");
-
-    // Apply styles to buttons
-    Button yesButtonNode = (Button) dialogPane.lookupButton(yesButton);
-    Button noButtonNode = (Button) dialogPane.lookupButton(noButton);
-
-    for (Button button : new Button[]{yesButtonNode, noButtonNode}) {
-      button.setStyle("-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);"
-          + " -fx-text-fill: white;"
-          + " -fx-background-radius: 5;"
-          + " -fx-padding: 5 15 5 15;");
-
-      button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: #FFDAB9; "
-          + "-fx-text-fill: white;"));
-      button.setOnMouseExited(event -> button.setStyle("-fx-background-color: linear-gradient"
-          + "(#FFDAB9, #FFA07A); -fx-text-fill: white;"));
-      button.setOnMousePressed(event -> button.setStyle("-fx-background-color: #FFA07A; "
-          + "-fx-text-fill: white;"));
-      button.setOnMouseReleased(event -> button.setStyle("-fx-background-color: linear-gradient"
-          + "(#FFDAB9, #FFA07A); -fx-text-fill: white;"));
-    }
-
-    Optional<ButtonType> result = alert.showAndWait();
-    return result.isPresent() && result.get() == yesButton;
-  }
-
-  private void showErrorDialog(String title, String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
   }
 
 }

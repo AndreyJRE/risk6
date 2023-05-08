@@ -3,6 +3,8 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showConfirmationDialog;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
@@ -20,8 +22,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -72,9 +72,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   private void initElements() {
-
-    //TODO: Elo matching
-
     Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
@@ -189,7 +186,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
   private void handleJoinButton() {
    /* if (lobbyList.getSelectionModel().getSelectedIndex() == -1) {
-      //TODO: Error Message anzeigen: Keine Lobby Ausgewählt
     } else {
       GameLobby gameLobby = gameLobbies.get(lobbyList.getSelectionModel().getSelectedIndex());
       MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
@@ -207,33 +203,33 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     }*/
     //TODO For test purposes
     if (lobbyList.getSelectionModel().getSelectedItem() != null) {
-      LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
-      //lobbyList.getSelectionModel().getSelectedItem().addUser(GameConfiguration.getMyGameUser());
-      MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-          .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-      if (scene == null) {
-        scene = new MultiplayerLobbyScene();
-        //TODO Overwrite game lobby owner
-        MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-            scene);
-        scene.setController(multiplayerLobbySceneController);
-        sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+      if (lobbyList.getSelectionModel().getSelectedItem().getMatchMakingElo()
+          <= GameConfiguration.getMyGameUser().getWinLossRatio()) {
+        LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
+        //lobbyList.getSelectionModel().getSelectedItem().addUser(GameConfiguration.getMyGameUser());
+        MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
+            .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
+        if (scene == null) {
+          scene = new MultiplayerLobbyScene();
+          //TODO Overwrite game lobby owner
+          MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+              scene);
+          scene.setController(multiplayerLobbySceneController);
+          sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+        }
+        pauseTitleSound();
+        lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+        sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+      } else {
+        showConfirmationDialog("Missing experience",
+            "Your Win / Loss Ratio does not match the minimum required"
+                + " Ratio of the selected Lobby. Do you still want to continue?");
       }
-      pauseTitleSound();
-      lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-      sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
     } else {
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
     }
   }
 
-  private void showErrorDialog(String title, String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
 
   private void handleCreateButton() {
     CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
