@@ -182,7 +182,7 @@ public class CreateLobbySceneController {
 
     minElo = new ComboBox<>();
     ObservableList<String> minEloList = FXCollections.observableArrayList();
-    minEloList.addAll("0", "500", "1000", "1500", "2000");
+    minEloList.addAll("0", "0.5", "1", "1.5", "2", "2.5", "3", "4", "5");
     minElo.setItems(minEloList);
     minElo.setPrefWidth(800);
 
