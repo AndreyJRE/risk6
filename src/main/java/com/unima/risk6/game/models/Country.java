@@ -70,9 +70,15 @@ public class Country {
 
   @Override
   public String toString() {
+    String userName;
+    if (hasPlayer) {
+      userName = player.getUser();
+    } else {
+      userName = "No player yet";
+    }
     return "Country{" +
         "countryName=" + countryName
-        + ", player=" + player.getUser()
+        + ", player=" + userName
         + ", hasPlayer=" + hasPlayer
         + ", troops=" + troops
         + ", continent=" + continent.getContinentName() + '}';
