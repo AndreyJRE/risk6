@@ -107,7 +107,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             //TODO Connection problem
             ConnectionMessage connectionMessage = null;
             try {
-              connectionMessage = (ConnectionMessage) Deserializer.deserialize(
+              connectionMessage = (ConnectionMessage) Deserializer.deserializeConnectionMessage(
                   request);
             } catch (Exception e) {
               LOGGER.error("Error at deserializing ConnectionMessage: " + e);
@@ -144,6 +144,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendGameLobby(gameLobbyFromServer);
                 }
                 case START_GAME -> {
+                  //TODO MOVECONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
                   sendFirstGamestate();
                   moveProcessor.clearLastMoves();
