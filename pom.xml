@@ -85,6 +85,12 @@
       <artifactId>logback-core</artifactId>
       <version>1.4.7</version>
     </dependency>
+    <dependency>
+      <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+      <version>30.1-jre</version>
+    </dependency>
+
   </dependencies>
 
   <build>

@@ -13,6 +13,7 @@ module com.unima.risk6 {
   requires org.xerial.sqlitejdbc;
   requires com.google.gson;
   requires org.slf4j;
+  requires com.google.common;
   opens com.unima.risk6.network.message to com.google.gson;
   opens com.unima.risk6.game.logic to com.google.gson, javafx.fxml;
   exports com.unima.risk6.database.models;

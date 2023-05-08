@@ -1,12 +1,18 @@
 package com.unima.risk6.network.server;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.Lobby;
 import com.unima.risk6.game.models.ServerLobby;
+import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.ConnectionActions;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
@@ -26,6 +32,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   private final static Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
 
   private static ChannelGroup channels;
+  private static BiMap<Lobby, ChannelGroup> gameChannels = HashBiMap.create();
+
+  private static BiMap<UserDto, Channel> users = HashBiMap.create();
   private MoveProcessor moveProcessor;
 
   GameServerFrameHandler(ChannelGroup channels, MoveProcessor moveProcessor) {
@@ -105,33 +114,53 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             try {
               switch (connectionMessage.getConnectionActions()) {
 
-                case GET_GAMES -> {
-                }
                 case JOIN_SERVER_LOBBY -> {
                   //TODO Make it work properly
-                 /* System.out.println(connectionMessage.getContent().getClass());
+                  System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
-                  NetworkConfiguration.getServerLobby().getUsers().add(userDto);
-                  sendServerLobby(NetworkConfiguration.getServerLobby());*/
-                  sendGamestate();
-                  moveProcessor.clearLastMoves();
+                  if (users.containsKey(userDto)) {
+                    LOGGER.error("User already in the Lobby");
+                  } else {
+                    users.put(userDto, ctx.channel());
+                    NetworkConfiguration.getServerLobby().getUsers().add(userDto);
+                  }
+                  sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
+                  LOGGER.debug("At JOIN_GAME_LOBBY" + connectionMessage.getContent().getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  //TODO Muss der Nutzer aus der ServerLobby entfernt werden? Letzter Stand Nein
+                  gameChannels.get(NetworkConfiguration.getServerLobby()).remove(ctx.channel());
+                  GameLobby gameLobbyFromServer = NetworkConfiguration.getServerLobby()
+                      .getGameLobbies().stream()
+                      .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst()
+                      .get();
+                  //Add users channel to the ChannelGroup from the gamelobby
+                  gameLobbyFromServer.getUsers().add(users.inverse().get(ctx.channel()));
+                  gameChannels.get(gameLobbyFromServer).add(ctx.channel());
+                  sendGameLobby(gameLobbyFromServer);
+                }
+                case START_GAME -> {
+                  LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
 
                 }
-                case JOIN_GAME -> {
-                }
                 case LEAVE_SERVER_LOBBY -> {
+                  LOGGER.debug("At LEAVE_SERVER_LOBBY" + connectionMessage.getContent().getClass());
                 }
                 case LEAVE_GAME_LOBBY -> {
+                  LOGGER.debug("At LEAVE_GAME_LOBBY" + connectionMessage.getContent().getClass());
+
                 }
                 case LEAVE_GAME -> {
+                  LOGGER.debug("At LEAVE_GAME" + connectionMessage.getContent().getClass());
+
                 }
-                case CREATE_GAME -> {
-                }
-                case ACCEPT_USER -> {
-                }
-                case DROP_USER -> {
+                case CREATE_GAME_LOBBY -> {
+                  LOGGER.debug("At CREATE_GAME_LOBBY" + connectionMessage.getContent().getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  NetworkConfiguration.getServerLobby().getGameLobbies().add(gameLobby);
+                  sendServerLobby(NetworkConfiguration.getServerLobby());
+
                 }
                 default -> LOGGER.error("Server received a faulty connection message");
               }
@@ -153,21 +182,33 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   }
 
   private void sendGamestate() {
+    String message = Serializer.serialize(
+        new StandardMessage(moveProcessor.getGameController().getGameState()));
+    LOGGER.debug(message);
     for (Channel ch : channels) {
       LOGGER.debug("Send new gamestate to: " + ch.id());
       ch.writeAndFlush(
-          new TextWebSocketFrame(Serializer.serialize(
-              new StandardMessage(moveProcessor.getGameController().getGameState()))));
+          new TextWebSocketFrame(message));
     }
   }
 
   private void sendServerLobby(ServerLobby serverLobby) {
     for (Channel ch : channels) {
-      LOGGER.debug("Send new gamestate to: " + ch.id());
+      LOGGER.debug("Send new server lobby to: " + ch.id());
       ch.writeAndFlush(
           new TextWebSocketFrame(Serializer.serialize(
-              new ConnectionMessage<ServerLobby>(ConnectionActions.JOIN_SERVER_LOBBY,
+              new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_USER_LOBBY,
                   serverLobby))));
+    }
+  }
+
+  private void sendGameLobby(GameLobby gameLobby) {
+    for (Channel ch : gameChannels.get(gameLobby)) {
+      LOGGER.debug("Send new server lobby to: " + ch.id());
+      ch.writeAndFlush(
+          new TextWebSocketFrame(Serializer.serialize(
+              new ConnectionMessage<GameLobby>(ConnectionActions.ACCEPT_USER_LOBBY,
+                  gameLobby))));
     }
   }
 
