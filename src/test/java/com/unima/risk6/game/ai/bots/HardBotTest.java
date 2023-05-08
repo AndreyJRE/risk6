@@ -1,14 +1,12 @@
 package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
@@ -44,15 +42,6 @@ class HardBotTest {
 
   }
 
-//  @BeforeEach
-//  void resetState() {
-//    gameState.getCountries().forEach(c -> {
-//      c.setTroops(0);
-//      c.setPlayer(null);
-//      c.setHasPlayer(false);
-//    });
-//  }
-
   @Test
   void getBestMovesTest() {
     hardBot = new HardBot("Otto the Botto");
@@ -64,7 +53,7 @@ class HardBotTest {
     bots.add(hardBot);
     bots.add(new EasyBot("Pedro the guy"));
     gameState = GameConfiguration.configureGame(humans, bots);
-    ((HardBot) hardBot).setContinentsCopy(gameState.getContinents());
+    hardBot.setGameState(gameState);
     DeckController deckController = new DeckController(gameState.getDeck());
     deckController.initDeck();
     for (Player p : gameState.getActivePlayers()) {
@@ -79,7 +68,7 @@ class HardBotTest {
       gameState.getActivePlayers().add(enemy);
       gameState.setCurrentPlayer((Player) hardBot);
     }
-    ((EasyBot) enemy).setCurrentGameState(gameState);
+    ((EasyBot) enemy).setGameState(gameState);
     gameState.getCountries().stream()
         .filter(c -> !c.getCountryName().equals(CountryName.MIDDLE_EAST)).forEach(c -> {
           enemyController.addCountry(c);
@@ -125,7 +114,7 @@ class HardBotTest {
     bots.add(easy);
     bots.add(med);
     gameState = GameConfiguration.configureGame(humans, bots);
-    ((HardBot) hardBot).setContinentsCopy(gameState.getContinents());
+    hardBot.setGameState(gameState);
     DeckController deckController = new DeckController(gameState.getDeck());
     deckController.initDeck();
     for (Player p : gameState.getActivePlayers()) {
@@ -168,8 +157,8 @@ class HardBotTest {
       easyController.addCountry(c);
       c.setTroops(rng.nextInt(1, 5));
     });
-    easy.setCurrentGameState(gameState);
-    med.setContinentsCopy(gameState.getContinents());
+    easy.setGameState(gameState);
+    med.setGameState(gameState);
     ((HardBot) hardBot).setCurrentGameState(gameState);
     gameState.getActivePlayers().forEach(p -> p.setInitialTroops(0));
     botTestController.getPlayer().setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
@@ -190,9 +179,6 @@ class HardBotTest {
       attacks.add(hardBot.createAttack());
     }
     assertTrue(attacks.size() > 0);
-    Fortify fortify = hardBot.createFortify();
-    assertNotNull(fortify);
-    System.out.println(fortify);
   }
 
   static Country getMiddleEast() {

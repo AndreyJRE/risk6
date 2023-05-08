@@ -50,7 +50,7 @@ class EasyBotTest {
 
   @Test
   void claimCountryTest() {
-    ((EasyBot) easyBot).setCurrentGameState(gameState);
+    easyBot.setGameState(gameState);
     Reinforce firstClaim = easyBot.claimCountry();
     assertNotNull(firstClaim.getCountry());
     assertEquals(1, firstClaim.getToAdd());
@@ -62,7 +62,7 @@ class EasyBotTest {
     botTestController.addCountry(greatBritain);
     Country iceland = getCountryByName(CountryName.ICELAND);
     enemyController.addCountry(iceland);
-    ((EasyBot) easyBot).setCurrentGameState(gameState);
+    easyBot.setGameState(gameState);
     CountryPair attack = easyBot.createAttack();
     // can't attack with 1 troop
     assertNull(attack);
