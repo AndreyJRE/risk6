@@ -210,7 +210,7 @@ public class SerializationTest {
 
   @Test
   void testConnectionMessageSerialization() {
-    ConnectionMessage message = new ConnectionMessage<>(ConnectionActions.JOIN_GAME, "Game1");
+    ConnectionMessage message = new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, "Game1");
     System.out.println(Serializer.serialize(message));
   }
 }
