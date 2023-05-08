@@ -62,18 +62,21 @@ public class MoveProcessor {
         //check if the Country actually belongs to player
 
         int numberOfNeutralCountries = gameController.getGameState().getCountries().stream()
-            .filter(Country::hasPlayer).collect(Collectors.toSet()).size();
+            .filter(n -> !n.hasPlayer()).collect(Collectors.toSet()).size();
 
+        //Check if there are still neutral countries to reinforce
         //TODO removed for testing
-        //if (numberOfNeutralCountries > 0) {
-        if (!countryToReinforce.hasPlayer()) {
-          playerController.addCountry(countryToReinforce);
-        } else {
-          throw new InvalidMoveException("Cannot claim a claimed country");
-        } /*else {
-          throw new InvalidMoveException("Cannot reinforce own countries yet");
+        if (numberOfNeutralCountries > 0) {
+          if (!countryToReinforce.hasPlayer()) {
+            playerController.addCountry(countryToReinforce);
+          } else {
+            if (countryToReinforce.getPlayer().equals(currentPlayer)) {
+              throw new InvalidMoveException("Cannot reinforce own country yet");
+            } else {
+              throw new InvalidMoveException("Cannot claim or reinforce country that is not yours");
+            }
+          }
         }
-        */
 
         if (countryToReinforce.getPlayer().equals(currentPlayer)) {
           currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
@@ -101,15 +104,14 @@ public class MoveProcessor {
       if (!countryToReinforce.getPlayer().equals(currentPlayer)) {
         throw new InvalidMoveException("The Reinforce is not valid because of not your country ");
       }
-      if (reinforce.getToAdd() <= currentPlayer.getDeployableTroops()) {
+      if (reinforce.getToAdd() > currentPlayer.getDeployableTroops()) {
         throw new InvalidMoveException(
             "The Reinforce is not valid because of no more deployable troops ");
       }
       if (!currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
         throw new InvalidMoveException("The Reinforce is not valid because of not in claim phase");
       }
-
-      throw new InvalidMoveException("The Reinforce is not valid because of ");
+      throw new InvalidMoveException("The Reinforce is not valid because of unexpected Situation");
     }
   }
 
@@ -177,14 +179,31 @@ public class MoveProcessor {
 
         //TODO OPTIONAL Fortify NOW Attack has won HOW TO SIGNAL?
 
-      }
-      playerController.setPlayer(defender);
-      if (playerController.getNumberOfCountries() == 0) {
-        gameController.removeLostPlayer(defender);
+        playerController.setPlayer(defender);
+        if (playerController.getNumberOfCountries() == 0) {
+          gameController.removeLostPlayer(defender);
+        }
       }
       playerController.setPlayer(attacker);
     } else {
-      throw new InvalidMoveException("The Attack is not valid");
+
+      if (!(attacker.equals(currentPlayer) && !attacker.equals(defender))) {
+        throw new InvalidMoveException(
+            "Invalid Move because: Attack made by not current player or attacker tries to attack himself");
+      }
+      if (!(currentPlayer.getCurrentPhase().equals(ATTACK_PHASE))) {
+        throw new InvalidMoveException("Invalid Attack because not in attack phase");
+      }
+      if (!defendingCountry.getAdjacentCountries().contains(attackingCountry)) {
+        throw new InvalidMoveException("Invalid attack because not adcjecent country");
+      }
+      if (!(attack.getTroopNumber() <= attackingCountry.getTroops() - 1)) {
+        throw new InvalidMoveException(
+            "invalid attack because of not valid troop size to attack with");
+      }
+      if (!(attack.getTroopNumber() < 4 && attack.getTroopNumber() > 0)) {
+        throw new InvalidMoveException("Invalid attack because of not valid troop size ");
+      }
 
     }
 
