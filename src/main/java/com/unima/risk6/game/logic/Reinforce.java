@@ -43,9 +43,7 @@ public class Reinforce extends Move {
 
   @Override
   public String toString() {
-    return "Reinforce{" +
-        "country=" + country +
-        ", toAdd=" + toAdd +
-        '}';
+    return "Reinforce{" + "country=" + country
+        + ", toAdd=" + toAdd + '}';
   }
 }

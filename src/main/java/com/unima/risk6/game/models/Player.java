@@ -17,6 +17,9 @@ public class Player {
   private GamePhase currentPhase;
   private boolean hasConquered;
 
+  /**
+   * Constructs a new player without username.
+   */
   public Player() {
     this.hand = new Hand();
     countries = new HashSet<>();
@@ -26,6 +29,11 @@ public class Player {
     this.currentPhase = GamePhase.ORDER_PHASE;
   }
 
+  /**
+   * Constructs a PLayer object if given the username.
+   *
+   * @param user the name of the user that is represented by this player object
+   */
   public Player(String user) {
     this.hand = new Hand();
     this.countries = new HashSet<>();
@@ -35,6 +43,11 @@ public class Player {
     this.currentPhase = GamePhase.ORDER_PHASE;
   }
 
+  /**
+   * Constructs a PLayer object that is a copy of the given player.
+   *
+   * @param toCopy the player object to be copied
+   */
   public Player(Player toCopy) {
     // only to be used by AI!
     this.hand = toCopy.getHand();

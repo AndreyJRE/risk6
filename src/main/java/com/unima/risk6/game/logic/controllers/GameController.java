@@ -24,6 +24,11 @@ public class GameController {
 
   private final Queue<Player> players;
 
+  /**
+   * Constructs a new GameController with the given GameState
+   *
+   * @param gameState The GameState that is managed by the GameController
+   */
   public GameController(GameState gameState) {
     this.gameState = gameState;
     this.players = gameState.getActivePlayers();
@@ -119,7 +124,8 @@ public class GameController {
   }
 
   /**
-   * Moves on to the next game phase of the current player or even
+   * Moves on to the next GamePhase of the current player or changes the current player if the turn
+   * of the player has ended after the change of GamePhase
    */
   public void nextPhase() {
     Player player = gameState.getCurrentPlayer();
@@ -234,7 +240,7 @@ public class GameController {
   }
 
   /**
-   * Changes the game state that is managed by the game controller into the given game state
+   * Changes the GameState that is managed by the GameController into the given GameState.
    */
   public void setGameState(GameState gameState) {
     this.gameState = gameState;

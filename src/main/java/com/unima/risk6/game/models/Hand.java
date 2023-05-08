@@ -7,7 +7,9 @@ public class Hand {
   private final ArrayList<Card> cards;
   private final ArrayList<Card> selectedCards;
 
-
+  /**
+   * Constructs a new Hand and initializes tha fields: cards and selectedCards.
+   */
   public Hand() {
     cards = new ArrayList<>();
     selectedCards = new ArrayList<>();
