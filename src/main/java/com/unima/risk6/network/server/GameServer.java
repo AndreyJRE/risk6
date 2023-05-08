@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import java.net.InetSocketAddress;
 
 public final class GameServer implements Runnable {
 
@@ -30,7 +31,8 @@ public final class GameServer implements Runnable {
       b.group(bossGroup, workerGroup)
           .channel(NioServerSocketChannel.class)
           .handler(new LoggingHandler(LogLevel.INFO))
-          .childHandler(new GameServerInitializer(channels, moveProcessor));
+          .childHandler(new GameServerInitializer(channels, moveProcessor))
+          .localAddress(new InetSocketAddress("0.0.0.0", PORT));
 
       Channel ch = b.bind(PORT).sync().channel();
       ch.closeFuture().sync();
