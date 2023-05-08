@@ -3,7 +3,7 @@ package com.unima.risk6.game.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameLobby {
+public class GameLobby extends Lobby {
 
   private final String lobbyName;
   private final String name;

@@ -96,12 +96,33 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameConfiguration.setGameState(g);
           }
           case "CONNECTION" -> {
-            LobbyConfiguration.setServerLobby(
-                (ServerLobby) Deserializer.deserialize(textFrame.text()).getContent());
-            LobbyConfiguration.getServerLobby().getUsers()
-                .forEach(user -> System.out.println(user.getUsername()));
+            switch (json.get("connectionActions").getAsString()) {
+              case "ACCEPT_USER_LOBBY" -> {
+                LobbyConfiguration.setServerLobby(
+                    (ServerLobby) Deserializer.deserialize(textFrame.text()).getContent());
+                LobbyConfiguration.getServerLobby().getUsers()
+                    .forEach(user -> System.out.println(user.getUsername()));
+              }
+              case "ACCEPT_USER_GAME" -> {
+                LOGGER.debug(
+                    "Got first Gamestate: Overwrite GameState with new GameState from Server");
+                GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
+                        GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
+                    .getContent();
+                GameConfiguration.setGameState(g);
+                //TODO
+              }
+              case "DROP_USER_LOBBY" -> {
+                //TODO
+              }
+              case "DROP_USER_GAME" -> {
+                //TODO
+              }
+
+            }
           }
-          default -> LOGGER.debug("The Message received wasnt a gamestate");
+
+          default -> LOGGER.debug("The Message received wasnt a gamestate or a connection message");
         }
       }
 
