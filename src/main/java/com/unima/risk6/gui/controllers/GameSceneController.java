@@ -1,7 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.configurations.GameStateObserver;
+import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
@@ -93,6 +93,7 @@ public class GameSceneController implements GameStateObserver {
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
   private ActivePlayerUi activePlayerUi;
   private Button nextPhaseButton;
+
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -162,8 +163,7 @@ public class GameSceneController implements GameStateObserver {
       //TODO: MOCKED CARDUI - USED STACK AND TOOK FIRST FEW TO ADD TO FIRST PLAYER IN ORDER TO VIEW CARD IN POPUP
       Random random = new Random();
       int randomNumber = random.nextInt(4);
-      CardSymbol[] possibleSymbols = {CardSymbol.CANNON, CardSymbol.CAVALRY,
-          CardSymbol.INFANTRY,
+      CardSymbol[] possibleSymbols = {CardSymbol.CANNON, CardSymbol.CAVALRY, CardSymbol.INFANTRY,
           CardSymbol.WILDCARD};
       Card countryCard = new Card(possibleSymbols[randomNumber],
           countryUi.getCountry().getCountryName(), counter);
@@ -188,12 +188,10 @@ public class GameSceneController implements GameStateObserver {
     int colorIndex = 0;
     playerUis = new LinkedList<>();
     for (Player player : gameState.getActivePlayers()) {
-      PlayerUi playerUi = new PlayerUi(player, possibleColors[colorIndex].getColor(), 35, 35,
-          100,
+      PlayerUi playerUi = new PlayerUi(player, possibleColors[colorIndex].getColor(), 35, 35, 100,
           45);
       playerUis.offer(playerUi);
-      if (playerUi.getPlayer().getUser()
-          .equals(GameConfiguration.getMyGameUser().getUsername())) {
+      if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi = playerUi;
         PLAYER_CONTROLLER.setPlayer(player);
         System.out.println("My player: " + playerUi.getPlayer().getUser());
@@ -233,8 +231,7 @@ public class GameSceneController implements GameStateObserver {
       new ChatUi(gameScene);
     });
 
-    activePlayerUi = new ActivePlayerUi(40, 40, 300, 75,
-        getCurrentPlayerUi());
+    activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     nextPhaseButton = new Button();
     ImageView rightArrowIcon = new ImageView(new Image(
         getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
@@ -251,8 +248,7 @@ public class GameSceneController implements GameStateObserver {
 
     Button cardsButton = new Button();
     ImageView cardsGroup = new ImageView(
-        new Image(
-            getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
+        new Image(getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
     cardsGroup.setFitWidth(150);
     cardsGroup.setFitHeight(80);
     cardsButton.setGraphic(cardsGroup);
@@ -277,8 +273,7 @@ public class GameSceneController implements GameStateObserver {
     Button closeCardsButton = new Button();
     closeCardsButton.setPrefSize(20, 20);
     ImageView closeCardIcon = new ImageView(
-        new Image(
-            getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+        new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
     closeCardIcon.setFitWidth(40);
     closeCardIcon.setFitHeight(40);
     closeCardsButton.setGraphic(closeCardIcon);
@@ -436,8 +431,7 @@ public class GameSceneController implements GameStateObserver {
     double maxOffsetY = 10;
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
       ImageView imageView = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif")
-              .toString()));
+          getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString()));
       imageView.setFitWidth(35);
       imageView.setFitHeight(35);
       double offsetX = Math.random() * maxOffsetX;
@@ -492,8 +486,9 @@ public class GameSceneController implements GameStateObserver {
 
   private void animateEndPhase(EndPhase endPhase) {
     updateActivePlayerUi();
-    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe()
-        || myPlayerUi.getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE);
+    nextPhaseButton.setVisible(
+        checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
+            != GamePhase.NOT_ACTIVE));
 
   }
 
@@ -506,8 +501,7 @@ public class GameSceneController implements GameStateObserver {
 
   public PlayerUi getPlayerUiByCurrentPlayer() {
     return playerUis.stream()
-        .filter(playerUi -> gameState.getCurrentPlayer().equals(playerUi.getPlayer()))
-        .findFirst()
+        .filter(playerUi -> gameState.getCurrentPlayer().equals(playerUi.getPlayer())).findFirst()
         .get();
 
   }

@@ -155,7 +155,7 @@ public class JoinOnlineSceneController {
         DatabaseConfiguration.getGameStatisticService()
             .getAllStatisticsByUserId(SessionManager.getUser().getId()));
     GameConfiguration.setMyGameUser(userDto);
-    //TODO
+    //TODO Auskommentieren
     //Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
     SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SELECT_LOBBY);

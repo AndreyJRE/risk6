@@ -15,17 +15,20 @@ public class GameLobby {
 
   private final int turnTime;
 
+  private final UserDto lobbyOwner;
+
   private final List<UserDto> users;
 
 
   public GameLobby(String lobbyName, int maxPlayers, String hostName,
-      boolean isChatEnabled, int matchMakingElo, int turnTime) {
+      boolean isChatEnabled, int matchMakingElo, int turnTime, UserDto lobbyOwner) {
     this.lobbyName = lobbyName;
     this.maxPlayers = maxPlayers;
     this.name = hostName;
     this.isChatEnabled = isChatEnabled;
     this.matchMakingElo = matchMakingElo;
     this.turnTime = turnTime;
+    this.lobbyOwner = lobbyOwner;
     this.users = new ArrayList<>();
   }
 

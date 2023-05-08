@@ -1,4 +1,4 @@
-package com.unima.risk6.game.configurations;
+package com.unima.risk6.game.configurations.observers;
 
 import com.unima.risk6.game.models.ServerLobby;
 

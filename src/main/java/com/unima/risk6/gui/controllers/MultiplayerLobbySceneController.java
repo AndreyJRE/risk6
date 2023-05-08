@@ -10,6 +10,7 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -37,7 +38,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
-public class MultiplayerLobbySceneController {
+public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   private final MultiplayerLobbyScene multiplayerLobbyScene;
   private final SceneController sceneController;
@@ -46,17 +47,17 @@ public class MultiplayerLobbySceneController {
   private HBox centralHBox;
   private final List<AiBot> aiBots = new ArrayList<>();
   private StackPane plus;
-  private final GameLobby gameLobby;
+  private GameLobby gameLobby;
 
 
-  public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene,
-      GameLobby gameLobby) {
+  public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
     this.multiplayerLobbyScene = multiplayerLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
-    this.gameLobby = gameLobby;
+    LobbyConfiguration.addGameLobbyObserver(this);
   }
 
   public void init() {
+    this.gameLobby = LobbyConfiguration.getGameLobby();
     this.user = SessionManager.getUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
@@ -71,7 +72,7 @@ public class MultiplayerLobbySceneController {
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.SELECT_LOBBY));
+    backButton.setOnMouseClicked(e -> handleQuitGameLobby());
 
     // Initialize the username TextField
     Label title = new Label("Multiplayer Lobby");
@@ -104,6 +105,12 @@ public class MultiplayerLobbySceneController {
     BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
 
+  }
+
+  private void handleQuitGameLobby() {
+    Platform.runLater(
+        () -> LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser()));
+    sceneController.activate(SceneName.SELECT_LOBBY);
   }
 
   private void botAdded() {
@@ -326,9 +333,13 @@ public class MultiplayerLobbySceneController {
       gameScene.setGameSceneController(gameSceneController);
       sceneController.addScene(SceneName.GAME, gameScene);
     }
-    System.out.println("Game started");
     sceneController.activate(SceneName.GAME);
     //TODO If we want to go full screen we can use this
     sceneController.getStage().setFullScreen(true);
+  }
+
+  @Override
+  public void updateGameLobby(GameLobby gameLobby) {
+    this.gameLobby = gameLobby;
   }
 }

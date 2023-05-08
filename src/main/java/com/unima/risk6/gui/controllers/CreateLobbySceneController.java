@@ -3,6 +3,8 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
@@ -10,6 +12,7 @@ import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -79,21 +82,7 @@ public class CreateLobbySceneController {
     applyButtonStyle(createLobby);
 
     createLobby.setOnMouseClicked(e -> {
-      gameLobby = new GameLobby(lobbyNameTextField.getText(),
-          Integer.parseInt(maxPlayers.getValue()),
-          SessionManager.getUser().getUsername(), chatCheck.isSelected(),
-          Integer.parseInt(minElo.getValue()), Integer.parseInt(turnTimeBox.getValue()));
-      MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-          .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-      if (scene == null) {
-        scene = new MultiplayerLobbyScene();
-        MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-            scene, gameLobby);
-        scene.setController(multiplayerLobbySceneController);
-        sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
-      }
-      pauseTitleSound();
-      sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+      handleCreateButton();
     });
 
     createLobby.setPrefSize(1080, 44);
@@ -131,6 +120,27 @@ public class CreateLobbySceneController {
     BorderPane.setMargin(createLobbyContainer, new Insets(10, 20, 20, 50));
     BorderPane.setMargin(multiplayerSettingsContainer, new Insets(10, 20, 20, 10));*/
 
+  }
+
+  private void handleCreateButton() {
+
+    gameLobby = new GameLobby(lobbyNameTextField.getText(),
+        Integer.parseInt(maxPlayers.getValue()),
+        SessionManager.getUser().getUsername(), chatCheck.isSelected(),
+        Integer.parseInt(minElo.getValue()), Integer.parseInt(turnTimeBox.getValue()),
+        GameConfiguration.getMyGameUser());
+    Platform.runLater(() -> LobbyConfiguration.sendCreateLobby(gameLobby));
+    MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
+    if (scene == null) {
+      scene = new MultiplayerLobbyScene();
+      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+          scene);
+      scene.setController(multiplayerLobbySceneController);
+      sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
   }
 
   private void initGridpane() {

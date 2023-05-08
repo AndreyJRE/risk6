@@ -1,5 +1,10 @@
 package com.unima.risk6.gui.uiModels;
 
+import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
+
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.controllers.PlayerController;
@@ -50,7 +55,7 @@ public class CountryUi extends Group {
 
   private TroopsCounterUi troopsCounterUi;
 
-  private static boolean isCountrySelectedToAttackOthers = false;
+  private static boolean isCountrySelected = false;
 
   private static Attack lastAttack;
 
@@ -96,40 +101,73 @@ public class CountryUi extends Group {
   }
 
   public void initMouseListener() {
-    setOnMouseEntered((MouseEvent event) -> {
 
-      if (checkIfCountryIsMine(country) || (!country.hasPlayer()
-          && GameSceneController.getPlayerController().getPlayer().getCurrentPhase()
-          == GamePhase.CLAIM_PHASE)) {
-        this.setCursor(Cursor.CROSSHAIR);
-      } else {
-        this.setCursor(Cursor.DEFAULT);
+    setOnMouseEntered((MouseEvent event) -> {
+      PlayerController playerController = GameSceneController.getPlayerController();
+      GamePhase currentPhase = playerController.getPlayer().getCurrentPhase();
+      switch (currentPhase) {
+        case CLAIM_PHASE -> {
+          int numberOfNeutralCountries =
+              GameConfiguration.getGameState().getCountries().stream().filter(Country::hasPlayer)
+                  .toList()
+                  .size();
+          if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
+              || !country.hasPlayer()) {
+            this.setCursor(Cursor.CROSSHAIR);
+          } else {
+            this.setCursor(Cursor.DEFAULT);
+          }
+        }
+        case ATTACK_PHASE, FORTIFY_PHASE -> {
+          if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
+            this.setCursor(Cursor.CROSSHAIR);
+          } else {
+            this.setCursor(Cursor.DEFAULT);
+          }
+        }
+        case REINFORCEMENT_PHASE -> {
+          if (checkIfCountryIsMine(country)
+              && playerController.getPlayer().getDeployableTroops() > 0) {
+            this.setCursor(Cursor.CROSSHAIR);
+          } else {
+            this.setCursor(Cursor.DEFAULT);
+          }
+
+        }
       }
     });
+
     setOnMouseClicked(event -> {
+
       Group countriesGroup = (Group) this.getParent();
       PlayerController playerController = GameSceneController.getPlayerController();
       GamePhase currentPhase = playerController.getPlayer().getCurrentPhase();
       switch (currentPhase) {
         case CLAIM_PHASE -> {
-          if (!this.country.hasPlayer() || checkIfCountryIsMine(country)) {
+          int numberOfNeutralCountries =
+              GameConfiguration.getGameState().getCountries().stream().filter(Country::hasPlayer)
+                  .toList()
+                  .size();
+          if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
+              || !country.hasPlayer()) {
             playerController.sendReinforce(this.country, 1);
             playerController.sendEndPhase(currentPhase);
           }
         }
         case ATTACK_PHASE -> {
-          if (checkIfCountryIsMine(country)) {
+          if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
             animateAttackPhase(countriesGroup);
           }
         }
         case FORTIFY_PHASE -> {
-          if (checkIfCountryIsMine(country)) {
+          if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
             animateFortifyPhase(countriesGroup);
           }
         }
         case REINFORCEMENT_PHASE -> {
-          if (checkIfCountryIsMine(country)) {
-            animateReinforcementPhase(countriesGroup);
+          if (checkIfCountryIsMine(country)
+              && playerController.getPlayer().getDeployableTroops() > 0) {
+            animateReinforcementPhase();
           }
         }
 
@@ -153,43 +191,59 @@ public class CountryUi extends Group {
 
   public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath,
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
+    adjacentCountryPath.setOnMouseEntered(mouseEvent -> {
+      adjacentCountryPath.setCursor(Cursor.HAND);
+    });
     adjacentCountryPath.setOnMouseClicked(
-        event -> showAmountOfTroopsPopUp(this.country.getTroops(), adjacentCountryUi, gamePhase));
+        event -> {
+          if (gamePhase == ATTACK_PHASE) {
+            showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1),
+                adjacentCountryUi,
+                gamePhase);
+          } else {
+            showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi,
+                gamePhase);
+          }
+
+        });
   }
 
   public void animateAttackPhase(Group countriesGroup) {
-    if (isCountrySelectedToAttackOthers) {
-      countriesGroup.getChildren().removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
-          || countriesGroupNode instanceof SVGPath);
+    if (isCountrySelected) {
+      removeArrowsAndAdjacentCountries();
       setCursor(Cursor.DEFAULT);
-      isCountrySelectedToAttackOthers = false;
-
     } else {
       for (CountryUi adjacentCountryUi : adjacentCountryUis) {
         if (!checkIfCountryIsMine(adjacentCountryUi.getCountry())) {
           Line arrow = createArrowAndAnimateAdjacentCountries(countriesGroup, adjacentCountryUi,
-              GamePhase.ATTACK_PHASE);
+              ATTACK_PHASE);
+          animateArrow(adjacentCountryUi, arrow);
+        }
+      }
+      isCountrySelected = true;
+    }
+  }
+
+  private void animateReinforcementPhase() {
+    showAmountOfTroopsPopUp(
+        GameSceneController.getPlayerController().getPlayer().getDeployableTroops(), null,
+        REINFORCEMENT_PHASE);
+  }
+
+  private void animateFortifyPhase(Group countriesGroup) {
+    if (isCountrySelected) {
+      removeArrowsAndAdjacentCountries();
+      setCursor(Cursor.DEFAULT);
+    } else {
+      for (CountryUi adjacentCountryUi : adjacentCountryUis) {
+        if (checkIfCountryIsMine(adjacentCountryUi.getCountry())) {
+          Line arrow = createArrowAndAnimateAdjacentCountries(countriesGroup, adjacentCountryUi,
+              FORTIFY_PHASE);
           animateArrow(adjacentCountryUi, arrow);
         }
 
       }
-      isCountrySelectedToAttackOthers = true;
-    }
-  }
-
-  private void animateReinforcementPhase(Group countriesGroup) {
-    showAmountOfTroopsPopUp(
-        GameSceneController.getPlayerController().getPlayer().getDeployableTroops(), null,
-        GamePhase.REINFORCEMENT_PHASE);
-  }
-
-  private void animateFortifyPhase(Group countriesGroup) {
-    for (CountryUi adjacentCountryUi : adjacentCountryUis) {
-      if (checkIfCountryIsMine(adjacentCountryUi.getCountry())) {
-        Line arrow = createArrowAndAnimateAdjacentCountries(countriesGroup, adjacentCountryUi,
-            GamePhase.FORTIFY_PHASE);
-        animateArrow(adjacentCountryUi, arrow);
-      }
+      isCountrySelected = true;
     }
   }
 
@@ -237,19 +291,16 @@ public class CountryUi extends Group {
       //TODO fortify or attack depending
       popUp.hide();
       PlayerController playerController = GameSceneController.getPlayerController();
-      if (gamePhase == GamePhase.FORTIFY_PHASE) {
-        playerController
-            .sendFortify(this.country, adjacentCountryUi.getCountry(), amountOfTroops.get());
+      if (gamePhase == FORTIFY_PHASE) {
+        playerController.sendFortify(this.country, adjacentCountryUi.getCountry(),
+            amountOfTroops.get());
         playerController.sendEndPhase(gamePhase);
-      } else if (gamePhase == GamePhase.ATTACK_PHASE) {
-        playerController
-            .sendAttack(this.country, adjacentCountryUi.getCountry(), amountOfTroops.get());
-        Group countriesGroup = (Group) this.getParent();
-        countriesGroup.getChildren().removeIf(
-            countriesGroupNode -> countriesGroupNode instanceof Line
-                || countriesGroupNode instanceof SVGPath);
-        isCountrySelectedToAttackOthers = false;
-      } else if (gamePhase == GamePhase.REINFORCEMENT_PHASE) {
+        removeArrowsAndAdjacentCountries();
+      } else if (gamePhase == ATTACK_PHASE) {
+        playerController.sendAttack(this.country, adjacentCountryUi.getCountry(),
+            amountOfTroops.get());
+        removeArrowsAndAdjacentCountries();
+      } else if (gamePhase == REINFORCEMENT_PHASE) {
         playerController.sendReinforce(this.country, amountOfTroops.get());
       }
 
@@ -279,6 +330,13 @@ public class CountryUi extends Group {
     popUp.setX(centerX - popupWidth / 2);
     popUp.setY(centerY - popupHeight / 2);
     popUp.show(gamePane.getScene().getWindow());
+  }
+
+  private void removeArrowsAndAdjacentCountries() {
+    Group countriesGroup = (Group) this.getParent();
+    countriesGroup.getChildren().removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
+        || countriesGroupNode instanceof SVGPath);
+    isCountrySelected = false;
   }
 
   private void showAttackDicePopUp(Attack lastAttack) {
@@ -352,7 +410,7 @@ public class CountryUi extends Group {
     adjacentCountryPath.setEffect(adjacentCountryUi.getGlowEffect());
     addEventHandlersToAdjacentCountryPath(adjacentCountryPath, adjacentCountryUi, gamePhase);
     Line arrow = new Line();
-    arrow.setStroke(Color.RED);
+    arrow.setStroke(Color.RED.invert());
     int index = 0;
     for (Node troopsCounterUiNode : countriesGroup.getChildren()) {
       if (troopsCounterUiNode instanceof TroopsCounterUi) {
@@ -408,7 +466,6 @@ public class CountryUi extends Group {
     showAttackDicePopUp(attack);
     System.out.println(attack);
     if (attack.getHasConquered()) {
-      System.out.println("Test");
       Color playerColor = activePlayerUi.getPlayerUi().getPlayerColor();
       FillTransition highlightTransition = new FillTransition(Duration.seconds(1),
           attacker.getCountryPath(), (Color) attacker.getCountryPath().getFill(), playerColor);
@@ -421,8 +478,6 @@ public class CountryUi extends Group {
                 attack.getTroopNumber());
       }
     }
-    System.out.println(attack.getAttackingCountry().getTroops() + " | "
-        + attack.getDefendingCountry().getTroops());
     attacker.getTroopsCounterUi().update(attack.getAttackingCountry().getTroops());
     defender.getTroopsCounterUi().update(attack.getDefendingCountry().getTroops());
 
