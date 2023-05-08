@@ -55,6 +55,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       }
     }
 
+    // use up all reinforcements
     if (this.reinforceTroopsCopy > 0 && allReinforcements.size() > 0) {
       Reinforce repeat = allReinforcements.get(0);
       Reinforce extra = new Reinforce(repeat.getCountry(), this.reinforceTroopsCopy);
@@ -62,6 +63,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       allReinforcements.add(extra);
     }
 
+    // if no proper reinforcement was found, make the strongest country stronger -> greedy
     if (this.reinforceTroopsCopy > 0) {
       Country greedyChoice = this.getCountries().stream() // will never return null
           .max(Comparator.comparing(Country::getTroops)).orElse(null);

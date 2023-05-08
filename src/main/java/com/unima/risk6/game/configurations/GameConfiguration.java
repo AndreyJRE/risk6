@@ -41,7 +41,9 @@ public class GameConfiguration {
     PlayersConfiguration playersConfiguration = new PlayersConfiguration(users, bots);
     playersConfiguration.configure();
     Queue<Player> players = playersConfiguration.getPlayers();
-    return new GameState(countries, continents, players);
+    GameState configuredGameState = new GameState(countries, continents, players);
+    GameConfiguration.setInitialTroops(configuredGameState);
+    return configuredGameState;
   }
 
   /**
@@ -101,5 +103,26 @@ public class GameConfiguration {
    */
   public static void setMyGameUser(UserDto myGameUser) {
     GameConfiguration.myGameUser = myGameUser;
+  }
+
+  /**
+   * Sets the initial troops of each player in the GameState according to the rulebook.
+   *
+   * @param blankState a GameState that was just created
+   */
+  public static void setInitialTroops(GameState blankState) {
+    int numberOfInitialTroops = 0;
+    switch (blankState.getActivePlayers().size()) {
+      case 2 -> numberOfInitialTroops = 40;
+      case 3 -> numberOfInitialTroops = 35;
+      case 4 -> numberOfInitialTroops = 30;
+      case 5 -> numberOfInitialTroops = 25;
+      case 6 -> numberOfInitialTroops = 20;
+      default -> {
+      }
+    }
+    int finalNumberOfInitialTroops = numberOfInitialTroops;
+    blankState.getActivePlayers().forEach(n -> n.setInitialTroops(finalNumberOfInitialTroops));
+
   }
 }

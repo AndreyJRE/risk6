@@ -123,28 +123,6 @@ public class HandController {
   }
 
   /**
-   * Determines if the hand holds exchangeable cards.
-   *
-   * @return true if the hand holds exchangeable cards, false otherwise.
-   */
-  public boolean holdsExchangeable() {
-    calculateNumberOfEachCardType(cards);
-    if (cards.size() < 3) {
-      return false;
-    }
-    return (numberOfWildcards == 2 || numberOfCannonCards >= 3
-        || numberOfInfantryCards >= 3 || numberOfCavalryCards >= 3)
-        || (numberOfWildcards == 1 && (numberOfCannonCards == 2
-        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2))
-        || (numberOfCannonCards >= 1 && numberOfCavalryCards >= 1 && numberOfInfantryCards >= 1)
-        || (numberOfWildcards == 1 && ((numberOfCannonCards == 0 && numberOfCavalryCards == 1
-        && numberOfInfantryCards == 1) || numberOfCannonCards == 1 && numberOfCavalryCards == 0
-        && numberOfInfantryCards == 1) || numberOfCannonCards == 1 && numberOfCavalryCards == 1
-        && numberOfInfantryCards == 0);
-  }
-
-
-  /**
    * Selects a combination of exchangeable cards from the hand.
    */
   public void selectExchangeableCards() {
@@ -167,6 +145,27 @@ public class HandController {
       }
       deselectCardsThroughIndex(i);
     }
+  }
+
+  /**
+   * Determines if the hand holds exchangeable cards.
+   *
+   * @return true if the hand holds exchangeable cards, false otherwise.
+   */
+  public boolean holdsExchangeable() {
+    calculateNumberOfEachCardType(cards);
+    if (cards.size() < 3) {
+      return false;
+    }
+    return (numberOfWildcards == 2 || numberOfCannonCards >= 3
+        || numberOfInfantryCards >= 3 || numberOfCavalryCards >= 3)
+        || (numberOfWildcards == 1 && (numberOfCannonCards == 2
+        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2))
+        || (numberOfCannonCards >= 1 && numberOfCavalryCards >= 1 && numberOfInfantryCards >= 1)
+        || (numberOfWildcards == 1 && ((numberOfCannonCards == 0 && numberOfCavalryCards == 1
+        && numberOfInfantryCards == 1) || numberOfCannonCards == 1 && numberOfCavalryCards == 0
+        && numberOfInfantryCards == 1) || numberOfCannonCards == 1 && numberOfCavalryCards == 1
+        && numberOfInfantryCards == 0);
   }
 
   /**

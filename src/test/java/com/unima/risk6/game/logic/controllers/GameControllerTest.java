@@ -377,5 +377,19 @@ class GameControllerTest {
     getCountryByCountryName(countryName).setPlayer(null);
   }
 
+  @Test
+  void doubleArrayListToInt() {
+    ArrayList<Integer> integers1 = new ArrayList<>();
+    ;
+
+    ArrayList<Double> doubles = new ArrayList<>();
+
+    ArrayList<Integer> integers = new ArrayList<>();
+    for (Double aDouble : doubles) {
+      integers.add(aDouble.intValue());
+    }
+    integers.forEach(System.out::println);
+  }
+
 
 }

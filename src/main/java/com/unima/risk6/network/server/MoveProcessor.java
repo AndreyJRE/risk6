@@ -42,8 +42,8 @@ public class MoveProcessor {
   }
 
   /**
-   * Validates if the Reinforce is legal and if it is it updates the game state according to the
-   * fortification move received.
+   * Validates if the Reinforce move is legal and if it is, GameState is updated according to the
+   * Reinforce move received. If the Reinforce move is not legal an InvalidMoveException is thrown.
    */
   public void processReinforce(Reinforce reinforce) {
     Player currentPlayer = gameController.getCurrentPlayer();
@@ -55,7 +55,6 @@ public class MoveProcessor {
         || currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
 
       //Should process a Reinforce during the ClaimPhase differently
-
       if (currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
         //If the country doesn't have an owner, owner is assigned to currentPlayer, if it does
         //check if the Country actually belongs to player
@@ -114,6 +113,10 @@ public class MoveProcessor {
     }
   }
 
+  /**
+   * Validates if the Attack move is legal and if it is, the GameState is updated according to the
+   * Attack move received. If the Attack move is illegal an InvalidMoveExcepiton is thrown.
+   */
   public void processAttack(Attack attack) {
     Country attackingCountry = getCountryByCountryName(
         attack.getAttackingCountry().getCountryName());
@@ -170,14 +173,6 @@ public class MoveProcessor {
           attackerStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
         }
 
-        //Forced Fortify after attack and takeover
-        /*Fortify forcedFortify = new Fortify(attackingCountry, defendingCountry,
-       /* Fortify forcedFortify = new Fortify(attackingCountry, defendingCountry,
-            attack.getTroopNumber());
-        processFortify(forcedFortify);*/
-
-        //TODO OPTIONAL Fortify NOW Attack has won HOW TO SIGNAL?
-
         playerController.setPlayer(defender);
         if (playerController.getNumberOfCountries() == 0) {
           gameController.removeLostPlayer(defender);
@@ -220,12 +215,13 @@ public class MoveProcessor {
     Country outgoing = getCountryByCountryName(fortify.getOutgoing().getCountryName());
 
     //Validate if the fortify is legal
-    if (fortify.getTroopsToMove() < outgoing.getTroops() && outgoing.getPlayer()
-        .equals(incoming.getPlayer()) && incoming.getAdjacentCountries().contains(outgoing)
-        && fortify.getTroopsToMove() >= 0 && outgoing.getPlayer()
-        .equals(gameController.getCurrentPlayer()) && (
-        gameController.getCurrentPlayer().getCurrentPhase().equals(ATTACK_PHASE)
-            || gameController.getCurrentPlayer().getCurrentPhase().equals(FORTIFY_PHASE))) {
+    if (fortify.getTroopsToMove() < outgoing.getTroops()
+        && outgoing.getPlayer().equals(incoming.getPlayer())
+        && incoming.getAdjacentCountries().contains(outgoing)
+        && fortify.getTroopsToMove() >= 0
+        && outgoing.getPlayer().equals(gameController.getCurrentPlayer())
+        && (gameController.getCurrentPlayer().getCurrentPhase().equals(ATTACK_PHASE)
+        || gameController.getCurrentPlayer().getCurrentPhase().equals(FORTIFY_PHASE))) {
 
       incoming.changeTroops(fortify.getTroopsToMove());
       outgoing.changeTroops(-fortify.getTroopsToMove());
@@ -237,7 +233,9 @@ public class MoveProcessor {
 
   }
 
-
+  /**
+   * Draws a Card from the deck and assigns it to the Hand of the current Player.
+   */
   public void drawCard() {
     Card drawnCard = deckController.removeCardOnTop();
     playerController.getHandController().addCard(drawnCard);
@@ -246,6 +244,10 @@ public class MoveProcessor {
     }
   }
 
+  /**
+   * Processes a HandIn move of cards and increases the deployable troops of the current Player
+   * according to the number of hand ins that had already occurred.
+   */
   public void processHandIn(HandIn handIn) {
     HandController handController = playerController.getHandController();
     handController.selectCardsFromCardList(handIn.getCards());
@@ -280,7 +282,8 @@ public class MoveProcessor {
       //Increase troopsGained statistic according to troops gotten through card Exchange
       Statistic statisticOfCurrentPlayer = playerController.getPlayer().getStatistic();
       if (statisticOfCurrentPlayer != null) { // a bot doesn't have statistics
-        statisticOfCurrentPlayer.setTroopsGained(statisticOfCurrentPlayer.getTroopsGained() + diff);
+        statisticOfCurrentPlayer.setTroopsGained(
+            statisticOfCurrentPlayer.getTroopsGained() + diff);
       }
 
       gameController.getGameState()
@@ -293,6 +296,10 @@ public class MoveProcessor {
 
   }
 
+  /**
+   * Processes an EndPhase move of and changes the GamePhase into the next phase according to the
+   * current GameState and GamePhase.
+   */
   public void processEndPhase(EndPhase endPhase) {
     Player currentPlayer = gameController.getCurrentPlayer();
     if (currentPlayer.getHasConquered() && playerController.getPlayer().getCurrentPhase()
@@ -307,6 +314,7 @@ public class MoveProcessor {
       gameController.nextPhase();
       playerController.setPlayer(gameController.getCurrentPlayer());
 
+
     } else {
       //Throw invalid move exception
       throw new InvalidMoveException("Cannot End Phase yet");
@@ -314,7 +322,11 @@ public class MoveProcessor {
 
   }
 
-
+  /**
+   * Gets the Country object in GameState by the given CountryName.
+   *
+   * @param countryName the name of the Country as represented by the CountryName enum.
+   */
   public Country getCountryByCountryName(CountryName countryName) {
     final Country[] country = new Country[1];
     gameController.getGameState().getCountries().stream()
@@ -327,6 +339,9 @@ public class MoveProcessor {
         .findFirst().orElse(null);
   }
 
+  /**
+   * Clears the LastMoves ArrayList in GameState.
+   */
   public void clearLastMoves() {
     gameController.getGameState().getLastMoves().clear();
   }
