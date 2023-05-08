@@ -1,6 +1,7 @@
 package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.CountryPair;
@@ -41,15 +42,6 @@ class HardBotTest {
 
   }
 
-//  @BeforeEach
-//  void resetState() {
-//    gameState.getCountries().forEach(c -> {
-//      c.setTroops(0);
-//      c.setPlayer(null);
-//      c.setHasPlayer(false);
-//    });
-//  }
-
   @Test
   void getBestMovesTest() {
     hardBot = new HardBot("Otto the Botto");
@@ -61,7 +53,7 @@ class HardBotTest {
     bots.add(hardBot);
     bots.add(new EasyBot("Pedro the guy"));
     gameState = GameConfiguration.configureGame(humans, bots);
-    ((HardBot) hardBot).setContinentsCopy(gameState.getContinents());
+    hardBot.setGameState(gameState);
     DeckController deckController = new DeckController(gameState.getDeck());
     deckController.initDeck();
     for (Player p : gameState.getActivePlayers()) {
@@ -76,23 +68,31 @@ class HardBotTest {
       gameState.getActivePlayers().add(enemy);
       gameState.setCurrentPlayer((Player) hardBot);
     }
-    ((EasyBot) enemy).setCurrentGameState(gameState);
+    ((EasyBot) enemy).setGameState(gameState);
     gameState.getCountries().stream()
         .filter(c -> !c.getCountryName().equals(CountryName.MIDDLE_EAST)).forEach(c -> {
           enemyController.addCountry(c);
           c.setTroops(1);
         });
-    Country middleEast = getCountryByName(CountryName.MIDDLE_EAST);
+    Country middleEast = getMiddleEast();
+    botTestController.getPlayer().setInitialTroops(0);
+    enemyController.getPlayer().setInitialTroops(0);
     botTestController.addCountry(middleEast);
     middleEast.setTroops(2);
-    botTestController.changeDeployableTroops(4);
+    botTestController.changeDeployableTroops(3);
     ((Player) hardBot).setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
     enemy.setCurrentPhase(GamePhase.NOT_ACTIVE);
     ((HardBot) hardBot).setCurrentGameState(gameState);
     List<Reinforce> decisions = hardBot.createAllReinforcements();
-    assertEquals(4, decisions.stream().mapToInt(Reinforce::getToAdd).sum());
+    assertEquals(3, decisions.stream().mapToInt(Reinforce::getToAdd).sum());
     List<CountryPair> attacks = new ArrayList<>();
     CountryPair attack = hardBot.createAttack();
+    attacks.add(attack);
+    while (hardBot.attackAgain()) {
+      attacks.add(hardBot.createAttack());
+    }
+    assertTrue(attacks.size() > 0);
+    assertTrue(attacks.stream().map(CountryPair::getOutgoing).toList().contains(middleEast));
   }
 
   @Test
@@ -114,7 +114,7 @@ class HardBotTest {
     bots.add(easy);
     bots.add(med);
     gameState = GameConfiguration.configureGame(humans, bots);
-    ((HardBot) hardBot).setContinentsCopy(gameState.getContinents());
+    hardBot.setGameState(gameState);
     DeckController deckController = new DeckController(gameState.getDeck());
     deckController.initDeck();
     for (Player p : gameState.getActivePlayers()) {
@@ -157,19 +157,33 @@ class HardBotTest {
       easyController.addCountry(c);
       c.setTroops(rng.nextInt(1, 5));
     });
-    easy.setCurrentGameState(gameState);
-    med.setContinentsCopy(gameState.getContinents());
-    System.out.println(med.getCountries().size());
+    easy.setGameState(gameState);
+    med.setGameState(gameState);
     ((HardBot) hardBot).setCurrentGameState(gameState);
+    gameState.getActivePlayers().forEach(p -> p.setInitialTroops(0));
     botTestController.getPlayer().setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
+    botTestController.getPlayer().setDeployableTroops(3);
     enemyController.getPlayer().setCurrentPhase(GamePhase.NOT_ACTIVE);
     medController.getPlayer().setCurrentPhase(GamePhase.NOT_ACTIVE);
     easyController.getPlayer().setCurrentPhase(GamePhase.NOT_ACTIVE);
-    hardBot.createAllReinforcements();
+    assertEquals(hardBot, gameState.getCurrentPlayer());
+    assertEquals(hardBot, gameState.getActivePlayers().peek());
+    List<Reinforce> reinforcements = hardBot.createAllReinforcements();
+    assertEquals(3, reinforcements.stream().mapToInt(Reinforce::getToAdd).sum());
+    assertEquals(ContinentName.EUROPE,
+        reinforcements.get(0).getCountry().getContinent().getContinentName());
+    List<CountryPair> attacks = new ArrayList<>();
+    CountryPair attack = hardBot.createAttack();
+    attacks.add(attack);
+    while (hardBot.attackAgain()) {
+      attacks.add(hardBot.createAttack());
+    }
+    assertTrue(attacks.size() > 0);
   }
 
-  static Country getCountryByName(CountryName countryName) {
-    return gameState.getCountries().stream().filter(n -> n.getCountryName().equals(countryName))
+  static Country getMiddleEast() {
+    return gameState.getCountries().stream().filter(n -> n.getCountryName().equals(
+            CountryName.MIDDLE_EAST))
         .findFirst().orElse(null);
   }
 }

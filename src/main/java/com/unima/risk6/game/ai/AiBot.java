@@ -4,6 +4,7 @@ import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import java.util.List;
 
 /**
@@ -51,7 +52,26 @@ public interface AiBot {
    */
   Reinforce claimCountry();
 
+  /**
+   * Returns if the bot chooses to attack another country.
+   *
+   * @return if the bot chooses to attack another country.
+   */
   boolean attackAgain();
 
+  /**
+   * Returns the amount of troops the bot wants to attack with.
+   *
+   * @param attacker the country attacking.
+   * @return the amount of troops the bot wants to attack with.
+   */
   int getAttackTroops(Country attacker);
+
+  /**
+   * Sets the values relevant to the bots decision-making by copying them from the current game
+   * state.
+   *
+   * @param gameState the current state of the game.
+   */
+  void setGameState(GameState gameState);
 }

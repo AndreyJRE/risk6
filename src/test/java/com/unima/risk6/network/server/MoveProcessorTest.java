@@ -106,6 +106,9 @@ class MoveProcessorTest {
     for (Country c : gameState.getCountries()) {
       moveProcessor.processReinforce(
           new Reinforce(getCountryByCountryName(c.getCountryName()), 1));
+      moveProcessor.processEndPhase(
+          new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+
     }
 
     //assertEquals(2, getCountryByCountryName(CountryName.ONTARIO).getTroops());
@@ -115,9 +118,14 @@ class MoveProcessorTest {
 
     while (!gameState.getCurrentPlayer().getCurrentPhase()
         .equals(GamePhase.REINFORCEMENT_PHASE)) {
+
       List<Country> countries = new ArrayList<>(gameState.getCurrentPlayer().getCountries());
       moveProcessor.processReinforce(
           new Reinforce(countries.get(0), 1));
+      moveProcessor.processEndPhase(
+          new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+
+
     }
 
     assertEquals(0, players[0].getInitialTroops());
@@ -217,6 +225,9 @@ class MoveProcessorTest {
     moveProcessor.processAttack(testAttack0);
 
     if (testAttack0.getHasConquered()) {
+      moveProcessor.processFortify(
+          new Fortify(testAttack0.getAttackingCountry(), testAttack0.getDefendingCountry(),
+              testAttack0.getTroopNumber()));
       //Owner of Peru should change to the attacker
       assertEquals(attacker, getCountryByCountryName(CountryName.PERU).getPlayer());
       //Automatic fortify should move 3 troops to Peru if conquered.
@@ -242,6 +253,9 @@ class MoveProcessorTest {
     moveProcessor.processAttack(testAttack1);
 
     if (testAttack1.getHasConquered()) {
+      moveProcessor.processFortify(
+          new Fortify(testAttack1.getAttackingCountry(), testAttack1.getDefendingCountry(),
+              testAttack1.getTroopNumber()));
       assertEquals(attacker, getCountryByCountryName(CountryName.ICELAND).getPlayer());
       //Automatic fortify should move 2 troops to Iceland if conquered.
       assertEquals(2, getCountryByCountryName(CountryName.ICELAND).getTroops());
@@ -268,6 +282,9 @@ class MoveProcessorTest {
     moveProcessor.processAttack(testAttack2);
 
     if (testAttack2.getHasConquered()) {
+      moveProcessor.processFortify(
+          new Fortify(testAttack2.getAttackingCountry(), testAttack2.getDefendingCountry(),
+              testAttack2.getTroopNumber()));
       assertEquals(attacker, getCountryByCountryName(CountryName.QUEBEC).getPlayer());
       //Automatic fortify should move 1 troop to Iceland if conquered.
       assertEquals(1, getCountryByCountryName(CountryName.QUEBEC).getTroops());
@@ -394,29 +411,29 @@ class MoveProcessorTest {
 
   @Test
   void processHandInTest() {
-    for (int i = 0; i < 100; i++) {
-      players[0].setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
-      playerController.setPlayer(players[0]);
-      moveProcessor.drawCard();
-      moveProcessor.drawCard();
-      moveProcessor.drawCard();
-      moveProcessor.drawCard();
-      moveProcessor.drawCard();
 
-      playerController.getHandController().selectExchangeableCards();
-      //   assertEquals(5, players[0].getHand().getCards().size());
-      // assertEquals(3, players[0].getHand().getSelectedCards().size());
-      //  System.out.println(players[0].getHand().toString());
-      moveProcessor.processHandIn(new HandIn(players[0].getHand().getSelectedCards()));
-
-      //Should remove cards in Hand and selected ones and set DeployableTroops to 2.
-      /*
-      assertEquals(0, players[0].getHand().getSelectedCards().size());
-      assertEquals(2, players[0].getHand().getCards().size());
-      assertEquals(2, players[0].getDeployableTroops());
-
-       */
+    players[0].setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
+    playerController.setPlayer(players[0]);
+    for (int i = 0; i < 5; i++) {
+      moveProcessor.drawCard();
     }
+    playerController.getHandController().selectExchangeableCards();
+    assertEquals(5, players[0].getHand().getCards().size());
+    assertEquals(3, players[0].getHand().getSelectedCards().size());
+
+    moveProcessor.processHandIn(new HandIn(players[0].getHand().getSelectedCards()));
+
+    //Should remove cards in Hand and selected ones and set DeployableTroops to 2.
+    assertEquals(0, players[0].getHand().getSelectedCards().size());
+    assertEquals(2, players[0].getHand().getCards().size());
+    assertEquals(2, players[0].getDeployableTroops());
+    assertEquals(39, deckController.getDeck().getDeckCards().size());
+    assertEquals(3, deckController.getHandedIn().getDeckCards().size());
+    //draws the rest of the cards to check if Deck is refilled
+    for (int i = 0; i < 39; i++) {
+      moveProcessor.drawCard();
+    }
+    assertEquals(3, deckController.getDeck().getDeckCards().size());
 
     //Clear player for next test HandIn
     players[0].setDeployableTroops(0);
@@ -438,21 +455,21 @@ class MoveProcessorTest {
 
     playerController.getHandController().selectExchangeableCards();
 
-    try {
-      moveProcessor.processHandIn(new HandIn(players[0].getHand().getSelectedCards()));
-    } catch (InvalidMoveException e) {
-      System.err.println(e.getMessage());
-
-    }
+    moveProcessor.processHandIn(new HandIn(players[0].getHand().getSelectedCards()));
 
     assertEquals(2, getCountryByCountryName(CountryName.CHINA).getTroops());
     assertEquals(2, getCountryByCountryName(CountryName.BRAZIL).getTroops());
     assertEquals(0, getCountryByCountryName(CountryName.ARGENTINA).getTroops());
 
+
   }
 
   @Test
   void processFortifyTest() {
+
+    for (int i = 0; i < 6; i++) {
+      players[i].setInitialTroops(0);
+    }
     addCountryToPlayer(CountryName.UKRAINE, players[0]);
     addCountryToPlayer(CountryName.URAL, players[0]);
 
@@ -466,10 +483,47 @@ class MoveProcessorTest {
     moveProcessor.processFortify(new Fortify(russia, ukraine, 5));
     assertEquals(5, getCountryByCountryName(CountryName.URAL).getTroops());
     assertEquals(15, getCountryByCountryName(CountryName.UKRAINE).getTroops());
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+
     assertEquals(GamePhase.REINFORCEMENT_PHASE,
         gameController.getCurrentPlayer().getCurrentPhase());
 
 
+  }
+
+  @Test
+  void someAttacks() {
+    addCountryToPlayer(CountryName.ARGENTINA, players[0]);
+    addCountryToPlayer(CountryName.GREENLAND, players[0]);
+    addCountryToPlayer(CountryName.ONTARIO, players[0]);
+
+    getCountryByCountryName(CountryName.GREENLAND).setTroops(8);
+    getCountryByCountryName(CountryName.ARGENTINA).setTroops(5);
+    getCountryByCountryName(CountryName.ONTARIO).setTroops(8);
+
+    //defending countries
+    addCountryToPlayer(CountryName.ICELAND, players[1]);
+    addCountryToPlayer(CountryName.PERU, players[1]);
+    addCountryToPlayer(CountryName.QUEBEC, players[1]);
+
+    getCountryByCountryName(CountryName.ICELAND).setTroops(1);
+    getCountryByCountryName(CountryName.PERU).setTroops(2);
+    getCountryByCountryName(CountryName.QUEBEC).setTroops(1);
+
+    //make Reinforce in a country owned by players[0].
+    players[0].setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
+    players[0].setDeployableTroops(3);
+    moveProcessor.processReinforce(
+        new Reinforce(getCountryByCountryName(CountryName.ARGENTINA), 3));
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+
+    //Test 3 Attacks with all different Troop number.
+    Attack testAttack0 = new Attack(
+        getCountryByCountryName(CountryName.ARGENTINA),
+        getCountryByCountryName(CountryName.PERU),
+        3);
+    moveProcessor.processAttack(testAttack0);
+  
   }
 
   Country getCountryByCountryName(CountryName countryName) {

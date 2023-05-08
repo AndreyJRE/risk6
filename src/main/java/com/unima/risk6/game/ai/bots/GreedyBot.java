@@ -7,6 +7,7 @@ import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * An intermediate class representing a player which only makes greedy moves. Used for Medium- and
@@ -27,7 +27,6 @@ import java.util.Set;
 public abstract class GreedyBot extends Player implements AiBot {
 
   protected static final Random RNG = new Random();
-
   protected List<Continent> continentsCopy;
   protected final PlayerController playerController;
 
@@ -40,14 +39,10 @@ public abstract class GreedyBot extends Player implements AiBot {
     return continentsCopy;
   }
 
-  /**
-   * Adds all items of a Set of continents to the continentsCopy list.
-   *
-   * @param continents the set of continents.
-   */
-  public void setContinentsCopy(Set<Continent> continents) {
+  @Override
+  public void setGameState(GameState gameState) {
     this.continentsCopy = new ArrayList<>();
-    this.continentsCopy.addAll(continents);
+    this.continentsCopy.addAll(gameState.getContinents());
   }
 
   public GreedyBot(Player player) {
