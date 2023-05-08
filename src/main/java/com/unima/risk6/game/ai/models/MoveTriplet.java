@@ -5,27 +5,22 @@ import com.unima.risk6.game.logic.Reinforce;
 import java.util.List;
 import java.util.Queue;
 
-public class MoveTriplet {
+/**
+ * A record representing a triplet of moves: All reinforcements, attacks and fortify moves which a
+ * bot would want to make.
+ *
+ * @author eameri
+ */
+public record MoveTriplet(List<Reinforce> reinforcements, Queue<CountryPair> attacks,
+                          Fortify fortify) {
 
-  private final List<Reinforce> reinforcements;
-  private final Queue<CountryPair> attacks;
-  private final Fortify fortify;
-
-  public List<Reinforce> getReinforcements() {
-    return reinforcements;
-  }
-
-  public Queue<CountryPair> getAttacks() {
-    return attacks;
-  }
-
-  public Fortify getFortify() {
-    return fortify;
-  }
-
-  public MoveTriplet(List<Reinforce> reinforcements, Queue<CountryPair> attacks, Fortify fortify) {
-    this.reinforcements = reinforcements;
-    this.attacks = attacks;
-    this.fortify = fortify;
+  /**
+   * Creates a new MoveTriplet object containing all chosen moves.
+   *
+   * @param reinforcements the collection of reinforcements to be made.
+   * @param attacks        the collection of attacks to be made.
+   * @param fortify        the single fortify move to be made.
+   */
+  public MoveTriplet {
   }
 }

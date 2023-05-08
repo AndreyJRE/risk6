@@ -1,10 +1,7 @@
 package com.unima.risk6.game.ai.montecarlo;
 
-import com.unima.risk6.game.ai.bots.EasyBot;
-import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.MoveTriplet;
 import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,13 +20,18 @@ public class MonteCarloNode {
   private final GameState gameState;
   private int wins;
   private int visits;
-  private int depth;
   private final MoveTriplet move;
   private final List<MonteCarloNode> children;
   private MonteCarloNode parent;
   private final Set<MoveTriplet> testedMoves;
 
 
+  /**
+   * Constructs a new node in the MonteCarlo Tree.
+   *
+   * @param gameState The GameState during creation of the node.
+   * @param move      The move used to get to this point.
+   */
   public MonteCarloNode(GameState gameState, MoveTriplet move) {
     this.gameState = gameState;
     this.move = move;
@@ -37,15 +39,20 @@ public class MonteCarloNode {
     this.visits = 0;
     this.children = new ArrayList<>();
     this.parent = null;
-    this.depth = 0;
     this.testedMoves = new HashSet<>();
   }
 
-  public MonteCarloNode(GameState game, MoveTriplet move, MonteCarloNode parent) {
-    this(game, move);
+  /**
+   * Constructs a new node in the MonteCarlo Tree and links it to its parent node.
+   *
+   * @param gameState The GameState during creation of the node.
+   * @param move      The move used to get to this point.
+   * @param parent    The parent of this node.
+   */
+  public MonteCarloNode(GameState gameState, MoveTriplet move, MonteCarloNode parent) {
+    this(gameState, move);
     this.parent = parent;
     this.parent.addChild(this);
-    this.depth = parent.getDepth() + 1;
   }
 
   /**
@@ -96,15 +103,6 @@ public class MonteCarloNode {
   }
 
   /**
-   * Returns the depth of this node in the Monte Carlo Tree.
-   *
-   * @return The depth of the node.
-   */
-  public int getDepth() {
-    return depth;
-  }
-
-  /**
    * Increments the number of wins for this node.
    */
   public void incrementWins() {
@@ -141,8 +139,7 @@ public class MonteCarloNode {
    *
    * @return A boolean value indicating if the node is fully expanded.
    */
-  public boolean isFullyExpanded() {
-    // TODO: find good number for this
+  public boolean isFullyExpanded() { // find a good number for this
     return this.testedMoves.size() > EXPANSION_AMOUNT;
   }
 
@@ -175,23 +172,7 @@ public class MonteCarloNode {
    * @return The calculated UCT value.
    */
   private double calculateUctValue(MonteCarloNode child) {
-    // TODO: visits == 0 and recheck formula
     return (double) child.getWins() / child.getVisits() + EXPLORATION_PARAMETER * Math.sqrt(
         Math.log(this.getVisits()) / child.getVisits());
-  }
-
-
-  /**
-   * Checks if the given player is an instance of MonteCarloBot.
-   *
-   * @param player The player to be checked.
-   * @return A boolean value indicating whether the player is an instance of MonteCarloBot.
-   */
-  private boolean playerIsMonteCarlo(Player player) {
-    return !(player instanceof EasyBot || player instanceof MediumBot);
-  }
-
-  public boolean playerLost(Player player) {
-    return player == null || this.getGameState().getActivePlayers().contains(player);
   }
 }

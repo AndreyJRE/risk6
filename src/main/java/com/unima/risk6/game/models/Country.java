@@ -12,6 +12,9 @@ public class Country {
   private Set<Country> adjacentCountries;
   private Continent continent;
 
+  /**
+   * Constructs a Country object using the given countryName.
+   */
   public Country(CountryName countryName) {
     this.countryName = countryName;
     this.hasPlayer = false;
@@ -46,6 +49,11 @@ public class Country {
     return troops;
   }
 
+  /**
+   * Changes the amount of troops on the country by the specified amount.
+   *
+   * @param diff the amount the troops should be changed by.
+   */
   public void changeTroops(int diff) {
     troops = troops + diff;
   }
@@ -70,9 +78,15 @@ public class Country {
 
   @Override
   public String toString() {
-    return "Country{" +
-        "countryName=" + countryName
-        + ", player=" + player.getUser()
+    String userName;
+    if (hasPlayer) {
+      userName = player.getUser();
+    } else {
+      userName = "No player yet";
+    }
+    return "Country{"
+        + "countryName=" + countryName
+        + ", player=" + userName
         + ", hasPlayer=" + hasPlayer
         + ", troops=" + troops
         + ", continent=" + continent.getContinentName() + '}';

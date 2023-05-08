@@ -105,7 +105,7 @@ public class Card {
     stringBuilder.append(cardSymbol.toString()).append(" ");
     if (hasCountry) {
       assert country != null;
-      stringBuilder.append(country.toString()).append(" ");
+      stringBuilder.append(country).append(" ");
     }
     stringBuilder.append(id);
 

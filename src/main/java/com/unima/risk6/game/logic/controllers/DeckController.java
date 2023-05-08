@@ -28,6 +28,12 @@ public class DeckController {
     this.handedIn = new Deck();
   }
 
+  /**
+   * Constructs a new DeckController with the given decks.
+   *
+   * @param deck     The deck to be managed by this controller.
+   * @param handedIn the cards that were already handedIn
+   */
   public DeckController(Deck deck, Deck handedIn) {
     this.deck = deck;
     this.handedIn = handedIn;

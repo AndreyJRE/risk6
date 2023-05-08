@@ -24,16 +24,32 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
   private double attackProbability = 1.;
 
 
+  /**
+   * Constructs a new MonteCarloBot as a copy of a player.
+   *
+   * @param toCopy the player which is to be copied.
+   */
   public MonteCarloBot(Player toCopy) {
     super(toCopy);
     playerController.setPlayer(this);
   }
 
+  /**
+   * Constructs a default MonteCarloBot.
+   *
+   * @param username the username of the bot.
+   */
   public MonteCarloBot(String username) {
     super(username);
     playerController.setPlayer(this);
   }
 
+  /**
+   * Creates a map of reinforce moves for every country owned based off of the troop numbers in
+   * adjacent countries with the number of troops to add slightly randomized.
+   *
+   * @return A map of countries to an amount of troops which would be good for a reinforce.
+   */
   public Map<Country, Integer> getReinforceMoves() { //recreate defendable -> aggressive
     Map<Country, Integer> diffMap = new HashMap<>();
     for (Country reinforcable : this.getCountries()) {
@@ -47,6 +63,11 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     return diffMap;
   }
 
+  /**
+   * Goes through all possible attack moves and returns only those which are likely to win.
+   *
+   * @return A list of attack moves with a high probability of victory.
+   */
   public List<CountryPair> getAttackMoves() {
     List<CountryPair> attackPairs = new ArrayList<>();
     for (Continent continent : this.getContinentsCopy()) {
@@ -56,6 +77,12 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     return attackPairs.stream().filter(pair -> pair.getWinningProbability() > 70).toList();
   }
 
+  /**
+   * Gets a list of possible fortify moves using the greedy algorithm of the GreedyBot, but
+   * collecting at most 5 different options instead of only returning the best one.
+   *
+   * @return A list of algorithmically optimal fortify moves.
+   */
   public List<Fortify> getFortifyMoves() {
     List<Fortify> fortifyList = new LinkedList<>();
     this.sortContinentsByHighestRelativePower();
@@ -74,18 +101,33 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     return fortifyList.subList(0, Math.min(5, fortifyList.size()));
   }
 
+  /**
+   * Sorts the object variable list of continents in descending order based off of the bots power.
+   */
   public void sortContinentsByHighestRelativePower() {
     this.continentsCopy.sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
         .reversed());
   }
 
-
   /**
-   * Creates a list of all Reinforce moves the bot will perform.
+   * Returns a random country object from a set of countries.
    *
-   * @return A list of Reinforce objects representing all reinforcement moves to be performed.
+   * @param countrySet the non-empty set of countries.
+   * @return a random country from the set.
    */
+  private Country pickRandomCountryFromSet(Set<Country> countrySet) {
+    int position = RNG.nextInt(countrySet.size());
+    int counter = 0;
+    for (Country country : countrySet) {
+      if (position == counter) {
+        return country;
+      }
+      counter++;
+    }
+    return null; // will never happen, method is only called when countries are available
+  }
+
   @Override
   public List<Reinforce> createAllReinforcements() {
     List<Reinforce> answer = new ArrayList<>();
@@ -112,18 +154,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     }
 
     return answer;
-  }
-
-  private Country pickRandomCountryFromSet(Set<Country> countrySet) {
-    int position = RNG.nextInt(countrySet.size());
-    int counter = 0;
-    for (Country country : countrySet) {
-      if (position == counter) {
-        return country;
-      }
-      counter++;
-    }
-    return null; // will never happen, method is only called when countries are available
   }
 
   /**

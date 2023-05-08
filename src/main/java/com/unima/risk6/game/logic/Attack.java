@@ -63,38 +63,41 @@ public class Attack extends Move {
         for (int i = 0; i < 2; i++) {
           attackDiceResult.add(Dice.rollDice());
         }
-        defendDiceResult.add(Dice.rollDice());
-        if (defendingCountry.getTroops() > 1) {
-          defendDiceResult.add(Dice.rollDice());
-        }
-        sortDicelist();
-        if (defendingCountry.getTroops() > 1) {
-          for (int i = 0; i < 2; i++) {
-            compareDice(i);
-          }
-        } else {
-          compareDice(0);
-        }
+        addDefenderDiceRolls();
       }
       case 3 -> {
         for (int i = 0; i < 3; i++) {
           attackDiceResult.add(Dice.rollDice());
         }
-        defendDiceResult.add(Dice.rollDice());
-        if (defendingCountry.getTroops() > 1) {
-          defendDiceResult.add(Dice.rollDice());
-        }
-        sortDicelist();
-        if (defendingCountry.getTroops() > 1) {
-          for (int i = 0; i < 2; i++) {
-            compareDice(i);
-          }
-        } else {
-          compareDice(0);
-        }
+        addDefenderDiceRolls();
       }
       default -> {
       }
+    }
+    if (defenderLosses >= defendingCountry.getTroops()) {
+      hasConquered = true;
+    }
+
+
+  }
+
+  /**
+   * Adds the DiceResults for the defending player depending on the number of troops on the
+   * defending country.
+   */
+
+  private void addDefenderDiceRolls() {
+    defendDiceResult.add(Dice.rollDice());
+    if (defendingCountry.getTroops() > 1) {
+      defendDiceResult.add(Dice.rollDice());
+    }
+    sortDicelist();
+    if (defendingCountry.getTroops() > 1) {
+      for (int i = 0; i < 2; i++) {
+        compareDice(i);
+      }
+    } else {
+      compareDice(0);
     }
     if (defenderLosses >= defendingCountry.getTroops()) {
       hasConquered = true;
@@ -201,15 +204,14 @@ public class Attack extends Move {
   @Override
   public String toString() {
     return "Attack{" +
-        "attackingCountry=" + attackingCountry +
-        ", defendingCountry=" + defendingCountry +
-        ", attackerLosses=" + attackerLosses +
-        ", defenderLosses=" + defenderLosses +
-        ", attackDiceResult=" + attackDiceResult +
-        ", defendDiceResult=" + defendDiceResult +
-        ", troopNumber=" + troopNumber +
-        ", hasConquered=" + hasConquered +
-        '}';
+        "attackingCountry=" + attackingCountry
+        + ", defendingCountry=" + defendingCountry
+        + ", attackerLosses=" + attackerLosses
+        + ", defenderLosses=" + defenderLosses
+        + ", attackDiceResult=" + attackDiceResult
+        + ", defendDiceResult=" + defendDiceResult
+        + ", troopNumber=" + troopNumber
+        + ", hasConquered=" + hasConquered + '}';
   }
 
   public void setAttackerLosses(int attackerLosses) {

@@ -1,7 +1,5 @@
 package com.unima.risk6.game.logic.controllers;
 
-import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
-
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.logic.Attack;
@@ -25,35 +23,76 @@ public class PlayerController {
 
   private final GameClient gameClient;
 
+  /**
+   * Constructs a new PlayerController which has a new HandController and sets the GameClient.
+   */
   public PlayerController() {
     this.handController = new HandController();
     this.gameClient = LobbyConfiguration.getGameClient();
 
   }
 
+  /**
+   * Sends message containing a Reinforce move that is initialized with the given parameters.
+   *
+   * @param reinforcedCountry the country the player wants to reinforce.
+   * @param troopNumber       the amount of troops the player wants to reinforce with.
+   */
   public void sendReinforce(Country reinforcedCountry, int troopNumber) {
     Reinforce reinforce = new Reinforce(reinforcedCountry, troopNumber);
-    gameClient.sendMessage(new StandardMessage<Reinforce>(reinforce));
-  }
-
-  public void sendAttack(Country attackingCountry, Country defendingCountry, int troopNumber) {
-    Attack attack = new Attack(attackingCountry, defendingCountry, troopNumber);
-    gameClient.sendMessage(new StandardMessage<Attack>(attack));
-  }
-
-  public void sendFortify(Country outgoing, Country incoming, int troopNumber) {
-    Fortify fortify = new Fortify(outgoing, incoming, troopNumber);
-    gameClient.sendMessage(new StandardMessage<Fortify>(fortify));
-  }
-
-
-  public void sendEndPhase(GamePhase gamePhase) {
-    EndPhase endPhase = new EndPhase(gamePhase);
-    gameClient.sendMessage(new StandardMessage<EndPhase>(endPhase));
+    gameClient.sendMessage(new StandardMessage<>(reinforce));
   }
 
   /**
-   * Changes the number of deployable troops of the player by the amount stated in diff
+   * Sends a message containing an Attack move that is initialized with the given parameters.
+   *
+   * @param attackingCountry the country the player wants to attack with
+   * @param defendingCountry the country that is under attack
+   * @param troopNumber      the amount of troops the player wants to attack with
+   */
+  public void sendAttack(Country attackingCountry, Country defendingCountry, int troopNumber) {
+    Attack attack = new Attack(attackingCountry, defendingCountry, troopNumber);
+    gameClient.sendMessage(new StandardMessage<>(attack));
+  }
+
+  /**
+   * Sends a message containing a Fortify move that is initialized with the given parameters.
+   *
+   * @param outgoing    the country the player want to fortify from
+   * @param incoming    the country that is fortified
+   * @param troopNumber the amount of troops the player wants to move
+   */
+  public void sendFortify(Country outgoing, Country incoming, int troopNumber) {
+    Fortify fortify = new Fortify(outgoing, incoming, troopNumber);
+    gameClient.sendMessage(new StandardMessage<>(fortify));
+  }
+
+  /**
+   * Sends a message containing an EndPhase move that signals that the player wants to end the
+   * current GamePhase.
+   *
+   * @param gamePhase the GamePhase that should be ended
+   */
+  public void sendEndPhase(GamePhase gamePhase) {
+    EndPhase endPhase = new EndPhase(gamePhase);
+    gameClient.sendMessage(new StandardMessage<>(endPhase));
+  }
+
+  /**
+   * Sends a message containing a HandIn move which stores the cards that should be exchanged.
+   */
+  public void sendHandIn() {
+    if (handController.isExchangeable()) {
+      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
+      //removes Cards that were selected and can be exchanged
+      handController.exchangeCards();
+      gameClient.sendMessage(new StandardMessage<>(handIn));
+    }
+
+  }
+
+  /**
+   * Changes the number of deployable troops of the player by the amount stated in diff.
    *
    * @param diff the number of troops that should be added or subtracted from players troops that
    *             can be deployed
@@ -61,18 +100,6 @@ public class PlayerController {
   public void changeDeployableTroops(int diff) {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
-
-
-  public void sendHandIn() {
-    if (handController.isExchangeable()) {
-      HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
-      //removes Cards that were selected and can be exchanged
-      handController.exchangeCards();
-      gameClient.sendMessage(new StandardMessage<HandIn>(handIn));
-    }
-
-  }
-
 
   public List<CountryPair> getValidFortifiesFromCountry(Country country) {
     List<CountryPair> fortifiable = new ArrayList<>();
@@ -151,7 +178,7 @@ public class PlayerController {
   }
 
   /**
-   * Changes the player object to be managed by the player controller
+   * Changes the player object to be managed by the player controller.
    *
    * @param player the player that the PlayerController should now manage.
    */
@@ -174,7 +201,4 @@ public class PlayerController {
     return player.getCountries().size();
   }
 
-  public boolean isActive() {
-    return !player.getCurrentPhase().equals(NOT_ACTIVE);
-  }
 }

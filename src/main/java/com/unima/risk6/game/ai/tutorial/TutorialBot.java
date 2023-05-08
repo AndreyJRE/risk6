@@ -6,6 +6,7 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import java.util.LinkedList;
@@ -154,6 +155,11 @@ public class TutorialBot extends Player implements AiBot {
   @Override
   public int getAttackTroops(Country attacker) {
     return 3;
+  }
+
+  @Override
+  public void setGameState(GameState gameState) {
+
   }
 
 }

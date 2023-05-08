@@ -7,6 +7,7 @@ import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * An intermediate class representing a player which only makes greedy moves. Used for Medium- and
@@ -27,7 +27,6 @@ import java.util.Set;
 public abstract class GreedyBot extends Player implements AiBot {
 
   protected static final Random RNG = new Random();
-
   protected List<Continent> continentsCopy;
   protected final PlayerController playerController;
 
@@ -40,16 +39,17 @@ public abstract class GreedyBot extends Player implements AiBot {
     return continentsCopy;
   }
 
-  /**
-   * Adds all items of a Set of continents to the continentsCopy list.
-   *
-   * @param continents the set of continents.
-   */
-  public void setContinentsCopy(Set<Continent> continents) {
+  @Override
+  public void setGameState(GameState gameState) {
     this.continentsCopy = new ArrayList<>();
-    this.continentsCopy.addAll(continents);
+    this.continentsCopy.addAll(gameState.getContinents());
   }
 
+  /**
+   * Constructs a new GreedyBot as a copy of a player.
+   *
+   * @param player the player which is to be copied.
+   */
   public GreedyBot(Player player) {
     super(player);
     playerController = new PlayerController();
@@ -57,6 +57,11 @@ public abstract class GreedyBot extends Player implements AiBot {
     this.continentsCopy = new ArrayList<>();
   }
 
+  /**
+   * Constructs a default GreedyBot.
+   *
+   * @param username the username of the bot.
+   */
   public GreedyBot(String username) {
     super(username);
     playerController = new PlayerController();
@@ -198,11 +203,10 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   /**
    * Creates a mapping of countries from a continent to the amount of additional troops needed in
-   * order to balance out their strength with that of their strongest enemy country
+   * order to balance out their strength with that of their strongest enemy country.
    *
-   * @param continent The continent whose countries are being tested
-   * @return A map of countries to the additionally necessary amount of troops. Countries without an
-   * enemy adjacent country are not included in this map
+   * @param continent The continent whose countries are being tested.
+   * @return A map of countries to the additionally necessary amount of troops (if the value exists)
    */
   protected Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
     Map<Country, Integer> ownedCountryDiffs = new HashMap<>();

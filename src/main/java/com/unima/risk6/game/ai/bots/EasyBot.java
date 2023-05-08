@@ -164,7 +164,16 @@ public class EasyBot extends Player implements AiBot {
     }
   }
 
-  public void setCurrentGameState(GameState currentGameState) {
-    this.currentGameState = currentGameState;
+  /**
+   * Sets the values relevant to the bots decision-making by copying them from the current game
+   * state.
+   *
+   * @param gameState the current state of the game.
+   */
+  @Override
+  public void setGameState(GameState gameState) {
+    this.currentGameState = gameState;
   }
+
+
 }
