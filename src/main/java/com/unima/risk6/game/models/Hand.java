@@ -21,4 +21,19 @@ public class Hand {
     return selectedCards;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("Cards: ");
+    for (Card c : cards) {
+      stringBuilder.append(c.toString()).append("||");
+    }
+    stringBuilder.append("\n");
+    stringBuilder.append("Selected: ");
+    for (Card c : selectedCards) {
+      stringBuilder.append(c.toString()).append("||");
+    }
+    return stringBuilder.toString();
+  }
+
 }

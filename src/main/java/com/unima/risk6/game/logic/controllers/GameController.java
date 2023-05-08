@@ -34,8 +34,10 @@ public class GameController {
    */
   public void nextPlayer() {
     Player lastPlayer = players.poll();
-    Player nextPlayer = players.peek();
-    gameState.setCurrentPlayer(nextPlayer);
+    if (players.size() > 0) {
+      Player nextPlayer = players.peek();
+      gameState.setCurrentPlayer(nextPlayer);
+    }
     nextPhase();
     players.add(lastPlayer);
     assert lastPlayer != null;

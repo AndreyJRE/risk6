@@ -73,7 +73,7 @@ public class HandController {
    *
    * @param i The index of the card in the hand.
    */
-  public void deselectCards(int i) {
+  public void deselectCardsThroughIndex(int i) {
     selectedCards.remove(cards.get(i));
   }
 
@@ -148,7 +148,7 @@ public class HandController {
    * Selects a combination of exchangeable cards from the hand.
    */
   public void selectExchangeableCards() {
-
+    deselectAllCards();
     int border = cards.size() - 2;
     A:
     for (int i = 0; i < border; i++) {
@@ -160,12 +160,12 @@ public class HandController {
           if (isExchangeable(selectedCards)) {
             break A;
           }
-          deselectCards(k + 2);
+          deselectCardsThroughIndex(k + 2);
 
         }
-        deselectCards(j + 1);
+        deselectCardsThroughIndex(j + 1);
       }
-      deselectCards(i);
+      deselectCardsThroughIndex(i);
     }
   }
 

@@ -115,14 +115,14 @@ class HandControllerTest {
     handController.selectCardThroughIndex(1);
     handController.selectCardThroughIndex(2);
     //Deselecting one card at a time
-    handController.deselectCards(0);
+    handController.deselectCardsThroughIndex(0);
 
     assertFalse(handController.getHand().getSelectedCards().contains(cards[0]));
     assertEquals(2, handController.getHand().getSelectedCards().size());
-    handController.deselectCards(2);
+    handController.deselectCardsThroughIndex(2);
     assertEquals(1, handController.getHand().getSelectedCards().size());
     assertFalse(handController.getHand().getSelectedCards().contains(cards[2]));
-    handController.deselectCards(1);
+    handController.deselectCardsThroughIndex(1);
     assertEquals(0, handController.getHand().getSelectedCards().size());
     assertFalse(handController.getHand().getSelectedCards().contains(cards[1]));
 

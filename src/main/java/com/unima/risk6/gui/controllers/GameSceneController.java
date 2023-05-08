@@ -33,6 +33,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import javafx.animation.PathTransition;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -91,7 +92,7 @@ public class GameSceneController implements GameStateObserver {
 
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
   private ActivePlayerUi activePlayerUi;
-
+  private Button nextPhaseButton;
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -232,8 +233,9 @@ public class GameSceneController implements GameStateObserver {
       new ChatUi(gameScene);
     });
 
-    activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getMyPlayerUi());
-    Button nextPhaseButton = new Button();
+    activePlayerUi = new ActivePlayerUi(40, 40, 300, 75,
+        getCurrentPlayerUi());
+    nextPhaseButton = new Button();
     ImageView rightArrowIcon = new ImageView(new Image(
         getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
     rightArrowIcon.setFitWidth(50);
@@ -262,11 +264,11 @@ public class GameSceneController implements GameStateObserver {
 
     bottomPane.getChildren().addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton);
     bottomPane.setAlignment(Pos.CENTER);
-    bottomPane.setMargin(nextPhaseButton, new Insets(0, 0, 0, 450));
-    bottomPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
-    bottomPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
-    bottomPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
-    bottomPane.setMargin(chatButton, new Insets(0, 15, 0, 0));
+    StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 0, 450));
+    StackPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
+    StackPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
+    StackPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
+    StackPane.setMargin(chatButton, new Insets(0, 15, 0, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));
     return bottomPane;
   }
@@ -285,7 +287,7 @@ public class GameSceneController implements GameStateObserver {
 
     BorderPane cardsPane = new BorderPane();
     cardsPane.setTop(closeCardsButton);
-    cardsPane.setAlignment(closeCardsButton, Pos.TOP_RIGHT);
+    BorderPane.setAlignment(closeCardsButton, Pos.TOP_RIGHT);
 
     HBox cardsBox = new HBox();
 
@@ -369,22 +371,25 @@ public class GameSceneController implements GameStateObserver {
     Queue<Move> lastMoves = gameState.getLastMoves();
     Iterator<Move> iterator = lastMoves.iterator();
     updateReferencesFromGameState();
-    updateActivePlayerUi();
     while (iterator.hasNext()) {
       Move lastMove = iterator.next();
       if (lastMove instanceof Fortify fortify) {
-        animateTroopsMovement(fortify);
+        System.out.println(fortify);
+        Platform.runLater(() -> animateTroopsMovement(fortify));
       } else if (lastMove instanceof Attack attack) {
-        animateAttack(attack);
+        System.out.println(attack);
+        Platform.runLater(() -> animateAttack(attack));
       } else if (lastMove instanceof Reinforce reinforce) {
-        animateReinforce(reinforce);
+        System.out.println(reinforce);
+        Platform.runLater(() -> animateReinforce(reinforce));
       } else if (lastMove instanceof HandIn handIn) {
-        animateHandIn(handIn);
+        Platform.runLater(() -> animateHandIn(handIn));
       } else if (lastMove instanceof EndPhase endPhase) {
-//                animateEndPhase(endPhase);
+        Platform.runLater(() -> animateEndPhase(endPhase));
       }
       iterator.remove();
     }
+    System.out.println("Current Phase by player " + gameState.getCurrentPlayer().getCurrentPhase());
   }
 
 
@@ -475,8 +480,7 @@ public class GameSceneController implements GameStateObserver {
   private void animateAttack(Attack attack) {
     CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
     CountryUi countryUi1 = getCountryUiByCountry(attack.getDefendingCountry());
-    countryUi.update(activePlayerUi, attack);
-    countryUi1.update(activePlayerUi, attack);
+    countryUi.updateAfterAttack(activePlayerUi, attack, countryUi, countryUi1);
 
   }
 
@@ -486,9 +490,12 @@ public class GameSceneController implements GameStateObserver {
 
   }
 
-//    private void animateEndPhase(EndPhase endPhase) {
-//        activePlayerUi.changePhase(endPhase);
-//    }
+  private void animateEndPhase(EndPhase endPhase) {
+    updateActivePlayerUi();
+    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe()
+        || myPlayerUi.getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE);
+
+  }
 
   private void animateHandIn(HandIn handIn) {
   }
@@ -511,12 +518,13 @@ public class GameSceneController implements GameStateObserver {
   }
 
   public void updateActivePlayerUi() {
+    activePlayerUi.changeActivePlayerUi(getCurrentPlayerUi());
+  }
+
+  public PlayerUi getCurrentPlayerUi() {
     Player currentPlayer = gameState.getCurrentPlayer();
-    if (!currentPlayer.equals(activePlayerUi.getPlayerUi().getPlayer())) {
-      activePlayerUi.changeActivePlayerUi(
-          playerUis.stream().filter(playerUi -> currentPlayer.equals(playerUi.getPlayer()))
-              .findFirst().get());
-    }
+    return playerUis.stream().filter(playerUi -> currentPlayer.equals(playerUi.getPlayer()))
+        .findFirst().get();
   }
 }
 
