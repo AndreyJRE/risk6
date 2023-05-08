@@ -129,7 +129,7 @@ public class UserOptionsSceneController {
     HBox userNameFieldContainer = new HBox(userNameField);
     userNameFieldContainer.setAlignment(Pos.CENTER);
 
-    Button changeUserButton = new Button("Change User");
+    Button changeUserButton = new Button("Switch account");
 
     changeUserButton.setPrefWidth(470);
     changeUserButton.setPrefHeight(40);

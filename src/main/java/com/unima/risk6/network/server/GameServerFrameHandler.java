@@ -4,12 +4,19 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.DeckController;
+import com.unima.risk6.game.logic.controllers.GameController;
+import com.unima.risk6.game.logic.controllers.PlayerController;
+import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Lobby;
+import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
@@ -24,6 +31,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import java.util.HashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +112,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
           case "CONNECTION" -> {
             LOGGER.debug("The server received a connection message");
-            //TODO Connection problem
             ConnectionMessage connectionMessage = null;
             try {
               connectionMessage = (ConnectionMessage) Deserializer.deserializeConnectionMessage(
@@ -115,7 +123,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
               switch (connectionMessage.getConnectionActions()) {
 
                 case JOIN_SERVER_LOBBY -> {
-                  //TODO Make it work properly
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
                   if (users.containsKey(userDto)) {
@@ -131,19 +138,22 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   LOGGER.debug("At JOIN_GAME_LOBBY " + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   //TODO Muss der Nutzer aus der ServerLobby entfernt werden? Letzter Stand Nein
-                  gameChannels.get(NetworkConfiguration.getServerLobby()).remove(ctx.channel());
+                  // gameChannels.get(NetworkConfiguration.getServerLobby()).remove(ctx.channel());
                   GameLobby gameLobbyFromServer = NetworkConfiguration.getServerLobby()
                       .getGameLobbies().stream()
                       .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst()
                       .get();
                   //Add users channel to the ChannelGroup from the gamelobby
                   gameLobbyFromServer.getUsers().add(users.inverse().get(ctx.channel()));
-                  gameChannels.get(gameLobbyFromServer).add(ctx.channel());
+                  //gameChannels.get(f).add(ctx.channel());
+                  System.out.println(gameLobbyFromServer);
                   sendGameLobby(gameLobbyFromServer);
                 }
                 case START_GAME -> {
-                  //TODO MOVECONTROLLER
+                  //TODO MOVE_CONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  processStartGame(gameLobby);
                   sendFirstGamestate();
                   moveProcessor.clearLastMoves();
 
@@ -223,14 +233,34 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void sendGameLobby(GameLobby gameLobby) {
     //TODO It is not working properly list is maybe empty
-    for (Channel ch : gameChannels.get(gameLobby)) {
-      System.out.println("Test");
+    String serializedGameLobby = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_LOBBY,
+            gameLobby));
+    for (Channel ch : channels) {
       LOGGER.debug("Send a game lobby to: " + ch.id());
       ch.writeAndFlush(
-          new TextWebSocketFrame(Serializer.serialize(
-              new ConnectionMessage<GameLobby>(ConnectionActions.ACCEPT_JOIN_LOBBY,
-                  gameLobby))));
+          new TextWebSocketFrame(serializedGameLobby));
     }
+  }
+
+  public void processStartGame(GameLobby gameLobby) {
+    List<String> usersList = gameLobby.getUsers().stream()
+        .map(UserDto::getUsername).toList();
+    GameState gameState = GameConfiguration.configureGame(usersList, List.of());
+    moveProcessor.setGameController(new GameController(gameState));
+    moveProcessor.setDeckController(new DeckController(new Deck()));
+    PlayerController playerController = new PlayerController();
+    moveProcessor.setPlayerController(playerController);
+    HashMap<Player, Integer> diceRolls = new HashMap<>();
+    diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(), 6);
+    diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(), 1);
+    moveProcessor.getGameController()
+        .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
+    Player activePlayer = moveProcessor.getGameController().getGameState().getActivePlayers()
+        .peek();
+    moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
+    moveProcessor.getPlayerController().setPlayer(activePlayer);
+    moveProcessor.getDeckController().initDeck();
   }
 
   @Override

@@ -206,7 +206,15 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       if (lobbyList.getSelectionModel().getSelectedItem().getMatchMakingElo()
           <= GameConfiguration.getMyGameUser().getWinLossRatio()) {
         LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
-        //lobbyList.getSelectionModel().getSelectedItem().addUser(GameConfiguration.getMyGameUser());
+
+        while (LobbyConfiguration.getGameLobby() == null) {
+          try {
+            Thread.sleep(100);
+            System.out.println("Waiting for Lobby");
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
         MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
             .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
         if (scene == null) {
@@ -250,7 +258,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     this.serverLobby = serverLobby;
     Iterator<GameLobby> iterator = lobbies.listIterator();
     while (iterator.hasNext()) {
-      iterator.next();
       iterator.remove();
     }
     lobbies.addAll(serverLobby.getGameLobbies());

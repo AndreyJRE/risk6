@@ -59,12 +59,17 @@ public class GameLobby extends Lobby {
   public List<UserDto> getUsers() {
     return users;
   }
-/*
-  public void addUser(UserDto user){
-    users.add(user);
+
+  public UserDto getLobbyOwner() {
+    return lobbyOwner;
   }
 
-  public void removeUser(UserDto user){
-    users.remove(user);
-  }*/
+
+  @Override
+  public String toString() {
+    return "GameLobby{" +
+        "lobbyName='" + lobbyName + '\'' + ", name='" + name + '\'' + ", maxPlayers=" + maxPlayers
+        + ", isChatEnabled=" + isChatEnabled + ", matchMakingElo=" + matchMakingElo + ", turnTime="
+        + turnTime + ", lobbyOwner=" + lobbyOwner + ", users= {" + users + "}";
+  }
 }

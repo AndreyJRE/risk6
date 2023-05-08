@@ -4,6 +4,7 @@ import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 public class UserDto {
 
@@ -70,4 +71,17 @@ public class UserDto {
     return new UserDto(user.getUsername(), lossRatio, hoursPlayed,
         won, userGameStatistic.size() - won, countriesConquered);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    UserDto userDto = (UserDto) o;
+    return Objects.equals(username, userDto.username);
+  }
+
 }

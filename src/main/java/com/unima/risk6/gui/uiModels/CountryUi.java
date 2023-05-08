@@ -6,13 +6,13 @@ import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.animation.FillTransition;
@@ -56,8 +56,6 @@ public class CountryUi extends Group {
   private TroopsCounterUi troopsCounterUi;
 
   private static boolean isCountrySelected = false;
-
-  private static Attack lastAttack;
 
 
   public CountryUi(Country country, String SVGPath) {
@@ -191,9 +189,7 @@ public class CountryUi extends Group {
 
   public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath,
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
-    adjacentCountryPath.setOnMouseEntered(mouseEvent -> {
-      adjacentCountryPath.setCursor(Cursor.HAND);
-    });
+    adjacentCountryPath.setOnMouseEntered(mouseEvent -> adjacentCountryPath.setCursor(Cursor.HAND));
     adjacentCountryPath.setOnMouseClicked(
         event -> {
           if (gamePhase == ATTACK_PHASE) {
@@ -263,7 +259,9 @@ public class CountryUi extends Group {
 
     Circle leftCircle = new Circle(25);
     Image leftImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/minusIcon.png").toString());
+        Objects.requireNonNull(getClass()
+                .getResource("/com/unima/risk6/pictures/minusIcon.png"))
+            .toString());
     leftCircle.setFill(new ImagePattern(leftImage));
     leftCircle.setOnMouseClicked(minusEvent -> {
       if (amountOfTroops.get() > 1) {
@@ -274,7 +272,8 @@ public class CountryUi extends Group {
 
     Circle rightCircle = new Circle(25);
     Image rightImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString());
+        Objects.requireNonNull(getClass()
+            .getResource("/com/unima/risk6/pictures/plusIcon.png")).toString());
     rightCircle.setFill(new ImagePattern(rightImage));
     rightCircle.setOnMouseClicked(plusEvent -> {
       if (amountOfTroops.get() < troopBound) {
@@ -285,7 +284,8 @@ public class CountryUi extends Group {
 
     Circle confirmCircle = new Circle(25);
     Image confirmImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png").toString());
+        Objects.requireNonNull(getClass()
+            .getResource("/com/unima/risk6/pictures/confirmIcon.png")).toString());
     confirmCircle.setFill(new ImagePattern(confirmImage));
     confirmCircle.setOnMouseClicked(confirmEvent -> {
       //TODO fortify or attack depending
@@ -307,7 +307,7 @@ public class CountryUi extends Group {
     });
 
     chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
-    chatBox.setHgrow(confirmCircle, Priority.ALWAYS);
+    HBox.setHgrow(confirmCircle, Priority.ALWAYS);
 
     moveTroopsPane.setCenter(chatBox);
     moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
@@ -372,9 +372,7 @@ public class CountryUi extends Group {
     diceHBox.getChildren().addAll(attackerBox, winningChanceLabel, defenderBox);
 
     PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
-    delayTransition.setOnFinished(delayTransitionEvent -> {
-      dicePopup.hide();
-    });
+    delayTransition.setOnFinished(delayTransitionEvent -> dicePopup.hide());
 
     dicePane.setCenter(diceHBox);
     dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
@@ -451,7 +449,7 @@ public class CountryUi extends Group {
     timeline.play();
   }
 
-  public void update(ActivePlayerUi activePlayerUi, Move move) {
+  public void update(ActivePlayerUi activePlayerUi) {
     troopsCounterUi.update(country.getTroops());
     Color playerColor = activePlayerUi.getPlayerUi().getPlayerColor();
     FillTransition highlightTransition = new FillTransition(Duration.seconds(1), this.countryPath,
@@ -523,8 +521,5 @@ public class CountryUi extends Group {
     return adjacentCountryUis;
   }
 
-  public void setLastAttack(Attack attack) {
-
-  }
 }
 

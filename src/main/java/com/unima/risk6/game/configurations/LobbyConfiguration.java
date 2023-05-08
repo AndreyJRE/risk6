@@ -76,6 +76,11 @@ public class LobbyConfiguration {
     //setGameLobby(gameLobby);
   }
 
+  public static void sendStartGame(GameLobby gameLobby) {
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.START_GAME, gameLobby));
+  }
+
   /**
    * This method is used to configure the network client.
    *

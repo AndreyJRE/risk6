@@ -1,6 +1,9 @@
 package com.unima.risk6.gui.configurations;
 
+import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.controllers.SceneController;
+import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.GameScene;
 import javafx.beans.value.ChangeListener;
 import javafx.stage.Stage;
 
@@ -26,6 +29,19 @@ public class SceneConfiguration {
     stage.heightProperty().addListener(stageSizeListener);
   }
 
+  public static void startGame() {
+    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.GAME);
+    if (gameScene == null) {
+      gameScene = new GameScene();
+      GameSceneController gameSceneController = new GameSceneController(gameScene);
+      gameScene.setGameSceneController(gameSceneController);
+      sceneController.addScene(SceneName.GAME, gameScene);
+    }
+    sceneController.activate(SceneName.GAME);
+    //TODO If we want to go full screen we can use this
+    sceneController.getStage().setFullScreen(true);
+  }
 
   public static SceneController getSceneController() {
     return sceneController;

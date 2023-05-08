@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.message.ConnectionActions;
@@ -37,7 +38,8 @@ public class ConnectionMessageAdapter implements JsonDeserializer<ConnectionMess
         message = new ConnectionMessage<>(connectionAction, statusCode, serverLobby);
       }
       case ACCEPT_START_GAME -> {
-
+        GameState gameState = context.deserialize(jsonObject.get("content"), GameState.class);
+        message = new ConnectionMessage<>(connectionAction, statusCode, gameState);
       }
 
       default -> throw new JsonParseException("Unsupported content type: " + connectionAction);

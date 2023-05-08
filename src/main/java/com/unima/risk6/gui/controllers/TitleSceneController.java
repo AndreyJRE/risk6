@@ -82,12 +82,9 @@ public class TitleSceneController implements Initializable {
   private FillTransition fillAnimation = new FillTransition(Duration.seconds(0.25));
   private ParallelTransition animation = new ParallelTransition(translateAnimation, fillAnimation);
 
-  public BooleanProperty switchedOnProperty() {
-    return switchedOn;
-  }
-
 
   private SceneController sceneController;
+
   private UserService userService;
 
   @Override
@@ -140,8 +137,8 @@ public class TitleSceneController implements Initializable {
     animation.play();
   }
 
-
   // Define the event handler for the single player button
+
   @FXML
   private void handleSinglePlayer() {
     SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
@@ -157,8 +154,8 @@ public class TitleSceneController implements Initializable {
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
-
   // Define the event handler for the multi player button
+
   @FXML
   private void handleMultiPlayer() {
     //TODO: Implement MultiPlayer
@@ -175,8 +172,8 @@ public class TitleSceneController implements Initializable {
     sceneController.activate(SceneName.JOIN_ONLINE);
 
   }
-
   // Define the event handler for the options button
+
   @FXML
   private void handleOptions() {
     UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
@@ -229,5 +226,9 @@ public class TitleSceneController implements Initializable {
     ParallelTransition parallelTransition = new ParallelTransition(movementTransition,
         scaleTransition, colorTimeline);
     parallelTransition.play();
+  }
+
+  public BooleanProperty switchedOnProperty() {
+    return switchedOn;
   }
 }

@@ -34,14 +34,13 @@ public class LobbyUserStatisticSceneController {
   private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
 
 
-  public LobbyUserStatisticSceneController(LobbyUserStatisticScene lobbyUserStatisticScene,
-      UserDto user) {
+  public LobbyUserStatisticSceneController(LobbyUserStatisticScene lobbyUserStatisticScene) {
     this.lobbyUserStatisticScene = lobbyUserStatisticScene;
     this.sceneController = SceneConfiguration.getSceneController();
-    this.user = user;
   }
 
-  public void init() {
+  public void init(UserDto user) {
+    this.user = user;
     this.root = (BorderPane) lobbyUserStatisticScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);

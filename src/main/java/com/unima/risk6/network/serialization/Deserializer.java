@@ -80,4 +80,22 @@ public class Deserializer {
         .create()
         .fromJson(json, ConnectionMessage.class);
   }
+
+  public static Message deserializeConnectionMessage(String json, GameState gameState) {
+    return new GsonBuilder()
+        .registerTypeAdapter(ConnectionMessage.class, new ConnectionMessageAdapter())
+        .registerTypeAdapter(GameState.class, new GameStateTypeAdapter(gameState))
+        .registerTypeAdapter(Country.class, new CountryTypeAdapter(gameState))
+        .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
+        .registerTypeAdapter(Card.class, new CardTypeAdapter())
+        .registerTypeAdapter(Hand.class, new HandTypeAdapter())
+        .registerTypeAdapter(Player.class, new PlayerTypeAdapter(gameState))
+        .registerTypeAdapter(Attack.class, new AttackTypeAdapter(gameState))
+        .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter(gameState))
+        .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter(gameState))
+        .registerTypeAdapter(HandIn.class, new HandInTypeAdapter())
+        .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter())
+        .create()
+        .fromJson(json, ConnectionMessage.class);
+  }
 }

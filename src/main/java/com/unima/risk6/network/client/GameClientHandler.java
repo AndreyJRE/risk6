@@ -7,6 +7,8 @@ import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
+import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.network.serialization.Deserializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -22,6 +24,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
 import java.util.ArrayList;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,16 +112,21 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
                     "Got first Gamestate: Overwrite GameState with new GameState from Server");
-                GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
+                GameState g = (GameState) Deserializer.deserializeConnectionMessage(
+                        textFrame.text(),
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
                     .getContent();
                 GameConfiguration.setGameState(g);
+                CountriesUiConfiguration.configureCountries(g.getCountries());
+                Platform.runLater(SceneConfiguration::startGame);
               }
               case "ACCEPT_JOIN_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite game lobby");
+                GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
+                        textFrame.text())
+                    .getContent();
                 LobbyConfiguration.setGameLobby(
-                    (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
-                        .getContent());
+                    gameLobby);
               }
               case "DROP_USER_LOBBY" -> {
                 //TODO Error Messsage

@@ -16,7 +16,7 @@ public class PlayerUi extends Group {
 
   private Player player;
 
-  private Color playerColor;
+  private final Color playerColor;
 
   private Ellipse ellipse;
 

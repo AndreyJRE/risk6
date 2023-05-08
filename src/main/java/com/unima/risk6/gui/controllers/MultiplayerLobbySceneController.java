@@ -11,12 +11,9 @@ import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.UserDto;
-import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.LobbyUserStatisticScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import java.util.ArrayList;
@@ -42,7 +39,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   private final MultiplayerLobbyScene multiplayerLobbyScene;
   private final SceneController sceneController;
   private final List<AiBot> aiBots = new ArrayList<>();
-  private UserDto user;
+  private UserDto myUser;
   private BorderPane root;
   private HBox centralHBox;
   private StackPane plus;
@@ -57,10 +54,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
-    this.user = GameConfiguration.getMyGameUser();
+    this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     // Initialize elements
     initHBox();
     initElements();
@@ -90,7 +86,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
     HBox playButton = new HBox(play);
     playButton.setAlignment(Pos.CENTER);
-
+    playButton.setVisible(checkIfUserIsOwner());
     play.setOnMouseClicked(e -> handlePlayButton());
 
     //TODO: Implement Gridpane for Multiplayer Settings
@@ -106,12 +102,18 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   }
 
+  private boolean checkIfUserIsOwner() {
+    System.out.println("User: " + myUser.getUsername());
+    System.out.println("Owner: " + gameLobby.getLobbyOwner().getUsername());
+    return myUser.getUsername().equals(gameLobby.getLobbyOwner().getUsername());
+  }
+
   private void handleQuitGameLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
       //gameLobby.removeUser(GameConfiguration.getMyGameUser());
-      Platform.runLater(
-          () -> LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser()));
+
+      LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser());
       sceneController.activate(SceneName.SELECT_LOBBY);
     }
   }
@@ -122,7 +124,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     for (UserDto user : users) {
       VBox userVBox = createPlayerVBox(user);
       centralHBox.getChildren().add(userVBox);
-      userVBox.setOnMouseClicked(e -> userClicked(user));
+      System.out.println("User:" + user.getUsername());
     }
 
     for (int i = gameLobby.getMaxPlayers() - users.size(); i > 0; i--) {
@@ -139,25 +141,26 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     if (scene == null) {
       scene = new LobbyUserStatisticScene();
       LobbyUserStatisticSceneController lobbyUserStatisticSceneController = new LobbyUserStatisticSceneController(
-          scene, user);
+          scene);
       scene.setController(lobbyUserStatisticSceneController);
       sceneController.addScene(SceneName.LOBBY_USER_STATISTIC, scene);
     }
     pauseTitleSound();
+    scene.setUserDto(user);
     sceneController.activate(SceneName.LOBBY_USER_STATISTIC);
   }
 
 
-  private VBox createPlayerVBox(UserDto user) {
+  private VBox createPlayerVBox(UserDto userDto) {
     //TODO: Image Path für UserDto nachfragen
     StackPane userImage = createPlayerStackPane("/com/unima/risk6/pictures/playerIcon.png");
-    Label userName = new Label(user.getUsername());
+    Label userName = new Label(userDto.getUsername());
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
         + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
         + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
-
     VBox playerBox = new VBox(userImage, userName);
+    playerBox.setOnMouseClicked(e -> userClicked(userDto));
     playerBox.setAlignment(Pos.CENTER);
     playerBox.setSpacing(-10);
 
@@ -224,39 +227,24 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   }
 
   private void handlePlayButton() {
-    // TODO: Implement the single player game
 
-    List<String> users = new ArrayList<>();
-    users.add(SessionManager.getUser().getUsername());
-    users.add("Jake");
-    users.add("Joel");
-    users.add("John");
-
-    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser()));
-
-    /*GameState gameState = GameConfiguration.configureGame(users, aiBots);
-    User myUser = SessionManager.getUser();
-    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
-    );
-    GameConfiguration.setGameState(gameState);*/
-    CountriesUiConfiguration.configureCountries(GameConfiguration.getGameState().getCountries());
-    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.GAME);
-    if (gameScene == null) {
-      gameScene = new GameScene();
-      GameSceneController gameSceneController = new GameSceneController(gameScene);
-      gameScene.setGameSceneController(gameSceneController);
-      sceneController.addScene(SceneName.GAME, gameScene);
+    int usersSize = gameLobby.getUsers().size();
+    if (usersSize < 2 || usersSize > gameLobby.getMaxPlayers()) {
+      showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
+      return;
     }
-    sceneController.activate(SceneName.GAME);
-    //TODO If we want to go full screen we can use this
-    sceneController.getStage().setFullScreen(true);
+
+    LobbyConfiguration.sendStartGame(gameLobby);
   }
 
   @Override
   public void updateGameLobby(GameLobby gameLobby) {
     this.gameLobby = gameLobby;
+    Platform.runLater(() -> {
+      initHBox();
+      root.setCenter(centralHBox);
+    });
+
   }
 
 /*  private void botAdded() {

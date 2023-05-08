@@ -357,5 +357,17 @@ public class MoveProcessor {
   public DeckController getDeckController() {
     return deckController;
   }
+
+  public void setGameController(GameController gameController) {
+    this.gameController = gameController;
+  }
+
+  public void setPlayerController(PlayerController playerController) {
+    this.playerController = playerController;
+  }
+
+  public void setDeckController(DeckController deckController) {
+    this.deckController = deckController;
+  }
 }
 

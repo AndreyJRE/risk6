@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.scenes;
 
+import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.controllers.LobbyUserStatisticSceneController;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -8,6 +9,8 @@ public class LobbyUserStatisticScene extends Scene implements InitializableScene
 
   private LobbyUserStatisticSceneController lobbyUserStatisticSceneController;
 
+  private UserDto userDto;
+
   public LobbyUserStatisticScene() {
     super(new BorderPane());
   }
@@ -15,7 +18,7 @@ public class LobbyUserStatisticScene extends Scene implements InitializableScene
   @Override
   public void init() {
     if (lobbyUserStatisticSceneController != null) {
-      lobbyUserStatisticSceneController.init();
+      lobbyUserStatisticSceneController.init(userDto);
     }
   }
 
@@ -23,5 +26,8 @@ public class LobbyUserStatisticScene extends Scene implements InitializableScene
     this.lobbyUserStatisticSceneController = lobbyUserStatisticSceneController;
   }
 
+  public void setUserDto(UserDto userDto) {
+    this.userDto = userDto;
+  }
 }
 

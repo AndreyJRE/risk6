@@ -53,8 +53,7 @@ public class CreateLobbySceneController {
 
   public void init() {
     this.root = (BorderPane) createLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     // Initialize elements
     initElements();
   }
@@ -122,13 +121,11 @@ public class CreateLobbySceneController {
   }
 
   private void handleCreateButton() {
-
-    gameLobby = new GameLobby(lobbyNameTextField.getText(),
-        Integer.parseInt(maxPlayers.getValue()),
+    gameLobby = new GameLobby(lobbyNameTextField.getText(), Integer.parseInt(maxPlayers.getValue()),
         SessionManager.getUser().getUsername(), chatCheck.isSelected(),
         Integer.parseInt(minElo.getValue()), Integer.parseInt(turnTimeBox.getValue()),
         GameConfiguration.getMyGameUser());
-
+    gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     LobbyConfiguration.sendCreateLobby(gameLobby);
     LobbyConfiguration.setGameLobby(gameLobby);
     //gameLobby.addUser(GameConfiguration.getMyGameUser());
@@ -171,8 +168,7 @@ public class CreateLobbySceneController {
 
     turnTimeBox = new ComboBox<>();
     ObservableList<String> turnTimes = FXCollections.observableArrayList();
-    turnTimes.addAll("60", "90", "120", "150", "180",
-        "300");
+    turnTimes.addAll("60", "90", "120", "150", "180", "300");
     turnTimeBox.setItems(turnTimes);
     turnTimeBox.setPrefWidth(800);
 
@@ -196,17 +192,17 @@ public class CreateLobbySceneController {
         "-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");
 
     // ComboBox styling
-    String comboBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: " +
-        "#cccccc; -fx-border-radius: 20; -fx-background-radius: 20;";
+    String comboBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: "
+        + "#cccccc; -fx-border-radius: 20; -fx-background-radius: 20;";
     turnTimeBox.setStyle(comboBoxStyle);
     maxPlayers.setStyle(comboBoxStyle);
     minElo.setStyle(comboBoxStyle);
 
 // CheckBox styling
-    String checkBoxBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: " +
-        "#cccccc; -fx-border-radius: 3; -fx-background-radius: 3;";
-    String checkBoxSelectedBoxStyle = "-fx-font-size: 20; -fx-background-color: #93d2f8; " +
-        "-fx-border-color: #7fc6fd; -fx-border-radius: 3; -fx-background-radius: 3;";
+    String checkBoxBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: "
+        + "#cccccc; -fx-border-radius: 3; -fx-background-radius: 3;";
+    String checkBoxSelectedBoxStyle = "-fx-font-size: 20; -fx-background-color: #93d2f8; "
+        + "-fx-border-color: #7fc6fd; -fx-border-radius: 3; -fx-background-radius: 3;";
 
     chatCheck.setStyle(checkBoxBoxStyle);
     chatCheck.selectedProperty().addListener((observable, oldValue, newValue) -> {
