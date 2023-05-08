@@ -3,15 +3,12 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
-import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
-import com.unima.risk6.game.ai.bots.EasyBot;
-import com.unima.risk6.game.ai.bots.HardBot;
-import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
@@ -20,12 +17,10 @@ import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -42,10 +37,10 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   private final MultiplayerLobbyScene multiplayerLobbyScene;
   private final SceneController sceneController;
-  private User user;
+  private final List<AiBot> aiBots = new ArrayList<>();
+  private UserDto user;
   private BorderPane root;
   private HBox centralHBox;
-  private final List<AiBot> aiBots = new ArrayList<>();
   private StackPane plus;
   private GameLobby gameLobby;
 
@@ -58,7 +53,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
-    this.user = SessionManager.getUser();
+    this.user = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
         26);
@@ -108,12 +103,137 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   }
 
   private void handleQuitGameLobby() {
+    //TODO: Abfrage im PopUp einfügen
     Platform.runLater(
         () -> LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser()));
     sceneController.activate(SceneName.SELECT_LOBBY);
   }
 
-  private void botAdded() {
+  private void initHBox() {
+    List<UserDto> users = gameLobby.getUsers();
+    for (UserDto user : users) {
+      VBox userVBox = createPlayerVBox(user);
+      centralHBox.getChildren().add(userVBox);
+    }
+    plus = createPlusStackpane();
+    for (int i = gameLobby.getMaxPlayers() - users.size(); i > 0; i--) {
+      centralHBox.getChildren().add(plus);
+    }
+    centralHBox.setAlignment(Pos.CENTER);
+    centralHBox.setSpacing(20.0);
+  }
+
+  private VBox createPlayerVBox(UserDto user) {
+    //TODO: Image Path für UserDto nachfragen
+    StackPane userImage = createPlayerStackPane("/com/unima/risk6/pictures/playerIcon.png");
+    Label userName = new Label(user.getUsername());
+    userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
+        + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
+        + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
+
+    VBox playerBox = new VBox(userImage, userName);
+    playerBox.setAlignment(Pos.CENTER);
+    playerBox.setSpacing(-10);
+
+    Button removeButton = new Button("");
+    removeButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
+
+    VBox removeBox = new VBox(removeButton, playerBox);
+    removeBox.setAlignment(Pos.CENTER);
+    removeBox.setSpacing(15);
+
+    return removeBox;
+  }
+
+  private StackPane createPlayerStackPane(String imagePath) {
+    Circle circle = new Circle();
+    ImageView userImage = new ImageView(new Image(getClass().getResource(imagePath).toString()));
+    userImage.setFitHeight(110);
+    userImage.setFitWidth(110);
+    circle.setRadius(70);
+
+    circle.setStroke(Color.BLACK);
+    circle.setFill(Color.LIGHTGRAY);
+    circle.setStrokeWidth(2.0);
+
+    // create a clip for the user image
+    Circle clip = new Circle(userImage.getFitWidth() / 2, userImage.getFitHeight() / 2,
+        circle.getRadius());
+
+    // apply the clip to the user image
+    userImage.setClip(clip);
+
+    // create a stack pane to place the circle and image on top of each other
+    StackPane userStackPane = new StackPane();
+    userStackPane.getChildren().addAll(circle, userImage);
+
+    return userStackPane;
+  }
+
+  private StackPane createPlusStackpane() {
+    ImageView plusImage = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
+    plusImage.setFitHeight(20);
+    plusImage.setFitWidth(20);
+    Circle circle = new Circle();
+    circle.setRadius(20);
+    circle.setStroke(Color.BLACK);
+    circle.setFill(Color.LIGHTGRAY);
+    circle.setStrokeWidth(2.0);
+
+    Circle clip = new Circle(plusImage.getFitWidth() / 2, plusImage.getFitHeight() / 2,
+        circle.getRadius());
+
+    plusImage.setClip(clip);
+
+    StackPane plusStackPane = new StackPane();
+    plusStackPane.getChildren().addAll(circle, plusImage);
+    plusStackPane.setOnMouseClicked(e -> showMessage());
+    return plusStackPane;
+  }
+
+  private void showMessage() {
+    //TODO: Show Message to invite Friends
+  }
+
+  private void handlePlayButton() {
+    // TODO: Implement the single player game
+
+    List<String> users = new ArrayList<>();
+    users.add(SessionManager.getUser().getUsername());
+    users.add("Jake");
+    users.add("Joel");
+    users.add("John");
+
+    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser()));
+
+    /*GameState gameState = GameConfiguration.configureGame(users, aiBots);
+    User myUser = SessionManager.getUser();
+    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
+        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
+    );
+    GameConfiguration.setGameState(gameState);*/
+    CountriesUiConfiguration.configureCountries(GameConfiguration.getGameState().getCountries());
+    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.GAME);
+    if (gameScene == null) {
+      gameScene = new GameScene();
+      GameSceneController gameSceneController = new GameSceneController(gameScene);
+      gameScene.setGameSceneController(gameSceneController);
+      sceneController.addScene(SceneName.GAME, gameScene);
+    }
+    sceneController.activate(SceneName.GAME);
+    //TODO If we want to go full screen we can use this
+    sceneController.getStage().setFullScreen(true);
+  }
+
+  @Override
+  public void updateGameLobby(GameLobby gameLobby) {
+    this.gameLobby = gameLobby;
+  }
+
+/*  private void botAdded() {
     // Erstellen Sie eine Liste der Auswahlmöglichkeiten
     List<String> choices = new ArrayList<>();
     choices.add("Easy");
@@ -174,69 +294,6 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     }
   }
 
-  private void initHBox() {
-    VBox userVBox = createPlayerVBox(user);
-    VBox botBox1 = createBotVBox(0);
-    plus = createPlusStackpane();
-
-    centralHBox = new HBox(userVBox, botBox1, plus);
-    centralHBox.setAlignment(Pos.CENTER);
-    centralHBox.setSpacing(20.0);
-  }
-
-  private StackPane createPlusStackpane() {
-    ImageView plusImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
-    plusImage.setFitHeight(20);
-    plusImage.setFitWidth(20);
-    Circle circle = new Circle();
-    circle.setRadius(20);
-    circle.setStroke(Color.BLACK);
-    circle.setFill(Color.LIGHTGRAY);
-    circle.setStrokeWidth(2.0);
-
-    Circle clip = new Circle(plusImage.getFitWidth() / 2, plusImage.getFitHeight() / 2,
-        circle.getRadius());
-
-    plusImage.setClip(clip);
-
-    StackPane plusStackPane = new StackPane();
-    plusStackPane.getChildren().addAll(circle, plusImage);
-    plusStackPane.setOnMouseClicked(e -> botAdded());
-    return plusStackPane;
-  }
-
-  private StackPane createPlayerStackPane(String imagePath, boolean bot) {
-    Circle circle = new Circle();
-    ImageView userImage = new ImageView(new Image(getClass().getResource(imagePath).toString()));
-    if (bot) {
-      userImage.setFitHeight(130);
-      userImage.setFitWidth(130);
-      circle.setRadius(65);
-    } else {
-      userImage.setFitHeight(110);
-      userImage.setFitWidth(110);
-      circle.setRadius(70);
-    }
-
-    circle.setStroke(Color.BLACK);
-    circle.setFill(Color.LIGHTGRAY);
-    circle.setStrokeWidth(2.0);
-
-    // create a clip for the user image
-    Circle clip = new Circle(userImage.getFitWidth() / 2, userImage.getFitHeight() / 2,
-        circle.getRadius());
-
-    // apply the clip to the user image
-    userImage.setClip(clip);
-
-    // create a stack pane to place the circle and image on top of each other
-    StackPane userStackPane = new StackPane();
-    userStackPane.getChildren().addAll(circle, userImage);
-
-    return userStackPane;
-  }
-
   private VBox createBotVBox(int difficultyNumber) {
     StackPane botImage = new StackPane();
     String difficulty = "";
@@ -283,63 +340,5 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     removeBox.setSpacing(10);
 
     return removeBox;
-  }
-
-  private VBox createPlayerVBox(User user) {
-    StackPane userImage = createPlayerStackPane(user.getImagePath(), false);
-    Label userName = new Label(user.getUsername());
-    userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
-        + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
-        + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
-
-    VBox playerBox = new VBox(userImage, userName);
-    playerBox.setAlignment(Pos.CENTER);
-    playerBox.setSpacing(-10);
-
-    Button removeButton = new Button("");
-    removeButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
-
-    VBox removeBox = new VBox(removeButton, playerBox);
-    removeBox.setAlignment(Pos.CENTER);
-    removeBox.setSpacing(15);
-
-    return removeBox;
-  }
-
-  private void handlePlayButton() {
-    // TODO: Implement the single player game
-
-    List<String> users = new ArrayList<>();
-    users.add(SessionManager.getUser().getUsername());
-    users.add("Jake");
-    users.add("Joel");
-    users.add("John");
-
-    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser()));
-
-    /*GameState gameState = GameConfiguration.configureGame(users, aiBots);
-    User myUser = SessionManager.getUser();
-    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId()))
-    );
-    GameConfiguration.setGameState(gameState);*/
-    CountriesUiConfiguration.configureCountries(GameConfiguration.getGameState().getCountries());
-    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.GAME);
-    if (gameScene == null) {
-      gameScene = new GameScene();
-      GameSceneController gameSceneController = new GameSceneController(gameScene);
-      gameScene.setGameSceneController(gameSceneController);
-      sceneController.addScene(SceneName.GAME, gameScene);
-    }
-    sceneController.activate(SceneName.GAME);
-    //TODO If we want to go full screen we can use this
-    sceneController.getStage().setFullScreen(true);
-  }
-
-  @Override
-  public void updateGameLobby(GameLobby gameLobby) {
-    this.gameLobby = gameLobby;
-  }
+  }*/
 }

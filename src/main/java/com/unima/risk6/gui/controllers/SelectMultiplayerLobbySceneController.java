@@ -18,10 +18,13 @@ import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
@@ -41,7 +44,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   private final SceneController sceneController;
   private ServerLobby serverLobby;
   private final SplitPane lobbyChatSplit = new SplitPane();
-  private final ListView<GameLobby> lobbyList = new ListView<>();
+  private final ListView<String> lobbyList = new ListView<>();
   private BorderPane root;
   private List<GameLobby> gameLobbies = new ArrayList<>();
 
@@ -56,7 +59,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   public void init() {
-    //Todo server
+    //TODO server
     this.user = GameConfiguration.getMyGameUser();
     this.gameLobbies = serverLobby.getGameLobbies();
     this.root = (BorderPane) selectMultiplayerLobbyScene.getRoot();
@@ -70,6 +73,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   private void initElements() {
+
+    //TODO: Elo matching
+
     Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
@@ -119,9 +125,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
   }
 
+
   private void initGameLobbys() {
-    //TODO: get all GameLobbys and save them to listview
-    /*
     ObservableList<String> lobbys = FXCollections.observableArrayList();
     for (GameLobby gameLobby : gameLobbies) {
       String temp = gameLobby.getLobbyName() + " hosted by " + gameLobby.getName() + " "
@@ -154,12 +159,13 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       }
     });
 
-    lobbyList.setItems(lobbys); */
+    lobbyList.setItems(lobbys);
   }
 
   private void initSplitPane() {
     initGameLobbys();
 
+    //TODO: Implement Chat Server Integration
     TextArea chatArea = new TextArea();
     chatArea.setEditable(false);
     chatArea.setWrapText(true);
@@ -205,7 +211,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     }*/
     //TODO For test purposes
     Platform.runLater(
-        () -> LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem()));
+        () -> LobbyConfiguration.sendJoinLobby(
+            gameLobbies.get(lobbyList.getSelectionModel().getSelectedIndex())));
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {
@@ -222,7 +229,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   private void handleCreateButton() {
-    //TODO: Create Lobby Scene hinzufügen
     CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.CREATE_LOBBY);
     if (scene == null) {
@@ -239,5 +245,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   @Override
   public void updateServerLobby(ServerLobby serverLobby) {
     this.serverLobby = serverLobby;
+    this.gameLobbies = serverLobby.getGameLobbies();
+    lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+    initSplitPane();
   }
 }
