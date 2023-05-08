@@ -13,7 +13,7 @@ import java.util.Queue;
 
 /**
  * The Hard Bot, which uses the Monte Carlo Tree Search Algorithm to identify its moves during the
- * game, and otherwise makes greedy decisions
+ * game, and otherwise makes greedy decisions.
  *
  * @author eameri
  */
@@ -61,9 +61,9 @@ public class HardBot extends GreedyBot implements AiBot {
   private void updateBestMoves() {
     MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(this);
     MoveTriplet results = mcts.getBestMove(this.currentGameState);
-    this.reinforces = results.getReinforcements();
-    this.attacks = results.getAttacks();
-    this.fortifies = results.getFortify();
+    this.reinforces = results.reinforcements();
+    this.attacks = results.attacks();
+    this.fortifies = results.fortify();
   }
 
   /**

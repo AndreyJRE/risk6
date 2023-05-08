@@ -20,7 +20,7 @@ import java.util.Map;
 public class Probabilities {
 
   /**
-   * Return the initialized probability array object, strictly for testing purposes
+   * Return the initialized probability array object, strictly for testing purposes.
    *
    * @return the win probability array
    */
@@ -67,14 +67,11 @@ public class Probabilities {
 
   /**
    * Gets the probability of a country winning a battle against another country based off of their
-   * amount of troops ("Calculations are done in python, data wrangling in pandas", for more
-   * information on the source of the data see: ...https://www.reddit.com/r/dataisbeautiful/
-   * comments/vknu9r/oc_the_probability_of_winning_a_battle_as_an/
+   * amount of troops, see project report for source of data.
    *
    * @param attackerTotal The total amount of troops the attacking country has.
    * @param defenderTotal The total amount of troops the defending country has.
-   * @return the probability of the attacker winning an entire battle, rounded and given as an
-   * integer.
+   * @return the probability of the attacker winning an entire battle, rounded as an Integer
    */
   public static int getWinProbability(int attackerTotal, int defenderTotal) {
     // attacker always needs to have at least 1 troop
@@ -85,7 +82,6 @@ public class Probabilities {
     }
     int attackerIndex = Math.min(attackerAvailable - 1, 19);
     int defenderIndex = Math.min(defenderTotal - 1, 19);
-    System.out.print(attackerIndex < 0 ? "Attacker" : "");
 
     return winProbability[attackerIndex][defenderIndex];
   }

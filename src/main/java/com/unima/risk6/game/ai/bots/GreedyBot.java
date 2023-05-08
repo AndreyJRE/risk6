@@ -45,6 +45,11 @@ public abstract class GreedyBot extends Player implements AiBot {
     this.continentsCopy.addAll(gameState.getContinents());
   }
 
+  /**
+   * Constructs a new GreedyBot as a copy of a player.
+   *
+   * @param player the player which is to be copied.
+   */
   public GreedyBot(Player player) {
     super(player);
     playerController = new PlayerController();
@@ -52,6 +57,11 @@ public abstract class GreedyBot extends Player implements AiBot {
     this.continentsCopy = new ArrayList<>();
   }
 
+  /**
+   * Constructs a default GreedyBot.
+   *
+   * @param username the username of the bot.
+   */
   public GreedyBot(String username) {
     super(username);
     playerController = new PlayerController();
@@ -193,11 +203,10 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   /**
    * Creates a mapping of countries from a continent to the amount of additional troops needed in
-   * order to balance out their strength with that of their strongest enemy country
+   * order to balance out their strength with that of their strongest enemy country.
    *
-   * @param continent The continent whose countries are being tested
-   * @return A map of countries to the additionally necessary amount of troops. Countries without an
-   * enemy adjacent country are not included in this map
+   * @param continent The continent whose countries are being tested.
+   * @return A map of countries to the additionally necessary amount of troops (if the value exists)
    */
   protected Map<Country, Integer> getCountryTroopDiffsByContinent(Continent continent) {
     Map<Country, Integer> ownedCountryDiffs = new HashMap<>();

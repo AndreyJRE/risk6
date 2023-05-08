@@ -53,8 +53,8 @@ public class MonteCarloTreeSearch {
 
 
   private static int counter = 0;
-  private static final int SIMULATION_COUNT = 50;
-  private static final int SIMULATION_TIME_LIMIT = 200;
+  private static final int SIMULATION_COUNT = 100; // best choice is more, but shorter simulations
+  private static final int SIMULATION_TIME_LIMIT = 500;
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -99,7 +99,6 @@ public class MonteCarloTreeSearch {
       }
       backpropagate(node, result);
     }
-    System.out.println(counter);
     return chooseBestMove(root);
   }
 
@@ -110,8 +109,6 @@ public class MonteCarloTreeSearch {
    * @return The most promising node.
    */
   private MonteCarloNode select(MonteCarloNode node) {
-    // goes to specific depth?
-    // keep traversing non-terminal states, finding a leaf node <-> not expanded fully
     while (node.isFullyExpanded() && !node.getGameState().isGameOver() && node.getGameState()
         .getActivePlayers().contains(this.player)) {
       node = node.getBestChild();
@@ -133,14 +130,9 @@ public class MonteCarloTreeSearch {
     DeckController deckController = new DeckController(oneTurn.getDeck());
     MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
         deckController);
-    // apply move from bots perspective
-    // move get player method to node?
-//    AiBot ourBot = new MonteCarloBot(this.getPlayerAtGameState(node.getGameState()));
-    // the current player is our bot?
     MoveTriplet move = this.playTurn(simulationController, playerController, moveProcessor);
-    int players = oneTurn.getActivePlayers().size();
-    // play for all other bots
-    for (int i = 0; i < players - 1; i++) {
+    int playerCount = oneTurn.getActivePlayers().size();
+    for (int i = 0; i < playerCount - 1; i++) {
       this.playTurn(simulationController, playerController, moveProcessor);
     }
     return new MonteCarloNode(oneTurn, move, node);
@@ -156,13 +148,13 @@ public class MonteCarloTreeSearch {
    */
   private Player simulate(GameState game) {
     GameState simulation = this.copyGameState(game);
-    long endTime = System.currentTimeMillis() + SIMULATION_TIME_LIMIT;
     GameController simulationController = new GameController(simulation);
     PlayerController playerController = new PlayerController();
     playerController.setPlayer(simulationController.getCurrentPlayer());
     DeckController deckController = new DeckController(simulation.getDeck());
     MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
         deckController);
+    long endTime = System.currentTimeMillis() + SIMULATION_TIME_LIMIT;
     while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
       this.playTurn(simulationController, playerController, moveProcessor);
     }
@@ -196,8 +188,7 @@ public class MonteCarloTreeSearch {
   private MoveTriplet chooseBestMove(MonteCarloNode node) {
     MonteCarloNode bestChild = null;
     int maxVisits = Integer.MIN_VALUE;
-    for (MonteCarloNode child : node.getChildren()) { // all children signify a move made by the
-      // HardBot
+    for (MonteCarloNode child : node.getChildren()) { // all children are moves made by the HardBot
       if (child.getVisits() > maxVisits) {
         maxVisits = child.getVisits();
         bestChild = child;
@@ -207,10 +198,10 @@ public class MonteCarloTreeSearch {
   }
 
   /**
-   * Creates a deep copy of the given game state.
+   * Creates a deep copy of the given game state with all human players replaced by MonteCarloBots.
    *
    * @param gameState The game state to be copied.
-   * @return A deep copy of the given game state.
+   * @return A deep copy of the given game state with all human players replaced by MonteCarloBots.
    */
   public GameState copyGameState(GameState gameState) {
     GameState empty = GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>());
@@ -234,28 +225,80 @@ public class MonteCarloTreeSearch {
 
     }
     deepCopy.setCurrentPlayer(deepCopy.getActivePlayers().peek());
-    return (GameState) copy.getContent();
+    return deepCopy;
   }
 
+  /**
+   * Plays one entire turn (reinforce, attack, fortify) of a bot.
+   *
+   * @param simulationController The GameController of the game state being played.
+   * @param playerController     The player controller to control the current player.
+   * @param moveProcessor        The Move Processor used to process moves in each phase.
+   * @return The set of moves (Reinforce, Attack, Fortify) made by the bot in its turn.
+   */
   public MoveTriplet playTurn(GameController simulationController,
       PlayerController playerController, MoveProcessor moveProcessor) {
     counter++;
     AiBot current = (AiBot) simulationController.getCurrentPlayer();
     HandController handController = playerController.getHandController();
+    this.simulateHandIn(handController, moveProcessor);
+    List<Reinforce> allReinforcements = this.simulateReinforcements(moveProcessor, current);
+
+    Queue<CountryPair> allAttacks = this.simulateAttacks(simulationController, moveProcessor,
+        current);
+
+    if (!simulationController.getGameState().isGameOver()) {
+      Fortify fortify = this.simulateFortify(moveProcessor, current);
+      return new MoveTriplet(allReinforcements, allAttacks, fortify);
+    } else {
+      return new MoveTriplet(allReinforcements, allAttacks, null);
+    }
+  }
+
+
+  /**
+   * Simulates checking to see if cards can be handed in and does so if possible.
+   *
+   * @param handController The Hand controller used to control the hand of the current player.
+   * @param moveProcessor  The Move Processor used to process the hand-in.
+   */
+  private void simulateHandIn(HandController handController, MoveProcessor moveProcessor) {
     if (handController.holdsExchangeable()) { // hand in will be redone by server
       handController.selectExchangeableCards();
       HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
       moveProcessor.processHandIn(handIn);
     }
+  }
+
+  /**
+   * Simulates an entire reinforcement phase of a bot player.
+   *
+   * @param moveProcessor The Move Processor used to process the reinforcements.
+   * @param current       The player which is currently active.
+   * @return The list of reinforcements chosen by the bot.
+   */
+  private List<Reinforce> simulateReinforcements(MoveProcessor moveProcessor, AiBot current) {
     List<Reinforce> allReinforcements = current.createAllReinforcements();
     for (Reinforce reinforce : allReinforcements) {
       moveProcessor.processReinforce(reinforce);
     }
     moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+    return allReinforcements;
+  }
+
+  /**
+   * Simulates an entire attack phase of a bot player.
+   *
+   * @param simulationController The game controller of the current game state.
+   * @param moveProcessor        The Move Processor which will be used to process the attacks.
+   * @param current              The player which is currently active.
+   * @return All pairs of countries involved in attacks in order.
+   */
+  private Queue<CountryPair> simulateAttacks(GameController simulationController,
+      MoveProcessor moveProcessor, AiBot current) {
     Queue<CountryPair> allAttacks = new LinkedList<>();
     do {
       CountryPair attacks = current.createAttack();
-      // while not (one country has lost)
       if (attacks == null) {
         break;
       }
@@ -266,7 +309,7 @@ public class MonteCarloTreeSearch {
         moveProcessor.processAttack(toProcess);
       } while (!toProcess.getHasConquered() && toProcess.getAttackingCountry().getTroops() >= 2);
       if (simulationController.getGameState().isGameOver()) {
-        return new MoveTriplet(allReinforcements, allAttacks, null);
+        return allAttacks;
       }
       if (toProcess.getHasConquered()) {
         Fortify forcedFortify = attacks.createFortify(toProcess.getTroopNumber());
@@ -278,12 +321,22 @@ public class MonteCarloTreeSearch {
       }
     } while (current.attackAgain());
     moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+    return allAttacks;
+  }
 
+  /**
+   * Simulates an entire fortify phase of a bot player.
+   *
+   * @param moveProcessor The Move Processor which will be used to process the attacks.
+   * @param current       The player which is currently active.
+   * @return The fortify move performed by the bot player.
+   */
+  private Fortify simulateFortify(MoveProcessor moveProcessor, AiBot current) {
     Fortify fortify = current.createFortify();
     if (fortify != null) {
       moveProcessor.processFortify(fortify);
     }
     moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-    return new MoveTriplet(allReinforcements, allAttacks, fortify);
+    return fortify;
   }
 }

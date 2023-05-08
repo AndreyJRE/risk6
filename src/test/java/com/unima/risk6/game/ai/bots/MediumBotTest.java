@@ -64,7 +64,7 @@ class MediumBotTest {
       c.setPlayer(null);
       c.setHasPlayer(false);
     });
-    ((MediumBot) mediumBot).setContinentsCopy(gameState.getContinents());
+    mediumBot.setGameState(gameState);
     ((MediumBot) mediumBot).setInitialTroops(0);
     ((MediumBot) mediumBot).setDeployableTroops(0);
   }
@@ -164,7 +164,6 @@ class MediumBotTest {
     // should reinforce middle east with everything
     List<Reinforce> reinforcements = mediumBot.createAllReinforcements();
     assertTrue(reinforcements.size() > 0);
-    reinforcements.forEach(r -> System.out.println(r.getCountry() + " " + r.getToAdd()));
     assertEquals(10, reinforcements.stream().mapToInt(Reinforce::getToAdd).sum());
   }
 
