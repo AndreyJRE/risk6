@@ -79,7 +79,7 @@ public class MoveProcessor {
           currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
           countryToReinforce.setTroops(countryToReinforce.getTroops() + 1);
         } else {
-          throw new InvalidMoveException("The Reinforce is not valid");
+          throw new InvalidMoveException("The Reinforce is not valid because country is not yours");
         }
 
         //After a reinforce in claim phase the turn of the player should end.
@@ -93,7 +93,23 @@ public class MoveProcessor {
       }
       gameController.addLastMove(reinforce);
     } else {
-      throw new InvalidMoveException("The Reinforce is not valid");
+
+      if (!currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)) {
+        throw new InvalidMoveException(
+            "The Reinforce is not valid because of not in reinforcephase ");
+      }
+      if (!countryToReinforce.getPlayer().equals(currentPlayer)) {
+        throw new InvalidMoveException("The Reinforce is not valid because of not your country ");
+      }
+      if (reinforce.getToAdd() <= currentPlayer.getDeployableTroops()) {
+        throw new InvalidMoveException(
+            "The Reinforce is not valid because of no more deployable troops ");
+      }
+      if (!currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
+        throw new InvalidMoveException("The Reinforce is not valid because of not in claim phase");
+      }
+
+      throw new InvalidMoveException("The Reinforce is not valid because of ");
     }
   }
 
