@@ -9,6 +9,7 @@ import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Lobby;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
@@ -106,7 +107,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             //TODO Connection problem
             ConnectionMessage connectionMessage = null;
             try {
-              connectionMessage = (ConnectionMessage) Deserializer.deserialize(
+              connectionMessage = (ConnectionMessage) Deserializer.deserializeConnectionMessage(
                   request);
             } catch (Exception e) {
               LOGGER.error("Error at deserializing ConnectionMessage: " + e);
@@ -116,6 +117,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case JOIN_SERVER_LOBBY -> {
                   //TODO Make it work properly
+                  //TODO MAximale größe beachten
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
                   if (users.containsKey(userDto)) {
@@ -127,6 +129,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
+                  //TODO Maximale Größe beachten
                   LOGGER.debug("At JOIN_GAME_LOBBY" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   //TODO Muss der Nutzer aus der ServerLobby entfernt werden? Letzter Stand Nein
@@ -141,10 +144,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendGameLobby(gameLobbyFromServer);
                 }
                 case START_GAME -> {
+                  //TODO MOVECONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
+                  sendFirstGamestate();
+                  moveProcessor.clearLastMoves();
 
                 }
                 case LEAVE_SERVER_LOBBY -> {
+                  //TODO implement leave
                   LOGGER.debug("At LEAVE_SERVER_LOBBY" + connectionMessage.getContent().getClass());
                 }
                 case LEAVE_GAME_LOBBY -> {
@@ -165,6 +172,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 default -> LOGGER.error("Server received a faulty connection message");
               }
             } catch (NullPointerException ignored) {
+              //TODO
             }
           }
           default -> {
@@ -192,6 +200,18 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
+  private void sendFirstGamestate() {
+    String message = Serializer.serialize(
+        new ConnectionMessage<GameState>(ConnectionActions.START_GAME,
+            moveProcessor.getGameController().getGameState()));
+    LOGGER.debug(message);
+    for (Channel ch : channels) {
+      LOGGER.debug("Send new gamestate to: " + ch.id());
+      ch.writeAndFlush(
+          new TextWebSocketFrame(message));
+    }
+  }
+
   private void sendServerLobby(ServerLobby serverLobby) {
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
@@ -207,7 +227,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       LOGGER.debug("Send new server lobby to: " + ch.id());
       ch.writeAndFlush(
           new TextWebSocketFrame(Serializer.serialize(
-              new ConnectionMessage<GameLobby>(ConnectionActions.ACCEPT_USER_LOBBY,
+              new ConnectionMessage<GameLobby>(ConnectionActions.ACCEPT_USER_GAME,
                   gameLobby))));
     }
   }
