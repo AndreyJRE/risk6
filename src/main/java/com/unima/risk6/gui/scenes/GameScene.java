@@ -2,13 +2,9 @@ package com.unima.risk6.gui.scenes;
 
 
 import com.unima.risk6.gui.controllers.GameSceneController;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -18,24 +14,52 @@ import javafx.stage.Popup;
 
 public class GameScene extends Scene implements InitializableScene {
 
-  private GameSceneController gameSceneController;
+    private GameSceneController gameSceneController;
 
-  private Popup statisticPopup;
+    private Popup statisticPopup;
 
-  boolean isStatisticsShowing = false;
+    boolean isStatisticsShowing = false;
 
-  public GameScene() {
-    super(new BorderPane());
-    this.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-      if (event.getCode() == KeyCode.TAB && !isStatisticsShowing) {
+    public GameScene() {
+        super(new BorderPane());
+        this.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.TAB && !isStatisticsShowing) {
+                showStatisticsPopup();
+                event.consume();
+            }
+        });
+        this.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+            if (event.getCode() == KeyCode.TAB) {
+                statisticPopup.hide();
+                isStatisticsShowing = false;
+                event.consume();
+            }
+        });
+
+    }
+
+    public void setGameSceneController(GameSceneController gameSceneController) {
+        this.gameSceneController = gameSceneController;
+    }
+
+    @Override
+    public void init() {
+        if (gameSceneController != null) {
+            this.setRoot(new BorderPane());
+            gameSceneController.init();
+        }
+    }
+
+    private void showStatisticsPopup() {
 
         BorderPane statisticPane = new BorderPane();
 
-        VBox cardsBox = new VBox();
-        Label cardTitleLabel = new Label("This is cards popup.");
-        cardTitleLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-        cardsBox.getChildren().addAll(cardTitleLabel);
-        statisticPane.setCenter(cardsBox);
+        VBox statisticsVBox = new VBox();
+        Label statisticsTitleLabel = new Label("This is Statistics popup.");
+        statisticsTitleLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+        statisticsVBox.getChildren().addAll(statisticsTitleLabel);
+        statisticPane.setCenter(statisticsVBox);
+        statisticPane.setPrefSize(this.getWidth() * 0.7, this.getHeight() * 0.7);
         statisticPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
 
         statisticPopup = new Popup();
@@ -46,33 +70,16 @@ public class GameScene extends Scene implements InitializableScene {
         dropShadow.setRadius(10);
         statisticPane.setEffect(dropShadow);
 
-        statisticPopup.setX(this.getX());
-        statisticPopup.setY(this.getY());
+        double popupWidth = statisticPane.getPrefWidth();
+        double popupHeight = statisticPane.getPrefHeight();
+
+        statisticPopup.setX(
+                (this.getWindow().getX() + this.getWindow().getWidth() / 2) - popupWidth / 2);
+        statisticPopup.setY(
+                (this.getWindow().getY() + this.getWindow().getHeight() / 2) - popupHeight / 2);
+
         statisticPopup.show(this.getWindow());
         isStatisticsShowing = true;
-        event.consume();
-      }
-    });
-    this.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
-      if (event.getCode() == KeyCode.TAB) {
-        statisticPopup.hide();
-        isStatisticsShowing = false;
-        event.consume();
-      }
-    });
-
-  }
-
-  public void setGameSceneController(GameSceneController gameSceneController) {
-    this.gameSceneController = gameSceneController;
-  }
-
-  @Override
-  public void init() {
-    if (gameSceneController != null) {
-      this.setRoot(new BorderPane());
-      gameSceneController.init();
     }
-  }
 }
 

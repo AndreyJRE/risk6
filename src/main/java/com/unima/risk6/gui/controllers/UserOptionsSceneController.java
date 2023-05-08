@@ -1,8 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
-
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
@@ -14,19 +11,13 @@ import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
-import java.util.Optional;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -40,6 +31,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+
+import java.util.Optional;
+
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 
 public class UserOptionsSceneController {
@@ -96,8 +92,8 @@ public class UserOptionsSceneController {
     EventHandler<MouseEvent> mouseClickedHandler = event -> {
       if (event.getClickCount() == 2) {
         userNameField.setEditable(true);
-        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
-            + "-fx-font-size: 35px; -fx-background-color: lightgrey; "
+        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
+            + "70px; -fx-background-color: lightgrey; "
             + "-fx-border-color: transparent;");
         userNameField.requestFocus();
       }
@@ -107,6 +103,9 @@ public class UserOptionsSceneController {
 
     userNameField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue && !enterPressed.get()) {
+        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
+            + "70px; -fx-background-color: transparent; "
+            + "-fx-border-color: transparent;");
         userNameField.setEditable(false);
         changeUsernameConfirmation(userNameField);
       }
@@ -114,6 +113,9 @@ public class UserOptionsSceneController {
 
     userNameField.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ENTER) {
+        userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
+            + "70px; -fx-background-color: transparent; "
+            + "-fx-border-color: transparent;");
         userNameField.setEditable(false);
         enterPressed.set(true);
         changeUsernameConfirmation(userNameField);
@@ -219,7 +221,8 @@ public class UserOptionsSceneController {
         userNameField.setText(user.getUsername());
       }
     }
-    userNameField.setStyle("-fx-font-size: 40; -fx-background-color: transparent; "
+    userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
+        + "70px; -fx-background-color: transparent; "
         + "-fx-border-color: transparent;");
   }
 

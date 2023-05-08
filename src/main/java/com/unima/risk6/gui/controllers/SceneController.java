@@ -1,9 +1,12 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.InitializableScene;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
 import java.util.HashMap;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -39,6 +42,8 @@ public class SceneController {
     }
 
     stage.setScene(scene);
+    stage.setWidth(SceneConfiguration.getWidth() + 0.1);
+    stage.setHeight(SceneConfiguration.getHeight() + 0.1);
     stage.setOnCloseRequest((WindowEvent event) -> close());
     switch (name) {
       case TITLE -> SoundConfiguration.playTitleSound();
@@ -49,6 +54,12 @@ public class SceneController {
 
   public void close() {
     DatabaseConfiguration.closeDatabaseConnectionAndServices();
+    if (NetworkConfiguration.getGameServerThread() != null) {
+      NetworkConfiguration.stopGameServer();
+    }
+    if (LobbyConfiguration.getGameClient() != null) {
+      LobbyConfiguration.stopGameClient();
+    }
     stage.close();
     Platform.exit();
   }

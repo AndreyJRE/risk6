@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -43,6 +44,7 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
     jsonObject.addProperty("defenderLosses", src.getDefenderLosses());
     jsonObject.add("attackDiceResult", context.serialize(src.getAttackDiceResult()));
     jsonObject.add("defendDiceResult", context.serialize(src.getDefendDiceResult()));
+    jsonObject.add("hasConquered", context.serialize(src.getHasConquered()));
 
     return jsonObject;
   }
@@ -66,14 +68,17 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
             .equals(jsonObject.get("defendingCountry").getAsString())).findFirst()
         .get();
     int troopNumber = jsonObject.get("troopNumber").getAsInt();
-
+    //TODO
     Attack attack = new Attack(attackingCountry, defendingCountry, troopNumber);
-    attack.calculateLosses();
-
+    attack.setAttackerLosses(jsonObject.get("attackerLosses").getAsInt());
+    attack.setDefenderLosses(jsonObject.get("defenderLosses").getAsInt());
+    attack.setHasConquered(jsonObject.get("hasConquered").getAsBoolean());
+    TypeToken<ArrayList<Integer>> integerListTypeToken = new TypeToken<>() {
+    };
     ArrayList<Integer> attackDiceResult = context.deserialize(jsonObject.get("attackDiceResult"),
-        ArrayList.class);
+        integerListTypeToken.getType());
     ArrayList<Integer> defendDiceResult = context.deserialize(jsonObject.get("defendDiceResult"),
-        ArrayList.class);
+        integerListTypeToken.getType());
 
     // Set values for attackDiceResult and defendDiceResult using reflection, as they are final fields
     try {

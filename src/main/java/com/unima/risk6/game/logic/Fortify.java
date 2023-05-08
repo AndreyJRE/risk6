@@ -56,7 +56,10 @@ public class Fortify extends Move {
 
   @Override
   public String toString() {
-
-    return "this is an a Fortify";
+    return "Fortify{" +
+        "outgoing=" + outgoing +
+        ", incoming=" + incoming +
+        ", troopsToMove=" + troopsToMove +
+        '}';
   }
 }

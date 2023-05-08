@@ -1,10 +1,10 @@
 package com.unima.risk6.game.configurations;
 
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.client.GameClient;
-import com.unima.risk6.network.message.ConnectionActions;
-import com.unima.risk6.network.message.ConnectionMessage;
+import com.unima.risk6.network.message.StandardMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +38,11 @@ public class LobbyConfiguration {
   }
 
   public static void sendJoinServer(UserDto userDto) {
-    gameClient.sendMessage(
-        new ConnectionMessage<UserDto>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));
+    //TODO After testing
+    /*gameClient.sendMessage(
+        new ConnectionMessage<UserDto>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));*/
+    gameClient.sendMessage(new StandardMessage<HandIn>(new HandIn(List.of())));
+
   }
 
   /**

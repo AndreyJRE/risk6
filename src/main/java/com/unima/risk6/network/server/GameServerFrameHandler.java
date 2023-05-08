@@ -7,8 +7,6 @@ import com.google.gson.JsonParser;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
-import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.Lobby;
@@ -26,8 +24,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.util.AttributeKey;
-import java.util.Queue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +68,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 moveProcessor.getGameController().getGameState()).getContent();
             moveProcessor.processAttack(attack);
             sendGamestate();
+            moveProcessor.clearLastMoves();
           }
           case "REINFORCE" -> {
             LOGGER.debug("The server received a reinforce object");
@@ -79,6 +76,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 moveProcessor.getGameController().getGameState()).getContent();
             moveProcessor.processReinforce(reinforce);
             sendGamestate();
+            moveProcessor.clearLastMoves();
           }
           case "FORTIFY" -> {
             LOGGER.debug("The server received a fortify object");
@@ -86,19 +84,22 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 moveProcessor.getGameController().getGameState()).getContent();
             moveProcessor.processFortify(fortify);
             sendGamestate();
+            moveProcessor.clearLastMoves();
           }
+          //TODO Serializers
           case "HAND_IN" -> {
-            LOGGER.debug("The server received a hand in object");
+            /*LOGGER.debug("The server received a hand in object");
             HandIn handIn = (HandIn) Deserializer.deserialize(request).getContent();
-            moveProcessor.processHandIn(handIn);
+            moveProcessor.processHandIn(handIn); */
             sendGamestate();
+            moveProcessor.clearLastMoves();
           }
           case "END_PHASE" -> {
             LOGGER.debug("The server received a end phase object");
             EndPhase endPhase = (EndPhase) Deserializer.deserialize(request).getContent();
             moveProcessor.processEndPhase(endPhase);
-            Queue<Move> moves = moveProcessor.getGameController().getGameState().getLastMoves();
             sendGamestate();
+            moveProcessor.clearLastMoves();
           }
           case "CONNECTION" -> {
             LOGGER.debug("The server received a connection message");
@@ -115,7 +116,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case JOIN_SERVER_LOBBY -> {
                   //TODO Make it work properly
-                  LOGGER.debug("At JOIN_SERVER_LOBBY" + connectionMessage.getContent().getClass());
+                  System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
                   if (users.containsKey(userDto)) {
                     LOGGER.error("User already in the Lobby");
@@ -215,7 +216,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     channels.add(ctx.channel());
     //TODO Manage the different games and the server lobby, multiple channelGroups could be the solution
-    ctx.channel().attr(AttributeKey.newInstance("name")).set("Test");
+    // ctx.channel().attr(AttributeKey.newInstance("name")).set("Test");
   }
 
 }

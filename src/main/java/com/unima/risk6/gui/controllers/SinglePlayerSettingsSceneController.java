@@ -1,8 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
-
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
@@ -18,9 +15,6 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -37,6 +31,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+
 
 public class SinglePlayerSettingsSceneController {
 
@@ -46,6 +47,7 @@ public class SinglePlayerSettingsSceneController {
   private BorderPane root;
   private HBox centralHBox;
   private List<AiBot> aiBots = new ArrayList<>();
+  private StackPane plus;
 
   public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
@@ -143,16 +145,37 @@ public class SinglePlayerSettingsSceneController {
     });
   }
 
-  private void removeBot() {
-    StackPane plus = (StackPane) centralHBox.getChildren()
-        .remove(centralHBox.getChildren().size() - 1);
-    centralHBox.getChildren().remove(centralHBox.getChildren().size() - 1);
-    centralHBox.getChildren().add(plus);
+  private void removeBot(AiBot botToRemove) {
+    // Find the index of the botToRemove in the aiBots list
+    int botIndex = aiBots.indexOf(botToRemove);
+
+    boolean full =
+        (centralHBox.getChildren().size() == 6) && (!centralHBox.getChildren().get(centralHBox.getChildren().size() - 1).equals(plus));
+    System.out.println(full);
+
+    // Remove the VBox containing the bot and the remove button from the centralHBox
+    centralHBox.getChildren().remove(botIndex + 1); // Add 1 to account for the user VBox at index 0
+
+    // Remove the botToRemove from the aiBots list
+    aiBots.remove(botToRemove);
+
+    // If the size of centralHBox is 5, ensure the plusStackPane is present
+    if (full) {
+      centralHBox.getChildren().add(plus);
+    }
   }
 
   private void initHBox() {
     VBox userVBox = createPlayerVBox(user);
     VBox botBox1 = createBotVBox(0);
+    plus = createPlusStackpane();
+
+    centralHBox = new HBox(userVBox, botBox1, plus);
+    centralHBox.setAlignment(Pos.CENTER);
+    centralHBox.setSpacing(20.0);
+  }
+
+  private StackPane createPlusStackpane() {
     ImageView plusImage = new ImageView(
         new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
     plusImage.setFitHeight(20);
@@ -163,21 +186,15 @@ public class SinglePlayerSettingsSceneController {
     circle.setFill(Color.LIGHTGRAY);
     circle.setStrokeWidth(2.0);
 
-    // create a clip for the user image
     Circle clip = new Circle(plusImage.getFitWidth() / 2, plusImage.getFitHeight() / 2,
         circle.getRadius());
 
-    // apply the clip to the user image
     plusImage.setClip(clip);
 
-    // create a stack pane to place the circle and image on top of each other
     StackPane plusStackPane = new StackPane();
     plusStackPane.getChildren().addAll(circle, plusImage);
     plusStackPane.setOnMouseClicked(e -> botAdded());
-
-    centralHBox = new HBox(userVBox, botBox1, plusStackPane);
-    centralHBox.setAlignment(Pos.CENTER);
-    centralHBox.setSpacing(20.0);
+    return plusStackPane;
   }
 
 
@@ -249,7 +266,9 @@ public class SinglePlayerSettingsSceneController {
     removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
         + "-fx-background-color: lightgrey; -fx-border-color: black;");
 
-    removeButton.setOnMouseClicked(e -> removeBot());
+    AiBot bot = aiBots.get(aiBots.size() - 1);
+
+    removeButton.setOnMouseClicked(e -> removeBot(bot));
 
     VBox removeBox = new VBox(removeButton, botBox);
     removeBox.setAlignment(Pos.CENTER);

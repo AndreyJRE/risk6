@@ -53,7 +53,8 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     jsonObject.add("lostPlayers", lostPlayersJsonArray);
 
     //to ensure that the current player and the players in the activePlayers List have the right reference
-    jsonObject.add("currentPlayer", context.serialize(gameState.getCurrentPlayer().hashCode()));
+    jsonObject.add("currentPlayer",
+        context.serialize(context.serialize(gameState.getCurrentPlayer())));
 
     jsonObject.addProperty("numberOfHandIns", gameState.getNumberOfHandIns());
 
@@ -79,15 +80,16 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
 
-    int currentPlayerReference = jsonObject.get("currentPlayer").getAsInt();
+   /* Player currentPlayerReference = context.deserialize(jsonObject.get("currentPlayer"),
+        Player.class);*/
 
     JsonArray activePlayersJsonArray = jsonObject.getAsJsonArray("activePlayers");
     activePlayersJsonArray.forEach(x -> {
       Player p = context.deserialize(x, Player.class);
       gameState.getActivePlayers().add(p);
-      if (x.getAsJsonObject().get("hashCode").getAsInt() == currentPlayerReference) {
+      /*if (x.getAsJsonObject().get("hashCode").getAsInt() == currentPlayerReference) {
         gameState.setCurrentPlayer(p);
-      }
+      }*/
     });
     ArrayList<Player> lostPlayers = context.deserialize(jsonObject.get("lostPlayers"),
         new TypeToken<ArrayList<Player>>() {
@@ -130,8 +132,7 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
 
     gameState.setGameOver(isGameOver);
 
-    //gameState.setCurrentPlayer(context.deserialize(jsonObject.get("currentPlayer"), Player
-    // .class));
+    gameState.setCurrentPlayer(context.deserialize(jsonObject.get("currentPlayer"), Player.class));
     //gameState.setDice(context.deserialize(jsonObject.get("dice"), Dice.class));
     //gameState.setNumberOfHandIns(jsonObject.get("numberOfHandIns").getAsInt());
     //gameState.setCurrentPhase(GamePhase.valueOf(jsonObject.get("currentPhase").getAsString()));

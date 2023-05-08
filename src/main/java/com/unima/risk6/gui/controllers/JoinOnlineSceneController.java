@@ -5,6 +5,7 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -12,12 +13,11 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -87,13 +87,13 @@ public class JoinOnlineSceneController {
         "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
 
     TextField ipAdressTextField = new TextField();
-    ipAdressTextField.setPrefSize(330, 38);
+    ipAdressTextField.setPrefSize(800, 40);
     ipAdressTextField.setFont(Font.font(18));
     ipAdressTextField.setPromptText("Enter IP Adress");
     ipAdressTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
-    PasswordField portTextField = new PasswordField();
-    portTextField.setPrefSize(330, 39);
+    TextField portTextField = new TextField();
+    portTextField.setPrefSize(800, 40);
     portTextField.setFont(Font.font(18));
     portTextField.setPromptText("Enter Port");
     portTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
@@ -104,15 +104,17 @@ public class JoinOnlineSceneController {
     serverNotFoundLabel.setPadding(new Insets(-10, 0, -10, 0));
 
     Button joinButton = new Button("Join");
-    joinButton.setPrefSize(500, 40);
+    joinButton.setPrefSize(1080, 40);
     joinButton.setFont(Font.font(18));
     applyButtonStyle(joinButton);
 
     Label ipLabel = new Label("Enter IP Adress:");
+    ipLabel.setMinWidth(130);
     ipLabel.setFont(Font.font(18));
     ipLabel.setAlignment(Pos.CENTER_LEFT);
 
     Label portLabel = new Label("Enter Port:");
+    portLabel.setMinWidth(130);
     portLabel.setFont(Font.font(18));
     portLabel.setAlignment(Pos.CENTER_LEFT);
 
@@ -136,12 +138,25 @@ public class JoinOnlineSceneController {
   }
 
   private void handleJoin(String host, int port) {
-    LobbyConfiguration.configureGameClient(host, port);
-    LobbyConfiguration.startGameClient();
+    Task<Void> task = new Task<Void>() {
+      @Override
+      protected Void call() throws Exception {
+        LobbyConfiguration.configureGameClient(host, port);
+        LobbyConfiguration.startGameClient();
+        while (LobbyConfiguration.getGameClient() == null) {
+          Thread.sleep(100);
+        }
+        return null;
+      }
+    };
+    Thread thread = new Thread(task);
+    thread.start();
     UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
         DatabaseConfiguration.getGameStatisticService()
             .getAllStatisticsByUserId(SessionManager.getUser().getId()));
-    Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
+    GameConfiguration.setMyGameUser(userDto);
+    //TODO
+    //Platform.runLater(() -> LobbyConfiguration.sendJoinServer(userDto));
     SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SELECT_LOBBY);
     if (scene == null) {

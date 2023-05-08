@@ -70,7 +70,7 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
-    int troopsAffordable = 0;
+    int troopsAffordable = Integer.MIN_VALUE;
     for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
       if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
         int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
@@ -78,6 +78,9 @@ public abstract class GreedyBot extends Player implements AiBot {
           troopsAffordable = diff;
         }
       }
+    }
+    if (troopsAffordable == Integer.MIN_VALUE) {
+      troopsAffordable = 1;
     }
     // we can spare troops
     if (troopsAffordable < 0) {
@@ -87,7 +90,7 @@ public abstract class GreedyBot extends Player implements AiBot {
       int makeEqual = (outgoingTroops - incomingTroops) / 2;
       return winPair.createFortify(Math.min(troopsAffordable / 2, makeEqual));
     } else { // not worth it to fortify -> all surrounding enemy countries are stronger
-      return winPair.createFortify(0);
+      return null;
     }
   }
 
