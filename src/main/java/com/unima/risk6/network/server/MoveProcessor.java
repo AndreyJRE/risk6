@@ -47,12 +47,11 @@ public class MoveProcessor {
    */
   public void processReinforce(Reinforce reinforce) {
     Player currentPlayer = gameController.getCurrentPlayer();
-    Country countryToReinforce = getCountryByCountryName(
-        reinforce.getCountry().getCountryName());
+    Country countryToReinforce = getCountryByCountryName(reinforce.getCountry().getCountryName());
 
-    if (currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)
+    if ((currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)
         && countryToReinforce.getPlayer().equals(currentPlayer)
-        && reinforce.getToAdd() <= currentPlayer.getDeployableTroops()
+        && reinforce.getToAdd() <= currentPlayer.getDeployableTroops())
         || currentPlayer.getCurrentPhase().equals(CLAIM_PHASE)) {
 
       //Should process a Reinforce during the ClaimPhase differently
@@ -122,8 +121,8 @@ public class MoveProcessor {
     Country defendingCountry = getCountryByCountryName(
         attack.getDefendingCountry().getCountryName());
 
-    Player attacker = attackingCountry.getPlayer();
-    Player defender = defendingCountry.getPlayer();
+    Player attacker = getPlayerFromCurrentState(attackingCountry.getPlayer());
+    Player defender = getPlayerFromCurrentState(defendingCountry.getPlayer());
 
     //check if attack is legal.
     Player currentPlayer = gameController.getCurrentPlayer();
@@ -221,13 +220,12 @@ public class MoveProcessor {
     Country outgoing = getCountryByCountryName(fortify.getOutgoing().getCountryName());
 
     //Validate if the fortify is legal
-    if (fortify.getTroopsToMove() < outgoing.getTroops()
-        && outgoing.getPlayer().equals(incoming.getPlayer())
-        && incoming.getAdjacentCountries().contains(outgoing)
-        && fortify.getTroopsToMove() >= 0
-        && outgoing.getPlayer().equals(gameController.getCurrentPlayer())
-        && (gameController.getCurrentPlayer().getCurrentPhase().equals(ATTACK_PHASE)
-        || gameController.getCurrentPlayer().getCurrentPhase().equals(FORTIFY_PHASE))) {
+    if (fortify.getTroopsToMove() < outgoing.getTroops() && outgoing.getPlayer()
+        .equals(incoming.getPlayer()) && incoming.getAdjacentCountries().contains(outgoing)
+        && fortify.getTroopsToMove() >= 0 && outgoing.getPlayer()
+        .equals(gameController.getCurrentPlayer()) && (
+        gameController.getCurrentPlayer().getCurrentPhase().equals(ATTACK_PHASE)
+            || gameController.getCurrentPlayer().getCurrentPhase().equals(FORTIFY_PHASE))) {
 
       incoming.changeTroops(fortify.getTroopsToMove());
       outgoing.changeTroops(-fortify.getTroopsToMove());
@@ -282,8 +280,7 @@ public class MoveProcessor {
       //Increase troopsGained statistic according to troops gotten through card Exchange
       Statistic statisticOfCurrentPlayer = playerController.getPlayer().getStatistic();
       if (statisticOfCurrentPlayer != null) { // a bot doesn't have statistics
-        statisticOfCurrentPlayer.setTroopsGained(
-            statisticOfCurrentPlayer.getTroopsGained() + diff);
+        statisticOfCurrentPlayer.setTroopsGained(statisticOfCurrentPlayer.getTroopsGained() + diff);
       }
 
       gameController.getGameState()
@@ -304,14 +301,11 @@ public class MoveProcessor {
       currentPlayer.setHasConquered(false);
     }
 
-    if (currentPlayer.getDeployableTroops() == 0 || !playerController.getPlayer()
-        .getCurrentPhase()
+    if (currentPlayer.getDeployableTroops() == 0 || !playerController.getPlayer().getCurrentPhase()
         .equals(REINFORCEMENT_PHASE)) {
-      gameController.addLastMove(
-          new EndPhase(gameController.getCurrentPlayer().getCurrentPhase()));
+      gameController.addLastMove(new EndPhase(gameController.getCurrentPlayer().getCurrentPhase()));
       gameController.nextPhase();
       playerController.setPlayer(gameController.getCurrentPlayer());
-
 
     } else {
       //Throw invalid move exception
@@ -324,9 +318,13 @@ public class MoveProcessor {
   public Country getCountryByCountryName(CountryName countryName) {
     final Country[] country = new Country[1];
     gameController.getGameState().getCountries().stream()
-        .filter(n -> n.getCountryName().equals(countryName))
-        .forEach(n -> country[0] = n);
+        .filter(n -> n.getCountryName().equals(countryName)).forEach(n -> country[0] = n);
     return country[0];
+  }
+
+  public Player getPlayerFromCurrentState(Player player) {
+    return gameController.getGameState().getActivePlayers().stream().filter(p -> p.equals(player))
+        .findFirst().orElse(null);
   }
 
   public void clearLastMoves() {

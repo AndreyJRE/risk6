@@ -54,8 +54,8 @@ public class MonteCarloTreeSearch {
 
 
   private static int counter = 0;
-  private static final int SIMULATION_COUNT = 10;
-  private static final int SIMULATION_TIME_LIMIT = 50;
+  private static final int SIMULATION_COUNT = 50;
+  private static final int SIMULATION_TIME_LIMIT = 200;
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -98,10 +98,9 @@ public class MonteCarloTreeSearch {
         node = expand(node);
         result = simulate(node.getGameState());
       }
-      System.out.println(result);
-      counter = 0;
       backpropagate(node, result);
     }
+    System.out.println(counter);
     return chooseBestMove(root);
   }
 
@@ -234,7 +233,7 @@ public class MonteCarloTreeSearch {
       if (replacement instanceof GreedyBot) {
         ((GreedyBot) replacement).setContinentsCopy(deepCopy.getContinents());
         // find cleaner solution for following - AiBot method with gamestate parameter?
-      } else if (replacement instanceof EasyBot) {
+      } else {
         ((EasyBot) replacement).setCurrentGameState(deepCopy);
       }
       deepCopy.getActivePlayers().add((Player) replacement);
@@ -273,9 +272,11 @@ public class MonteCarloTreeSearch {
         moveProcessor.processAttack(toProcess);
       } while (!toProcess.getHasConquered() && toProcess.getAttackingCountry().getTroops() >= 2);
       if (simulationController.getGameState().isGameOver()) {
-        return null;
+        return new MoveTriplet(allReinforcements, allAttacks, null);
       }
       if (toProcess.getHasConquered()) {
+        Fortify forcedFortify = attacks.createFortify(toProcess.getTroopNumber());
+        moveProcessor.processFortify(forcedFortify); // always possible
         Fortify afterAttack = current.moveAfterAttack(attacks);
         if (afterAttack != null) {
           moveProcessor.processFortify(afterAttack);
