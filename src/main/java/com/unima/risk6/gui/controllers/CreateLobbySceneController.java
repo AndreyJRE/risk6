@@ -108,7 +108,7 @@ public class CreateLobbySceneController {
 
     AnchorPane anchorPane = new AnchorPane();
     anchorPane.setPrefSize(900, 600);
-    anchorPane.setPadding(new Insets(80, 100, 80, 100));
+    anchorPane.setPadding(new Insets(60, 100, 60, 100));
 
     vBox.setStyle(
         "-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
@@ -145,7 +145,7 @@ public class CreateLobbySceneController {
     Label isChatEnabled = new Label("Enable in-game Chat: ");
     isChatEnabled.setStyle(labelStyle);
 
-    Label turnTime = new Label("Turn Time: ");
+    Label turnTime = new Label("Turn Time (seconds): ");
     turnTime.setStyle(labelStyle);
 
     Label matchMakingElo = new Label("Min. required Elo:");
@@ -159,8 +159,8 @@ public class CreateLobbySceneController {
 
     turnTimeBox = new ComboBox<>();
     ObservableList<String> turnTimes = FXCollections.observableArrayList();
-    turnTimes.addAll("60 Seconds ", "90 Seconds", "120 Seconds", "150 Seconds", "180 Seconds",
-        "300 Seconds");
+    turnTimes.addAll("60", "90", "120", "150", "180",
+        "300");
     turnTimeBox.setItems(turnTimes);
     turnTimeBox.setPrefWidth(800);
 
@@ -211,8 +211,10 @@ public class CreateLobbySceneController {
     centerGridPane.add(maxPlayers, 1, 1);
     centerGridPane.add(matchMakingElo, 0, 2);
     centerGridPane.add(minElo, 1, 2);
-    centerGridPane.add(isChatEnabled, 0, 3);
-    centerGridPane.add(chatCheck, 1, 3);
+    centerGridPane.add(turnTime, 0, 3);
+    centerGridPane.add(turnTimeBox, 1, 3);
+    centerGridPane.add(isChatEnabled, 0, 4);
+    centerGridPane.add(chatCheck, 1, 4);
     centerGridPane.setAlignment(Pos.CENTER);
     centerGridPane.setHgap(60); // Set horizontal gap
     centerGridPane.setVgap(40); // Set vertical gap

@@ -46,7 +46,6 @@ public class SelectMultiplayerLobbySceneController {
   private User user;
   private BorderPane root;
   private List<GameLobby> gameLobbies = new ArrayList<>();
-  private boolean initialized = false;
 
 
   public SelectMultiplayerLobbySceneController(
@@ -61,6 +60,9 @@ public class SelectMultiplayerLobbySceneController {
     this.root = (BorderPane) selectMultiplayerLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/Fonts/Fonts/Segoe UI Bold.ttf"),
         26);
+    for (int i = lobbyChatSplit.getItems().size(); i > 0; i--) {
+      lobbyChatSplit.getItems().remove(i - 1);
+    }
     // Initialize elements
     initElements();
   }
@@ -103,9 +105,7 @@ public class SelectMultiplayerLobbySceneController {
 
     HBox bottomBox = new HBox(create, seperator, join);
     bottomBox.setAlignment(Pos.CENTER);
-    if (!initialized) {
-      initSplitPane();
-    }
+    initSplitPane();
 
     root.setLeft(backButton);
     root.setTop(titleBox);
@@ -119,7 +119,7 @@ public class SelectMultiplayerLobbySceneController {
 
   private void initGameLobbys() {
     //TODO: get all GameLobbys and save them to listview
-    /*gameLobbies = serverLobby.getGameLobbies();
+    gameLobbies = serverLobby.getGameLobbies();
     ObservableList<String> lobbys = FXCollections.observableArrayList();
     for (GameLobby gameLobby : gameLobbies) {
       String temp = gameLobby.getLobbyName() + " hosted by " + gameLobby.getName() + " "
@@ -133,8 +133,6 @@ public class SelectMultiplayerLobbySceneController {
         + "-fx-control-inner-background-alt: #e0e0e0;" // Alternierende Hintergrundfarbe der Zellen
         + "-fx-font-size: 20;" // Schriftgröße
         + "-fx-border-color: #cccccc;" // Randfarbe der ListView
-        + "-fx-border-radius: 10;" // Randradius der ListView
-        + "-fx-background-radius: 10;" // Hintergrundradius der ListView
         + "-fx-cell-size: 80;"; // Zellengröße, um mehr Platz zwischen den Einträgen zu schaffen
 
     lobbyList.setStyle(listViewStyle);
@@ -154,11 +152,10 @@ public class SelectMultiplayerLobbySceneController {
       }
     });
 
-    lobbyList.setItems(lobbys);*/
+    lobbyList.setItems(lobbys);
   }
 
   private void initSplitPane() {
-    initialized = true;
     initGameLobbys();
 
     TextArea chatArea = new TextArea();
