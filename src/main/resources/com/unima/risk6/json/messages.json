@@ -1,9 +1,11 @@
 [
   [
     "Welcome to RISK Tutorial mode! This game mode intends to teach you the basics of the game and",
-    "provide an understanding of how to play a match of risk. We start with the claim phase, each",
-    "player takes turns placing one troop on one unclaimed country. Try it out by clicking on the",
-    "highlighted country."
+    "provide an understanding of how to play a match of risk. Usually, the game starts with every",
+    "player rolling a die to determine turn order in order of highest rolls to lowest. In the",
+    "Tutorial however, we start in the middle of the first phase after the dice rolls, the claim",
+    "phase. Each player takes turns placing one troop on one unclaimed country. Try it out by",
+    "clicking on the highlighted country."
   ],
   [
     "Once all countries are claimed, each player gets an additional amount of troops depending on",
