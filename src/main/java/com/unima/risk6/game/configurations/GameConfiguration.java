@@ -113,7 +113,7 @@ public class GameConfiguration {
   public static void setInitialTroops(GameState blankState) {
     int numberOfInitialTroops = 0;
     switch (blankState.getActivePlayers().size()) {
-      case 2 -> numberOfInitialTroops = 14;
+      case 2 -> numberOfInitialTroops = 40;
       case 3 -> numberOfInitialTroops = 35;
       case 4 -> numberOfInitialTroops = 30;
       case 5 -> numberOfInitialTroops = 25;
