@@ -155,32 +155,33 @@ public class JoinOnlineSceneController {
       i++;
 
     }
-
     if (i >= 60) {
       showErrorDialog("Error",
           "Failed to connect to Server. Please correct your inputs if necessary.");
     } else {
-      String username = SessionManager.getUser().getUsername();
-      ServerLobby serverLobby = LobbyConfiguration.getServerLobby();
-      List<UserDto> users = serverLobby.getUsers();
-      for (UserDto userDto : users) {
-        if (userDto.getUsername().equals(username)) {
-          usernameExists = true;
-          break;
-        }
-      }
-      if (usernameExists) {
-        String newUserName = handleUsernameExists("Your username " + username
-                + " already exists in this lobby. Please select a unique username.", "New username",
-            "Enter your unique username: ");
-        SessionManager.getUser().setUsername(newUserName);
-      }
       UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
           DatabaseConfiguration.getGameStatisticService()
               .getAllStatisticsByUserId(SessionManager.getUser().getId()));
       GameConfiguration.setMyGameUser(userDto);
       LobbyConfiguration.sendJoinServer(userDto);
+
     }
+    //TODO Rework this maybe
+   /* String username = SessionManager.getUser().getUsername();
+    ServerLobby serverLobby = LobbyConfiguration.getServerLobby();
+    List<UserDto> users = serverLobby.getUsers();
+    for (UserDto userDto : users) {
+      if (userDto.getUsername().equals(username)) {
+        usernameExists = true;
+        break;
+      }
+    }
+    if (usernameExists) {
+      String newUserName = handleUsernameExists("Your username " + username
+              + " already exists in this lobby. Please select a unique username.", "New username",
+          "Enter your unique username: ");
+      SessionManager.getUser().setUsername(newUserName);
+    } */
   }
 
   private String handleUsernameExists(String problem, String title, String body) {
