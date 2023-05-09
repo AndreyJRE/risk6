@@ -116,6 +116,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             try {
               connectionMessage = (ConnectionMessage) Deserializer.deserializeConnectionMessage(
                   request);
+              LOGGER.debug(
+                  "Connection Type: " + connectionMessage.getConnectionActions().toString());
             } catch (Exception e) {
               LOGGER.error("Error at deserializing ConnectionMessage: " + e);
             }
@@ -175,7 +177,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   //TODO Maybe create a channelgroup for the gamelobby and add the creator to it
                   NetworkConfiguration.getServerLobby().getGameLobbies().add(gameLobby);
-                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby());
+                  ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
+                  sendCreatedGameLobby(serverLobby);
 
                 }
                 default -> LOGGER.error("Server received a faulty connection message");
@@ -202,6 +205,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     String serialized = Serializer.serialize(
         new ConnectionMessage<>(ConnectionActions.ACCEPT_CREATE_LOBBY,
             serverLobby));
+    LOGGER.debug("sendCreatedGameLobby: " + serialized);
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
       ch.writeAndFlush(

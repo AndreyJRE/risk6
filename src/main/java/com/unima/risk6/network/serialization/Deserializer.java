@@ -13,6 +13,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.message.StandardMessage;
@@ -97,5 +98,12 @@ public class Deserializer {
         .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter())
         .create()
         .fromJson(json, ConnectionMessage.class);
+  }
+
+  public static ChatMessage deserializeChatMessage(String json) {
+    return new GsonBuilder()
+        .registerTypeAdapter(ChatMessage.class, new ChatMessageTypeAdapter())
+        .create()
+        .fromJson(json, ChatMessage.class);
   }
 }
