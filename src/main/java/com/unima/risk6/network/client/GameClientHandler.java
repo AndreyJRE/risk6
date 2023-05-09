@@ -81,11 +81,11 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     WebSocketFrame frame = (WebSocketFrame) msg;
+    System.out.println("ctx = " + ctx + ", msg = " + msg);
     if (frame instanceof TextWebSocketFrame textFrame) {
       JsonObject json = null;
       try {
         json = JsonParser.parseString(textFrame.text()).getAsJsonObject();
-        //TODO Error Handling
       } catch (Exception e) {
         LOGGER.debug("Not a JSON: " + textFrame.text() + "\n Exception: " + e);
 
@@ -99,6 +99,12 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
+          }
+          case "CHAT_MESSAGE" -> {
+            String message = (String) Deserializer.deserializeChatMessage(textFrame.text())
+                .getContent();
+            LOGGER.debug("Client got a chat message " + message);
+            LobbyConfiguration.setLastChatMessage(message);
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
@@ -122,7 +128,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
-                        "At ACCEPT_START_GAME: Got first Gamestate: Overwrite GameState with new GameState from Server");
+                    "At ACCEPT_START_GAME: Got first Gamestate: Overwrite GameState with new GameState from Server");
                 GameState g = (GameState) Deserializer.deserializeConnectionMessage(
                         textFrame.text(),
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
