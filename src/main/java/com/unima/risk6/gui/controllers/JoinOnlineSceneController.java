@@ -1,6 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
@@ -12,7 +11,6 @@ import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
-import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -160,19 +158,6 @@ public class JoinOnlineSceneController {
         throw new RuntimeException(e);
       }
     }
-    SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SELECT_LOBBY);
-    if (scene == null) {
-      scene = new SelectMultiplayerLobbyScene();
-      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController = new SelectMultiplayerLobbySceneController(
-          scene);
-      scene.setController(selectMultiplayerLobbySceneController);
-      sceneController.addScene(SceneName.SELECT_LOBBY, scene);
-    }
-    pauseTitleSound();
-    sceneController.activate(SceneName.SELECT_LOBBY);
   }
-
-  //TODO:
 
 }

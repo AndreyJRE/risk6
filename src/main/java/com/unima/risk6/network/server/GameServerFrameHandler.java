@@ -175,7 +175,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   //TODO Maybe create a channelgroup for the gamelobby and add the creator to it
                   NetworkConfiguration.getServerLobby().getGameLobbies().add(gameLobby);
-                  sendServerLobby(NetworkConfiguration.getServerLobby());
+                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby());
 
                 }
                 default -> LOGGER.error("Server received a faulty connection message");
@@ -195,6 +195,17 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     } else {
       String message = "unsupported frame type: " + frame.getClass().getName();
       throw new UnsupportedOperationException(message);
+    }
+  }
+
+  private void sendCreatedGameLobby(ServerLobby serverLobby) {
+    String serialized = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_CREATE_LOBBY,
+            serverLobby));
+    for (Channel ch : channels) {
+      LOGGER.debug("Send new server lobby to: " + ch.id());
+      ch.writeAndFlush(
+          new TextWebSocketFrame(serialized));
     }
   }
 

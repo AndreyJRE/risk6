@@ -101,13 +101,23 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
-              case "ACCEPT_SERVER_LOBBY", "ACCEPT_CREATE_LOBBY" -> {
+              case "ACCEPT_SERVER_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 LobbyConfiguration.setServerLobby(
                     (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
                         .getContent());
                 LobbyConfiguration.getServerLobby().getUsers()
                     .forEach(user -> System.out.println(user.getUsername()));
+                Platform.runLater(SceneConfiguration::joinServerLobbyScene);
+              }
+              case "ACCEPT_CREATE_LOBBY" -> {
+                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                LobbyConfiguration.setServerLobby(
+                    (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent());
+                LobbyConfiguration.getServerLobby().getUsers()
+                    .forEach(user -> System.out.println(user.getUsername()));
+                Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
@@ -127,6 +137,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                     .getContent();
                 LobbyConfiguration.setGameLobby(
                     gameLobby);
+                Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
               }
               case "DROP_USER_LOBBY" -> {
                 //TODO Error Messsage

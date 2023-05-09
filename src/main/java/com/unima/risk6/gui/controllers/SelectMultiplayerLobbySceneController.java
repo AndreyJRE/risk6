@@ -15,7 +15,6 @@ import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
-import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import java.util.Iterator;
 import javafx.collections.FXCollections;
@@ -206,28 +205,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       if (lobbyList.getSelectionModel().getSelectedItem().getMatchMakingElo()
           <= GameConfiguration.getMyGameUser().getWinLossRatio()) {
         LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
-
-        while (LobbyConfiguration.getGameLobby() == null) {
-          try {
-            Thread.sleep(100);
-            System.out.println("Waiting for Lobby");
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-        MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-            .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-        if (scene == null) {
-          scene = new MultiplayerLobbyScene();
-          //TODO Overwrite game lobby owner
-          MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-              scene);
-          scene.setController(multiplayerLobbySceneController);
-          sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
-        }
-        pauseTitleSound();
         lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-        sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+
       } else {
         showConfirmationDialog("Missing experience",
             "Your Win / Loss Ratio does not match the minimum required"
