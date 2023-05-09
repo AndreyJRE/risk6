@@ -1,6 +1,7 @@
 package com.unima.risk6.game.ai.montecarlo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import com.unima.risk6.game.ai.AiBot;
@@ -26,7 +27,6 @@ class MonteCarloTreeSearchTest {
     randomHumans.add("Steven");
     ourBot = new HardBot("Popp");
     List<AiBot> bots = new ArrayList<>();
-//    bots.add(new EasyBot("Tested"));
     bots.add(ourBot);
     gameState = GameConfiguration.configureGame(randomHumans, bots);
   }
@@ -39,6 +39,7 @@ class MonteCarloTreeSearchTest {
     gameState.getActivePlayers().add(originalHumanPlayer);
     gameState.getActivePlayers().add(originalBotPlayer);
     assertEquals(2, gameState.getActivePlayers().size());
+    assertNotNull(originalHumanPlayer);
     originalHumanPlayer.setDeployableTroops(6);
     MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(ourBot);
     GameState gameStateCopy = mcts.copyGameState(gameState);
@@ -48,11 +49,12 @@ class MonteCarloTreeSearchTest {
     gameStateCopy.getActivePlayers().add(copiedBotPlayer);
     assertEquals(2, gameStateCopy.getActivePlayers().size());
     assertEquals(originalHumanPlayer, copiedHumanPlayer);
+    assertNotNull(copiedHumanPlayer);
     assertEquals(originalHumanPlayer.getDeployableTroops(),
         copiedHumanPlayer.getDeployableTroops());
     assertNotSame(originalHumanPlayer, copiedHumanPlayer);
     assertEquals(originalBotPlayer, copiedBotPlayer);
-    assertNotSame(originalBotPlayer, copiedBotPlayer); //TODO: try with bots that don't get swapped
+    assertNotSame(originalBotPlayer, copiedBotPlayer);
     Country originalPeru = getCountryFromGameState(gameState, CountryName.PERU);
     Country copyPeru = getCountryFromGameState(gameStateCopy, CountryName.PERU);
     assertEquals(originalPeru, copyPeru);
