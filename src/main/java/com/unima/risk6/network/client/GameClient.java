@@ -28,7 +28,7 @@ public final class GameClient implements Runnable {
 
   private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
 
-  private Channel ch;
+  private volatile Channel ch;
 
   public GameClient(String url) {
     URL = System.getProperty("url", url);

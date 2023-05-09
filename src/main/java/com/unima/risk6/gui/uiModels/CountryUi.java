@@ -106,9 +106,8 @@ public class CountryUi extends Group {
       switch (currentPhase) {
         case CLAIM_PHASE -> {
           int numberOfNeutralCountries =
-              GameConfiguration.getGameState().getCountries().stream().filter(Country::hasPlayer)
-                  .toList()
-                  .size();
+              GameConfiguration.getGameState().getCountries().stream()
+                  .filter(country1 -> !country1.hasPlayer()).toList().size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
               || !country.hasPlayer()) {
             this.setCursor(Cursor.CROSSHAIR);
@@ -143,7 +142,8 @@ public class CountryUi extends Group {
       switch (currentPhase) {
         case CLAIM_PHASE -> {
           int numberOfNeutralCountries =
-              GameConfiguration.getGameState().getCountries().stream().filter(Country::hasPlayer)
+              GameConfiguration.getGameState().getCountries().stream()
+                  .filter(country -> !country.hasPlayer())
                   .toList()
                   .size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)

@@ -151,13 +151,6 @@ public class JoinOnlineSceneController {
     GameConfiguration.setMyGameUser(userDto);
     LobbyConfiguration.sendJoinServer(userDto);
 
-    while (LobbyConfiguration.getServerLobby() == null) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
   }
 
 }
