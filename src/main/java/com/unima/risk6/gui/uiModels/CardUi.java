@@ -1,13 +1,19 @@
 package com.unima.risk6.gui.uiModels;
 
 import com.unima.risk6.game.models.Card;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -16,97 +22,146 @@ import javafx.scene.shape.SVGPath;
 
 public class CardUi extends StackPane {
 
-    private Card card;
+  private Card card;
 
-    private Rectangle cardFrame;
+  private Rectangle cardFrame;
 
-    private ImageView cardSymbolImage;
+  private ImageView cardSymbolImage;
 
-    public CardUi(Card card, CountryUi countryUi) {
-        super();
-        this.card = card;
-        cardFrame = new Rectangle(250, 450);
-        cardFrame.setFill(Color.WHITE);
-        cardFrame.setStroke(Color.BLACK);
-        cardFrame.setArcHeight(25);
-        cardFrame.setArcWidth(25);
-        switch (card.getCardSymbol()) {
-            case CANNON -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/cannonCard.png").toString()));
-            }
-            case INFANTRY -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/infantryCard.png").toString()));
-            }
-            case CAVALRY -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/cavalryCard.png").toString()));
-            }
-            case WILDCARD -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/wildCard.png").toString()));
-            }
-        }
-        Label chatLabel = new Label(countryUi.getCountry().getCountryName().name());
-        chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold");
-        SVGPath countryPath = countryUi.svgPathClone(countryUi.getCountryPath());
-        VBox cardVBox = new VBox();
-        cardVBox.setSpacing(10);
-        cardVBox.getChildren().addAll(chatLabel, countryPath, cardSymbolImage);
-        cardVBox.setAlignment(Pos.CENTER);
-        this.getChildren().addAll(cardFrame, cardVBox);
-        this.initMouseListener();
+  private List<CardUi> cardUis = new ArrayList<>();
+
+  private boolean clicked = false;
+
+  public CardUi(Card card, CountryUi countryUi) {
+    super();
+    this.card = card;
+    cardFrame = new Rectangle(250, 450);
+    cardFrame.setFill(Color.WHITE);
+    cardFrame.setStroke(Color.BLACK);
+    cardFrame.setArcHeight(25);
+    cardFrame.setArcWidth(25);
+    switch (card.getCardSymbol()) {
+      case CANNON -> {
+        cardSymbolImage = new ImageView(
+            new Image(
+                getClass().getResource("/com/unima/risk6/pictures/cannonCard.png").toString()));
+      }
+      case INFANTRY -> {
+        cardSymbolImage = new ImageView(
+            new Image(
+                getClass().getResource("/com/unima/risk6/pictures/infantryCard.png").toString()));
+      }
+      case CAVALRY -> {
+        cardSymbolImage = new ImageView(
+            new Image(
+                getClass().getResource("/com/unima/risk6/pictures/cavalryCard.png").toString()));
+      }
+      case WILDCARD -> {
+        cardSymbolImage = new ImageView(
+            new Image(getClass().getResource("/com/unima/risk6/pictures/wildCard.png").toString()));
+      }
     }
+    Label chatLabel = new Label(countryUi.getCountry().getCountryName().name());
+    chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold");
+    SVGPath countryPath = countryUi.svgPathClone(countryUi.getCountryPath());
+    VBox cardVBox = new VBox();
+    cardVBox.setSpacing(10);
+    cardVBox.getChildren().addAll(chatLabel, countryPath, cardSymbolImage);
+    cardVBox.setAlignment(Pos.CENTER);
+    this.getChildren().addAll(cardFrame, cardVBox);
+    this.initMouseListener();
+  }
 
-    public CardUi(Card card) {
-        super();
-        this.card = card;
-        cardFrame = new Rectangle(125, 225);
-        cardFrame.setArcHeight(25);
-        cardFrame.setArcWidth(25);
-        switch (card.getCardSymbol()) {
-            case CANNON -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/cannonCard.png").toString()));
-            }
-            case INFANTRY -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/infantryCard.png").toString()));
-            }
-            case CAVALRY -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/cavalryCard.png").toString()));
-            }
-            case WILDCARD -> {
-                cardSymbolImage = new ImageView(
-                        new Image(getClass().getResource("/com/unima/risk6/pictures/wildCard.png").toString()));
-            }
-        }
-        this.getChildren().addAll(cardFrame, cardSymbolImage);
-        this.initMouseListener();
+  public CardUi(Card card) {
+    super();
+    this.card = card;
+    cardFrame = new Rectangle(125, 225);
+    cardFrame.setArcHeight(25);
+    cardFrame.setArcWidth(25);
+    switch (card.getCardSymbol()) {
+      case CANNON -> {
+        cardSymbolImage = new ImageView(
+            new Image(
+                getClass().getResource("/com/unima/risk6/pictures/cannonCard.png").toString()));
+      }
+      case INFANTRY -> {
+        cardSymbolImage = new ImageView(
+            new Image(
+                getClass().getResource("/com/unima/risk6/pictures/infantryCard.png").toString()));
+      }
+      case CAVALRY -> {
+        cardSymbolImage = new ImageView(
+            new Image(
+                getClass().getResource("/com/unima/risk6/pictures/cavalryCard.png").toString()));
+      }
+      case WILDCARD -> {
+        cardSymbolImage = new ImageView(
+            new Image(getClass().getResource("/com/unima/risk6/pictures/wildCard.png").toString()));
+      }
     }
+    this.getChildren().addAll(cardFrame, cardSymbolImage);
+    this.initMouseListener();
+  }
 
-    private void initMouseListener() {
-        setOnMouseEntered(event -> {
-            this.setCursor(Cursor.HAND);
-            DropShadow dropShadow = new DropShadow();
-            dropShadow.setColor(Color.DARKRED);
-            this.cardFrame.setEffect(dropShadow);
-        });
-        setOnMouseClicked(event -> {
-            System.out.println("clicked");
-            DropShadow dropShadow = new DropShadow();
-            dropShadow.setColor(Color.DARKRED);
-            this.cardFrame.setEffect(dropShadow);
-        });
-    }
+  private void initMouseListener() {
+    setOnMouseEntered(event -> {
+      this.setCursor(Cursor.HAND);
+    });
+    setOnMouseClicked(event -> {
+      if (!this.clicked) {
+        this.clicked = true;
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setColor(Color.DARKRED);
+        this.cardFrame.setEffect(dropShadow);
+        checkAmountOfSelectedCards();
+      } else {
+        this.cardFrame.setEffect(null);
+        this.clicked = false;
+        checkAmountOfSelectedCards();
+      }
+    });
+  }
 
-    public Card getCard() {
-        return card;
+  private void checkAmountOfSelectedCards() {
+    HBox cardBox = (HBox) this.getParent();
+    HBox newBottomBox = new HBox();
+    newBottomBox.setAlignment(Pos.CENTER);
+    BorderPane.setMargin(newBottomBox, new Insets(10));
+    BorderPane cardPane = (BorderPane) this.getParent().getParent();
+    int counter = 0;
+    for (Node cardNode : cardBox.getChildren()) {
+      if (((CardUi) cardNode).isClicked()) {
+        counter++;
+      }
     }
+    System.out.println(counter);
+    cardPane.setBottom(newBottomBox);
+    if (counter == 3) {
+      //TODO: DIFFERENTIATE BETWEEN MATCHING TRIO OF CARDS AND NOT MATCHING
+      Button handInButton = new Button("Hand in the cards!");
+      handInButton.setStyle(
+          "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
+      handInButton.setFocusTraversable(false);
+      System.out.println(this.getParent().getParent());
+      newBottomBox.getChildren().clear();
+      newBottomBox.getChildren().add(handInButton);
+    } else if (counter > 3) {
+      Label removeCardLabel = new Label("You selected too many cards! Only three are allowed!");
+      removeCardLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: red; -fx-font-weight: bold;");
+      newBottomBox.getChildren().clear();
+      newBottomBox.getChildren().add(removeCardLabel);
+    }
+  }
 
-    public void setCard(Card card) {
-        this.card = card;
-    }
+  public Card getCard() {
+    return card;
+  }
+
+  public void setCard(Card card) {
+    this.card = card;
+  }
+
+  public boolean isClicked() {
+    return clicked;
+  }
 }
