@@ -16,8 +16,6 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -34,11 +32,7 @@ class HardBotTest {
 
   @BeforeAll
   static void setUp() {
-    InputStream data = MediumBotTest.class.getResourceAsStream(
-        "/com/unima/risk6/json/probabilities.json");
-    assert data != null;
-    InputStreamReader fileReader = new InputStreamReader(data);
-    Probabilities.init(fileReader);
+    Probabilities.init();
 
   }
 
@@ -82,7 +76,7 @@ class HardBotTest {
     botTestController.changeDeployableTroops(3);
     ((Player) hardBot).setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
     enemy.setCurrentPhase(GamePhase.NOT_ACTIVE);
-    ((HardBot) hardBot).setCurrentGameState(gameState);
+    ((HardBot) hardBot).setGameState(gameState);
     List<Reinforce> decisions = hardBot.createAllReinforcements();
     assertEquals(3, decisions.stream().mapToInt(Reinforce::getToAdd).sum());
     List<CountryPair> attacks = new ArrayList<>();
@@ -159,7 +153,7 @@ class HardBotTest {
     });
     easy.setGameState(gameState);
     med.setGameState(gameState);
-    ((HardBot) hardBot).setCurrentGameState(gameState);
+    ((HardBot) hardBot).setGameState(gameState);
     gameState.getActivePlayers().forEach(p -> p.setInitialTroops(0));
     botTestController.getPlayer().setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
     botTestController.getPlayer().setDeployableTroops(3);

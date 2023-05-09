@@ -2,7 +2,6 @@ package com.unima.risk6.game.ai.models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.controllers.PlayerController;
@@ -11,9 +10,6 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,13 +25,7 @@ class ProbabilitiesTest {
 
   @BeforeAll
   static void setUp() {
-    InputStream data = ProbabilitiesTest.class.getResourceAsStream(
-        "/com/unima/risk6/json/probabilities.json");
-    try (InputStreamReader fileReader = new InputStreamReader(data)) {
-      Probabilities.init(fileReader);
-    } catch (IOException | NullPointerException e) {
-      fail("Probabilities could not be loaded");
-    }
+    Probabilities.init();
     List<String> players = new ArrayList<>();
     players.add("John McClane");
     players.add("Jerry Seinfeld");

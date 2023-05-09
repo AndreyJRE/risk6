@@ -6,6 +6,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.json.JsonParser;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,15 +30,16 @@ public class Probabilities {
   }
 
   private static Integer[][] winProbability;
+  private static final String PROBABILITIES_FILE = "/com/unima/risk6/json/probabilities.json";
 
   /**
    * Initialize the Probabilities class by setting the classes static winProbability and
    * borderCountries attributes.
-   *
-   * @param fileReader An InputStreamReader pointing to the json file containing the 20x20
-   *                   Win-Probability Matrix.
    */
-  public static void init(InputStreamReader fileReader) {
+  public static void init() {
+    InputStream data = Probabilities.class.getResourceAsStream(PROBABILITIES_FILE);
+    assert data != null;
+    InputStreamReader fileReader = new InputStreamReader(data);
     winProbability = JsonParser.parseJsonFile(fileReader, Integer[][].class);
   }
 

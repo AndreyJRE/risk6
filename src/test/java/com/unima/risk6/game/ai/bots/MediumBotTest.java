@@ -18,8 +18,6 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,11 +35,7 @@ class MediumBotTest {
 
   @BeforeAll
   static void setUp() {
-    InputStream data = MediumBotTest.class.getResourceAsStream(
-        "/com/unima/risk6/json/probabilities.json");
-    assert data != null;
-    InputStreamReader fileReader = new InputStreamReader(data);
-    Probabilities.init(fileReader);
+    Probabilities.init();
     mediumBot = new MediumBot("Sirius Black");
     botTestController = new PlayerController();
     botTestController.setPlayer((MediumBot) mediumBot);

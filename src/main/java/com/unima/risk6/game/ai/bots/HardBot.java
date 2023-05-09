@@ -22,7 +22,7 @@ public class HardBot extends GreedyBot implements AiBot {
   private Queue<CountryPair> attacks;
   private Fortify fortifies;
 
-  private GameState currentGameState;
+  private GameState gameState;
 
 
   public HardBot(String username) {
@@ -56,19 +56,20 @@ public class HardBot extends GreedyBot implements AiBot {
    */
   private void updateBestMoves() {
     MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(this);
-    MoveTriplet results = mcts.getBestMove(this.currentGameState);
+    MoveTriplet results = mcts.getBestMove(this.gameState);
     this.reinforces = results.reinforcements();
     this.attacks = results.attacks();
     this.fortifies = results.fortify();
   }
 
   /**
-   * Update the value of currentGameState.
+   * Update the value of gameState.
    *
-   * @param currentGameState The state of the game right at the beginning of the HardBots turn.
+   * @param gameState The state of the game right at the beginning of the HardBots turn.
    */
-  public void setCurrentGameState(GameState currentGameState) {
-    this.currentGameState = currentGameState;
+  public void setGameState(GameState gameState) {
+    super.setGameState(gameState);
+    this.gameState = gameState;
   }
 
   @Override
