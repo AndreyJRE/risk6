@@ -76,7 +76,6 @@ public class GameSceneController implements GameStateObserver {
   private Set<CountryUi> countriesUis;
   private double originalScreenWidth;
   private double originalScreenHeight;
-  private BorderPane chatBoxPane;
   private Group countriesGroup;
   private LinkedList<PlayerUi> playerUis;
   private TimeUi timeUi;
@@ -103,7 +102,6 @@ public class GameSceneController implements GameStateObserver {
     this.countriesUis = CountriesUiConfiguration.getCountriesUis();
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
-    this.chatBoxPane = new BorderPane();
     this.initializeGameScene();
     mockGamePhase = GamePhase.ATTACK_PHASE;
     GameConfiguration.addObserver(this);
