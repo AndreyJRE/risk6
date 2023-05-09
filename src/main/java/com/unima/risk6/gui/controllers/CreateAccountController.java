@@ -1,6 +1,8 @@
 package com.unima.risk6.gui.controllers;
 
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
+
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.NotValidPasswordException;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
@@ -15,8 +17,6 @@ import java.util.ResourceBundle;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -96,14 +96,6 @@ public class CreateAccountController implements Initializable {
     }
   }
 
-  private void showErrorDialog(String title, String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
-
   @FXML
   private void handleMouseEntered(MouseEvent event) {
     Label label = (Label) event.getSource();
@@ -119,11 +111,19 @@ public class CreateAccountController implements Initializable {
             + "-fx-underline: true;");
   }
 
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     userService = DatabaseConfiguration.getUserService();
     checkPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue.equals(passwordField.getText())) {
+        passwordMismatchLabel.setText("Passwords do not match!");
+      } else {
+        passwordMismatchLabel.setText("");
+      }
+    });
+    passwordField.textProperty().addListener((observableValue, oldValue, newValue) -> {
+      if (!newValue.equals(checkPasswordField.getText())) {
         passwordMismatchLabel.setText("Passwords do not match!");
       } else {
         passwordMismatchLabel.setText("");

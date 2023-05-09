@@ -152,6 +152,12 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     });
 
     lobbyList.setItems(lobbies);
+
+    lobbyList.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER) {
+        handleJoinButton();
+      }
+    });
   }
 
   private void initSplitPane() {
@@ -208,9 +214,13 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
 
       } else {
-        showConfirmationDialog("Missing experience",
+        boolean confirm = showConfirmationDialog("Missing experience",
             "Your Win / Loss Ratio does not match the minimum required"
                 + " Ratio of the selected Lobby. Do you still want to continue?");
+        if (confirm) {
+          LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
+          lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+        }
       }
     } else {
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
