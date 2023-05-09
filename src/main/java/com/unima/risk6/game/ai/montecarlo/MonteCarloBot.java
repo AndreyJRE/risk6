@@ -70,7 +70,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
    */
   public List<CountryPair> getAttackMoves() {
     List<CountryPair> attackPairs = new ArrayList<>();
-    for (Continent continent : this.getContinentsCopy()) {
+    for (Continent continent : this.getAllContinents()) {
       attackPairs.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
     // TODO: shuffle moves or let it play by best chances?
@@ -105,7 +105,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
    * Sorts the object variable list of continents in descending order based off of the bots power.
    */
   public void sortContinentsByHighestRelativePower() {
-    this.continentsCopy.sort(Comparator.comparing(
+    this.allContinents.sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
         .reversed());
   }

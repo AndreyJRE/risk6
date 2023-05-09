@@ -239,8 +239,8 @@ class MediumBotTest {
     botTestController.addCountry(china);
     china.setTroops(2);
     ((MediumBot) mediumBot).sortContinentsByHighestRelativePower();
-    assertEquals(westernEur.getContinent(), ((MediumBot) mediumBot).getContinentsCopy().get(0));
-    assertEquals(china.getContinent(), ((MediumBot) mediumBot).getContinentsCopy().get(1));
+    assertEquals(westernEur.getContinent(), ((MediumBot) mediumBot).getAllContinents().get(0));
+    assertEquals(china.getContinent(), ((MediumBot) mediumBot).getAllContinents().get(1));
   }
 
   static Country getCountryByName(CountryName countryName) {
