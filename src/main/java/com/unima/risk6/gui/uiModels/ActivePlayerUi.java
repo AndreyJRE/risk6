@@ -1,5 +1,8 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.controllers.GameSceneController;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -82,10 +85,15 @@ public class ActivePlayerUi extends Group {
   }
 
   public void changeActivePlayerUi(PlayerUi playerUi) {
+    if (!this.playerUi.getPlayer().getUser().equals(playerUi.getPlayer().getUser())
+        && this.playerUi.getPlayer().getUser()
+        .equals(GameSceneController.getPlayerController().getPlayer().getUser())
+        && playerUi.getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE) {
+      SoundConfiguration.playYourTurnSound();
+    }
     this.playerUi = playerUi;
     ellipse.setStroke(playerUi.getPlayerColor());
     rectangle.setStroke(playerUi.getPlayerColor());
-    System.out.println("Change aktive " + playerUi.getPlayer().getCurrentPhase());
     switch (playerUi.getPlayer().getCurrentPhase()) {
       case REINFORCEMENT_PHASE -> {
         phaseLabel.setText("Reinforcement");

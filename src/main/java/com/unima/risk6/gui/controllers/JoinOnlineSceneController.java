@@ -146,7 +146,7 @@ public class JoinOnlineSceneController {
     LobbyConfiguration.startGameClient();
     int i = 0;
     boolean usernameExists = false;
-    while (LobbyConfiguration.getGameClient().getCh() == null && i < 60) {
+    while (LobbyConfiguration.getGameClient().getCh() == null && i < 10) {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
@@ -155,7 +155,7 @@ public class JoinOnlineSceneController {
       i++;
 
     }
-    if (i >= 60) {
+    if (i >= 10) {
       showErrorDialog("Error",
           "Failed to connect to Server. Please correct your inputs if necessary.");
     } else {

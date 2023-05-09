@@ -30,7 +30,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -99,38 +98,35 @@ public class CountryUi extends Group {
   }
 
   public void initMouseListener() {
-
-    setOnMouseEntered((MouseEvent event) -> {
+    this.hoverProperty().addListener((observable, oldValue, newValue) -> {
       PlayerController playerController = GameSceneController.getPlayerController();
       GamePhase currentPhase = playerController.getPlayer().getCurrentPhase();
-      switch (currentPhase) {
-        case CLAIM_PHASE -> {
-          int numberOfNeutralCountries =
-              GameConfiguration.getGameState().getCountries().stream()
-                  .filter(country1 -> !country1.hasPlayer()).toList().size();
-          if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
-              || !country.hasPlayer()) {
-            this.setCursor(Cursor.CROSSHAIR);
-          } else {
-            this.setCursor(Cursor.DEFAULT);
+      if (newValue) {
+        switch (currentPhase) {
+          case CLAIM_PHASE -> {
+            int numberOfNeutralCountries =
+                GameConfiguration.getGameState().getCountries().stream()
+                    .filter(country1 -> !country1.hasPlayer()).toList().size();
+            if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
+                || !country.hasPlayer()) {
+              this.setCursor(Cursor.CROSSHAIR);
+            }
           }
-        }
-        case ATTACK_PHASE, FORTIFY_PHASE -> {
-          if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-            this.setCursor(Cursor.CROSSHAIR);
-          } else {
-            this.setCursor(Cursor.DEFAULT);
+          case ATTACK_PHASE, FORTIFY_PHASE -> {
+            if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
+              this.setCursor(Cursor.CROSSHAIR);
+            }
           }
-        }
-        case REINFORCEMENT_PHASE -> {
-          if (checkIfCountryIsMine(country)
-              && playerController.getPlayer().getDeployableTroops() > 0) {
-            this.setCursor(Cursor.CROSSHAIR);
-          } else {
-            this.setCursor(Cursor.DEFAULT);
-          }
+          case REINFORCEMENT_PHASE -> {
+            if (checkIfCountryIsMine(country)
+                && playerController.getPlayer().getDeployableTroops() > 0) {
+              this.setCursor(Cursor.CROSSHAIR);
+            }
 
+          }
         }
+      } else {
+        this.setCursor(Cursor.DEFAULT);
       }
     });
 
@@ -171,6 +167,7 @@ public class CountryUi extends Group {
 
         // add more cases for other enum values
       }
+      this.setCursor(Cursor.DEFAULT);
 
 
     });

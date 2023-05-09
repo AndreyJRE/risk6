@@ -233,7 +233,8 @@ public class GameSceneController implements GameStateObserver {
     nextPhaseButton.setGraphic(rightArrowIcon);
     nextPhaseButton.setStyle("-fx-background-radius: 25px;");
     nextPhaseButton.setFocusTraversable(false);
-    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe());
+    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe()
+        && activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE);
     nextPhaseButton.setOnAction(event -> {
       GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
       PLAYER_CONTROLLER.sendEndPhase(currentPhase);
@@ -378,12 +379,11 @@ public class GameSceneController implements GameStateObserver {
         countryUi.setCountry(country);
       }
     }));
-    countriesUis.forEach(
-        countryUi -> countryUi.getAdjacentCountryUis()
-            .forEach(adjacentCountryUi -> adjacentCountryUi.setCountry(countriesUis.stream()
-                .filter(countryUi1 -> countryUi1.getCountry().getCountryName()
+    countriesUis.forEach(countryUi -> countryUi.getAdjacentCountryUis().forEach(
+        adjacentCountryUi -> adjacentCountryUi.setCountry(countriesUis.stream().filter(
+                countryUi1 -> countryUi1.getCountry().getCountryName()
                     .equals(adjacentCountryUi.getCountry().getCountryName())).findFirst().get()
-                .getCountry())));
+            .getCountry())));
 
     //TODO Update reference for the deckUi,handUi, etc
   }
@@ -394,8 +394,8 @@ public class GameSceneController implements GameStateObserver {
   }
 
   public void animateTroopsMovement(Fortify fortify) {
-    double maxOffsetX = 10;
-    double maxOffsetY = 10;
+    double maxOffsetX = 7;
+    double maxOffsetY = 7;
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
       ImageView imageView = new ImageView(new Image(
           getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString()));
@@ -427,8 +427,9 @@ public class GameSceneController implements GameStateObserver {
       pathTransition.setDuration(Duration.seconds(2));
       pathTransition.setPath(path);
       pathTransition.setNode(imageView);
-      pathTransition.setOnFinished(
-          onFinishedEvent -> countriesGroup.getChildren().remove(imageView));
+      pathTransition.setOnFinished(onFinishedEvent -> {
+        countriesGroup.getChildren().remove(imageView);
+      });
       pathTransition.play();
       countriesGroup.getChildren().add(imageView);
     }
@@ -455,7 +456,8 @@ public class GameSceneController implements GameStateObserver {
     updateActivePlayerUi();
     nextPhaseButton.setVisible(
         checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
-            != GamePhase.NOT_ACTIVE));
+            != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
+            != GamePhase.CLAIM_PHASE));
 
   }
 

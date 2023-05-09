@@ -124,9 +124,4 @@ public class LobbyConfiguration {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.JOIN_BOT_GAME_LOBBY, gameLobby));
   }
-
-  public static void sendUpdateServerLobby(GameLobby gameLobby) {
-    gameClient.sendMessage(
-        new ConnectionMessage<>(ConnectionActions.UPDATE_SERVER_LOBBY, gameLobby));
-  }
 }

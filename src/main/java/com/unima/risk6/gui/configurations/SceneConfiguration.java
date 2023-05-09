@@ -36,6 +36,7 @@ public class SceneConfiguration {
   }
 
   public static void startGame() {
+
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
     if (gameScene == null) {
@@ -47,6 +48,7 @@ public class SceneConfiguration {
     sceneController.activate(SceneName.GAME);
     //TODO If we want to go full screen we can use this
     sceneController.getStage().setFullScreen(true);
+    SoundConfiguration.playStartGameSound();
   }
 
   public static void joinServerLobbyScene() {
