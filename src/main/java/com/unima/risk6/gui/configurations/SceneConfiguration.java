@@ -36,17 +36,19 @@ public class SceneConfiguration {
   }
 
   public static void startGame() {
+    GameSceneController gameSceneController = null;
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
     if (gameScene == null) {
       gameScene = new GameScene();
-      GameSceneController gameSceneController = new GameSceneController(gameScene);
+      gameSceneController = new GameSceneController(gameScene);
       gameScene.setGameSceneController(gameSceneController);
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
     //TODO If we want to go full screen we can use this
     sceneController.getStage().setFullScreen(true);
+    gameSceneController.showOrderPopup();
   }
 
   public static void joinServerLobbyScene() {
