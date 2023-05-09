@@ -39,7 +39,7 @@ public class MediumBot extends GreedyBot implements AiBot {
     this.reinforceTroopsCopy = this.getDeployableTroops() + this.getInitialTroops();
     sortContinentsByHighestRelativePower();
     // reinforce defensively
-    for (Continent continent : this.getContinentsCopy()) {
+    for (Continent continent : this.getAllContinents()) {
       if (this.reinforceTroopsCopy > 0) {
         allReinforcements.addAll(makeContinentDefendable(continent));
       } else {
@@ -47,7 +47,7 @@ public class MediumBot extends GreedyBot implements AiBot {
       }
     }
 
-    for (Continent continent : this.getContinentsCopy()) {
+    for (Continent continent : this.getAllContinents()) {
       if (this.reinforceTroopsCopy > 0) {
         allReinforcements.addAll(aggressiveReinforce(continent));
       } else {
@@ -99,7 +99,7 @@ public class MediumBot extends GreedyBot implements AiBot {
    * presence the bot has over a continent.
    */
   public void sortContinentsByHighestRelativePower() {
-    this.getContinentsCopy().sort(Comparator.comparing(
+    this.getAllContinents().sort(Comparator.comparing(
             (Continent continent) -> Probabilities.relativeTroopContinentPower(this, continent))
         .reversed());
   }
@@ -163,7 +163,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   public CountryPair createAttack() {
     List<CountryPair> allAttacks = new ArrayList<>();
     sortContinentsByHighestRelativePower();
-    for (Continent continent : this.getContinentsCopy()) {
+    for (Continent continent : this.getAllContinents()) {
       allAttacks.addAll(makeBestAttackInContinent(continent));
     }
     this.lastAttackSize = allAttacks.size();

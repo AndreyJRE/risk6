@@ -17,6 +17,7 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -54,6 +55,18 @@ class EasyBotTest {
     Reinforce firstClaim = easyBot.claimCountry();
     assertNotNull(firstClaim.getCountry());
     assertEquals(1, firstClaim.getToAdd());
+    Random rng = new Random();
+    gameState.getCountries().forEach(country -> {
+      if (rng.nextDouble() < 0.5) {
+        enemyController.addCountry(country);
+      } else {
+        botTestController.addCountry(country);
+      }
+      country.setTroops(1);
+    });
+    Reinforce partTwo = easyBot.claimCountry();
+    assertNotNull(partTwo);
+    assertEquals(1, partTwo.getToAdd());
   }
 
   @Test

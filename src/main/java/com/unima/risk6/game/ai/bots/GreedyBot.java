@@ -27,7 +27,8 @@ import java.util.Random;
 public abstract class GreedyBot extends Player implements AiBot {
 
   protected static final Random RNG = new Random();
-  protected List<Continent> continentsCopy;
+  protected List<Continent> allContinents;
+  protected List<Country> allCountries;
   protected final PlayerController playerController;
 
   /**
@@ -35,14 +36,16 @@ public abstract class GreedyBot extends Player implements AiBot {
    *
    * @return a copy of the list of continents.
    */
-  protected List<Continent> getContinentsCopy() {
-    return continentsCopy;
+  protected List<Continent> getAllContinents() {
+    return allContinents;
   }
 
   @Override
   public void setGameState(GameState gameState) {
-    this.continentsCopy = new ArrayList<>();
-    this.continentsCopy.addAll(gameState.getContinents());
+    this.allContinents = new ArrayList<>();
+    this.allContinents.addAll(gameState.getContinents());
+    this.allCountries = new ArrayList<>();
+    this.allCountries.addAll(gameState.getCountries());
   }
 
   /**
@@ -54,7 +57,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     super(player);
     playerController = new PlayerController();
     playerController.setPlayer(this);
-    this.continentsCopy = new ArrayList<>();
+    this.allContinents = new ArrayList<>();
   }
 
   /**
@@ -66,7 +69,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     super(username);
     playerController = new PlayerController();
     playerController.setPlayer(this);
-    this.continentsCopy = new ArrayList<>();
+    this.allContinents = new ArrayList<>();
   }
 
   public abstract List<Reinforce> createAllReinforcements();
@@ -120,14 +123,31 @@ public abstract class GreedyBot extends Player implements AiBot {
   @Override
   public Reinforce claimCountry() {
     Map<ContinentName, Continent> continentMap = new HashMap<>();
-    this.continentsCopy.forEach(cont -> continentMap.put(cont.getContinentName(), cont));
-    List<Continent> priorityList = Arrays.asList(continentMap.get(ContinentName.AUSTRALIA),
-        continentMap.get(ContinentName.SOUTH_AMERICA),
-        continentMap.get(ContinentName.NORTH_AMERICA), continentMap.get(ContinentName.AFRICA),
-        continentMap.get(ContinentName.EUROPE), continentMap.get(ContinentName.ASIA));
-    Continent targetContinent = findBestClaim(priorityList);
-    Country targetCountry = findUnclaimedCountry(targetContinent);
-    return new Reinforce(targetCountry, 1);
+    this.allContinents.forEach(cont -> continentMap.put(cont.getContinentName(), cont));
+    long unclaimedCount = this.allCountries.stream().filter(c -> !c.hasPlayer()).count();
+    if (unclaimedCount > 0) {
+      List<Continent> priorityList = Arrays.asList(continentMap.get(ContinentName.AUSTRALIA),
+          continentMap.get(ContinentName.SOUTH_AMERICA),
+          continentMap.get(ContinentName.NORTH_AMERICA), continentMap.get(ContinentName.AFRICA),
+          continentMap.get(ContinentName.EUROPE), continentMap.get(ContinentName.ASIA));
+      Continent targetContinent = findBestClaim(priorityList);
+      Country targetCountry = findUnclaimedCountry(targetContinent);
+      return new Reinforce(targetCountry, 1);
+    } else {
+      List<Continent> priorityList = this.getAllContinents().stream()
+          .sorted(Comparator.comparingDouble(this::calculateClaimPhasePower).reversed()).toList();
+      Map<Country, Integer> allDiffs = new HashMap<>();
+      this.getAllContinents()
+          .forEach(continent -> allDiffs.putAll(this.getCountryTroopDiffsByContinent(continent)));
+      Country choice = null;
+      for (Continent continent : priorityList) {
+        choice = allDiffs.keySet().stream().filter(
+                country -> country.getContinent().getContinentName()
+                    .equals(continent.getContinentName())).max(Comparator.comparingInt(allDiffs::get))
+            .get();
+      }
+      return new Reinforce(choice, 1);
+    }
   }
 
   /**
@@ -172,12 +192,7 @@ public abstract class GreedyBot extends Player implements AiBot {
    * @return true if the continent has an unclaimed country, otherwise false.
    */
   private boolean hasFreeCountry(Continent continent) {
-    for (Country country : continent.getCountries()) {
-      if (!country.hasPlayer()) {
-        return true;
-      }
-    }
-    return false;
+    return continent.getCountries().stream().anyMatch(c -> !c.hasPlayer());
   }
 
   /**
@@ -245,7 +260,7 @@ public abstract class GreedyBot extends Player implements AiBot {
   }
 
   protected List<Country> getCountriesByHighestDiff(Map<Country, Integer> allOwnedCountryDiffs) {
-    for (Continent continent : this.getContinentsCopy()) {
+    for (Continent continent : this.getAllContinents()) {
       allOwnedCountryDiffs.putAll(getCountryTroopDiffsByContinent(continent));
     }
     List<Country> countriesByHighestDiff = new ArrayList<>(allOwnedCountryDiffs.keySet());
