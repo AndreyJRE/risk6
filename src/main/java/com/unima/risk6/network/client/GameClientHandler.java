@@ -10,23 +10,15 @@ import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.network.serialization.Deserializer;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
+import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import java.util.ArrayList;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -102,26 +94,26 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
               case "ACCEPT_SERVER_LOBBY" -> {
-                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                LOGGER.debug("At ACCEPT_SERVER_LOBBY: Got a Lobby, overwrite serverlobby");
                 LobbyConfiguration.setServerLobby(
-                    (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
-                        .getContent());
+                        (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                                .getContent());
                 LobbyConfiguration.getServerLobby().getUsers()
                     .forEach(user -> System.out.println(user.getUsername()));
                 Platform.runLater(SceneConfiguration::joinServerLobbyScene);
               }
               case "ACCEPT_CREATE_LOBBY" -> {
-                LOGGER.debug("Got a Lobby, overwrite serverlobby");
-                LobbyConfiguration.setServerLobby(
-                    (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
-                        .getContent());
+                LOGGER.debug("AT ACCEPT_CREATE_LOBBY: Got a Lobby, overwrite serverlobby");
+                ServerLobby serverLobby = (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent();
+                LobbyConfiguration.setServerLobby(serverLobby);
                 LobbyConfiguration.getServerLobby().getUsers()
-                    .forEach(user -> System.out.println(user.getUsername()));
+                        .forEach(user -> System.out.println(user.getUsername()));
                 Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
-                    "Got first Gamestate: Overwrite GameState with new GameState from Server");
+                        "At ACCEPT_START_GAME: Got first Gamestate: Overwrite GameState with new GameState from Server");
                 GameState g = (GameState) Deserializer.deserializeConnectionMessage(
                         textFrame.text(),
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
@@ -131,7 +123,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 Platform.runLater(SceneConfiguration::startGame);
               }
               case "ACCEPT_JOIN_LOBBY" -> {
-                LOGGER.debug("Got a Lobby, overwrite game lobby");
+                LOGGER.debug("At ACCEPT_JOIN_LOBBY: Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
                         textFrame.text())
                     .getContent();
