@@ -17,6 +17,7 @@ import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import java.util.Iterator;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -143,7 +144,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         } else {
           setText(
               item.getLobbyName() + "  hosted by " + item.getName() + "              "
-                  + item.getUsers().size()
+                  + (item.getUsers().size() + item.getBots().size())
                   + "/" + item.getMaxPlayers() + " Players" + "              min. Elo: "
                   + item.getMatchMakingElo());
           setPadding(new Insets(20, 30, 20, 30)); // Padding für die Zellen
@@ -152,6 +153,12 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     });
 
     lobbyList.setItems(lobbies);
+
+    lobbyList.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER) {
+        handleJoinButton();
+      }
+    });
   }
 
   private void initSplitPane() {
@@ -208,9 +215,13 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
 
       } else {
-        showConfirmationDialog("Missing experience",
+        boolean confirm = showConfirmationDialog("Missing experience",
             "Your Win / Loss Ratio does not match the minimum required"
                 + " Ratio of the selected Lobby. Do you still want to continue?");
+        if (confirm) {
+          LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
+          lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+        }
       }
     } else {
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
@@ -235,10 +246,14 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   @Override
   public void updateServerLobby(ServerLobby serverLobby) {
     this.serverLobby = serverLobby;
-    Iterator<GameLobby> iterator = lobbies.listIterator();
-    while (iterator.hasNext()) {
-      iterator.remove();
-    }
-    lobbies.addAll(serverLobby.getGameLobbies());
+    Platform.runLater(() -> {
+      Iterator<GameLobby> iterator = lobbies.listIterator();
+      while (iterator.hasNext()) {
+        iterator.next();
+        iterator.remove();
+      }
+      lobbies.addAll(serverLobby.getGameLobbies());
+    });
+
   }
 }

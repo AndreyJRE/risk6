@@ -54,7 +54,11 @@ public class EasyBot extends Player implements AiBot {
   public Reinforce claimCountry() {
     List<Country> unclaimed = this.currentGameState.getCountries().stream()
         .filter(country -> !country.hasPlayer()).toList();
-    return new Reinforce(unclaimed.get(RNG.nextInt(unclaimed.size())), 1);
+    if (unclaimed.size() == 0) {
+      return new Reinforce(this.getRandomCountryFromSet(this.getCountries()), 1);
+    } else {
+      return new Reinforce(unclaimed.get(RNG.nextInt(unclaimed.size())), 1);
+    }
   }
 
   @Override

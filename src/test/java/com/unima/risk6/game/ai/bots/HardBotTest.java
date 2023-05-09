@@ -97,26 +97,25 @@ class HardBotTest {
 
   @Test
   void getBestMovesTest2() {
-    Random rng = new Random();
     hardBot = new HardBot("Otto the Botto");
     botTestController = new PlayerController();
     botTestController.setPlayer((HardBot) hardBot);
-    enemy = new Player();
-    List<AiBot> bots = new ArrayList<>();
-    List<String> humans = List.of("Mack the Human");
     EasyBot easy = new EasyBot("Pedro the guy");
     PlayerController easyController = new PlayerController();
     easyController.setPlayer(easy);
     MediumBot med = new MediumBot("Joachim the greedy");
     PlayerController medController = new PlayerController();
     medController.setPlayer(med);
+    List<AiBot> bots = new ArrayList<>();
     bots.add(hardBot);
     bots.add(easy);
     bots.add(med);
+    List<String> humans = List.of("Mack the Human");
     gameState = GameConfiguration.configureGame(humans, bots);
     hardBot.setGameState(gameState);
     DeckController deckController = new DeckController(gameState.getDeck());
     deckController.initDeck();
+    enemy = new Player();
     for (Player p : gameState.getActivePlayers()) {
       if (p.getUser().equals("Mack the Human")) {
         enemy = p;
@@ -129,6 +128,7 @@ class HardBotTest {
       gameState.getActivePlayers().add(enemy);
       gameState.setCurrentPlayer((Player) hardBot);
     }
+    Random rng = new Random();
     gameState.getCountries().stream()
         .filter(c -> c.getContinent().getContinentName().equals(ContinentName.AUSTRALIA))
         .forEach(c -> {

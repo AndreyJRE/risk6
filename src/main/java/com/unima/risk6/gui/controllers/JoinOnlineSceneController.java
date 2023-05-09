@@ -2,20 +2,27 @@ package com.unima.risk6.gui.controllers;
 
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
+import java.util.List;
+import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -137,20 +144,75 @@ public class JoinOnlineSceneController {
 
     LobbyConfiguration.configureGameClient(host, port);
     LobbyConfiguration.startGameClient();
-    while (LobbyConfiguration.getGameClient().getCh() == null) {
+    int i = 0;
+    boolean usernameExists = false;
+    while (LobbyConfiguration.getGameClient().getCh() == null && i < 60) {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
+      i++;
+
     }
 
-    UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
-        DatabaseConfiguration.getGameStatisticService()
-            .getAllStatisticsByUserId(SessionManager.getUser().getId()));
-    GameConfiguration.setMyGameUser(userDto);
-    LobbyConfiguration.sendJoinServer(userDto);
-
+    if (i >= 60) {
+      showErrorDialog("Error",
+          "Failed to connect to Server. Please correct your inputs if necessary.");
+    } else {
+      String username = SessionManager.getUser().getUsername();
+      ServerLobby serverLobby = LobbyConfiguration.getServerLobby();
+      List<UserDto> users = serverLobby.getUsers();
+      for (UserDto userDto : users) {
+        if (userDto.getUsername().equals(username)) {
+          usernameExists = true;
+          break;
+        }
+      }
+      if (usernameExists) {
+        String newUserName = handleUsernameExists("Your username " + username
+                + " already exists in this lobby. Please select a unique username.", "New username",
+            "Enter your unique username: ");
+        SessionManager.getUser().setUsername(newUserName);
+      }
+      UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
+          DatabaseConfiguration.getGameStatisticService()
+              .getAllStatisticsByUserId(SessionManager.getUser().getId()));
+      GameConfiguration.setMyGameUser(userDto);
+      LobbyConfiguration.sendJoinServer(userDto);
+    }
   }
 
+  private String handleUsernameExists(String problem, String title, String body) {
+    Alert alert = new Alert(Alert.AlertType.WARNING, problem,
+        ButtonType.OK);
+    boolean exists = false;
+    String newUsername = "";
+    alert.showAndWait();
+    ServerLobby serverLobby = LobbyConfiguration.getServerLobby();
+    List<UserDto> users = serverLobby.getUsers();
+    if (alert.getResult() == ButtonType.OK) {
+      TextInputDialog dialog = new TextInputDialog();
+      dialog.setTitle(title);
+      dialog.setHeaderText(null);
+      dialog.setContentText(body);
+      Optional<String> result = dialog.showAndWait();
+      if (result.isPresent()) {
+        for (UserDto userDto : users) {
+          if (userDto.getUsername().equals(result.get())) {
+            exists = true;
+            break;
+          }
+        }
+        if (exists) {
+          newUsername = handleUsernameExists("Your username " + result.get()
+                  + " already exists in this lobby. Please select a unique username.", "New username",
+              "Enter your unique username for this lobby: ");
+        } else {
+          newUsername = result.get();
+        }
+      }
+    }
+    return newUsername;
+  }
 }

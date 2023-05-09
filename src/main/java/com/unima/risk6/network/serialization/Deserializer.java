@@ -74,7 +74,6 @@ public class Deserializer {
         .registerTypeAdapter(Card.class, new CardTypeAdapter())
         .registerTypeAdapter(Hand.class, new HandTypeAdapter())
         .registerTypeAdapter(Player.class, new PlayerTypeAdapter())
-        .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
         .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
         .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
         .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())

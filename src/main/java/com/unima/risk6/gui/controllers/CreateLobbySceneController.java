@@ -1,6 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
@@ -11,7 +10,6 @@ import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
-import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -127,19 +125,6 @@ public class CreateLobbySceneController {
         GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     LobbyConfiguration.sendCreateLobby(gameLobby);
-    LobbyConfiguration.setGameLobby(gameLobby);
-    //gameLobby.addUser(GameConfiguration.getMyGameUser());
-    MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-    if (scene == null) {
-      scene = new MultiplayerLobbyScene();
-      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-          scene);
-      scene.setController(multiplayerLobbySceneController);
-      sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
-    }
-    pauseTitleSound();
-    sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
   }
 
   private void initGridpane() {

@@ -9,16 +9,25 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.network.serialization.Deserializer;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
+import java.util.ArrayList;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
 
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -67,8 +76,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
     if (msg instanceof FullHttpResponse response) {
       throw new IllegalStateException(
-          "Unexpected FullHttpResponse (getStatus=" + response.status() +
-              ", content=" + response.content().toString(CharsetUtil.UTF_8) + ')');
+          "Unexpected FullHttpResponse (getStatus=" + response.status() + ", content="
+              + response.content().toString(CharsetUtil.UTF_8) + ')');
     }
 
     WebSocketFrame frame = (WebSocketFrame) msg;
@@ -94,21 +103,21 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
               case "ACCEPT_SERVER_LOBBY" -> {
-                LOGGER.debug("At ACCEPT_SERVER_LOBBY: Got a Lobby, overwrite serverlobby");
-                LobbyConfiguration.setServerLobby(
-                        (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
-                                .getContent());
-                LobbyConfiguration.getServerLobby().getUsers()
-                    .forEach(user -> System.out.println(user.getUsername()));
-                Platform.runLater(SceneConfiguration::joinServerLobbyScene);
+                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
+                    textFrame.text()).getContent();
+                LobbyConfiguration.setServerLobby(content);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    != SceneName.SELECT_LOBBY) {
+                  Platform.runLater(SceneConfiguration::joinServerLobbyScene);
+                }
+
               }
               case "ACCEPT_CREATE_LOBBY" -> {
-                LOGGER.debug("AT ACCEPT_CREATE_LOBBY: Got a Lobby, overwrite serverlobby");
-                ServerLobby serverLobby = (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
-                        .getContent();
-                LobbyConfiguration.setServerLobby(serverLobby);
-                LobbyConfiguration.getServerLobby().getUsers()
-                        .forEach(user -> System.out.println(user.getUsername()));
+                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                LobbyConfiguration.setGameLobby(
+                    (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent());
                 Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
               }
               case "ACCEPT_START_GAME" -> {
@@ -125,11 +134,19 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               case "ACCEPT_JOIN_LOBBY" -> {
                 LOGGER.debug("At ACCEPT_JOIN_LOBBY: Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
-                        textFrame.text())
-                    .getContent();
-                LobbyConfiguration.setGameLobby(
-                    gameLobby);
-                Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                    textFrame.text()).getContent();
+                LobbyConfiguration.setGameLobby(gameLobby);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    != SceneName.MULTIPLAYER_LOBBY) {
+                  Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                }
+              }
+              case "ACCEPT_UPDATE_SERVER_LOBBY" -> {
+                LOGGER.debug("Got updated server Lobby, overwrite serverlobby");
+                ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
+                    textFrame.text()).getContent();
+                System.out.println(content);
+                LobbyConfiguration.setServerLobby(content);
               }
               case "DROP_USER_LOBBY" -> {
                 //TODO Error Messsage

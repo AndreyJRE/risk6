@@ -13,23 +13,26 @@ public class GameLobby extends Lobby {
 
   private final int matchMakingElo;
 
-  private final int turnTime;
+  private final int phaseTime;
 
   private final UserDto lobbyOwner;
 
   private final List<UserDto> users;
 
+  private final List<String> bots;
+
 
   public GameLobby(String lobbyName, int maxPlayers, String hostName,
-      boolean isChatEnabled, int matchMakingElo, int turnTime, UserDto lobbyOwner) {
+      boolean isChatEnabled, int matchMakingElo, int phaseTime, UserDto lobbyOwner) {
     this.lobbyName = lobbyName;
     this.maxPlayers = maxPlayers;
     this.name = hostName;
     this.isChatEnabled = isChatEnabled;
     this.matchMakingElo = matchMakingElo;
-    this.turnTime = turnTime;
+    this.phaseTime = phaseTime;
     this.lobbyOwner = lobbyOwner;
     this.users = new ArrayList<>();
+    this.bots = new ArrayList<>();
   }
 
   public String getLobbyName() {
@@ -52,8 +55,8 @@ public class GameLobby extends Lobby {
     return matchMakingElo;
   }
 
-  public int getTurnTime() {
-    return turnTime;
+  public int getPhaseTime() {
+    return phaseTime;
   }
 
   public List<UserDto> getUsers() {
@@ -64,12 +67,22 @@ public class GameLobby extends Lobby {
     return lobbyOwner;
   }
 
+  public List<String> getBots() {
+    return bots;
+  }
 
   @Override
   public String toString() {
     return "GameLobby{" +
-        "lobbyName='" + lobbyName + '\'' + ", name='" + name + '\'' + ", maxPlayers=" + maxPlayers
-        + ", isChatEnabled=" + isChatEnabled + ", matchMakingElo=" + matchMakingElo + ", turnTime="
-        + turnTime + ", lobbyOwner=" + lobbyOwner + ", users= {" + users + "}";
+        "lobbyName='" + lobbyName + '\'' +
+        ", name='" + name + '\'' +
+        ", maxPlayers=" + maxPlayers +
+        ", isChatEnabled=" + isChatEnabled +
+        ", matchMakingElo=" + matchMakingElo +
+        ", phaseTime=" + phaseTime +
+        ", lobbyOwner=" + lobbyOwner +
+        ", users=" + users +
+        ", bots=" + bots +
+        '}';
   }
 }

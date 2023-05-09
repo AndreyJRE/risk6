@@ -32,7 +32,6 @@ public class EndPhaseTypeAdapter implements JsonSerializer<EndPhase>, JsonDeseri
       case "REINFORCEMENT_PHASE" -> phaseToEnd = GamePhase.REINFORCEMENT_PHASE;
       case "ATTACK_PHASE" -> phaseToEnd = GamePhase.ATTACK_PHASE;
       case "FORTIFY_PHASE" -> phaseToEnd = GamePhase.FORTIFY_PHASE;
-      case "NOT_ACTIVE" -> phaseToEnd = GamePhase.NOT_ACTIVE;
       case "CLAIM_PHASE" -> phaseToEnd = GamePhase.CLAIM_PHASE;
       case "ORDER_PHASE" -> phaseToEnd = GamePhase.ORDER_PHASE;
       default -> phaseToEnd = GamePhase.NOT_ACTIVE;

@@ -148,7 +148,7 @@ public class UserOptionsSceneController {
       sceneController.activate(SceneName.LOGIN);
     });
 
-    Button showStatisticsButton = new Button("Statistics");
+    Button showStatisticsButton = new Button("View Statistics");
 
     showStatisticsButton.setPrefWidth(470);
     showStatisticsButton.setPrefHeight(40);

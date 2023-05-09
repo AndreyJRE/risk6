@@ -25,6 +25,10 @@ public class GameState {
   private final Deck deck;
   private boolean isGameOver;
 
+  private int phaseTime;
+
+  private boolean chatEnabled;
+
 
   /**
    * Constructs a new game state with the given countries, continents, and players.
@@ -108,6 +112,21 @@ public class GameState {
     isGameOver = gameOver;
   }
 
+  public int getPhaseTime() {
+    return phaseTime;
+  }
+
+  public void setPhaseTime(int phaseTime) {
+    this.phaseTime = phaseTime;
+  }
+
+  public boolean isChatEnabled() {
+    return chatEnabled;
+  }
+
+  public void setChatEnabled(boolean chatEnabled) {
+    this.chatEnabled = chatEnabled;
+  }
 }
 
 

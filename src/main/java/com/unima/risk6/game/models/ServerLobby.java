@@ -41,4 +41,14 @@ public class ServerLobby extends Lobby {
   public List<UserDto> getUsers() {
     return users;
   }
+
+  @Override
+  public String toString() {
+    return "ServerLobby{" +
+        "lobbyName='" + lobbyName + '\'' +
+        ", hostName='" + hostName + '\'' +
+        ", gameLobbies=" + gameLobbies +
+        ", users=" + users +
+        '}';
+  }
 }
