@@ -1,6 +1,8 @@
 package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
@@ -20,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,24 +77,24 @@ class MediumBotTest {
     Country westernAus = getCountryByName(CountryName.WESTERN_AUSTRALIA);
     Country newGuinea = getCountryByName(CountryName.NEW_GUINEA);
     botTestController.addCountry(westernAus);
-    westernAus.setTroops(1);
+    westernAus.setTroops(2);
     botTestController.addCountry(newGuinea);
-    newGuinea.setTroops(2);
+    newGuinea.setTroops(3);
     Country adj1 = getCountryByName(CountryName.INDONESIA);
     Country adj2 = getCountryByName(CountryName.EASTERN_AUSTRALIA);
     enemyController.addCountry(adj1);
     enemyController.addCountry(adj2);
-    adj1.setTroops(1);
-    adj2.setTroops(1);
+    adj1.setTroops(2);
+    adj2.setTroops(2);
     CountryPair toMove = new CountryPair(westernAus, newGuinea);
     Fortify move = mediumBot.moveAfterAttack(toMove);
-    assertEquals(0, move.getTroopsToMove());
-    westernAus.setTroops(2);
-    move = mediumBot.moveAfterAttack(toMove);
-    assertEquals(0, move.getTroopsToMove());
+    assertNull(move);
     westernAus.setTroops(3);
     move = mediumBot.moveAfterAttack(toMove);
     assertEquals(0, move.getTroopsToMove());
+    westernAus.setTroops(5);
+    move = mediumBot.moveAfterAttack(toMove);
+    assertEquals(1, move.getTroopsToMove());
     westernAus.setTroops(8);
     adj1.setTroops(4);
     adj2.setTroops(6);
@@ -110,6 +113,7 @@ class MediumBotTest {
 
   @Test
   void claimCountryTest() {
+    botTestController.getPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
     Continent australia = getCountryByName(CountryName.WESTERN_AUSTRALIA).getContinent();
     // prioritizes australia
     Reinforce first = mediumBot.claimCountry();
@@ -119,7 +123,18 @@ class MediumBotTest {
     botTestController.addCountry(alberta);
     Reinforce smart = mediumBot.claimCountry();
     assertEquals(alberta.getContinent(), smart.getCountry().getContinent());
-
+    Random rng = new Random();
+    gameState.getCountries().forEach(country -> {
+      if (rng.nextDouble() < 0.5) {
+        botTestController.addCountry(country);
+      } else {
+        enemyController.addCountry(country);
+      }
+      country.setTroops(1);
+    });
+    Reinforce partTwo = mediumBot.claimCountry();
+    assertNotNull(partTwo);
+    assertEquals(1, partTwo.getToAdd());
   }
 
   @Test
