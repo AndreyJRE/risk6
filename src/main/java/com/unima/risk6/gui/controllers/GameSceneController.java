@@ -23,6 +23,7 @@ import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.CardUi;
 import com.unima.risk6.gui.uiModels.ChatUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
+import com.unima.risk6.gui.uiModels.DiceUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
@@ -33,6 +34,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import javafx.animation.PathTransition;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -40,6 +42,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,6 +56,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -122,6 +126,113 @@ public class GameSceneController implements GameStateObserver {
     root.setRight(timePane);
     StackPane bottomPane = initializeBottomPane();
     root.setBottom(bottomPane);
+
+  }
+
+  public void showOrderPopup() {
+
+    BorderPane orderPane = new BorderPane();
+
+    Popup orderPopup = new Popup();
+    orderPopup.getContent().add(orderPane);
+
+    Image image = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/dicePreview.png").toString());
+
+    int numImages = gameState.getActivePlayers().size() - 1;
+
+    Group otherDiceGroup = new Group();
+
+    //TODO LOGIC: REPLACE IMAGES WITH PREDETERMINED DICEUI. AS SOON AS OTHER PLAYERS HAVE CLICKED
+    // THEIR DICE BUTTON IT SHOULD UPDATE THE OTHERS
+
+    if (numImages <= 2) {
+      Arc semicircle = new Arc();
+      semicircle.setCenterX(0);
+      semicircle.setCenterY(0);
+      semicircle.setRadiusX(300);
+      semicircle.setRadiusY(150);
+      semicircle.setStartAngle(0);
+      semicircle.setLength(-180);
+      double imageWidth = image.getWidth();
+      double imageHeight = image.getHeight();
+      for (int i = 0; i < numImages; i++) {
+        double angle = Math.toRadians(
+            semicircle.getStartAngle() + i * semicircle.getLength() / (numImages));
+        double x =
+            semicircle.getCenterX() + semicircle.getRadiusX() * Math.cos(angle) - imageWidth / 2;
+        double y =
+            semicircle.getCenterY() + semicircle.getRadiusY() * Math.sin(angle) - imageHeight / 2;
+        ImageView imageView = new ImageView(image);
+        imageView.setX(x);
+        imageView.setY(y);
+        otherDiceGroup.getChildren().add(imageView);
+        orderPane.setCenter(otherDiceGroup);
+      }
+    } else {
+      otherDiceGroup.getChildren().add(new ImageView(image));
+      orderPane.setTop(otherDiceGroup);
+    }
+
+    VBox myDiceBox = new VBox();
+
+    //TODO LOGIC: REPLACE THIS MOCKED DICEUI WITH PREDETERMINED RESULT VALUE FROM LOGIC
+
+    DiceUi myDice = new DiceUi(false, 3);
+
+    Button rollMyDiceButton = new Button("Roll the Dice!");
+    rollMyDiceButton.setStyle(
+        "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
+    rollMyDiceButton.setFocusTraversable(false);
+
+    PauseTransition delayTransitionHidePopup = new PauseTransition(Duration.millis(3000));
+    delayTransitionHidePopup.setOnFinished(delayTransitionEvent -> orderPopup.hide());
+
+    PauseTransition delayTransitionShowOrder = new PauseTransition(Duration.millis(4000));
+    delayTransitionShowOrder.setOnFinished(delayTransitionEvent -> {
+      orderPane.getChildren().clear();
+      Label orderLabel = new Label("You are " + myDice.getResult() + ". Place. Good Luck!");
+      orderLabel.setStyle("-fx-font-size: 29px;");
+
+      HBox orderBox = new HBox();
+      orderBox.setAlignment(Pos.CENTER);
+      orderBox.getChildren().add(orderLabel);
+      orderPane.setCenter(orderBox);
+      delayTransitionHidePopup.play();
+    });
+
+    rollMyDiceButton.setOnAction(event -> {
+      myDice.rollDice();
+      delayTransitionShowOrder.play();
+    });
+
+    myDiceBox.getChildren().addAll(myDice, rollMyDiceButton);
+    myDiceBox.setSpacing(10);
+
+    HBox hBox = new HBox(myDiceBox);
+    hBox.setAlignment(Pos.CENTER);
+
+    orderPane.setBottom(hBox);
+    BorderPane.setMargin(hBox, new Insets(10));
+
+    orderPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setColor(Color.BLACK);
+    dropShadow.setRadius(10);
+    orderPane.setEffect(dropShadow);
+
+    orderPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
+
+    Bounds rootBounds = root.localToScreen(root.getBoundsInLocal());
+
+    double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+    double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+    double popupWidth = orderPane.getPrefWidth();
+    double popupHeight = orderPane.getPrefHeight();
+    orderPopup.setX(centerX - popupWidth / 2);
+    orderPopup.setY(centerY - popupHeight / 2);
+    orderPopup.show(gameScene.getWindow());
   }
 
   private StackPane initializeCountriesPane() {
@@ -233,7 +344,8 @@ public class GameSceneController implements GameStateObserver {
     nextPhaseButton.setGraphic(rightArrowIcon);
     nextPhaseButton.setStyle("-fx-background-radius: 25px;");
     nextPhaseButton.setFocusTraversable(false);
-    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe());
+    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe()
+        && activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE);
     nextPhaseButton.setOnAction(event -> {
       GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
       PLAYER_CONTROLLER.sendEndPhase(currentPhase);
@@ -378,12 +490,11 @@ public class GameSceneController implements GameStateObserver {
         countryUi.setCountry(country);
       }
     }));
-    countriesUis.forEach(
-        countryUi -> countryUi.getAdjacentCountryUis()
-            .forEach(adjacentCountryUi -> adjacentCountryUi.setCountry(countriesUis.stream()
-                .filter(countryUi1 -> countryUi1.getCountry().getCountryName()
+    countriesUis.forEach(countryUi -> countryUi.getAdjacentCountryUis().forEach(
+        adjacentCountryUi -> adjacentCountryUi.setCountry(countriesUis.stream().filter(
+                countryUi1 -> countryUi1.getCountry().getCountryName()
                     .equals(adjacentCountryUi.getCountry().getCountryName())).findFirst().get()
-                .getCountry())));
+            .getCountry())));
 
     //TODO Update reference for the deckUi,handUi, etc
   }
@@ -394,8 +505,8 @@ public class GameSceneController implements GameStateObserver {
   }
 
   public void animateTroopsMovement(Fortify fortify) {
-    double maxOffsetX = 10;
-    double maxOffsetY = 10;
+    double maxOffsetX = 7;
+    double maxOffsetY = 7;
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
       ImageView imageView = new ImageView(new Image(
           getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString()));
@@ -427,8 +538,9 @@ public class GameSceneController implements GameStateObserver {
       pathTransition.setDuration(Duration.seconds(2));
       pathTransition.setPath(path);
       pathTransition.setNode(imageView);
-      pathTransition.setOnFinished(
-          onFinishedEvent -> countriesGroup.getChildren().remove(imageView));
+      pathTransition.setOnFinished(onFinishedEvent -> {
+        countriesGroup.getChildren().remove(imageView);
+      });
       pathTransition.play();
       countriesGroup.getChildren().add(imageView);
     }
@@ -455,7 +567,8 @@ public class GameSceneController implements GameStateObserver {
     updateActivePlayerUi();
     nextPhaseButton.setVisible(
         checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
-            != GamePhase.NOT_ACTIVE));
+            != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
+            != GamePhase.CLAIM_PHASE));
 
   }
 

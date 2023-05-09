@@ -151,7 +151,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LOGGER.debug("Got updated server Lobby, overwrite serverlobby");
                 ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
-                System.out.println(content);
                 LobbyConfiguration.setServerLobby(content);
               }
               case "DROP_USER_LOBBY" -> {

@@ -70,5 +70,7 @@ public class DiceUi extends Pane {
     }
   }
 
-
+  public int getResult() {
+    return result;
+  }
 }

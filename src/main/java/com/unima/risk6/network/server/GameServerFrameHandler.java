@@ -155,7 +155,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   //Add users channel to the ChannelGroup from the gamelobby
                   gameLobbyFromServer.getUsers().add(users.inverse().get(ctx.channel()));
                   gameChannels.get(gameLobbyFromServer).add(ctx.channel());
-                  System.out.println(gameLobbyFromServer);
                   sendGameLobby(gameLobbyFromServer);
                 }
                 case JOIN_BOT_GAME_LOBBY -> {
@@ -167,20 +166,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   String bot = gameLobby.getBots().stream()
                       .filter(x -> !gameLobbyFromServer.getBots().contains(x)).findFirst().get();
                   gameLobbyFromServer.getBots().add(bot);
-                  sendGameLobby(gameLobbyFromServer);
-
-                }
-                case UPDATE_SERVER_LOBBY -> {
-                  LOGGER.debug(
-                      "At UPDATE_SERVER_LOBBY" + connectionMessage.getContent().getClass());
-                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
-                  GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby, serverLobby);
-                  int i = serverLobby.getGameLobbies().indexOf(gameLobbyFromServer);
-                  serverLobby.getGameLobbies().remove(i);
-                  serverLobby.getGameLobbies().add(i, gameLobby);
-                  System.out.println(serverLobby);
+                  sendGameLobby(gameLobbyFromServer);
                   sendUpdatedServerLobby(serverLobby);
+
                 }
                 case START_GAME -> {
                   //TODO MOVE_CONTROLLER
@@ -309,10 +298,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   }
 
   private void sendGameLobby(GameLobby gameLobby) {
-    //TODO It is not working properly list is maybe empty
     String serializedGameLobby = Serializer.serialize(
         new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_LOBBY,
             gameLobby));
+    System.out.println(gameChannels.get(gameLobby));
     for (Channel ch : gameChannels.get(gameLobby)) {
       LOGGER.debug("Send a game lobby to: " + ch.id());
       ch.writeAndFlush(
@@ -334,6 +323,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
               }
             })
             .toList());
+    System.out.println(gameState.getActivePlayers());
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
@@ -343,8 +333,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     PlayerController playerController = new PlayerController();
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
-    diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(), 6);
-    diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(), 1);
+    for (int i = gameState.getActivePlayers().size(); i > 0; i--) {
+      diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(), i);
+    }
     moveProcessor.getGameController()
         .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
     Player activePlayer = moveProcessor.getGameController().getGameState().getActivePlayers()

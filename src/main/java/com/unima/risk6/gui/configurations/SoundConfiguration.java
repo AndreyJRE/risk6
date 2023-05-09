@@ -13,10 +13,19 @@ public class SoundConfiguration {
   private static final String ROLL_DICE_SOUND_PATH = "/com/unima/risk6/sounds/dice_roll_1.mp3";
 
   private static final String IN_GAME_MUSIC_PATH = "/com/unima/risk6/sounds/in_game_music.mp3";
+
+  private static final String YOUR_TURN_SOUND_PATH = "/com/unima/risk6/sounds/your_turn_sound.mp3";
+
+  private static final String ALARM_FOR_START_GAME = "/com/unima/risk6/sounds/alarm_for_game_start"
+      + ".mp3";
   private static MediaPlayer titleSound;
 
   private static MediaPlayer inGameMusic;
   private static AudioClip rollDiceSound;
+
+  private static AudioClip yourTurnSound;
+
+  private static AudioClip startGameSound;
 
 
   public static void playTitleSound() {
@@ -28,6 +37,7 @@ public class SoundConfiguration {
         Objects.requireNonNull(SoundConfiguration.class.getResource(TITLE_SOUND_PATH))
             .toExternalForm());
     titleSound = new MediaPlayer(media);
+    titleSound.setVolume(0.4);
     titleSound.setStartTime(Duration.ZERO);
     titleSound.setStopTime(Duration.seconds(10));
     titleSound.setCycleCount(MediaPlayer.INDEFINITE);
@@ -39,11 +49,29 @@ public class SoundConfiguration {
             .toExternalForm()));
     inGameMusic.setCycleCount(MediaPlayer.INDEFINITE);
     inGameMusic.setVolume(0.4);
+    yourTurnSound = new AudioClip(
+        Objects.requireNonNull(SoundConfiguration.class.getResource(YOUR_TURN_SOUND_PATH))
+            .toExternalForm());
+    yourTurnSound.setVolume(0.5);
+    startGameSound = new AudioClip(
+        Objects.requireNonNull(SoundConfiguration.class.getResource(ALARM_FOR_START_GAME))
+            .toExternalForm());
+    startGameSound.setVolume(0.3);
+
   }
 
   public static void playInGameMusic() {
     // inGameMusic.play();
   }
+
+  public static void playYourTurnSound() {
+    yourTurnSound.play();
+  }
+
+  public static void playStartGameSound() {
+    startGameSound.play();
+  }
+
 
   public static void pauseTitleSound() {
     titleSound.pause();
