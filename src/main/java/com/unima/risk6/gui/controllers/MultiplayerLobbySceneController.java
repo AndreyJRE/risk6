@@ -1,5 +1,10 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
+
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
@@ -11,6 +16,8 @@ import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LobbyUserStatisticScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,12 +33,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.*;
 
 public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
@@ -53,7 +54,6 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
-    //this.gameLobby = LobbyConfiguration.getServerLobby().getGameLobbies().get(0);
     this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
