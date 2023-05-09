@@ -9,6 +9,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.network.serialization.Deserializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -75,8 +76,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
     if (msg instanceof FullHttpResponse response) {
       throw new IllegalStateException(
-          "Unexpected FullHttpResponse (getStatus=" + response.status() +
-              ", content=" + response.content().toString(CharsetUtil.UTF_8) + ')');
+          "Unexpected FullHttpResponse (getStatus=" + response.status() + ", content="
+              + response.content().toString(CharsetUtil.UTF_8) + ')');
     }
 
     WebSocketFrame frame = (WebSocketFrame) msg;
@@ -103,20 +104,20 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             switch (json.get("connectionActions").getAsString()) {
               case "ACCEPT_SERVER_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
-                LobbyConfiguration.setServerLobby(
-                    (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
-                        .getContent());
-                LobbyConfiguration.getServerLobby().getUsers()
-                    .forEach(user -> System.out.println(user.getUsername()));
-                Platform.runLater(SceneConfiguration::joinServerLobbyScene);
+                ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
+                    textFrame.text()).getContent();
+                LobbyConfiguration.setServerLobby(content);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    != SceneName.SELECT_LOBBY) {
+                  Platform.runLater(SceneConfiguration::joinServerLobbyScene);
+                }
+
               }
               case "ACCEPT_CREATE_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
-                LobbyConfiguration.setServerLobby(
-                    (ServerLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                LobbyConfiguration.setGameLobby(
+                    (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
                         .getContent());
-                LobbyConfiguration.getServerLobby().getUsers()
-                    .forEach(user -> System.out.println(user.getUsername()));
                 Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
               }
               case "ACCEPT_START_GAME" -> {
@@ -133,11 +134,19 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               case "ACCEPT_JOIN_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
-                        textFrame.text())
-                    .getContent();
-                LobbyConfiguration.setGameLobby(
-                    gameLobby);
-                Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                    textFrame.text()).getContent();
+                LobbyConfiguration.setGameLobby(gameLobby);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    != SceneName.MULTIPLAYER_LOBBY) {
+                  Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                }
+              }
+              case "ACCEPT_UPDATE_SERVER_LOBBY" -> {
+                LOGGER.debug("Got updated server Lobby, overwrite serverlobby");
+                ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
+                    textFrame.text()).getContent();
+                System.out.println(content);
+                LobbyConfiguration.setServerLobby(content);
               }
               case "DROP_USER_LOBBY" -> {
                 //TODO Error Messsage

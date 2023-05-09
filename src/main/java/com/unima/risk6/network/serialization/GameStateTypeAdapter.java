@@ -71,6 +71,8 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
         );
     jsonObject.add("deck", deckJsonArray);
     jsonObject.addProperty("isGameOver", gameState.isGameOver());
+    jsonObject.addProperty("chatEnabled", gameState.isChatEnabled());
+    jsonObject.addProperty("phaseTime", gameState.getPhaseTime());
 
     return jsonObject;
   }
@@ -102,10 +104,13 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
         new TypeToken<ArrayList<Card>>() {
         }.getType());
     boolean isGameOver = jsonObject.get("isGameOver").getAsBoolean();
+    boolean chatEnabled = jsonObject.get("chatEnabled").getAsBoolean();
+    int phaseTime = jsonObject.get("phaseTime").getAsInt();
 
+    gameState.setPhaseTime(phaseTime);
+    gameState.setChatEnabled(chatEnabled);
     gameState.setNumberOfHandIns(numberOfHandIns);
 
-    //TODO Testen, ob reihenfolge stimmt
     JsonArray jsonArray = jsonObject.get("lastMoves").getAsJsonArray();
     for (JsonElement element : jsonArray) {
 

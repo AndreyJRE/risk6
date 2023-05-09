@@ -73,6 +73,18 @@ public class UserDto {
   }
 
   @Override
+  public String toString() {
+    return "UserDto{" +
+        "username='" + username + '\'' +
+        ", winLossRatio=" + winLossRatio +
+        ", hoursPlayed=" + hoursPlayed +
+        ", gamesWon=" + gamesWon +
+        ", gamesLost=" + gamesLost +
+        ", countriesConquered=" + countriesConquered +
+        '}';
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;

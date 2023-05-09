@@ -22,6 +22,8 @@ public class SceneController {
   private final HashMap<SceneName, Scene> scenes;
   private final Stage stage;
 
+  private SceneName currentSceneName;
+
   public SceneController(Stage stage) {
     this.stage = stage;
     this.scenes = new HashMap<>();
@@ -42,6 +44,7 @@ public class SceneController {
     }
 
     stage.setScene(scene);
+    currentSceneName = name;
     stage.setWidth(SceneConfiguration.getWidth() + 0.1);
     stage.setHeight(SceneConfiguration.getHeight() + 0.1);
     stage.setOnCloseRequest((WindowEvent event) -> close());
@@ -85,6 +88,10 @@ public class SceneController {
 
   public Scene getSceneBySceneName(SceneName sceneName) {
     return scenes.get(sceneName);
+  }
+
+  public SceneName getCurrentSceneName() {
+    return currentSceneName;
   }
 }
 

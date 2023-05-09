@@ -73,7 +73,6 @@ public class LobbyConfiguration {
   public static void sendJoinLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, gameLobby));
-    //setGameLobby(gameLobby);
   }
 
   public static void sendStartGame(GameLobby gameLobby) {
@@ -119,5 +118,15 @@ public class LobbyConfiguration {
   public static void setGameLobby(GameLobby gameLobby) {
     LobbyConfiguration.gameLobby = gameLobby;
     notifyGameLobbyObservers();
+  }
+
+  public static void sendBotJoinLobby(GameLobby gameLobby) {
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.JOIN_BOT_GAME_LOBBY, gameLobby));
+  }
+
+  public static void sendUpdateServerLobby(GameLobby gameLobby) {
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.UPDATE_SERVER_LOBBY, gameLobby));
   }
 }

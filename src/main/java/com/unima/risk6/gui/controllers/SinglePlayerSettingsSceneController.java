@@ -16,11 +16,11 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -311,16 +311,8 @@ public class SinglePlayerSettingsSceneController {
         DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId())));
     GameConfiguration.setGameState(gameState);
     CountriesUiConfiguration.configureCountries(gameState.getCountries());
-    GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.GAME);
-    if (gameScene == null) {
-      gameScene = new GameScene();
-      GameSceneController gameSceneController = new GameSceneController(gameScene);
-      gameScene.setGameSceneController(gameSceneController);
-      sceneController.addScene(SceneName.GAME, gameScene);
-    }
-    sceneController.activate(SceneName.GAME);
-    //TODO If we want to go full screen we can use this
-    sceneController.getStage().setFullScreen(true);
+    Platform.runLater(SceneConfiguration::startGame);
+
+
   }
 }

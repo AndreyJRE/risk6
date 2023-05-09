@@ -137,8 +137,14 @@ public class JoinOnlineSceneController {
 
     LobbyConfiguration.configureGameClient(host, port);
     LobbyConfiguration.startGameClient();
+    int i = 0;
     while (LobbyConfiguration.getGameClient().getCh() == null) {
       try {
+        if (i == 20) {
+          //TODO Send message what server can not be connected or found
+          break;
+        }
+        i++;
         Thread.sleep(100);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
