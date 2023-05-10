@@ -1,5 +1,9 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.HardBot;
+import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
@@ -7,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -37,7 +42,24 @@ public class ActivePlayerUi extends Group {
     this.setId("activePlayerUi");
     this.playerUi = playerUi;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
-    ellipse.setFill(Color.WHITE);
+    ImageView userImage;
+    Player player = playerUi.getPlayer();
+    if (player instanceof EasyBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+    } else if (player instanceof MediumBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+    } else if (player instanceof HardBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+    } else {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+    }
+    StackPane stackPane = new StackPane(userImage);
+    stackPane.setStyle("-fx-background-color: #F5F5F5;");
+    ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(this.playerUi.getPlayerColor());
     ellipse.setStrokeWidth(3);
     rectangle = new Rectangle(rectangleWidth, rectangleHeight);
@@ -92,6 +114,24 @@ public class ActivePlayerUi extends Group {
       SoundConfiguration.playYourTurnSound();
     }
     this.playerUi = playerUi;
+    Player player = playerUi.getPlayer();
+    ImageView userImage;
+    if (player instanceof EasyBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+    } else if (player instanceof MediumBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+    } else if (player instanceof HardBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+    } else {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+    }
+    StackPane stackPane = new StackPane(userImage);
+    stackPane.setStyle("-fx-background-color: #F5F5F5;");
+    ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(playerUi.getPlayerColor());
     rectangle.setStroke(playerUi.getPlayerColor());
     switch (playerUi.getPlayer().getCurrentPhase()) {

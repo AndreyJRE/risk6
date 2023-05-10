@@ -1,8 +1,6 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.exceptions.NotFoundException;
-import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.ai.bots.EasyBot;
@@ -36,16 +34,12 @@ import com.unima.risk6.gui.uiModels.DiceUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TreeMap;
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -100,14 +94,10 @@ public class GameSceneController implements GameStateObserver {
   private Button nextPhaseButton;
   private Popup statisticPopup;
   boolean isStatisticsShowing = false;
-  private final GameStatisticService gameStatisticService;
-  private final UserService userService;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
-    this.gameStatisticService = DatabaseConfiguration.getGameStatisticService();
-    this.userService = DatabaseConfiguration.getUserService();
   }
 
   public static PlayerUi getMyPlayerUi() {
@@ -262,9 +252,6 @@ public class GameSceneController implements GameStateObserver {
     countriesGroup.getChildren().addAll(countriesUis);
     StackPane countriesPane = new StackPane();
 
-    //DELETE LATER - ID NEEDED FOR CARD CREATION
-    int counter = 0;
-    //DELETE END
     cardUis = new Stack<>();
     for (CountryUi countryUi : countriesUis) {
       Bounds bounds = countryUi.getCountryPath().getBoundsInParent();
@@ -517,15 +504,14 @@ public class GameSceneController implements GameStateObserver {
         userImage = new ImageView(new Image(
             getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
       } else {
-        User user = userService.getUserByUsername(player.getUser());
         userImage = new ImageView(new Image(
-            getClass().getResource(user.getImagePath()).toString()));
+            getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
       }
       userCircle.setFill(new ImagePattern(userImage.getImage()));
       userBox.getChildren().addAll(userLabel, userCircle);
       statisticsGrid.add(userBox, i, 0);
 
-      String[] attributeStrings = {"Amount of Troops: ", "Amount of owned Countries: "};
+      String[] attributeStrings = {"Troops: ", "Countries: "};
       for (int j = 0; j < attributeStrings.length; j++) {
         HBox statisticBox = new HBox();
         statisticBox.setPadding(new Insets(5));

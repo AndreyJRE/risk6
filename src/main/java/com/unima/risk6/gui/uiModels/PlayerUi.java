@@ -1,11 +1,16 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.database.models.User;
+import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.HardBot;
+import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.models.Player;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -28,7 +33,25 @@ public class PlayerUi extends Group {
     this.player = player;
     this.playerColor = playerColor;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
-    ellipse.setFill(Color.WHITE);
+    ImageView userImage;
+    if (player instanceof EasyBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+    } else if (player instanceof MediumBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+    } else if (player instanceof HardBot) {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+    } else {
+      userImage = new ImageView(new Image(
+          getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+    }
+
+    StackPane stackPane = new StackPane(userImage);
+    stackPane.setStyle("-fx-background-color: #F5F5F5;");
+
+    ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(playerColor);
     ellipse.setStrokeWidth(3);
 
