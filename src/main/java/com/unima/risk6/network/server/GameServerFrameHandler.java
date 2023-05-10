@@ -8,15 +8,18 @@ import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.ai.models.CountryPair;
+import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
+import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
@@ -47,8 +50,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   private final static Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
 
   private static ChannelGroup channels;
-  private static BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
-  private static BiMap<UserDto, Channel> users = HashBiMap.create();
+  private static final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
+  private static final BiMap<UserDto, Channel> users = HashBiMap.create();
   private MoveProcessor moveProcessor;
 
   GameServerFrameHandler(ChannelGroup channels, MoveProcessor moveProcessor) {
@@ -72,9 +75,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       if (json != null) {
         LOGGER.debug(
             "Server Received Message with ContentType: " + json.get("contentType").getAsString());
-        ChannelGroup channelGroup =
-            gameChannels.values().stream().filter(x -> x.contains(ctx.channel())).findFirst()
-                .orElse(channels);
+        ChannelGroup channelGroup = gameChannels.values().stream()
+            .filter(x -> x.contains(ctx.channel())).findFirst().orElse(channels);
         switch (json.get("contentType").getAsString()) {
           case "GAME_STATE" -> {
             LOGGER.error("The server should not receive a gamestate");
@@ -105,18 +107,26 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
           //TODO Serializers
           case "HAND_IN" -> {
-            /*LOGGER.debug("The server received a hand in object");
+            LOGGER.debug("The server received a hand in object");
             HandIn handIn = (HandIn) Deserializer.deserialize(request).getContent();
-            moveProcessor.processHandIn(handIn); */
+            moveProcessor.processHandIn(handIn);
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
           }
           case "END_PHASE" -> {
             LOGGER.debug("The server received a end phase object");
+            Player currentPlayer = moveProcessor.getGameController().getCurrentPlayer();
             EndPhase endPhase = (EndPhase) Deserializer.deserialize(request).getContent();
             moveProcessor.processEndPhase(endPhase);
+            Player currentPlayerAfter = moveProcessor.getGameController().getCurrentPlayer();
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
+            if (!currentPlayer.equals(currentPlayerAfter)
+                && currentPlayerAfter instanceof AiBot aiBot) {
+              processBotMove(aiBot, channelGroup);
+            }
+
+
           }
           case "CHAT_MESSAGE" -> {
             LOGGER.debug("The server received a chat message object");
@@ -224,39 +234,174 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       String message = "unsupported frame type: " + frame.getClass().getName();
       throw new UnsupportedOperationException(message);
     }
+
+  }
+
+  private void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
+    aiBot.setGameState(moveProcessor.getGameController().getGameState());
+    Player player = (Player) aiBot;
+    moveProcessor.getPlayerController().setPlayer(player);
+    try {
+      switch (player.getCurrentPhase()) {
+        case CLAIM_PHASE -> {
+          Thread.sleep(500);
+          Reinforce reinforce = aiBot.claimCountry();
+          moveProcessor.processReinforce(reinforce);
+          sendGamestate(channelGroup);
+          moveProcessor.clearLastMoves();
+          Thread.sleep(500);
+          moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+          sendGamestate(channelGroup);
+          moveProcessor.clearLastMoves();
+          Thread.sleep(500);
+          Player currentPlayer = moveProcessor.getGameController().getGameState()
+              .getCurrentPlayer();
+          if (!player.getUser().equals(currentPlayer.getUser())
+              && currentPlayer instanceof AiBot aiBot1) {
+            processBotMove(aiBot1, channelGroup);
+          }
+        }
+        case REINFORCEMENT_PHASE -> {
+          processBotReinforcementPhase(aiBot, channelGroup, player);
+          Thread.sleep(3000);
+          processBotAttackPhase(aiBot, channelGroup, player);
+          Thread.sleep(3000);
+          processBotFortifyPhase(aiBot, channelGroup, player);
+          Thread.sleep(500);
+          Player currentPlayer = moveProcessor.getGameController().getGameState()
+              .getCurrentPlayer();
+          if (!player.getUser().equals(currentPlayer.getUser())
+              && currentPlayer instanceof AiBot aiBot1) {
+            processBotMove(aiBot1, channelGroup);
+          }
+
+        }
+
+
+      }
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+      throws InterruptedException {
+    processBotHandIn(channelGroup);
+    Thread.sleep(1000);
+    List<Reinforce> reinforces = aiBot.createAllReinforcements();
+    reinforces.stream().filter(x -> x.getToAdd() > 0).forEach(x -> {
+      moveProcessor.processReinforce(x);
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+
+    });
+    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+    sendGamestate(channelGroup);
+    moveProcessor.clearLastMoves();
+  }
+
+  private void processBotHandIn(ChannelGroup channelGroup) {
+    HandController handController = moveProcessor.getPlayerController().getHandController();
+    if (handController.holdsExchangeable()) {
+      handController.selectExchangeableCards();
+      HandIn hand = new HandIn(handController.getHand().getSelectedCards());
+      moveProcessor.processHandIn(hand);
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+    }
+  }
+
+  private void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+      throws InterruptedException {
+    Fortify fortify = aiBot.createFortify();
+    if (fortify != null && fortify.getTroopsToMove() > 0) {
+      moveProcessor.processFortify(fortify);
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+    }
+    Thread.sleep(500);
+    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+    sendGamestate(channelGroup);
+    moveProcessor.clearLastMoves();
+  }
+
+  private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+      throws InterruptedException {
+    do {
+      CountryPair attack = aiBot.createAttack();
+      if (attack == null) {
+        moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+        sendGamestate(channelGroup);
+        moveProcessor.clearLastMoves();
+      } else {
+        Attack attack1;
+        do {
+          attack1 = attack.createAttack(aiBot.getAttackTroops(attack.getOutgoing()));
+          moveProcessor.processAttack(attack1);
+          sendGamestate(channelGroup);
+          moveProcessor.clearLastMoves();
+          Thread.sleep(3500);
+        } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
+        aiBot.setGameState(moveProcessor.getGameController().getGameState());
+
+        if (moveProcessor.getGameController().getGameState().isGameOver()) {
+          sendGameOver(channelGroup);
+          break;
+        }
+        if (attack1.getHasConquered()) {
+          Fortify fortify = attack.createFortify(attack1.getTroopNumber());
+          moveProcessor.processFortify(fortify);
+          sendGamestate(channelGroup);
+          Thread.sleep(500);
+          moveProcessor.clearLastMoves();
+          Fortify fortify1 = aiBot.moveAfterAttack(attack);
+          if (fortify1 != null && fortify1.getTroopsToMove() > 0) {
+            moveProcessor.processFortify(fortify1);
+            sendGamestate(channelGroup);
+            moveProcessor.clearLastMoves();
+          }
+        }
+      }
+    } while (aiBot.attackAgain());
+    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+    sendGamestate(channelGroup);
+    moveProcessor.clearLastMoves();
+  }
+
+  private void sendGameOver(ChannelGroup channelGroup) {
+    //TODO
   }
 
   private static GameLobby getServerGameLobby(GameLobby gameLobby, ServerLobby serverLobby) {
-    GameLobby gameLobbyFromServer = serverLobby
-        .getGameLobbies().stream()
-        .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst()
-        .get();
+    GameLobby gameLobbyFromServer = serverLobby.getGameLobbies().stream()
+        .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst().get();
     return gameLobbyFromServer;
   }
 
   private void sendUpdatedServerLobby(ServerLobby serverLobby) {
     String serialized = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY,
-            serverLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
     for (Channel ch : channels) {
       LOGGER.debug("Send updated server lobby to: " + ch.id());
-      ch.writeAndFlush(
-          new TextWebSocketFrame(serialized));
+      ch.writeAndFlush(new TextWebSocketFrame(serialized));
     }
   }
 
   private void sendCreatedGameLobby(ServerLobby serverLobby, GameLobby gameLobby) {
     String serialized = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY,
-            serverLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
-      ch.writeAndFlush(
-          new TextWebSocketFrame(serialized));
+      ch.writeAndFlush(new TextWebSocketFrame(serialized));
     }
     String serialized1 = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_CREATE_LOBBY,
-            gameLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_CREATE_LOBBY, gameLobby));
     for (Channel channel : gameChannels.get(gameLobby)) {
       LOGGER.debug("Send game lobby to : " + channel.id());
       channel.writeAndFlush(new TextWebSocketFrame(serialized1));
@@ -265,13 +410,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   }
 
   private void sendGamestate(ChannelGroup channelGroup) {
+    System.out.println("Serilize" + " Test");
+    System.out.println(moveProcessor.getDeckController().getDeck().getDeckCards());
     String message = Serializer.serialize(
         new StandardMessage(moveProcessor.getGameController().getGameState()));
     LOGGER.debug(message);
     for (Channel ch : channelGroup) {
       LOGGER.debug("Send new gamestate to: " + ch.id());
-      ch.writeAndFlush(
-          new TextWebSocketFrame(message));
+      ch.writeAndFlush(new TextWebSocketFrame(message));
     }
   }
 
@@ -282,54 +428,48 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     LOGGER.debug(message);
     for (Channel ch : gameChannels.get(gameLobby)) {
       LOGGER.debug("Send new gamestate to: " + ch.id());
-      ch.writeAndFlush(
-          new TextWebSocketFrame(message));
+      ch.writeAndFlush(new TextWebSocketFrame(message));
     }
   }
 
   private void sendServerLobby(ServerLobby serverLobby) {
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
-      ch.writeAndFlush(
-          new TextWebSocketFrame(Serializer.serialize(
-              new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_SERVER_LOBBY,
-                  serverLobby))));
+      ch.writeAndFlush(new TextWebSocketFrame(Serializer.serialize(
+          new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_SERVER_LOBBY, serverLobby))));
     }
   }
 
   private void sendGameLobby(GameLobby gameLobby) {
     String serializedGameLobby = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_LOBBY,
-            gameLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_LOBBY, gameLobby));
     System.out.println(gameChannels.get(gameLobby));
     for (Channel ch : gameChannels.get(gameLobby)) {
       LOGGER.debug("Send a game lobby to: " + ch.id());
-      ch.writeAndFlush(
-          new TextWebSocketFrame(serializedGameLobby));
+      ch.writeAndFlush(new TextWebSocketFrame(serializedGameLobby));
     }
   }
 
   public void processStartGame(GameLobby gameLobby) {
-    List<String> usersList = gameLobby.getUsers().stream()
-        .map(UserDto::getUsername).toList();
+    //TODO Bots should not start the game
+    List<String> usersList = gameLobby.getUsers().stream().map(UserDto::getUsername).toList();
     GameState gameState = GameConfiguration.configureGame(usersList,
         gameLobby.getBots().stream().map(x -> {
-              if (x.contains("Easy")) {
-                return new EasyBot(x);
-              } else if (x.contains("Medium")) {
-                return new MediumBot(x);
-              } else {
-                return (AiBot) new HardBot(x);
-              }
-            })
-            .toList());
+          if (x.contains("Easy")) {
+            return new EasyBot(x);
+          } else if (x.contains("Medium")) {
+            return new MediumBot(x);
+          } else {
+            return (AiBot) new HardBot(x);
+          }
+        }).toList());
     System.out.println(gameState.getActivePlayers());
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
     gameState.setPhaseTime(gameLobby.getPhaseTime());
     moveProcessor.setGameController(new GameController(gameState));
-    moveProcessor.setDeckController(new DeckController(new Deck()));
+    moveProcessor.setDeckController(new DeckController(gameState.getDeck()));
     PlayerController playerController = new PlayerController();
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
@@ -343,6 +483,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
+    Probabilities.init();
   }
 
   public void sendChatMessage(Channel channel, String request) {

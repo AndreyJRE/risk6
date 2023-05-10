@@ -51,7 +51,6 @@ public class PlayersConfiguration {
   private void initPlayers() {
     for (String user : users) {
       Player player = new Player(user);
-      player.setInitialTroops(5);
       players.add(player);
     }
   }
@@ -64,7 +63,6 @@ public class PlayersConfiguration {
   private void initBots() {
     for (AiBot aiBot : bots) {
       Player player = (Player) aiBot;
-      player.setInitialTroops(5);
       players.add(player);
 
     }

@@ -20,6 +20,7 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.network.server.exceptions.InvalidMoveException;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,6 +80,7 @@ public class MoveProcessor {
         if (countryToReinforce.getPlayer().equals(currentPlayer)) {
           currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
           countryToReinforce.setTroops(countryToReinforce.getTroops() + 1);
+          this.updateInGameStatistics();
         } else {
           throw new InvalidMoveException("The Reinforce is not valid because country is not yours");
         }
@@ -91,6 +93,7 @@ public class MoveProcessor {
         countryToReinforce.setTroops(countryToReinforce.getTroops() + reinforce.getToAdd());
         currentPlayer.setDeployableTroops(
             currentPlayer.getDeployableTroops() - reinforce.getToAdd());
+        this.updateInGameStatistics();
       }
       gameController.addLastMove(reinforce);
     } else {
@@ -145,14 +148,11 @@ public class MoveProcessor {
       Statistic attackerStatistic = attacker.getStatistic();
       Statistic defenderStatistic = defender.getStatistic();
       //Increase statistics for troopsLost
-      if (attackerStatistic != null) { // a bot doesn't have statistics
-        attackerStatistic.setTroopsLost(
-            attackerStatistic.getTroopsLost() + attack.getAttackerLosses());
-      }
-      if (defenderStatistic != null) {
-        defenderStatistic.setTroopsLost(
-            defenderStatistic.getTroopsLost() + attack.getDefenderLosses());
-      }
+      attackerStatistic.setTroopsLost(
+          attackerStatistic.getTroopsLost() + attack.getAttackerLosses());
+
+      defenderStatistic.setTroopsLost(
+          defenderStatistic.getTroopsLost() + attack.getDefenderLosses());
 
       //Take over a country if the attack has wiped out the troops on the defending country
       if (attack.getHasConquered()) {
@@ -165,22 +165,19 @@ public class MoveProcessor {
         playerController.setPlayer(attacker);
 
         //Increase statistic for countriesLost and countriesWon
-        // a bot doesn't have statistics
-        if (defenderStatistic != null) {
-          defenderStatistic.setCountriesLost(defenderStatistic.getCountriesLost() + 1);
-        }
-        if (attackerStatistic != null) {
-          attackerStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
-        }
+
+        defenderStatistic.setCountriesLost(defenderStatistic.getCountriesLost() + 1);
+
+        attackerStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
 
         playerController.setPlayer(defender);
         if (playerController.getNumberOfCountries() == 0) {
           gameController.removeLostPlayer(defender);
         }
+        this.updateInGameStatistics();
       }
       playerController.setPlayer(attacker);
     } else {
-
       if (!(attacker.equals(currentPlayer) && !attacker.equals(defender))) {
         throw new InvalidMoveException(
             "Invalid Move because: Attack made by not current player or attacker tries to attack himself");
@@ -281,10 +278,9 @@ public class MoveProcessor {
 
       //Increase troopsGained statistic according to troops gotten through card Exchange
       Statistic statisticOfCurrentPlayer = playerController.getPlayer().getStatistic();
-      if (statisticOfCurrentPlayer != null) { // a bot doesn't have statistics
-        statisticOfCurrentPlayer.setTroopsGained(
-            statisticOfCurrentPlayer.getTroopsGained() + diff);
-      }
+
+      statisticOfCurrentPlayer.setTroopsGained(
+          statisticOfCurrentPlayer.getTroopsGained() + diff);
 
       gameController.getGameState()
           .setNumberOfHandIns(gameController.getGameState().getNumberOfHandIns() + 1);
@@ -337,6 +333,15 @@ public class MoveProcessor {
   public Player getPlayerFromCurrentState(Player player) {
     return gameController.getGameState().getActivePlayers().stream().filter(p -> p.equals(player))
         .findFirst().orElse(null);
+  }
+
+  public void updateInGameStatistics() {
+    HashMap<Player, Integer> troopCounter = gameController.countTroops();
+    HashMap<Player, Integer> countryCounter = gameController.countCountries();
+    gameController.getGameState().getActivePlayers()
+        .forEach(n -> n.getStatistic().setNumberOfOwnedCountries(countryCounter.get(n)));
+    gameController.getGameState().getActivePlayers()
+        .forEach(n -> n.getStatistic().setNumberOfTroops(troopCounter.get(n)));
   }
 
   /**

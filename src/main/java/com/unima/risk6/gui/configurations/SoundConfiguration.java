@@ -18,6 +18,7 @@ public class SoundConfiguration {
 
   private static final String ALARM_FOR_START_GAME = "/com/unima/risk6/sounds/alarm_for_game_start"
       + ".mp3";
+  private static final String TROOPS_MOVE_SOUND = "/com/unima/risk6/sounds/marching_1.mp3";
   private static MediaPlayer titleSound;
 
   private static MediaPlayer inGameMusic;
@@ -26,6 +27,8 @@ public class SoundConfiguration {
   private static AudioClip yourTurnSound;
 
   private static AudioClip startGameSound;
+
+  private static AudioClip troopsMoveSound;
 
 
   public static void playTitleSound() {
@@ -57,7 +60,19 @@ public class SoundConfiguration {
         Objects.requireNonNull(SoundConfiguration.class.getResource(ALARM_FOR_START_GAME))
             .toExternalForm());
     startGameSound.setVolume(0.3);
+    troopsMoveSound = new AudioClip(Objects.requireNonNull(SoundConfiguration.class
+        .getResource(TROOPS_MOVE_SOUND)).toExternalForm());
+    troopsMoveSound.setVolume(0.4);
 
+
+  }
+
+  public static void playTroopsMoveSound() {
+    troopsMoveSound.play();
+  }
+
+  public static void stopTroopsMoveSound() {
+    troopsMoveSound.stop();
   }
 
   public static void playInGameMusic() {
@@ -65,11 +80,11 @@ public class SoundConfiguration {
   }
 
   public static void playYourTurnSound() {
-    yourTurnSound.play();
+    //yourTurnSound.play();
   }
 
   public static void playStartGameSound() {
-    startGameSound.play();
+    //startGameSound.play();
   }
 
 

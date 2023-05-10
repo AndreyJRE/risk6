@@ -1,5 +1,7 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.gui.controllers.GameSceneController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -16,7 +18,7 @@ import javafx.util.Duration;
 
 public class TimeUi extends Group {
 
-  private int turnTime = 60;
+  private final int phaseTime;
 
   private int currentTimer;
 
@@ -26,9 +28,9 @@ public class TimeUi extends Group {
 
   private Rectangle timerRectangle = new Rectangle(80, 30);
 
-  public TimeUi(double rectangleWidth, double rectangleHeight) {
+  public TimeUi(double rectangleWidth, double rectangleHeight, int phaseTime) {
     //TODO: ADAPT TURNTIME DEPENDING ON LOBBY SETTINGS AND IF MULTIPLAYER
-    turnTime = 60;
+    this.phaseTime = phaseTime;
 
     VBox timerBox = new VBox();
     timerBox.setAlignment(Pos.CENTER);
@@ -47,7 +49,7 @@ public class TimeUi extends Group {
     StackPane stackPane = new StackPane(timerRectangle, timerLabel);
     stackPane.setPadding(new Insets(5));
 
-    currentTimer = turnTime;
+    currentTimer = this.phaseTime;
 
     timerLabel.setText(String.format("%02d:%02d", currentTimer / 60, currentTimer % 60));
     timerLabel.setTextFill(Color.BLACK);
@@ -57,7 +59,14 @@ public class TimeUi extends Group {
     timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
       currentTimer--;
       if (currentTimer <= 0) {
-        timeline.stop();
+        currentTimer = phaseTime;
+        if (GameSceneController.getMyPlayerUi().getPlayer().getCurrentPhase()
+            != GamePhase.NOT_ACTIVE) {
+          //TODO Ask elliya to get reinforce and attack phase to work
+          /*GameSceneController.getPlayerController().sendEndPhase(
+              GameSceneController.getPlayerController().getPlayer().getCurrentPhase()); */
+        }
+        //timeline.stop();
       } else {
         timerLabel.setText(String.format("%02d:%02d", currentTimer / 60, currentTimer % 60));
       }
@@ -75,7 +84,7 @@ public class TimeUi extends Group {
   }
 
   public void restartTimer() {
-    currentTimer = turnTime;
+    currentTimer = phaseTime;
   }
 
 }

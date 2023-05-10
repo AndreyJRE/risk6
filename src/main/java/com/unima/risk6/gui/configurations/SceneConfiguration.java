@@ -11,7 +11,11 @@ import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import javafx.beans.value.ChangeListener;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class SceneConfiguration {
 
@@ -47,9 +51,27 @@ public class SceneConfiguration {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
-    //TODO If we want to go full screen we can use this
     sceneController.getStage().setFullScreen(true);
     gameSceneController.showOrderPopup();
+    sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
+      event.consume();
+      Alert alert = new Alert(AlertType.WARNING);
+      alert.setTitle("Warning: Exiting Game");
+      alert.setHeaderText("Are you sure you want to to leave the game?");
+      alert.setContentText("If you leave, you cannot rejoin the game! Your place will be replaced "
+          + "by a bot.");
+      ButtonType buttonYes = new ButtonType("Yes, exit game");
+      ButtonType buttonNo = new ButtonType("No, continue playing");
+      alert.getButtonTypes().setAll(buttonYes, buttonNo);
+      alert.showAndWait().ifPresent(buttonType -> {
+        if (buttonType == buttonYes) {
+          sceneController.close();
+        }
+        if (buttonType == buttonNo) {
+          alert.close();
+        }
+      });
+    });
     SoundConfiguration.playStartGameSound();
   }
 

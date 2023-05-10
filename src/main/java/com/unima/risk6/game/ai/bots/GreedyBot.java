@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -139,13 +140,14 @@ public abstract class GreedyBot extends Player implements AiBot {
       Map<Country, Integer> allDiffs = new HashMap<>();
       this.getAllContinents()
           .forEach(continent -> allDiffs.putAll(this.getCountryTroopDiffsByContinent(continent)));
-      Country choice = null;
+      List<Optional<Country>> choices = new ArrayList<>();
       for (Continent continent : priorityList) {
-        choice = allDiffs.keySet().stream().filter(
-                country -> country.getContinent().getContinentName()
-                    .equals(continent.getContinentName())).max(Comparator.comparingInt(allDiffs::get))
-            .get();
+        choices.add(allDiffs.keySet().stream().filter(
+            country -> country.getContinent().getContinentName()
+                .equals(continent.getContinentName())).max(Comparator.comparingInt(allDiffs::get)));
       }
+      Country choice = choices.stream().filter(Optional::isPresent).map(Optional::get)
+          .max(Comparator.comparingInt(allDiffs::get)).get();
       return new Reinforce(choice, 1);
     }
   }

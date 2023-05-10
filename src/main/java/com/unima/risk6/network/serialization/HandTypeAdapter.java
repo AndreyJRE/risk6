@@ -62,9 +62,8 @@ public class HandTypeAdapter implements JsonSerializer<Hand>, JsonDeserializer<H
     }
 
     Hand hand = new Hand();
-    //TODO
-    //hand.setCards(cards);
-    //hand.setSelectedCards(selectedCards);
+    hand.getCards().addAll(cards);
+    hand.getSelectedCards().addAll(selectedCards);
 
     return hand;
   }
