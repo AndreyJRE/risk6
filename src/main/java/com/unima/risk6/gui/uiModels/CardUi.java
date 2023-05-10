@@ -63,7 +63,8 @@ public class CardUi extends StackPane {
             new Image(getClass().getResource("/com/unima/risk6/pictures/wildCard.png").toString()));
       }
     }
-    Label chatLabel = new Label(countryUi.getCountry().getCountryName().name());
+    Label chatLabel = new Label(
+        countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
     chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold");
     SVGPath countryPath = countryUi.svgPathClone(countryUi.getCountryPath());
     VBox cardVBox = new VBox();
@@ -77,7 +78,7 @@ public class CardUi extends StackPane {
   public CardUi(Card card) {
     super();
     this.card = card;
-    cardFrame = new Rectangle(125, 225);
+    cardFrame = new Rectangle(100, 185);
     cardFrame.setArcHeight(25);
     cardFrame.setArcWidth(25);
     switch (card.getCardSymbol()) {
