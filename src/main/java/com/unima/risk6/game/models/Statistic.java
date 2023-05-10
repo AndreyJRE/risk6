@@ -6,6 +6,8 @@ public class Statistic {
   private int troopsGained;
   private int countriesWon;
   private int countriesLost;
+  private int numberOfOwnedCountries;
+  private int numberOfTroops;
 
 
   public Statistic() {
@@ -13,8 +15,35 @@ public class Statistic {
     this.troopsLost = 0;
     this.countriesWon = 0;
     this.countriesLost = 0;
+
+
   }
 
+  @Override
+  public String toString() {
+    return "Statistic{" +
+        "troopsLost=" + troopsLost +
+        ", troopsGained=" + troopsGained +
+        ", countriesWon=" + countriesWon +
+        ", countriesLost=" + countriesLost +
+        '}';
+  }
+
+  public int getNumberOfOwnedCountries() {
+    return numberOfOwnedCountries;
+  }
+
+  public void setNumberOfOwnedCountries(int numberOfOwnedCountries) {
+    this.numberOfOwnedCountries = numberOfOwnedCountries;
+  }
+
+  public int getNumberOfTroops() {
+    return numberOfTroops;
+  }
+
+  public void setNumberOfTroops(int numberOfTroops) {
+    this.numberOfTroops = numberOfTroops;
+  }
 
   public int getTroopsLost() {
     return troopsLost;

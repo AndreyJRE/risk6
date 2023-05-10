@@ -145,14 +145,11 @@ public class MoveProcessor {
       Statistic attackerStatistic = attacker.getStatistic();
       Statistic defenderStatistic = defender.getStatistic();
       //Increase statistics for troopsLost
-      if (attackerStatistic != null) { // a bot doesn't have statistics
-        attackerStatistic.setTroopsLost(
-            attackerStatistic.getTroopsLost() + attack.getAttackerLosses());
-      }
-      if (defenderStatistic != null) {
-        defenderStatistic.setTroopsLost(
-            defenderStatistic.getTroopsLost() + attack.getDefenderLosses());
-      }
+      attackerStatistic.setTroopsLost(
+          attackerStatistic.getTroopsLost() + attack.getAttackerLosses());
+
+      defenderStatistic.setTroopsLost(
+          defenderStatistic.getTroopsLost() + attack.getDefenderLosses());
 
       //Take over a country if the attack has wiped out the troops on the defending country
       if (attack.getHasConquered()) {
@@ -165,13 +162,10 @@ public class MoveProcessor {
         playerController.setPlayer(attacker);
 
         //Increase statistic for countriesLost and countriesWon
-        // a bot doesn't have statistics
-        if (defenderStatistic != null) {
-          defenderStatistic.setCountriesLost(defenderStatistic.getCountriesLost() + 1);
-        }
-        if (attackerStatistic != null) {
-          attackerStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
-        }
+
+        defenderStatistic.setCountriesLost(defenderStatistic.getCountriesLost() + 1);
+
+        attackerStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
 
         playerController.setPlayer(defender);
         if (playerController.getNumberOfCountries() == 0) {
@@ -281,10 +275,9 @@ public class MoveProcessor {
 
       //Increase troopsGained statistic according to troops gotten through card Exchange
       Statistic statisticOfCurrentPlayer = playerController.getPlayer().getStatistic();
-      if (statisticOfCurrentPlayer != null) { // a bot doesn't have statistics
-        statisticOfCurrentPlayer.setTroopsGained(
-            statisticOfCurrentPlayer.getTroopsGained() + diff);
-      }
+
+      statisticOfCurrentPlayer.setTroopsGained(
+          statisticOfCurrentPlayer.getTroopsGained() + diff);
 
       gameController.getGameState()
           .setNumberOfHandIns(gameController.getGameState().getNumberOfHandIns() + 1);
@@ -337,6 +330,10 @@ public class MoveProcessor {
   public Player getPlayerFromCurrentState(Player player) {
     return gameController.getGameState().getActivePlayers().stream().filter(p -> p.equals(player))
         .findFirst().orElse(null);
+  }
+
+  public void updateStatistics() {
+
   }
 
   /**
