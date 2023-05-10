@@ -300,7 +300,7 @@ public class MonteCarloTreeSearch {
     do {
       CountryPair attacks = current.createAttack();
       if (attacks == null) {
-        moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+        break;
       }
       Attack toProcess;
       do {
