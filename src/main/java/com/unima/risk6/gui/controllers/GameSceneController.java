@@ -1,5 +1,10 @@
 package com.unima.risk6.gui.controllers;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.exceptions.NotFoundException;
+import com.unima.risk6.database.models.User;
+import com.unima.risk6.database.services.GameStatisticService;
+import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
@@ -46,17 +51,22 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -81,10 +91,16 @@ public class GameSceneController implements GameStateObserver {
   private TimeUi timeUi;
   private ActivePlayerUi activePlayerUi;
   private Button nextPhaseButton;
+  private Popup statisticPopup;
+  boolean isStatisticsShowing = false;
+  private final GameStatisticService gameStatisticService;
+  private final UserService userService;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
+    this.gameStatisticService = DatabaseConfiguration.getGameStatisticService();
+    this.userService = DatabaseConfiguration.getUserService();
   }
 
   public static PlayerUi getMyPlayerUi() {
@@ -105,7 +121,6 @@ public class GameSceneController implements GameStateObserver {
     this.initializeGameScene();
     mockGamePhase = GamePhase.ATTACK_PHASE;
     GameConfiguration.addObserver(this);
-
     this.addListeners();
   }
 
@@ -443,6 +458,91 @@ public class GameSceneController implements GameStateObserver {
       countriesGroup.setScaleX(scale + 0.3);
       countriesGroup.setScaleY(scale + 0.3);
     });
+
+    gameScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode() == KeyCode.TAB && !isStatisticsShowing) {
+        showStatisticsPopup();
+        event.consume();
+      }
+    });
+    gameScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+      if (event.getCode() == KeyCode.TAB) {
+        statisticPopup.hide();
+        isStatisticsShowing = false;
+        event.consume();
+      }
+    });
+  }
+
+  private void showStatisticsPopup() {
+
+    BorderPane statisticPane = new BorderPane();
+
+    GridPane statisticsGrid = new GridPane();
+
+    //TODO INTEGRATION: INTEGRATE THIS WITH THE ACTUAL STATISTIC FROM LOGIC
+
+    for (int i = 0; i < playerUis.size(); i++) {
+
+      try {
+        User user = userService.getUserByUsername(playerUis.get(i).getPlayer().getUser());
+        VBox userBox = new VBox();
+        userBox.setAlignment(Pos.CENTER);
+        userBox.setSpacing(5);
+        Label userLabel = new Label(user.getUsername());
+        Circle userCircle = new Circle(40);
+        userCircle.setStroke(Color.BLACK);
+        ImageView userImage = new ImageView(new Image(
+            getClass().getResource(user.getImagePath()).toString()));
+        userCircle.setFill(new ImagePattern(userImage.getImage()));
+        userBox.getChildren().addAll(userLabel, userCircle);
+        statisticsGrid.add(userBox, i, 0);
+        int numberOfAttributes = 1;
+        for (int j = 0; j < numberOfAttributes; j++) {
+          HBox statisticBox = new HBox();
+          statisticBox.setPadding(new Insets(5));
+          statisticBox.setAlignment(Pos.CENTER);
+          Label statisticName = new Label("Amount of Troops: ");
+          Label userStat = new Label(Integer.toString(13));
+          statisticBox.getChildren().addAll(statisticName, userStat);
+          statisticsGrid.add(statisticBox, i, j + 1);
+        }
+      } catch (NotFoundException e) {
+        //TODO: ADD BOTS HERE?
+
+        // Handle the exception...
+      }
+
+      //TODO: ADAPT SECOND FOR LOOP with number of properties of user
+
+    }
+
+//    VBox statisticsVBox = new VBox();
+//    Label statisticsTitleLabel = new Label("This is Statistics popup.");
+//    statisticsTitleLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+//    statisticsVBox.getChildren().addAll(statisticsTitleLabel);
+    statisticPane.setCenter(statisticsGrid);
+    statisticPane.setPrefSize(gameScene.getWidth() * 0.7, gameScene.getHeight() * 0.7);
+    statisticPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
+
+    statisticPopup = new Popup();
+    statisticPopup.getContent().add(statisticPane);
+
+    DropShadow dropShadow = new DropShadow();
+    dropShadow.setColor(Color.BLACK);
+    dropShadow.setRadius(10);
+    statisticPane.setEffect(dropShadow);
+
+    double popupWidth = statisticPane.getPrefWidth();
+    double popupHeight = statisticPane.getPrefHeight();
+
+    statisticPopup.setX(
+        (gameScene.getWindow().getX() + gameScene.getWindow().getWidth() / 2) - popupWidth / 2);
+    statisticPopup.setY(
+        (gameScene.getWindow().getY() + gameScene.getWindow().getHeight() / 2) - popupHeight / 2);
+
+    statisticPopup.show(gameScene.getWindow());
+    isStatisticsShowing = true;
   }
 
   @Override
