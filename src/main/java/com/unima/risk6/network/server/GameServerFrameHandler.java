@@ -26,6 +26,7 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
+import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionActions;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
@@ -126,6 +127,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             }
 
 
+          }
+          case "CHAT_MESSAGE" -> {
+            LOGGER.debug("The server received a chat message object");
+            sendChatMessage(ctx.channel(), request);
           }
           case "CONNECTION" -> {
             LOGGER.debug("The server received a connection message");
@@ -481,6 +486,22 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     Probabilities.init();
   }
 
+  public void sendChatMessage(Channel channel, String request) {
+    ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
+    chatMessage.setContent(
+        users.inverse().get(channel).getUsername() + ": " + chatMessage.getContent());
+    gameChannels.values()
+        .stream().filter(x -> x.contains(channel)).findFirst().orElse(channels)
+        //.stream().filter(x -> !x.equals(channel))
+        .forEach(ch ->
+        {
+          String message = Serializer.serialize(chatMessage);
+          LOGGER.debug("Send chatmessage: " + message + " to channel: " + channel.id());
+          ch.writeAndFlush(new TextWebSocketFrame(message));
+        });
+
+
+  }
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {

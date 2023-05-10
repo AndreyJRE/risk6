@@ -26,36 +26,35 @@ public class StandardMessageAdapter implements JsonDeserializer<StandardMessage>
 
     StandardMessage<?> message;
     switch (contentType) {
-      case ATTACK:
+      case ATTACK -> {
         Attack attack = context.deserialize(jsonObject.get("content"), Attack.class);
         message = new StandardMessage<Attack>(attack, statusCode);
-        break;
-      case FORTIFY:
+      }
+      case FORTIFY -> {
         Fortify fortify = context.deserialize(jsonObject.get("content"), Fortify.class);
         message = new StandardMessage<Fortify>(fortify, statusCode);
-        break;
-      case GAME_STATE:
+      }
+      case GAME_STATE -> {
         GameState gameState = context.deserialize(jsonObject.get("content"), GameState.class);
         message = new StandardMessage<GameState>(gameState, statusCode);
-        break;
-      case REINFORCE:
+      }
+      case REINFORCE -> {
         Reinforce reinforce = context.deserialize(jsonObject.get("content"), Reinforce.class);
         message = new StandardMessage<Reinforce>(reinforce, statusCode);
-        break;
-      case HAND_IN:
+      }
+      case HAND_IN -> {
         HandIn handin = context.deserialize(jsonObject.get("content"), HandIn.class);
         message = new StandardMessage<HandIn>(handin, statusCode);
-        break;
-      case END_PHASE:
+      }
+      case END_PHASE -> {
         EndPhase endPhase = context.deserialize(jsonObject.get("content"), EndPhase.class);
         message = new StandardMessage<EndPhase>(endPhase, statusCode);
-        break;
-      case DEFAULT:
+      }
+      case DEFAULT -> {
         String defaultContent = context.deserialize(jsonObject.get("content"), String.class);
         message = new StandardMessage<String>(defaultContent, statusCode);
-        break;
-      default:
-        throw new JsonParseException("Unsupported content type: " + contentType);
+      }
+      default -> throw new JsonParseException("Unsupported content type: " + contentType);
     }
 
     message.setContentType(contentType);

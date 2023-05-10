@@ -82,6 +82,8 @@ public class GameSceneController implements GameStateObserver {
   private ActivePlayerUi activePlayerUi;
   private Button nextPhaseButton;
 
+  private ChatUi chatUi;
+
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -103,6 +105,7 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.initializeGameScene();
+    this.chatUi = new ChatUi(gameScene);
     GameConfiguration.addObserver(this);
 
     this.addListeners();
@@ -318,7 +321,7 @@ public class GameSceneController implements GameStateObserver {
     chatButton.setStyle("-fx-background-radius: 15px;");
     chatButton.setFocusTraversable(false);
     chatButton.setOnAction(event -> {
-      new ChatUi(gameScene);
+      chatUi.show();
     });
 
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
@@ -539,9 +542,9 @@ public class GameSceneController implements GameStateObserver {
         countriesGroup.getChildren().remove(imageView);
       });
       pathTransition.play();
-      SoundConfiguration.playTroopsMoveSound();
       countriesGroup.getChildren().add(imageView);
     }
+    SoundConfiguration.playTroopsMoveSound();
     CountryUi countryUi1 = getCountryUiByCountry(fortify.getIncoming());
     CountryUi countryUi = getCountryUiByCountry(fortify.getOutgoing());
     countryUi.update(activePlayerUi);
