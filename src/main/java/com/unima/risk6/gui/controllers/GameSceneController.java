@@ -5,6 +5,9 @@ import com.unima.risk6.database.exceptions.NotFoundException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.HardBot;
+import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
@@ -33,12 +36,16 @@ import com.unima.risk6.gui.uiModels.DiceUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -467,72 +474,92 @@ public class GameSceneController implements GameStateObserver {
   }
 
   private void showStatisticsPopup() {
-
     BorderPane statisticPane = new BorderPane();
-
     GridPane statisticsGrid = new GridPane();
+    statisticsGrid.setAlignment(Pos.CENTER);
+    statisticsGrid.setHgap(10);
 
-    //TODO INTEGRATION: INTEGRATE THIS WITH THE ACTUAL STATISTIC FROM LOGIC
+    playerUis.sort((p1, p2) -> {
+      int numOwnedCountries1 = p1.getPlayer().getStatistic().getNumberOfOwnedCountries();
+      int numOwnedCountries2 = p2.getPlayer().getStatistic().getNumberOfOwnedCountries();
+
+      if (numOwnedCountries1 == numOwnedCountries2) {
+        int numTroops1 = p1.getPlayer().getStatistic().getNumberOfTroops();
+        int numTroops2 = p2.getPlayer().getStatistic().getNumberOfTroops();
+
+        if (numTroops1 == numTroops2) {
+          return 0;
+        } else {
+          return numTroops2 - numTroops1;
+        }
+      } else {
+        return numOwnedCountries2 - numOwnedCountries1;
+      }
+    });
 
     for (int i = 0; i < playerUis.size(); i++) {
-
-      try {
-        User user = userService.getUserByUsername(playerUis.get(i).getPlayer().getUser());
-        VBox userBox = new VBox();
-        userBox.setAlignment(Pos.CENTER);
-        userBox.setSpacing(5);
-        Label userLabel = new Label(user.getUsername());
-        Circle userCircle = new Circle(40);
-        userCircle.setStroke(Color.BLACK);
-        ImageView userImage = new ImageView(new Image(
+      Player player = playerUis.get(i).getPlayer();
+      VBox userBox = new VBox();
+      userBox.setAlignment(Pos.CENTER);
+      userBox.setSpacing(5);
+      Label userLabel = new Label(player.getUser());
+      userLabel.setStyle("-fx-font-size: 16px;");
+      Circle userCircle = new Circle(40);
+      userCircle.setStroke(Color.BLACK);
+      ImageView userImage;
+      if (player instanceof EasyBot) {
+        userImage = new ImageView(new Image(
+            getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+      } else if (player instanceof MediumBot) {
+        userImage = new ImageView(new Image(
+            getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+      } else if (player instanceof HardBot) {
+        userImage = new ImageView(new Image(
+            getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+      } else {
+        User user = userService.getUserByUsername(player.getUser());
+        userImage = new ImageView(new Image(
             getClass().getResource(user.getImagePath()).toString()));
-        userCircle.setFill(new ImagePattern(userImage.getImage()));
-        userBox.getChildren().addAll(userLabel, userCircle);
-        statisticsGrid.add(userBox, i, 0);
-        int numberOfAttributes = 1;
-        for (int j = 0; j < numberOfAttributes; j++) {
-          HBox statisticBox = new HBox();
-          statisticBox.setPadding(new Insets(5));
-          statisticBox.setAlignment(Pos.CENTER);
-          Label statisticName = new Label("Amount of Troops: ");
-          Label userStat = new Label(Integer.toString(13));
-          statisticBox.getChildren().addAll(statisticName, userStat);
-          statisticsGrid.add(statisticBox, i, j + 1);
-        }
-      } catch (NotFoundException e) {
-        //TODO: ADD BOTS HERE?
-
-        // Handle the exception...
       }
+      userCircle.setFill(new ImagePattern(userImage.getImage()));
+      userBox.getChildren().addAll(userLabel, userCircle);
+      statisticsGrid.add(userBox, i, 0);
 
-      //TODO: ADAPT SECOND FOR LOOP with number of properties of user
-
+      String[] attributeStrings = {"Amount of Troops: ", "Amount of owned Countries: "};
+      for (int j = 0; j < attributeStrings.length; j++) {
+        HBox statisticBox = new HBox();
+        statisticBox.setPadding(new Insets(5));
+        statisticBox.setAlignment(Pos.CENTER);
+        int value;
+        if (j == 0) {
+          value = player.getStatistic().getNumberOfTroops();
+        } else {
+          value = player.getStatistic().getNumberOfOwnedCountries();
+        }
+        Label statisticName = new Label(attributeStrings[j]);
+        statisticName.setStyle("-fx-font-size: 15px;");
+        Label userStat = new Label(Integer.toString(value));
+        userStat.setStyle("-fx-font-size: 15px; -fx-font-weight: bold");
+        statisticBox.getChildren().addAll(statisticName, userStat);
+        statisticsGrid.add(statisticBox, i, j + 1);
+      }
     }
-
-//    VBox statisticsVBox = new VBox();
-//    Label statisticsTitleLabel = new Label("This is Statistics popup.");
-//    statisticsTitleLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-//    statisticsVBox.getChildren().addAll(statisticsTitleLabel);
     statisticPane.setCenter(statisticsGrid);
     statisticPane.setPrefSize(gameScene.getWidth() * 0.7, gameScene.getHeight() * 0.7);
     statisticPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
 
     statisticPopup = new Popup();
     statisticPopup.getContent().add(statisticPane);
-
     DropShadow dropShadow = new DropShadow();
     dropShadow.setColor(Color.BLACK);
     dropShadow.setRadius(10);
     statisticPane.setEffect(dropShadow);
-
     double popupWidth = statisticPane.getPrefWidth();
     double popupHeight = statisticPane.getPrefHeight();
-
     statisticPopup.setX(
         (gameScene.getWindow().getX() + gameScene.getWindow().getWidth() / 2) - popupWidth / 2);
     statisticPopup.setY(
         (gameScene.getWindow().getY() + gameScene.getWindow().getHeight() / 2) - popupHeight / 2);
-
     statisticPopup.show(gameScene.getWindow());
     isStatisticsShowing = true;
   }
