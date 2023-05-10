@@ -26,6 +26,8 @@ public class Statistic {
         ", troopsGained=" + troopsGained +
         ", countriesWon=" + countriesWon +
         ", countriesLost=" + countriesLost +
+        ", numberOfOwnedCountries=" + numberOfOwnedCountries +
+        ", numberOfTroops=" + numberOfTroops +
         '}';
   }
 

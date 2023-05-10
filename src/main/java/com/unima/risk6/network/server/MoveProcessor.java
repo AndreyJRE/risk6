@@ -20,6 +20,7 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.network.server.exceptions.InvalidMoveException;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -79,6 +80,7 @@ public class MoveProcessor {
         if (countryToReinforce.getPlayer().equals(currentPlayer)) {
           currentPlayer.setInitialTroops(currentPlayer.getInitialTroops() - 1);
           countryToReinforce.setTroops(countryToReinforce.getTroops() + 1);
+          this.updateInGameStatistics();
         } else {
           throw new InvalidMoveException("The Reinforce is not valid because country is not yours");
         }
@@ -91,6 +93,7 @@ public class MoveProcessor {
         countryToReinforce.setTroops(countryToReinforce.getTroops() + reinforce.getToAdd());
         currentPlayer.setDeployableTroops(
             currentPlayer.getDeployableTroops() - reinforce.getToAdd());
+        this.updateInGameStatistics();
       }
       gameController.addLastMove(reinforce);
     } else {
@@ -171,6 +174,7 @@ public class MoveProcessor {
         if (playerController.getNumberOfCountries() == 0) {
           gameController.removeLostPlayer(defender);
         }
+        this.updateInGameStatistics();
       }
       playerController.setPlayer(attacker);
     } else {
@@ -332,8 +336,13 @@ public class MoveProcessor {
         .findFirst().orElse(null);
   }
 
-  public void updateStatistics() {
-
+  public void updateInGameStatistics() {
+    HashMap<Player, Integer> troopCounter = gameController.countTroops();
+    HashMap<Player, Integer> countryCounter = gameController.countCountries();
+    gameController.getGameState().getActivePlayers()
+        .forEach(n -> n.getStatistic().setNumberOfOwnedCountries(countryCounter.get(n)));
+    gameController.getGameState().getActivePlayers()
+        .forEach(n -> n.getStatistic().setNumberOfTroops(troopCounter.get(n)));
   }
 
   /**
