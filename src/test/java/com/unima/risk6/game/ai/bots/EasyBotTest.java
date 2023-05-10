@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class EasyBotTest {
@@ -47,6 +48,17 @@ class EasyBotTest {
     }
     enemyController = new PlayerController();
     enemyController.setPlayer(enemy);
+  }
+
+  @BeforeEach
+  void reset() {
+    gameState.getCountries().forEach(country -> {
+      country.setPlayer(null);
+      country.setHasPlayer(false);
+      country.setTroops(0);
+    });
+    botTestController.getPlayer().getCountries().clear();
+    enemy.getCountries().clear();
   }
 
   @Test
@@ -119,6 +131,10 @@ class EasyBotTest {
 
   @Test
   void createAllReinforcementsTest() {
+    gameState.getCountries().forEach(country -> {
+      enemyController.addCountry(country);
+      country.setTroops(1);
+    });
     Country middleEast = getCountryByName(CountryName.MIDDLE_EAST);
     botTestController.addCountry(middleEast);
     middleEast.setTroops(1);
@@ -128,7 +144,7 @@ class EasyBotTest {
     ((EasyBot) easyBot).setDeployableTroops(5);
     reinforcements = easyBot.createAllReinforcements();
     assertTrue(reinforcements.size() > 0);
-    assertEquals(reinforcements.get(0).getCountry(), middleEast);
+    assertEquals(middleEast, reinforcements.get(0).getCountry());
     int sumOfTroops = reinforcements.stream().mapToInt(Reinforce::getToAdd).sum();
     assertEquals(5, sumOfTroops);
   }

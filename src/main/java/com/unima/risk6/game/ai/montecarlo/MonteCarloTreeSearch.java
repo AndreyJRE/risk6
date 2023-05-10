@@ -49,12 +49,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * An implementation of the MCTS Algorithm to be used by the Hard Bot for decision-making. The four
+ * main steps of selection, expansion, simulation, and backpropagation are implemented, allowing the
+ * Hard Bot to consider future states of the game in order to make an informed decision on its next
+ * move.
+ *
+ * @author eameri
+ */
 public class MonteCarloTreeSearch {
 
 
   private static int counter = 0;
-  private static final int SIMULATION_COUNT = 100; // best choice is more, but shorter simulations
-  private static final int SIMULATION_TIME_LIMIT = 500;
+  private static final int SIMULATION_COUNT = 40; // best choice is more, but shorter simulations
+  private static final int SIMULATION_TIME_LIMIT = 300;
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -89,6 +97,7 @@ public class MonteCarloTreeSearch {
   public MoveTriplet getBestMove(GameState game) {
     MonteCarloNode root = new MonteCarloNode(game, null);
     for (int i = 0; i < SIMULATION_COUNT; i++) {
+      System.out.println("i = " + i);
       // does reassigning node in select mess up root?
       MonteCarloNode node = select(root);
       Player result = null;
@@ -127,15 +136,28 @@ public class MonteCarloTreeSearch {
     GameController simulationController = new GameController(oneTurn);
     PlayerController playerController = new PlayerController();
     playerController.setPlayer(simulationController.getCurrentPlayer());
+    AiBot hardBot = (AiBot) simulationController.getCurrentPlayer();
     DeckController deckController = new DeckController(oneTurn.getDeck());
     MoveProcessor moveProcessor = new MoveProcessor(playerController, simulationController,
         deckController);
-    MoveTriplet move = this.playTurn(simulationController, playerController, moveProcessor);
+    List<Reinforce> reinforcements = new ArrayList<>();
+    Queue<CountryPair> attacks = new LinkedList<>();
+    Fortify fortify = null;
+    if (((Player) hardBot).getCurrentPhase() == GamePhase.REINFORCEMENT_PHASE) {
+      reinforcements = simulateReinforcements(moveProcessor, hardBot);
+    }
+    if (((Player) hardBot).getCurrentPhase() == GamePhase.ATTACK_PHASE) {
+      attacks = simulateAttacks(simulationController, moveProcessor, hardBot);
+    }
+    if (((Player) hardBot).getCurrentPhase() == GamePhase.FORTIFY_PHASE) {
+      fortify = simulateFortify(moveProcessor, hardBot);
+    }
+    MoveTriplet decision = new MoveTriplet(reinforcements, attacks, fortify);
     int playerCount = oneTurn.getActivePlayers().size();
     for (int i = 0; i < playerCount - 1; i++) {
       this.playTurn(simulationController, playerController, moveProcessor);
     }
-    return new MonteCarloNode(oneTurn, move, node);
+    return new MonteCarloNode(oneTurn, decision, node);
   }
 
 
@@ -317,6 +339,8 @@ public class MonteCarloTreeSearch {
         Fortify afterAttack = current.moveAfterAttack(attacks);
         if (afterAttack != null) {
           moveProcessor.processFortify(afterAttack);
+        } else {
+          allAttacks.remove(attacks); // we lost, don't try it!
         }
       }
     } while (current.attackAgain());

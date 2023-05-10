@@ -3,7 +3,6 @@ package com.unima.risk6.game.ai.bots;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.models.CountryPair;
@@ -161,19 +160,22 @@ class MediumBotTest {
 
   @Test
   void createAllReinforcementsTest2() {
+    gameState.getCountries().forEach(country -> {
+      enemyController.addCountry(country);
+      country.setTroops(1);
+    });
     ((MediumBot) mediumBot).setCurrentPhase(GamePhase.CLAIM_PHASE);
     ((MediumBot) mediumBot).setInitialTroops(10);
     Country middleEast = getCountryByName(CountryName.MIDDLE_EAST);
     botTestController.addCountry(middleEast);
     middleEast.setTroops(1);
-    for (Country adj : middleEast.getAdjacentCountries()) {
-      enemyController.addCountry(adj);
-      adj.setTroops(1);
-    }
     // should reinforce middle east with everything
-    List<Reinforce> reinforcements = mediumBot.createAllReinforcements();
-    assertTrue(reinforcements.size() > 0);
-    assertEquals(10, reinforcements.stream().mapToInt(Reinforce::getToAdd).sum());
+    for (int i = 0; i < 10; i++) {
+      Reinforce reinforcements = mediumBot.claimCountry();
+      assertNotNull(reinforcements);
+      assertEquals(1, reinforcements.getToAdd());
+      assertEquals(middleEast, reinforcements.getCountry());
+    }
   }
 
   @Test

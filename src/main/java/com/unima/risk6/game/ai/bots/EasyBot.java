@@ -54,7 +54,7 @@ public class EasyBot extends Player implements AiBot {
   public Reinforce claimCountry() {
     List<Country> unclaimed = this.currentGameState.getCountries().stream()
         .filter(country -> !country.hasPlayer()).toList();
-    if (unclaimed.size() == 0) {
+    if (unclaimed.isEmpty()) {
       return new Reinforce(this.getRandomCountryFromSet(this.getCountries()), 1);
     } else {
       return new Reinforce(unclaimed.get(RNG.nextInt(unclaimed.size())), 1);
@@ -161,11 +161,7 @@ public class EasyBot extends Player implements AiBot {
    * @return A randomly chosen CountryPair from the list.
    */
   private CountryPair getRandomCountryPair(List<CountryPair> decision) {
-    if (decision.size() == 0) {
-      return null;
-    } else {
-      return decision.get(RNG.nextInt(decision.size()));
-    }
+    return !decision.isEmpty() ? decision.get(RNG.nextInt(decision.size())) : null;
   }
 
   /**

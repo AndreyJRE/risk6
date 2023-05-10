@@ -18,10 +18,18 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * A bot used for internal simulations as a replacement for the Hard Bot and for human players. For
+ * each of the 3 big phases, it collects a list of moves it deems optimal, and randomly decides
+ * which ones should be executed.
+ *
+ * @author eameri
+ */
 public class MonteCarloBot extends GreedyBot implements AiBot {
 
   private static final Random RNG = new Random();
   private double attackProbability = 1.;
+  private final double attackModifier = 0.95;
 
 
   /**
@@ -134,7 +142,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     int reinforceTroopsCopy = this.getDeployableTroops();
     Map<Country, Integer> allPossibilities = this.getReinforceMoves();
     Map<Country, Integer> allPossibilitiesCopy = new HashMap<>(allPossibilities);
-    while (reinforceTroopsCopy > 0 && allPossibilitiesCopy.size() > 0) {
+    while (reinforceTroopsCopy > 0 && !allPossibilitiesCopy.isEmpty()) {
       // create reinforcements here with troopnumber check
       Country choice = this.pickRandomCountryFromSet(allPossibilitiesCopy.keySet());
       int troopsTopLimit = Math.min(reinforceTroopsCopy, allPossibilitiesCopy.get(choice));
@@ -164,20 +172,20 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
    */
   @Override
   public CountryPair createAttack() {
-    return this.getAttackMoves().size() > 0 ? this.getAttackMoves().get(0) : null;
+    return !this.getAttackMoves().isEmpty() ? this.getAttackMoves().get(0) : null;
   }
 
   @Override
   public Fortify createFortify() {
     List<Fortify> fortifies = this.getFortifyMoves();
-    return fortifies.size() > 0 ? fortifies.get(RNG.nextInt(fortifies.size())) : null;
+    return !fortifies.isEmpty() ? fortifies.get(RNG.nextInt(fortifies.size())) : null;
   }
 
 
   @Override
   public boolean attackAgain() {
-    this.attackProbability *= 0.9;
-    return this.getAttackMoves().size() > 0 && RNG.nextDouble() < this.attackProbability;
+    this.attackProbability *= this.attackModifier;
+    return !this.getAttackMoves().isEmpty() && RNG.nextDouble() < this.attackProbability;
   }
 
 }
