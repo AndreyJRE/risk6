@@ -9,6 +9,7 @@ import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.CountryPair;
+import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
@@ -19,7 +20,6 @@ import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
@@ -122,7 +122,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             moveProcessor.clearLastMoves();
             if (!currentPlayer.equals(currentPlayerAfter)
                 && currentPlayerAfter instanceof AiBot aiBot) {
-              System.out.println("Test AI bot server");
               processBotMove(aiBot, channelGroup);
             }
 
@@ -240,7 +239,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     try {
       switch (player.getCurrentPhase()) {
         case CLAIM_PHASE -> {
-          Thread.sleep(1000);
+          Thread.sleep(500);
           Reinforce reinforce = aiBot.claimCountry();
           moveProcessor.processReinforce(reinforce);
           sendGamestate(channelGroup);
@@ -249,6 +248,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
           sendGamestate(channelGroup);
           moveProcessor.clearLastMoves();
+          Thread.sleep(500);
+          Player currentPlayer = moveProcessor.getGameController().getGameState()
+              .getCurrentPlayer();
+          if (!player.getUser().equals(currentPlayer.getUser())
+              && currentPlayer instanceof AiBot aiBot1) {
+            processBotMove(aiBot1, channelGroup);
+          }
         }
         case REINFORCEMENT_PHASE -> {
           processBotReinforcementPhase(aiBot, channelGroup, player);
@@ -256,6 +262,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           processBotAttackPhase(aiBot, channelGroup, player);
           Thread.sleep(3000);
           processBotFortifyPhase(aiBot, channelGroup, player);
+          Thread.sleep(500);
+          Player currentPlayer = moveProcessor.getGameController().getGameState()
+              .getCurrentPlayer();
+          if (!player.getUser().equals(currentPlayer.getUser())
+              && currentPlayer instanceof AiBot aiBot1) {
+            processBotMove(aiBot1, channelGroup);
+          }
 
         }
 
@@ -329,8 +342,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           sendGamestate(channelGroup);
           moveProcessor.clearLastMoves();
           Thread.sleep(3000);
-        } while (!attack1.getHasConquered()
-            && attack1.getAttackingCountry().getTroops() >= 2);
+        } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
 
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
           sendGameOver(channelGroup);
@@ -392,6 +404,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   }
 
   private void sendGamestate(ChannelGroup channelGroup) {
+    System.out.println("Serilize" + " Test");
+    System.out.println(moveProcessor.getDeckController().getDeck().getDeckCards());
     String message = Serializer.serialize(
         new StandardMessage(moveProcessor.getGameController().getGameState()));
     LOGGER.debug(message);
@@ -449,7 +463,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     gameState.setChatEnabled(gameLobby.isChatEnabled());
     gameState.setPhaseTime(gameLobby.getPhaseTime());
     moveProcessor.setGameController(new GameController(gameState));
-    moveProcessor.setDeckController(new DeckController(new Deck()));
+    moveProcessor.setDeckController(new DeckController(gameState.getDeck()));
     PlayerController playerController = new PlayerController();
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
@@ -463,6 +477,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
+    Probabilities.init();
   }
 
 

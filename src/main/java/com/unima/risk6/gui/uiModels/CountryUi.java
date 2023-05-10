@@ -104,9 +104,8 @@ public class CountryUi extends Group {
       if (newValue) {
         switch (currentPhase) {
           case CLAIM_PHASE -> {
-            int numberOfNeutralCountries =
-                GameConfiguration.getGameState().getCountries().stream()
-                    .filter(country1 -> !country1.hasPlayer()).toList().size();
+            int numberOfNeutralCountries = GameConfiguration.getGameState().getCountries().stream()
+                .filter(country1 -> !country1.hasPlayer()).toList().size();
             if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
                 || !country.hasPlayer()) {
               this.setCursor(Cursor.CROSSHAIR);
@@ -137,11 +136,8 @@ public class CountryUi extends Group {
       GamePhase currentPhase = playerController.getPlayer().getCurrentPhase();
       switch (currentPhase) {
         case CLAIM_PHASE -> {
-          int numberOfNeutralCountries =
-              GameConfiguration.getGameState().getCountries().stream()
-                  .filter(country -> !country.hasPlayer())
-                  .toList()
-                  .size();
+          int numberOfNeutralCountries = GameConfiguration.getGameState().getCountries().stream()
+              .filter(country -> !country.hasPlayer()).toList().size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
               || !country.hasPlayer()) {
             playerController.sendReinforce(this.country, 1);
@@ -187,18 +183,15 @@ public class CountryUi extends Group {
   public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath,
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
     adjacentCountryPath.setOnMouseEntered(mouseEvent -> adjacentCountryPath.setCursor(Cursor.HAND));
-    adjacentCountryPath.setOnMouseClicked(
-        event -> {
-          if (gamePhase == ATTACK_PHASE) {
-            showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1),
-                adjacentCountryUi,
-                gamePhase);
-          } else {
-            showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi,
-                gamePhase);
-          }
+    adjacentCountryPath.setOnMouseClicked(event -> {
+      if (gamePhase == ATTACK_PHASE) {
+        showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1), adjacentCountryUi,
+            gamePhase);
+      } else {
+        showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi, gamePhase);
+      }
 
-        });
+    });
   }
 
   public void animateAttackPhase(Group countriesGroup) {
@@ -256,8 +249,7 @@ public class CountryUi extends Group {
 
     Circle leftCircle = new Circle(25);
     Image leftImage = new Image(
-        Objects.requireNonNull(getClass()
-                .getResource("/com/unima/risk6/pictures/minusIcon.png"))
+        Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/minusIcon.png"))
             .toString());
     leftCircle.setFill(new ImagePattern(leftImage));
     leftCircle.setOnMouseClicked(minusEvent -> {
@@ -269,8 +261,8 @@ public class CountryUi extends Group {
 
     Circle rightCircle = new Circle(25);
     Image rightImage = new Image(
-        Objects.requireNonNull(getClass()
-            .getResource("/com/unima/risk6/pictures/plusIcon.png")).toString());
+        Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png"))
+            .toString());
     rightCircle.setFill(new ImagePattern(rightImage));
     rightCircle.setOnMouseClicked(plusEvent -> {
       if (amountOfTroops.get() < troopBound) {
@@ -281,8 +273,8 @@ public class CountryUi extends Group {
 
     Circle confirmCircle = new Circle(25);
     Image confirmImage = new Image(
-        Objects.requireNonNull(getClass()
-            .getResource("/com/unima/risk6/pictures/confirmIcon.png")).toString());
+        Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png"))
+            .toString());
     confirmCircle.setFill(new ImagePattern(confirmImage));
     confirmCircle.setOnMouseClicked(confirmEvent -> {
       //TODO fortify or attack depending
@@ -459,7 +451,6 @@ public class CountryUi extends Group {
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
       CountryUi defender) {
     showAttackDicePopUp(attack);
-    System.out.println(attack);
     if (attack.getHasConquered()) {
       Color playerColor = activePlayerUi.getPlayerUi().getPlayerColor();
       FillTransition highlightTransition = new FillTransition(Duration.seconds(1),

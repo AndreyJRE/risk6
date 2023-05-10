@@ -2,6 +2,7 @@ package com.unima.risk6.network.client;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
@@ -128,6 +129,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
                     .getContent();
                 GameConfiguration.setGameState(g);
+                Probabilities.init();
                 CountriesUiConfiguration.configureCountries(g.getCountries());
                 Platform.runLater(SceneConfiguration::startGame);
               }
