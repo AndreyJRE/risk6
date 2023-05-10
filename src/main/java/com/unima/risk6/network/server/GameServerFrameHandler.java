@@ -257,6 +257,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
         }
         case REINFORCEMENT_PHASE -> {
+          processBotHandIn(channelGroup);
+          Thread.sleep(1500);
           processBotReinforcementPhase(aiBot, channelGroup, player);
           Thread.sleep(3000);
           processBotAttackPhase(aiBot, channelGroup, player);
@@ -282,8 +284,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
-    processBotHandIn(channelGroup);
-    Thread.sleep(1000);
+    player.setDeployableTroops( // to ensure numbers are right
+        moveProcessor.getPlayerController().getPlayer().getDeployableTroops());
     List<Reinforce> reinforces = aiBot.createAllReinforcements();
     reinforces.stream().filter(x -> x.getToAdd() > 0).forEach(x -> {
       moveProcessor.processReinforce(x);
@@ -294,7 +296,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-
     });
     moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
     sendGamestate(channelGroup);
@@ -345,7 +346,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           moveProcessor.clearLastMoves();
           Thread.sleep(3500);
         } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
-        aiBot.setGameState(moveProcessor.getGameController().getGameState());
         aiBot.setGameState(moveProcessor.getGameController().getGameState());
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
           sendGameOver(channelGroup);
