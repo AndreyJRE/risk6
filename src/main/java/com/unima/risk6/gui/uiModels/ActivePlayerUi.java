@@ -37,6 +37,10 @@ public class ActivePlayerUi extends Group {
 
   private Rectangle fortifyRectangle;
 
+  private Label userLabel;
+
+  private Rectangle userRectangle;
+
   public ActivePlayerUi(double radiusX, double radiusY, double rectangleWidth,
       double rectangleHeight, PlayerUi playerUi) {
     this.setId("activePlayerUi");
@@ -98,7 +102,28 @@ public class ActivePlayerUi extends Group {
     phaseLabel.setText("Claim a territory");
     iconsPane.getChildren().add(phaseLabel);
     StackPane.setAlignment(phaseLabel, Pos.CENTER);
-    getChildren().addAll(rectangle, ellipse, iconsPane);
+
+    userLabel = new Label(player.getUser());
+    userLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
+    if (userLabel.getWidth() > ellipse.getRadiusX() * 2 + 15) {
+      userRectangle = new Rectangle(userLabel.getWidth(), userLabel.getHeight() + 20);
+    } else {
+      userRectangle = new Rectangle(ellipse.getRadiusX() * 2 + 15, userLabel.getHeight() + 20);
+    }
+    userRectangle.setFill(Color.WHITE);
+    userRectangle.setStroke(this.playerUi.getPlayerColor());
+    userRectangle.setStrokeWidth(2);
+    userRectangle.setArcWidth(ellipse.getRadiusX() - 10);
+    userRectangle.setArcHeight(userRectangle.getHeight());
+
+    StackPane playerNameStack = new StackPane();
+    playerNameStack.setPrefSize(userRectangle.getWidth(), userRectangle.getHeight());
+    playerNameStack.setLayoutX(0 - ellipse.getRadiusX() - 10);
+    playerNameStack.setLayoutY(ellipse.getRadiusY() - 10);
+    playerNameStack.getChildren().addAll(userRectangle, userLabel);
+    StackPane.setAlignment(userLabel, Pos.CENTER);
+
+    getChildren().addAll(rectangle, ellipse, iconsPane, playerNameStack);
 
   }
 
@@ -134,6 +159,8 @@ public class ActivePlayerUi extends Group {
     ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(playerUi.getPlayerColor());
     rectangle.setStroke(playerUi.getPlayerColor());
+    userRectangle.setStroke(playerUi.getPlayerColor());
+    userLabel.setText(player.getUser());
     switch (playerUi.getPlayer().getCurrentPhase()) {
       case REINFORCEMENT_PHASE -> {
         phaseLabel.setText("Reinforcement");
