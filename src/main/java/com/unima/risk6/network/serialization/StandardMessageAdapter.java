@@ -11,8 +11,8 @@ import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.network.message.ContentType;
 import com.unima.risk6.network.message.StandardMessage;
+import com.unima.risk6.network.message.enums.ContentType;
 import java.lang.reflect.Type;
 
 public class StandardMessageAdapter implements JsonDeserializer<StandardMessage> {

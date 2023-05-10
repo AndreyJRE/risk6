@@ -8,8 +8,8 @@ import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.client.GameClient;
 import com.unima.risk6.network.message.ChatMessage;
-import com.unima.risk6.network.message.ConnectionActions;
 import com.unima.risk6.network.message.ConnectionMessage;
+import com.unima.risk6.network.message.enums.ConnectionActions;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.unima.risk6.network.message;
+package com.unima.risk6.network.message.enums;
 
 public enum ContentType {
   /**

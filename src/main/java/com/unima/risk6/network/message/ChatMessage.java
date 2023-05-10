@@ -1,5 +1,7 @@
 package com.unima.risk6.network.message;
 
+import com.unima.risk6.network.message.enums.ContentType;
+
 public class ChatMessage extends Message {
 
   public ChatMessage(String content) {

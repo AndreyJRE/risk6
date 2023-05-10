@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.unima.risk6.network.message.ChatMessage;
-import com.unima.risk6.network.message.ContentType;
+import com.unima.risk6.network.message.enums.ContentType;
 import java.lang.reflect.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

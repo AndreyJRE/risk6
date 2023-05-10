@@ -9,8 +9,8 @@ import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
-import com.unima.risk6.network.message.ConnectionActions;
 import com.unima.risk6.network.message.ConnectionMessage;
+import com.unima.risk6.network.message.enums.ConnectionActions;
 import java.lang.reflect.Type;
 
 public class ConnectionMessageAdapter implements JsonDeserializer<ConnectionMessage> {
