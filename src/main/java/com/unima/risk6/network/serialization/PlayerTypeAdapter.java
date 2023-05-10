@@ -17,6 +17,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.lang.reflect.Type;
 import java.util.Set;
@@ -76,6 +77,7 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     jsonObject.addProperty("initialTroops", player.getInitialTroops());
     jsonObject.addProperty("type", player.getClass().getSimpleName());
     jsonObject.addProperty("hashCode", player.hashCode());
+    jsonObject.add("statistic", context.serialize(player.getStatistic(), Statistic.class));
 
     return jsonObject;
   }
@@ -147,7 +149,7 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     player.setCurrentPhase(currentPhase);
     player.setDeployableTroops(deployableTroops);
     player.setInitialTroops(initialTroops);
-
+    player.setStatistic(context.deserialize(jsonObject.get("statistic"), Statistic.class));
     return player;
   }
 

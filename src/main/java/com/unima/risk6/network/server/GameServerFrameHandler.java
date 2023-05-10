@@ -197,6 +197,21 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendUpdatedServerLobby(serverLobby);
 
                 }
+                case REMOVE_BOT_FROM_LOBBY -> {
+                  LOGGER.debug(
+                      "At REMOVE_BOT_FROM_LOBBY " + connectionMessage.getContent()
+                          .getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
+                      NetworkConfiguration.getServerLobby());
+                  String bot = gameLobbyFromServer.getBots().stream()
+                      .filter(x -> !gameLobby.getBots().contains(x))
+                      .findFirst().get();
+                  gameLobbyFromServer.getBots().remove(bot);
+                  ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
+                  sendGameLobby(gameLobbyFromServer);
+                  sendUpdatedServerLobby(serverLobby);
+                }
                 case START_GAME -> {
                   //TODO MOVE_CONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent()

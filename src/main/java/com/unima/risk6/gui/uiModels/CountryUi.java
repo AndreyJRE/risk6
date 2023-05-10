@@ -352,7 +352,7 @@ public class CountryUi extends Group {
     popUp.show(gamePane.getScene().getWindow());
   }
 
-  private void removeArrowsAndAdjacentCountries() {
+  public void removeArrowsAndAdjacentCountries() {
     Group countriesGroup = (Group) this.getParent();
     countriesGroup.getChildren().removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
         || countriesGroupNode instanceof SVGPath);
@@ -395,7 +395,8 @@ public class CountryUi extends Group {
     PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
       dicePopup.hide();
-      if (lastAttack.getAttackingCountry().getTroops() > 1 && lastAttack.getHasConquered()
+      //TODO last attack attacker check if he has more than 1 troop
+      if (attacker.getCountry().getTroops() > 1 && lastAttack.getHasConquered()
           && activePlayerUi.getPlayerUi().getPlayer()
           .equals(GameSceneController.getPlayerController().getPlayer())) {
         attacker.showAmountOfTroopsPopUp(
@@ -494,16 +495,11 @@ public class CountryUi extends Group {
       revertTransition.setInterpolator(Interpolator.EASE_BOTH);
       SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
           revertTransition);
-      DropShadow glow = new DropShadow();
-      glow.setColor(Color.WHITE);
-      glow.setRadius(6.5);
-      glow.setSpread(0.1);
-      this.countryPath.setEffect(glow);
-      sequentialTransition.setOnFinished(e -> this.countryPath.setEffect(null));
       sequentialTransition.play();
       return;
     }
-    FillTransition highlightTransition = new FillTransition(Duration.seconds(1), this.countryPath,
+    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.65),
+        this.countryPath,
         countryPathColor, playerColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     glowEffect.setColor(playerColor);

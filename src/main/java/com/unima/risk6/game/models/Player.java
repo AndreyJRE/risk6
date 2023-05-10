@@ -13,7 +13,7 @@ public class Player {
   private final String user;
   private int deployableTroops;
   private int initialTroops;
-  private final Statistic statistic;
+  private Statistic statistic;
   private GamePhase currentPhase;
   private boolean hasConquered;
 
@@ -142,6 +142,10 @@ public class Player {
 
   public void setHasConquered(boolean hasConquered) {
     this.hasConquered = hasConquered;
+  }
+
+  public void setStatistic(Statistic statistic) {
+    this.statistic = statistic;
   }
 }
 

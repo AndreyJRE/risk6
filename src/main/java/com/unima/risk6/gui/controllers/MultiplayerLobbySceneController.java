@@ -77,27 +77,36 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
+    if (checkIfUserIsOwner()) {
+      Button play = new Button("Play");
+      applyButtonStyle(play);
+      play.setPrefWidth(470);
+      play.setPrefHeight(40);
+      play.setAlignment(Pos.CENTER);
+      play.setFont(new Font(18));
 
-    Button play = new Button("Play");
-    applyButtonStyle(play);
-    play.setPrefWidth(470);
-    play.setPrefHeight(40);
-    play.setAlignment(Pos.CENTER);
-    play.setFont(new Font(18));
+      HBox playButton = new HBox(play);
+      playButton.setAlignment(Pos.CENTER);
+      play.setOnMouseClicked(e -> handlePlayButton());
+      root.setBottom(playButton);
+      BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
+    } else {
+      Label waiting = new Label("Waiting for the host to start the game...");
+      waiting.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;");
+      HBox waitingLabelBox = new HBox(waiting);
+      waitingLabelBox.setAlignment(Pos.CENTER);
+      root.setBottom(waitingLabelBox);
+      BorderPane.setMargin(waitingLabelBox, new Insets(10, 20, 20, 10));
 
-    HBox playButton = new HBox(play);
-    playButton.setAlignment(Pos.CENTER);
-    playButton.setVisible(checkIfUserIsOwner());
-    play.setOnMouseClicked(e -> handlePlayButton());
+    }
 
     //TODO: Implement Gridpane for Multiplayer Settings
 
-    root.setBottom(playButton);
     root.setTop(titleBox);
     root.setLeft(backButton);
 
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
-    BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
+
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
 
   }
@@ -109,15 +118,12 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   private void handleQuitGameLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
-      //gameLobby.removeUser(GameConfiguration.getMyGameUser());
-
       LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser());
       sceneController.activate(SceneName.SELECT_LOBBY);
     }
   }
 
   private void initHBox() {
-    System.out.println(gameLobby);
     HBox centralHBox = new HBox();
     List<UserDto> users = gameLobby.getUsers();
     for (UserDto user : users) {
@@ -132,13 +138,15 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
       if (bot.contains("Hard")) {
         i = 2;
       }
-      System.out.println(bot);
       VBox botVBox = createBotVBox(i, bot);
       centralHBox.getChildren().add(botVBox);
     }
     if (gameLobby.getBots().size() + gameLobby.getUsers().size() < gameLobby.getMaxPlayers()) {
       StackPane plus = createPlusStackpane();
-      centralHBox.getChildren().add(plus);
+      if (checkIfUserIsOwner()) {
+        centralHBox.getChildren().add(plus);
+      }
+
     }
     centralHBox.setAlignment(Pos.CENTER);
     centralHBox.setSpacing(20.0);
@@ -313,11 +321,17 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     Button removeButton = new Button("Remove");
     removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
         + "-fx-background-color: lightgrey; -fx-border-color: black;");
-    // removeButton.setOnMouseClicked(e -> removeBot(bot));
+    removeButton.setOnMouseClicked(e -> removeBot(botName));
+    removeButton.setVisible(checkIfUserIsOwner());
     VBox removeBox = new VBox(removeButton, botBox);
     removeBox.setAlignment(Pos.CENTER);
     removeBox.setSpacing(10);
     return removeBox;
+  }
+
+  public void removeBot(String bot) {
+    gameLobby.getBots().remove(bot);
+    LobbyConfiguration.sendRemoveBotFromLobby(gameLobby);
   }
 
   private void showMessage() {

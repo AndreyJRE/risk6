@@ -1,8 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.services.GameStatisticService;
-import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
@@ -347,6 +344,9 @@ public class GameSceneController implements GameStateObserver {
     nextPhaseButton.setOnAction(event -> {
       GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
       PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+      for (CountryUi countryUi : countriesUis) {
+        countryUi.removeArrowsAndAdjacentCountries();
+      }
     });
 
     Button cardsButton = new Button();
@@ -498,14 +498,14 @@ public class GameSceneController implements GameStateObserver {
       userCircle.setStroke(Color.BLACK);
       ImageView userImage;
       if (player instanceof EasyBot) {
-        userImage = new ImageView(new Image(
-            getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+        userImage = new ImageView(
+            new Image(getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
       } else if (player instanceof MediumBot) {
         userImage = new ImageView(new Image(
             getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
       } else if (player instanceof HardBot) {
-        userImage = new ImageView(new Image(
-            getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+        userImage = new ImageView(
+            new Image(getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
       } else {
         userImage = new ImageView(new Image(
             getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
@@ -577,7 +577,6 @@ public class GameSceneController implements GameStateObserver {
   }
 
   private void updateReferencesFromGameState() {
-    //TODO Update all references to the new gameState
     this.gameState.getActivePlayers().forEach(player -> {
       if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi.setPlayer(player);
@@ -617,11 +616,13 @@ public class GameSceneController implements GameStateObserver {
   }
 
   public void animateTroopsMovement(Fortify fortify) {
-    double maxOffsetX = 6;
-    double maxOffsetY = 6;
+    double maxOffsetX = 2.5;
+    double maxOffsetY = 2.5;
+    Image image = new Image(
+        getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString());
+
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
-      ImageView imageView = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString()));
+      ImageView imageView = new ImageView(image);
       imageView.setFitWidth(35);
       imageView.setFitHeight(35);
       double offsetX = Math.random() * maxOffsetX;
@@ -687,13 +688,6 @@ public class GameSceneController implements GameStateObserver {
   }
 
   private void animateHandIn(HandIn handIn) {
-  }
-
-  public PlayerUi getPlayerUiByCurrentPlayer() {
-    return playerUis.stream()
-        .filter(playerUi -> gameState.getCurrentPlayer().equals(playerUi.getPlayer())).findFirst()
-        .get();
-
   }
 
   public boolean checkIfCurrentPlayerIsMe() {

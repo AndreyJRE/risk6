@@ -20,5 +20,5 @@ public enum ConnectionActions {
   JOIN_BOT_GAME_LOBBY,
 
   //Currently not Used
-  ACCEPT_USER_GAME, ACCEPT_JOIN_GAME
+  ACCEPT_USER_GAME, REMOVE_BOT_FROM_LOBBY, ACCEPT_JOIN_GAME
 }

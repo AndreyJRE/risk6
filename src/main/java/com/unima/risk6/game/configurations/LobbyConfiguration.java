@@ -150,4 +150,9 @@ public class LobbyConfiguration {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.JOIN_BOT_GAME_LOBBY, gameLobby));
   }
+
+  public static void sendRemoveBotFromLobby(GameLobby gameLobby) {
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.REMOVE_BOT_FROM_LOBBY, gameLobby));
+  }
 }

@@ -116,7 +116,7 @@ public class TitleSceneController implements Initializable {
     background.setOnMouseClicked(event -> toggleButtonClicked());
     trigger.setOnMouseClicked(e -> toggleButtonClicked());
     switchedOn.addListener((obs, oldState, newState) -> {
-      boolean isOn = newState.booleanValue();
+      boolean isOn = newState;
       if (isOn) {
         NetworkConfiguration.startGameServer();
       } else {

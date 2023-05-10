@@ -66,8 +66,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     this.serverLobby = LobbyConfiguration.getServerLobby();
     this.user = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) selectMultiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     for (int i = lobbyChatSplit.getItems().size(); i > 0; i--) {
       lobbyChatSplit.getItems().remove(i - 1);
     }
@@ -146,11 +145,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
           setText(null);
           setGraphic(null);
         } else {
-          setText(
-              item.getLobbyName() + "  hosted by " + item.getName() + "              "
-                  + (item.getUsers().size() + item.getBots().size())
-                  + "/" + item.getMaxPlayers() + " Players" + "              min. Elo: "
-                  + item.getMatchMakingElo());
+          setText(item.getLobbyName() + "  hosted by " + item.getName() + "              " + (
+              item.getUsers().size() + item.getBots().size()) + "/" + item.getMaxPlayers()
+              + " Players" + "              min. Elo: " + item.getMatchMakingElo());
           setPadding(new Insets(20, 30, 20, 30)); // Padding für die Zellen
         }
       }
@@ -195,43 +192,29 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
 
   private void handleJoinButton() {
-   /* if (lobbyList.getSelectionModel().getSelectedIndex() == -1) {
-    } else {
-      GameLobby gameLobby = gameLobbies.get(lobbyList.getSelectionModel().getSelectedIndex());
-      MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-          .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-      if (scene == null) {
-        scene = new MultiplayerLobbyScene();
-        MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-            scene, gameLobby);
-        scene.setController(multiplayerLobbySceneController);
-        sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
-      }
-      pauseTitleSound();
-      lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-      sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
-    }*/
-    //TODO For test purposes
-    if (lobbyList.getSelectionModel().getSelectedItem() != null) {
-      if (lobbyList.getSelectionModel().getSelectedItem().getMatchMakingElo()
-          <= GameConfiguration.getMyGameUser().getWinLossRatio()) {
-        LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
-        lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-
+    GameLobby selectedLobby = lobbyList.getSelectionModel().getSelectedItem();
+    if (selectedLobby != null) {
+      if ((selectedLobby.getUsers().size() + selectedLobby.getBots().size())
+          == selectedLobby.getMaxPlayers()) {
+        showErrorDialog("Selected lobby is already full", "Please select another lobby!");
       } else {
-        boolean confirm = showConfirmationDialog("Missing experience",
-            "Your Win / Loss Ratio does not match the minimum required"
-                + " Ratio of the selected Lobby. Do you still want to continue?");
-        if (confirm) {
-          LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
+        if (selectedLobby.getMatchMakingElo() <= user.getWinLossRatio()) {
+          LobbyConfiguration.sendJoinLobby(selectedLobby);
           lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+        } else {
+          boolean confirm = showConfirmationDialog("Missing experience",
+              "Your Win / Loss Ratio does not match the minimum required"
+                  + " Ratio of the selected Lobby. Do you still want to continue?");
+          if (confirm) {
+            LobbyConfiguration.sendJoinLobby(selectedLobby);
+            lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+          }
         }
       }
     } else {
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
     }
   }
-
 
   private void handleCreateButton() {
     CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
