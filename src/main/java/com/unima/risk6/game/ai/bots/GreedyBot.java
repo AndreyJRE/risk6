@@ -43,9 +43,9 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   @Override
   public void setGameState(GameState gameState) {
-    this.allContinents = new ArrayList<>();
+    this.allContinents.clear();
     this.allContinents.addAll(gameState.getContinents());
-    this.allCountries = new ArrayList<>();
+    this.allCountries.clear();
     this.allCountries.addAll(gameState.getCountries());
   }
 
@@ -59,6 +59,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     playerController = new PlayerController();
     playerController.setPlayer(this);
     this.allContinents = new ArrayList<>();
+    this.allCountries = new ArrayList<>();
   }
 
   /**
@@ -71,6 +72,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     playerController = new PlayerController();
     playerController.setPlayer(this);
     this.allContinents = new ArrayList<>();
+    this.allCountries = new ArrayList<>();
   }
 
   public abstract List<Reinforce> createAllReinforcements();

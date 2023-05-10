@@ -106,9 +106,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
           //TODO Serializers
           case "HAND_IN" -> {
-            /*LOGGER.debug("The server received a hand in object");
+            LOGGER.debug("The server received a hand in object");
             HandIn handIn = (HandIn) Deserializer.deserialize(request).getContent();
-            moveProcessor.processHandIn(handIn); */
+            moveProcessor.processHandIn(handIn);
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
           }
@@ -328,12 +328,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
+    boolean quitEarly = false;
     do {
       CountryPair attack = aiBot.createAttack();
       if (attack == null) {
         moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
         sendGamestate(channelGroup);
         moveProcessor.clearLastMoves();
+        quitEarly = true;
       } else {
         Attack attack1;
         do {
@@ -341,9 +343,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           moveProcessor.processAttack(attack1);
           sendGamestate(channelGroup);
           moveProcessor.clearLastMoves();
-          Thread.sleep(3000);
+          Thread.sleep(3500);
         } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
-
+        aiBot.setGameState(moveProcessor.getGameController().getGameState());
+        aiBot.setGameState(moveProcessor.getGameController().getGameState());
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
           sendGameOver(channelGroup);
           break;
@@ -363,9 +366,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         }
       }
     } while (aiBot.attackAgain());
-    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-    sendGamestate(channelGroup);
-    moveProcessor.clearLastMoves();
+    if (!quitEarly) {
+      moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+    }
   }
 
   private void sendGameOver(ChannelGroup channelGroup) {

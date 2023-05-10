@@ -36,7 +36,7 @@ public class MediumBot extends GreedyBot implements AiBot {
   @Override
   public List<Reinforce> createAllReinforcements() {
     List<Reinforce> allReinforcements = new ArrayList<>();
-    this.reinforceTroopsCopy = this.getDeployableTroops() + this.getInitialTroops();
+    this.reinforceTroopsCopy = this.getDeployableTroops();
     sortContinentsByHighestRelativePower();
     // reinforce defensively
     for (Continent continent : this.getAllContinents()) {
@@ -172,7 +172,7 @@ public class MediumBot extends GreedyBot implements AiBot {
 
   @Override
   public boolean attackAgain() {
-    return this.lastAttackSize > 1;
+    return this.lastAttackSize > 0;
   }
 
   /**

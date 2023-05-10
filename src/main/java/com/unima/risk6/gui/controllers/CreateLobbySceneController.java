@@ -34,7 +34,7 @@ public class CreateLobbySceneController {
   private final CreateLobbyScene createLobbyScene;
   private final SceneController sceneController;
   private final String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
-  ComboBox<String> turnTimeBox;
+  ComboBox<String> phaseTimeBox;
   ComboBox<String> maxPlayers;
   ComboBox<String> minElo;
   CheckBox chatCheck;
@@ -96,7 +96,8 @@ public class CreateLobbySceneController {
     anchorPane.setPadding(new Insets(60, 100, 60, 100));
 
     vBox.setStyle(
-        "-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+        "-fx-background-color: #FFFFFF; -fx-background-radius: 20;"
+            + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     AnchorPane.setTopAnchor(vBox, 0.0);
     AnchorPane.setRightAnchor(vBox, 0.0);
     AnchorPane.setBottomAnchor(vBox, 0.0);
@@ -121,7 +122,7 @@ public class CreateLobbySceneController {
   private void handleCreateButton() {
     gameLobby = new GameLobby(lobbyNameTextField.getText(), Integer.parseInt(maxPlayers.getValue()),
         SessionManager.getUser().getUsername(), chatCheck.isSelected(),
-        Integer.parseInt(minElo.getValue()), Integer.parseInt(turnTimeBox.getValue()),
+        Integer.parseInt(minElo.getValue()), Integer.parseInt(phaseTimeBox.getValue()),
         GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     LobbyConfiguration.sendCreateLobby(gameLobby);
@@ -139,7 +140,7 @@ public class CreateLobbySceneController {
     Label isChatEnabled = new Label("Enable in-game Chat: ");
     isChatEnabled.setStyle(labelStyle);
 
-    Label turnTime = new Label("Turn Time (seconds): ");
+    Label turnTime = new Label("Phase Time (seconds): ");
     turnTime.setStyle(labelStyle);
 
     Label matchMakingElo = new Label("Min. required Elo:");
@@ -151,11 +152,11 @@ public class CreateLobbySceneController {
     turnTime.setMinWidth(350);
     matchMakingElo.setMinWidth(350);
 
-    turnTimeBox = new ComboBox<>();
+    phaseTimeBox = new ComboBox<>();
     ObservableList<String> turnTimes = FXCollections.observableArrayList();
-    turnTimes.addAll("60", "90", "120", "150", "180", "300");
-    turnTimeBox.setItems(turnTimes);
-    turnTimeBox.setPrefWidth(800);
+    turnTimes.addAll("20", "30", "40", "50", "60");
+    phaseTimeBox.setItems(turnTimes);
+    phaseTimeBox.setPrefWidth(800);
 
     maxPlayers = new ComboBox<>();
     ObservableList<String> maxPlayersList = FXCollections.observableArrayList();
@@ -179,7 +180,7 @@ public class CreateLobbySceneController {
     // ComboBox styling
     String comboBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: "
         + "#cccccc; -fx-border-radius: 20; -fx-background-radius: 20;";
-    turnTimeBox.setStyle(comboBoxStyle);
+    phaseTimeBox.setStyle(comboBoxStyle);
     maxPlayers.setStyle(comboBoxStyle);
     minElo.setStyle(comboBoxStyle);
 
@@ -205,7 +206,7 @@ public class CreateLobbySceneController {
     centerGridPane.add(matchMakingElo, 0, 2);
     centerGridPane.add(minElo, 1, 2);
     centerGridPane.add(turnTime, 0, 3);
-    centerGridPane.add(turnTimeBox, 1, 3);
+    centerGridPane.add(phaseTimeBox, 1, 3);
     centerGridPane.add(isChatEnabled, 0, 4);
     centerGridPane.add(chatCheck, 1, 4);
     centerGridPane.setAlignment(Pos.CENTER);

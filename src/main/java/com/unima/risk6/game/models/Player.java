@@ -56,7 +56,7 @@ public class Player {
     this.user = toCopy.getUser();
     this.deployableTroops = toCopy.getDeployableTroops();
     this.initialTroops = toCopy.getInitialTroops();
-    this.statistic = null;
+    this.statistic = new Statistic();
     this.currentPhase = toCopy.getCurrentPhase();
     this.hasConquered = toCopy.getHasConquered();
   }

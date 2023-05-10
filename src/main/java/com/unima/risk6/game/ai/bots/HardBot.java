@@ -21,9 +21,10 @@ public class HardBot extends GreedyBot implements AiBot {
 
   private List<Reinforce> reinforces;
   private Queue<CountryPair> attacks;
-  private Fortify fortifies;
+  private Fortify fortify;
 
   private GameState gameState;
+  private boolean firstAttack;
 
 
   public HardBot(String username) {
@@ -42,9 +43,13 @@ public class HardBot extends GreedyBot implements AiBot {
 
   @Override
   public CountryPair createAttack() {
-    // keep trying to find legal attacks
+    if (firstAttack) {
+      updateBestMoves();
+      firstAttack = false;
+    }
+    System.out.println(attacks.size());
     CountryPair updated = null;
-    do {
+    while (!attacks.isEmpty()) {
       CountryPair toUpdate = this.attacks.poll();
       Country attacker = getNewCountryReference(toUpdate.getOutgoing());
       Country defender = getNewCountryReference(toUpdate.getIncoming());
@@ -53,14 +58,16 @@ public class HardBot extends GreedyBot implements AiBot {
         updated = new CountryPair(attacker, defender);
         break;
       }
-    } while (attacks.size() > 0);
+    }
     return updated;
   }
 
   @Override
   public Fortify createFortify() { // check if fortify conditions need to be validated
-    return new Fortify(getNewCountryReference(this.fortifies.getOutgoing()),
-        getNewCountryReference(this.fortifies.getIncoming()), this.fortifies.getTroopsToMove());
+    updateBestMoves();
+    System.out.println(fortify);
+    firstAttack = true;
+    return this.fortify;
   }
 
   /**
@@ -72,7 +79,7 @@ public class HardBot extends GreedyBot implements AiBot {
     MoveTriplet results = mcts.getBestMove(this.gameState);
     this.reinforces = results.reinforcements();
     this.attacks = results.attacks();
-    this.fortifies = results.fortify();
+    this.fortify = results.fortify();
   }
 
   /**
@@ -87,7 +94,7 @@ public class HardBot extends GreedyBot implements AiBot {
 
   @Override
   public boolean attackAgain() { // the hard bot will return all attacks at once
-    return this.attacks.size() > 0;
+    return !this.attacks.isEmpty();
   }
 
   private Country getNewCountryReference(Country country) {

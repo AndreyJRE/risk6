@@ -1,6 +1,8 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.models.Card;
+import com.unima.risk6.gui.controllers.GameSceneController;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Insets;
@@ -128,29 +130,37 @@ public class CardUi extends StackPane {
     newBottomBox.setAlignment(Pos.CENTER);
     BorderPane.setMargin(newBottomBox, new Insets(10));
     BorderPane cardPane = (BorderPane) this.getParent().getParent();
+    HandController handController = GameSceneController.getPlayerController().getHandController();
     int counter = 0;
     for (Node cardNode : cardBox.getChildren()) {
       if (((CardUi) cardNode).isClicked()) {
-        counter++;
+        handController.selectCardThroughCard(((CardUi) cardNode).getCard());
       }
     }
-    System.out.println(counter);
     cardPane.setBottom(newBottomBox);
-    if (counter == 3) {
-      //TODO: DIFFERENTIATE BETWEEN MATCHING TRIO OF CARDS AND NOT MATCHING
+
+    List<Card> selectedCards = handController.getHand().getSelectedCards();
+    if (handController.isExchangeable(selectedCards)) {
       Button handInButton = new Button("Hand in the cards!");
       handInButton.setStyle(
           "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
       handInButton.setFocusTraversable(false);
-      System.out.println(this.getParent().getParent());
+      handInButton.setOnMouseClicked(event -> handleHandInButton());
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(handInButton);
-    } else if (counter > 3) {
+
+    } else if (selectedCards.size() > 3) {
       Label removeCardLabel = new Label("You selected too many cards! Only three are allowed!");
       removeCardLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: red; -fx-font-weight: bold;");
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(removeCardLabel);
     }
+  }
+
+  private void handleHandInButton() {
+    HBox cardBox = (HBox) this.getParent();
+    cardBox.getChildren().clear();
+    GameSceneController.getPlayerController().sendHandIn();
   }
 
   public Card getCard() {

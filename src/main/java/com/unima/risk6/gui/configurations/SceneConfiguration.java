@@ -51,7 +51,6 @@ public class SceneConfiguration {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
-    //TODO If we want to go full screen we can use this
     sceneController.getStage().setFullScreen(true);
     gameSceneController.showOrderPopup();
     sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
@@ -66,7 +65,7 @@ public class SceneConfiguration {
       alert.getButtonTypes().setAll(buttonYes, buttonNo);
       alert.showAndWait().ifPresent(buttonType -> {
         if (buttonType == buttonYes) {
-          sceneController.getStage().close();
+          sceneController.close();
         }
         if (buttonType == buttonNo) {
           alert.close();
