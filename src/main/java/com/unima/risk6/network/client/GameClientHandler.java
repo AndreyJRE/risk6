@@ -109,7 +109,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
-              case "ACCEPT_SERVER_LOBBY" -> {
+              case "ACCEPT_JOIN_SERVER_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
@@ -139,8 +139,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 CountriesUiConfiguration.configureCountries(g.getCountries());
                 Platform.runLater(SceneConfiguration::startGame);
               }
-              case "ACCEPT_JOIN_LOBBY" -> {
-                LOGGER.debug("At ACCEPT_JOIN_LOBBY: Got a Lobby, overwrite game lobby");
+              case "ACCEPT_JOIN_GAME_LOBBY" -> {
+                LOGGER.debug("At ACCEPT_JOIN_GAME_LOBBY: Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
                 LobbyConfiguration.setGameLobby(gameLobby);

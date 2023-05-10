@@ -436,13 +436,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(Serializer.serialize(
-          new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_SERVER_LOBBY, serverLobby))));
+          new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_JOIN_SERVER_LOBBY,
+              serverLobby))));
     }
   }
 
   private void sendGameLobby(GameLobby gameLobby) {
     String serializedGameLobby = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_LOBBY, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_GAME_LOBBY, gameLobby));
     System.out.println(gameChannels.get(gameLobby));
     for (Channel ch : gameChannels.get(gameLobby)) {
       LOGGER.debug("Send a game lobby to: " + ch.id());
