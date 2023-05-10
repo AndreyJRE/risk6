@@ -263,6 +263,8 @@ public class CountryUi extends Group {
 
     Popup popUp = new Popup();
 
+    closeAmountOfTroopsButton.setOnAction(event -> popUp.hide());
+
     Circle leftCircle = new Circle(25);
     Image leftImage = new Image(
         Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/minusIcon.png"))
