@@ -41,6 +41,10 @@ public class ConnectionMessageAdapter implements JsonDeserializer<ConnectionMess
         GameState gameState = context.deserialize(jsonObject.get("content"), GameState.class);
         message = new ConnectionMessage<>(connectionAction, statusCode, gameState);
       }
+      case LEAVE_GAME_LOBBY, LEAVE_SERVER_LOBBY -> {
+        //GameState gameState = context.deserialize(jsonObject.get("content");
+        message = new ConnectionMessage<>(connectionAction, statusCode, "");
+      }
 
       default -> throw new JsonParseException("Unsupported content type: " + connectionAction);
     }
