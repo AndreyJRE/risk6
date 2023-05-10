@@ -1,13 +1,15 @@
 package com.unima.risk6.game.configurations;
 
+import com.unima.risk6.game.configurations.observers.ChatObserver;
 import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
 import com.unima.risk6.game.configurations.observers.ServerLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.client.GameClient;
-import com.unima.risk6.network.message.ConnectionActions;
+import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
+import com.unima.risk6.network.message.enums.ConnectionActions;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,13 @@ public class LobbyConfiguration {
 
   private static GameLobby gameLobby;
 
+  private static final ArrayList<String> messages = new ArrayList<>();
+
   private static final List<ServerLobbyObserver> SERVER_LOBBY_OBSERVERS = new ArrayList<>();
 
   private static final List<GameLobbyObserver> GAME_LOBBY_OBSERVERS = new ArrayList<>();
+
+  private static final List<ChatObserver> CHAT_OBSERVERS = new ArrayList<>();
   private static GameClient gameClient;
   private static Thread gameClientThread;
 
@@ -46,6 +52,16 @@ public class LobbyConfiguration {
 
   private static void notifyGameLobbyObservers() {
     GAME_LOBBY_OBSERVERS.forEach(observer -> observer.updateGameLobby(gameLobby));
+  }
+
+  public static void addChatObserver(ChatObserver observer) {
+    System.out.println("Add a Chat Observer");
+    CHAT_OBSERVERS.add(observer);
+  }
+
+  private static void notifyChatLobbyObservers() {
+    System.out.println("Notify a Chat Observer");
+    CHAT_OBSERVERS.forEach(observer -> observer.updateChat(messages));
   }
 
 
@@ -78,6 +94,16 @@ public class LobbyConfiguration {
   public static void sendStartGame(GameLobby gameLobby) {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.START_GAME, gameLobby));
+  }
+
+  public static void sendChatMessage(String string) {
+    gameClient.sendMessage(
+        new ChatMessage(string));
+  }
+
+  public static void setLastChatMessage(String string) {
+    messages.add(string);
+    notifyChatLobbyObservers();
   }
 
   /**

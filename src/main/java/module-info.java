@@ -33,5 +33,6 @@ module com.unima.risk6 {
   opens com.unima.risk6.gui.controllers.enums to javafx.fxml;
   exports com.unima.risk6.game.logic.controllers;
   exports com.unima.risk6.network.serialization;
+  opens com.unima.risk6.network.message.enums to com.google.gson;
 
 }

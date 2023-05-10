@@ -32,6 +32,21 @@ public class NetworkConfiguration {
 
   }
 
+  public static void startSinglePlayerServer() {
+    MoveProcessor moveProcessor = new MoveProcessor();
+    GameServer gameServer = new GameServer(moveProcessor, "127.0.0.1");
+    serverLobby = new ServerLobby("Single player server");
+    gameServerThread = new Thread(gameServer);
+    gameServerThread.start();
+    try {
+      NetworkInterface.getNetworkInterfaces().asIterator().forEachRemaining(x -> System.out.println(
+          x.inetAddresses().map(y -> y.getHostAddress()).collect(Collectors.toList())));
+    } catch (SocketException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
   public static void stopGameServer() {
     serverLobby = null;
     gameServerThread.interrupt();

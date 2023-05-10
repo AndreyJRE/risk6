@@ -6,7 +6,7 @@ import java.util.List;
 public class GameLobby extends Lobby {
 
   private final String lobbyName;
-  private final String name;
+  private String name;
   private final int maxPlayers;
 
   private final boolean isChatEnabled;
@@ -15,7 +15,7 @@ public class GameLobby extends Lobby {
 
   private final int phaseTime;
 
-  private final UserDto lobbyOwner;
+  private UserDto lobbyOwner;
 
   private final List<UserDto> users;
 
@@ -66,6 +66,11 @@ public class GameLobby extends Lobby {
   public UserDto getLobbyOwner() {
     return lobbyOwner;
   }
+  public void setLobbyOwner(UserDto lobbyOwner) {
+    this.lobbyOwner = lobbyOwner;
+    this.name = lobbyOwner.getUsername();
+  }
+
 
   public List<String> getBots() {
     return bots;

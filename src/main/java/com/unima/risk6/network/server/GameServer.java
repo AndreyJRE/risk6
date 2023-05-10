@@ -15,11 +15,18 @@ import java.net.InetSocketAddress;
 public final class GameServer implements Runnable {
 
   private MoveProcessor moveProcessor;
-  static final int PORT = 8080;
+  final int PORT = 8080;
+  final String HOST_IP;
   static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
   public GameServer(MoveProcessor moveProcessor) {
     this.moveProcessor = moveProcessor;
+    this.HOST_IP = "0.0.0.0";
+  }
+
+  public GameServer(MoveProcessor moveProcessor, String host_ip) {
+    this.moveProcessor = moveProcessor;
+    this.HOST_IP = host_ip;
   }
 
   public void run() {
@@ -32,7 +39,7 @@ public final class GameServer implements Runnable {
           .channel(NioServerSocketChannel.class)
           .handler(new LoggingHandler(LogLevel.INFO))
           .childHandler(new GameServerInitializer(channels, moveProcessor))
-          .localAddress(new InetSocketAddress("0.0.0.0", PORT));
+          .localAddress(new InetSocketAddress(HOST_IP, PORT));
 
       Channel ch = b.bind(PORT).sync().channel();
       ch.closeFuture().sync();

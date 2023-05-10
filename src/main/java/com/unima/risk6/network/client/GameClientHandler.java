@@ -82,11 +82,11 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     WebSocketFrame frame = (WebSocketFrame) msg;
+    System.out.println("ctx = " + ctx + ", msg = " + msg);
     if (frame instanceof TextWebSocketFrame textFrame) {
       JsonObject json = null;
       try {
         json = JsonParser.parseString(textFrame.text()).getAsJsonObject();
-        //TODO Error Handling
       } catch (Exception e) {
         LOGGER.debug("Not a JSON: " + textFrame.text() + "\n Exception: " + e);
 
@@ -101,9 +101,15 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
           }
+          case "CHAT_MESSAGE" -> {
+            String message = (String) Deserializer.deserializeChatMessage(textFrame.text())
+                .getContent();
+            LOGGER.debug("Client got a chat message " + message);
+            LobbyConfiguration.setLastChatMessage(message);
+          }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
-              case "ACCEPT_SERVER_LOBBY" -> {
+              case "ACCEPT_JOIN_SERVER_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
@@ -123,7 +129,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
-                    "Got first Gamestate: Overwrite GameState with new GameState from Server");
+                    "At ACCEPT_START_GAME: Got first Gamestate: Overwrite GameState with new GameState from Server");
                 GameState g = (GameState) Deserializer.deserializeConnectionMessage(
                         textFrame.text(),
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))
@@ -133,8 +139,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 CountriesUiConfiguration.configureCountries(g.getCountries());
                 Platform.runLater(SceneConfiguration::startGame);
               }
-              case "ACCEPT_JOIN_LOBBY" -> {
-                LOGGER.debug("Got a Lobby, overwrite game lobby");
+              case "ACCEPT_JOIN_GAME_LOBBY" -> {
+                LOGGER.debug("At ACCEPT_JOIN_GAME_LOBBY: Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
                 LobbyConfiguration.setGameLobby(gameLobby);

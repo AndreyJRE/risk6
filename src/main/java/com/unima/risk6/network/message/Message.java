@@ -6,6 +6,7 @@ import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.network.message.enums.ContentType;
 
 public abstract class Message<MessageType> {
 
