@@ -55,10 +55,12 @@ public class LobbyConfiguration {
   }
 
   public static void addChatObserver(ChatObserver observer) {
+    System.out.println("Add a Chat Observer");
     CHAT_OBSERVERS.add(observer);
   }
 
   private static void notifyChatLobbyObservers() {
+    System.out.println("Notify a Chat Observer");
     CHAT_OBSERVERS.forEach(observer -> observer.updateChat(messages));
   }
 

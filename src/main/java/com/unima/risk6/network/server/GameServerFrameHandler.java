@@ -348,11 +348,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   public void sendChatMessage(Channel channel, String request) {
     ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
     chatMessage.setContent(
-        users.inverse().get(channel).getUsername() + ": " + chatMessage.getContent() + "\n");
-    //gameChannels.values()
-    //    .stream().filter(x -> x.contains(channel)).findFirst().orElse(channels)
-    //.stream().filter(x -> !x.equals(channel))
-    channels
+        users.inverse().get(channel).getUsername() + ": " + chatMessage.getContent());
+    gameChannels.values()
+        .stream().filter(x -> x.contains(channel)).findFirst().orElse(channels)
+        //.stream().filter(x -> !x.equals(channel))
         .forEach(ch ->
         {
           String message = Serializer.serialize(chatMessage);

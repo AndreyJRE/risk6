@@ -83,6 +83,8 @@ public class GameSceneController implements GameStateObserver {
   private ActivePlayerUi activePlayerUi;
   private Button nextPhaseButton;
 
+  private ChatUi chatUi;
+
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -105,6 +107,7 @@ public class GameSceneController implements GameStateObserver {
     this.countriesGroup = new Group();
     this.chatBoxPane = new BorderPane();
     this.initializeGameScene();
+    this.chatUi = new ChatUi(gameScene);
     mockGamePhase = GamePhase.ATTACK_PHASE;
     GameConfiguration.addObserver(this);
 
@@ -332,7 +335,7 @@ public class GameSceneController implements GameStateObserver {
     chatButton.setStyle("-fx-background-radius: 15px;");
     chatButton.setFocusTraversable(false);
     chatButton.setOnAction(event -> {
-      new ChatUi(gameScene);
+      chatUi.show();
     });
 
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());

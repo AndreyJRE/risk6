@@ -266,7 +266,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   public void updateChat(ArrayList<String> messages) {
     Platform.runLater(() -> {
       System.out.println("udpateServerLObby");
-      chatArea.appendText(messages.get(messages.size() - 1));
+      chatArea.appendText(messages.get(messages.size() - 1) + "\n");
     });
 
   }
