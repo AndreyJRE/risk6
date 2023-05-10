@@ -26,9 +26,10 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
-import com.unima.risk6.network.message.ConnectionActions;
+import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
+import com.unima.risk6.network.message.enums.ConnectionActions;
 import com.unima.risk6.network.serialization.Deserializer;
 import com.unima.risk6.network.serialization.Serializer;
 import io.netty.channel.Channel;
@@ -47,15 +48,20 @@ import org.slf4j.LoggerFactory;
 public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
-
-  private static ChannelGroup channels;
   private static final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
   private static final BiMap<UserDto, Channel> users = HashBiMap.create();
+  private static ChannelGroup channels;
   private MoveProcessor moveProcessor;
 
   GameServerFrameHandler(ChannelGroup channels, MoveProcessor moveProcessor) {
     GameServerFrameHandler.channels = channels;
     this.moveProcessor = moveProcessor;
+  }
+
+  private static GameLobby getServerGameLobby(GameLobby gameLobby, ServerLobby serverLobby) {
+    GameLobby gameLobbyFromServer = serverLobby.getGameLobbies().stream()
+        .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst().get();
+    return gameLobbyFromServer;
   }
 
   @Override
@@ -73,7 +79,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       }
       if (json != null) {
         LOGGER.debug(
-            "Server Received Message with ContentType: " + json.get("contentType").getAsString());
+            "Server Received Message with ContentType: " + json.get("contentType")
+                .getAsString());
         ChannelGroup channelGroup = gameChannels.values().stream()
             .filter(x -> x.contains(ctx.channel())).findFirst().orElse(channels);
         switch (json.get("contentType").getAsString()) {
@@ -115,9 +122,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           case "END_PHASE" -> {
             LOGGER.debug("The server received a end phase object");
             Player currentPlayer = moveProcessor.getGameController().getCurrentPlayer();
-            EndPhase endPhase = (EndPhase) Deserializer.deserialize(request).getContent();
+            EndPhase endPhase = (EndPhase) Deserializer.deserialize(request)
+                .getContent();
             moveProcessor.processEndPhase(endPhase);
-            Player currentPlayerAfter = moveProcessor.getGameController().getCurrentPlayer();
+            Player currentPlayerAfter = moveProcessor.getGameController()
+                .getCurrentPlayer();
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
             if (!currentPlayer.equals(currentPlayerAfter)
@@ -126,6 +135,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             }
 
 
+          }
+          case "CHAT_MESSAGE" -> {
+            LOGGER.debug("The server received a chat message object");
+            sendChatMessage(ctx.channel(), request);
           }
           case "CONNECTION" -> {
             LOGGER.debug("The server received a connection message");
@@ -140,36 +153,44 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
               switch (connectionMessage.getConnectionActions()) {
 
                 case JOIN_SERVER_LOBBY -> {
+                  System.out.println(channels.size());
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
                   if (users.containsKey(userDto)) {
                     LOGGER.error("User already in the Lobby");
                   } else {
                     users.put(userDto, ctx.channel());
-                    NetworkConfiguration.getServerLobby().getUsers().add(userDto);
+                    NetworkConfiguration.getServerLobby().getUsers()
+                        .add(userDto);
                   }
                   sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
                   //TODO Maximale Größe beachten
-                  LOGGER.debug("At JOIN_GAME_LOBBY " + connectionMessage.getContent().getClass());
+                  LOGGER.debug(
+                      "At JOIN_GAME_LOBBY " + connectionMessage.getContent()
+                          .getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   channels.remove(ctx.channel());
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
                   //Add users channel to the ChannelGroup from the gamelobby
-                  gameLobbyFromServer.getUsers().add(users.inverse().get(ctx.channel()));
+                  gameLobbyFromServer.getUsers()
+                      .add(users.inverse().get(ctx.channel()));
                   gameChannels.get(gameLobbyFromServer).add(ctx.channel());
                   sendGameLobby(gameLobbyFromServer);
+                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_BOT_GAME_LOBBY -> {
                   LOGGER.debug(
-                      "At JOIN_BOT_GAME_LOBBY " + connectionMessage.getContent().getClass());
+                      "At JOIN_BOT_GAME_LOBBY " + connectionMessage.getContent()
+                          .getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
                   String bot = gameLobby.getBots().stream()
-                      .filter(x -> !gameLobbyFromServer.getBots().contains(x)).findFirst().get();
+                      .filter(x -> !gameLobbyFromServer.getBots().contains(x))
+                      .findFirst().get();
                   gameLobbyFromServer.getBots().add(bot);
                   ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
                   sendGameLobby(gameLobbyFromServer);
@@ -178,7 +199,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 }
                 case START_GAME -> {
                   //TODO MOVE_CONTROLLER
-                  LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
+                  LOGGER.debug("At START_GAME" + connectionMessage.getContent()
+                      .getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
@@ -188,27 +210,91 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
                 }
                 case LEAVE_SERVER_LOBBY -> {
-                  //TODO implement leave
-                  LOGGER.debug("At LEAVE_SERVER_LOBBY" + connectionMessage.getContent().getClass());
+                  LOGGER.debug(
+                      "At LEAVE_SERVER_LOBBY");
+
+                  LOGGER.debug(
+                      "Sizes of ChannelGroup " + channels.size() + " ServerLobby "
+                          + NetworkConfiguration.getServerLobby().getUsers()
+                          .size() + " UsersList "
+                          + users.size());
+                  //remove from server lobby channelGroup,
+                  channels.remove(ctx.channel());
+                  //remove from LobbyObject
+                  NetworkConfiguration.getServerLobby().getUsers()
+                      .remove(users.inverse().get(ctx.channel()));
+                  //and users list
+                  users.inverse().remove(ctx.channel());
+                  LOGGER.debug(
+                      "Sizes of ChannelGroup " + channels.size() + " ServerLobby "
+                          + NetworkConfiguration.getServerLobby().getUsers()
+                          .size() + " UsersList "
+                          + users.size());
+                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+
+
                 }
                 case LEAVE_GAME_LOBBY -> {
-                  LOGGER.debug("At LEAVE_GAME_LOBBY" + connectionMessage.getContent().getClass());
+                  LOGGER.debug("At LEAVE_GAME_LOBBY");
+                  //LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby " + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList " + users.size());
+                  //TODO LEAVE gameChannel, remove from gamelobby, add to server lobby join channels delete gameLobby if empty;
+                  //leave gameChannel
+                  ChannelGroup currentGame = gameChannels.values().stream()
+                      .filter(x -> x.contains(ctx.channel())).findFirst().get();
+                  currentGame.remove(ctx.channel());
+                  //remove from game lobby
+                  gameChannels.inverse().get(currentGame).getUsers()
+                      .remove(users.inverse().get(ctx.channel()));
+                  //add to server lobby //////should not benecessary
+                  //join serverLobby channel
+                  channels.add(ctx.channel());
+
+                  //LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby " + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList " + users.size());
+
+                  /*GameLobby gameLobbyFromServer = getServerGameLobby(gameChannels.inverse().get(currentGame),
+                      NetworkConfiguration.getServerLobby());*/
+
+                  //Add users channel to the ChannelGroup from the gamelobby
+                  if (gameChannels.inverse().get(currentGame).getUsers().size()
+                      == 0) {
+
+                    NetworkConfiguration.getServerLobby().getGameLobbies()
+                        .remove(NetworkConfiguration.getServerLobby()
+                            .getGameLobbies().stream().filter(
+                                x -> x.getLobbyName().equals(
+                                    gameChannels.inverse().get(currentGame)
+                                        .getLobbyName())).findFirst().get());
+                    gameChannels.inverse().remove(currentGame);
+                  } else {
+                    //Change owner
+                    gameChannels.inverse().get(currentGame).setLobbyOwner(
+                        gameChannels.inverse().get(currentGame).getUsers()
+                            .get(0));
+                    sendGameLobby(gameChannels.inverse().get(currentGame));
+                  }
+                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+
 
                 }
                 case LEAVE_GAME -> {
-                  LOGGER.debug("At LEAVE_GAME" + connectionMessage.getContent().getClass());
+                  LOGGER.debug("At LEAVE_GAME" + connectionMessage.getContent()
+                      .getClass());
 
                 }
                 case CREATE_GAME_LOBBY -> {
-                  LOGGER.debug("At CREATE_GAME_LOBBY" + connectionMessage.getContent().getClass());
+                  LOGGER.debug(
+                      "At CREATE_GAME_LOBBY" + connectionMessage.getContent()
+                          .getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
-                  NetworkConfiguration.getServerLobby().getGameLobbies().add(gameLobby);
+                  NetworkConfiguration.getServerLobby().getGameLobbies()
+                      .add(gameLobby);
                   channels.remove(ctx.channel());
                   gameChannels.put(gameLobby,
                       new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
                   gameChannels.get(gameLobby).add(ctx.channel());
                   gameChannels.keySet().forEach(System.out::println);
-                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby(), gameLobby);
+                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby(),
+                      gameLobby);
 
                 }
                 default -> LOGGER.error("Server received a faulty connection message");
@@ -218,7 +304,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             }
           }
           default -> {
-            LOGGER.debug("The Message received wasnt a valid Message\nMessage: " + json);
+            LOGGER.debug(
+                "The Message received wasnt a valid Message\nMessage: " + json);
 
           }
         }
@@ -345,7 +432,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           sendGamestate(channelGroup);
           moveProcessor.clearLastMoves();
           Thread.sleep(3500);
-        } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
+        } while (!attack1.getHasConquered()
+            && attack1.getAttackingCountry().getTroops() >= 2);
         aiBot.setGameState(moveProcessor.getGameController().getGameState());
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
           sendGameOver(channelGroup);
@@ -375,12 +463,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void sendGameOver(ChannelGroup channelGroup) {
     //TODO
-  }
-
-  private static GameLobby getServerGameLobby(GameLobby gameLobby, ServerLobby serverLobby) {
-    GameLobby gameLobbyFromServer = serverLobby.getGameLobbies().stream()
-        .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst().get();
-    return gameLobbyFromServer;
   }
 
   private void sendUpdatedServerLobby(ServerLobby serverLobby) {
@@ -435,13 +517,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(Serializer.serialize(
-          new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_SERVER_LOBBY, serverLobby))));
+          new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_JOIN_SERVER_LOBBY,
+              serverLobby))));
     }
   }
 
   private void sendGameLobby(GameLobby gameLobby) {
     String serializedGameLobby = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_LOBBY, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_GAME_LOBBY, gameLobby));
     System.out.println(gameChannels.get(gameLobby));
     for (Channel ch : gameChannels.get(gameLobby)) {
       LOGGER.debug("Send a game lobby to: " + ch.id());
@@ -473,7 +556,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
     for (int i = gameState.getActivePlayers().size(); i > 0; i--) {
-      diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(), i);
+      diceRolls.put(
+          moveProcessor.getGameController().getGameState().getActivePlayers().poll(), i);
     }
     moveProcessor.getGameController()
         .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
@@ -485,7 +569,24 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     Probabilities.init();
   }
 
+  public void sendChatMessage(Channel channel, String request) {
+    ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
+    chatMessage.setContent(
+        users.inverse().get(channel).getUsername() + ": " + chatMessage.getContent());
+    gameChannels.values()
+        .stream().filter(x -> x.contains(channel)).findFirst().orElse(channels)
+        //.stream().filter(x -> !x.equals(channel))
+        .forEach(ch ->
+        {
+          String message = Serializer.serialize(chatMessage);
+          LOGGER.debug("Send chatmessage: " + message + " to channel: " + channel.id());
+          ch.writeAndFlush(new TextWebSocketFrame(message));
+        });
 
+
+  }
+
+  //TODO Handle verbindungsabbruch
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     channels.add(ctx.channel());

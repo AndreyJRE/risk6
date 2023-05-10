@@ -1,5 +1,8 @@
 package com.unima.risk6.network.message;
 
+import com.unima.risk6.network.message.enums.ConnectionActions;
+import com.unima.risk6.network.message.enums.ContentType;
+
 public class ConnectionMessage<T> extends Message<T> {
 
   private final ConnectionActions connectionActions;

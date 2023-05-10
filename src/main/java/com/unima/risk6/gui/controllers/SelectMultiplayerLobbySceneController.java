@@ -8,6 +8,7 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDia
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.configurations.observers.ChatObserver;
 import com.unima.risk6.game.configurations.observers.ServerLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
@@ -16,6 +17,7 @@ import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -38,7 +40,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
-public class SelectMultiplayerLobbySceneController implements ServerLobbyObserver {
+public class SelectMultiplayerLobbySceneController implements ServerLobbyObserver, ChatObserver {
 
   private final SelectMultiplayerLobbyScene selectMultiplayerLobbyScene;
   private final SceneController sceneController;
@@ -46,6 +48,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   private final ListView<GameLobby> lobbyList = new ListView<>();
   private ServerLobby serverLobby;
   private BorderPane root;
+  private TextArea chatArea;
 
   private UserDto user;
   private ObservableList<GameLobby> lobbies;
@@ -56,6 +59,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     this.selectMultiplayerLobbyScene = selectMultiplayerLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addServerLobbyObserver(this);
+    LobbyConfiguration.addChatObserver(this);
   }
 
   public void init() {
@@ -165,7 +169,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     initGameLobbys();
 
     //TODO: Implement Chat Server Integration
-    TextArea chatArea = new TextArea();
+    chatArea = new TextArea();
     chatArea.setEditable(false);
     chatArea.setWrapText(true);
     VBox.setVgrow(chatArea, Priority.ALWAYS);
@@ -177,8 +181,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
         String message = chatInput.getText();
         chatInput.clear();
-
-        chatArea.appendText(user.getUsername() + ": " + message + "\n");
+        LobbyConfiguration.sendChatMessage(message);
+        //chatArea.appendText(user.getUsername() + ": " + message + "\n");
         event.consume();
       }
     });
@@ -253,6 +257,16 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         iterator.remove();
       }
       lobbies.addAll(serverLobby.getGameLobbies());
+      System.out.println("udpateServerLObby");
+    });
+
+  }
+
+  @Override
+  public void updateChat(ArrayList<String> messages) {
+    Platform.runLater(() -> {
+      System.out.println("udpateServerLObby");
+      chatArea.appendText(messages.get(messages.size() - 1) + "\n");
     });
 
   }
