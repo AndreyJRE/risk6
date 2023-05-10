@@ -13,11 +13,12 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.enums.CardSymbol;
+import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.game.models.enums.PlayerColor;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.CardUi;
@@ -29,8 +30,8 @@ import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import javafx.animation.PathTransition;
@@ -66,7 +67,6 @@ import javafx.util.Duration;
 public class GameSceneController implements GameStateObserver {
 
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
-  public static GamePhase mockGamePhase;
   private static PlayerUi myPlayerUi;
   private final GameScene gameScene;
   private final SceneController sceneController;
@@ -103,7 +103,6 @@ public class GameSceneController implements GameStateObserver {
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.initializeGameScene();
-    mockGamePhase = GamePhase.ATTACK_PHASE;
     GameConfiguration.addObserver(this);
 
     this.addListeners();
@@ -259,19 +258,7 @@ public class GameSceneController implements GameStateObserver {
       TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
       troopsCounterUi.setText(countryUi.getCountry().getTroops().toString());
       countryUi.setTroopsCounterUi(troopsCounterUi);
-
       countriesGroup.getChildren().add(troopsCounterUi);
-
-      //TODO: MOCKED CARDUI - USED STACK AND TOOK FIRST FEW TO ADD TO FIRST PLAYER IN ORDER TO VIEW CARD IN POPUP
-      Random random = new Random();
-      int randomNumber = random.nextInt(4);
-      CardSymbol[] possibleSymbols = {CardSymbol.CANNON, CardSymbol.CAVALRY, CardSymbol.INFANTRY,
-          CardSymbol.WILDCARD};
-      Card countryCard = new Card(possibleSymbols[randomNumber],
-          countryUi.getCountry().getCountryName(), counter);
-      counter++;
-
-      cardUis.add(new CardUi(countryCard, countryUi));
 
     }
     countriesGroup.setScaleX(initialScale);
@@ -296,6 +283,7 @@ public class GameSceneController implements GameStateObserver {
       if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi = playerUi;
         PLAYER_CONTROLLER.setPlayer(player);
+        PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
         System.out.println("My player: " + playerUi.getPlayer().getUser());
       }
       colorIndex++;
@@ -312,7 +300,7 @@ public class GameSceneController implements GameStateObserver {
 
   private StackPane initializeTimePane() {
     StackPane timePane = new StackPane();
-    timeUi = new TimeUi(120, 120);
+    timeUi = new TimeUi(120, 120, gameState.getPhaseTime());
     timePane.getChildren().add(timeUi);
     timePane.setAlignment(Pos.CENTER);
     timePane.setPadding(new Insets(0, 15, 0, 0));
@@ -386,13 +374,17 @@ public class GameSceneController implements GameStateObserver {
     BorderPane.setAlignment(closeCardsButton, Pos.TOP_RIGHT);
 
     HBox cardsBox = new HBox();
-
-    //TODO Use this for show the cards
-    //PLAYER_CONTROLLER.getHandController().getHand().getCards();
-    //TODO: CHANGE IT AGAINST REAL CARDS
-    for (int i = 0; i < 4; i++) {
-      cardsBox.getChildren().add(cardUis.get(i));
+    List<Card> currentHandCards = cardUis.stream().map(CardUi::getCard).toList();
+    List<Card> cards = PLAYER_CONTROLLER.getHandController().getHand().getCards();
+    List<Card> cardsToAdd = cards.stream().filter(card -> !currentHandCards.contains(card))
+        .toList();
+    for (Card card : cardsToAdd) {
+      CardUi cardUi =
+          (card.hasCountry()) ? new CardUi(card, getCountryUiByCountryName(card.getCountry()))
+              : new CardUi(card);
+      cardUis.add(cardUi);
     }
+    cardsBox.getChildren().addAll(cardUis);
     cardsBox.setSpacing(30);
     cardsBox.setAlignment(Pos.CENTER);
 
@@ -466,7 +458,6 @@ public class GameSceneController implements GameStateObserver {
       }
       iterator.remove();
     }
-    System.out.println("Current Phase by player " + gameState.getCurrentPlayer().getCurrentPhase());
   }
 
   private void updateReferencesFromGameState() {
@@ -475,6 +466,7 @@ public class GameSceneController implements GameStateObserver {
       if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi.setPlayer(player);
         PLAYER_CONTROLLER.setPlayer(player);
+        PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
       } else {
         playerUis.forEach(playerUi -> {
           if (playerUi.getPlayer().getUser().equals(player.getUser())) {
@@ -502,9 +494,15 @@ public class GameSceneController implements GameStateObserver {
         .findFirst().get();
   }
 
+  public CountryUi getCountryUiByCountryName(CountryName countryName) {
+    return countriesUis.stream()
+        .filter(countryUi -> countryUi.getCountry().getCountryName().equals(countryName))
+        .findFirst().get();
+  }
+
   public void animateTroopsMovement(Fortify fortify) {
-    double maxOffsetX = 7;
-    double maxOffsetY = 7;
+    double maxOffsetX = 6;
+    double maxOffsetY = 6;
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
       ImageView imageView = new ImageView(new Image(
           getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString()));
@@ -537,9 +535,11 @@ public class GameSceneController implements GameStateObserver {
       pathTransition.setPath(path);
       pathTransition.setNode(imageView);
       pathTransition.setOnFinished(onFinishedEvent -> {
+        SoundConfiguration.stopTroopsMoveSound();
         countriesGroup.getChildren().remove(imageView);
       });
       pathTransition.play();
+      SoundConfiguration.playTroopsMoveSound();
       countriesGroup.getChildren().add(imageView);
     }
     CountryUi countryUi1 = getCountryUiByCountry(fortify.getIncoming());

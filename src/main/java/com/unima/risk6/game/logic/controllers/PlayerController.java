@@ -84,8 +84,6 @@ public class PlayerController {
   public void sendHandIn() {
     if (handController.isExchangeable()) {
       HandIn handIn = new HandIn(handController.getHand().getSelectedCards());
-      //removes Cards that were selected and can be exchanged
-      handController.exchangeCards();
       gameClient.sendMessage(new StandardMessage<>(handIn));
     }
 

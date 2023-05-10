@@ -180,7 +180,6 @@ public class MoveProcessor {
       }
       playerController.setPlayer(attacker);
     } else {
-
       if (!(attacker.equals(currentPlayer) && !attacker.equals(defender))) {
         throw new InvalidMoveException(
             "Invalid Move because: Attack made by not current player or attacker tries to attack himself");

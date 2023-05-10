@@ -5,6 +5,7 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
@@ -141,6 +142,9 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private void handleSinglePlayer() {
+    NetworkConfiguration.startGameServer();
+    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.startGameClient();
     SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
