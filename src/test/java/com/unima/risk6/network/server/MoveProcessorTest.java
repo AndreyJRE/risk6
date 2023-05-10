@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -182,6 +183,8 @@ class MoveProcessorTest {
     } catch (InvalidMoveException e) {
       System.err.println(e.getMessage());
     }
+
+
   }
 
   @Test
@@ -523,7 +526,49 @@ class MoveProcessorTest {
         getCountryByCountryName(CountryName.PERU),
         3);
     moveProcessor.processAttack(testAttack0);
-  
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+    moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+
+  }
+
+  @Test
+  void inGameStatisticsTest() {
+    for (int i = 0; i < 6; i++) {
+      players[i].setInitialTroops(20);
+    }
+
+    //Added Each Country to a player.
+    for (Country c : gameState.getCountries()) {
+      moveProcessor.processReinforce(
+          new Reinforce(getCountryByCountryName(c.getCountryName()), 1));
+      moveProcessor.processEndPhase(
+          new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+
+    }
+    for (int i = 0; i < 6; i++) {
+      assertEquals(7, players[i].getStatistic().getNumberOfOwnedCountries());
+      assertEquals(7, players[i].getStatistic().getNumberOfTroops());
+    }
+    //Selects a Random Country from players[1]
+    Random random = new Random();
+    int i = random.nextInt(players[1].getCountries().size());
+    int counter = 0;
+    Country countryToGiveAway = null;
+    for (Country country : players[1].getCountries()) {
+      if (i == counter) {
+        countryToGiveAway = country;
+        break;
+      }
+      counter++;
+    }
+    addCountryToPlayer(countryToGiveAway.getCountryName(), players[0]);
+    moveProcessor.updateInGameStatistics();
+    assertEquals(8, players[0].getStatistic().getNumberOfOwnedCountries());
+    assertEquals(6, players[1].getStatistic().getNumberOfOwnedCountries());
+
+    assertEquals(8, players[0].getStatistic().getNumberOfTroops());
+    assertEquals(6, players[1].getStatistic().getNumberOfTroops());
+
   }
 
   Country getCountryByCountryName(CountryName countryName) {
