@@ -28,9 +28,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -241,6 +243,19 @@ public class CountryUi extends Group {
     BorderPane moveTroopsPane = new BorderPane();
     Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
     chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+
+    Button closeAmountOfTroopsButton = new Button();
+    closeAmountOfTroopsButton.setPrefSize(20, 20);
+    ImageView closeIcon = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeIcon.setFitWidth(20);
+    closeIcon.setFitHeight(20);
+    closeAmountOfTroopsButton.setGraphic(closeIcon);
+    closeAmountOfTroopsButton.setStyle("-fx-background-radius: 15px;");
+    closeAmountOfTroopsButton.setFocusTraversable(false);
+
+    gamePane.setTop(closeAmountOfTroopsButton);
+    BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
     HBox chatBox = new HBox();
     chatBox.setAlignment(Pos.CENTER);

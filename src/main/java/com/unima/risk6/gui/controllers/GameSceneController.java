@@ -385,8 +385,8 @@ public class GameSceneController implements GameStateObserver {
     closeCardsButton.setPrefSize(20, 20);
     ImageView closeCardIcon = new ImageView(
         new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
-    closeCardIcon.setFitWidth(40);
-    closeCardIcon.setFitHeight(40);
+    closeCardIcon.setFitWidth(20);
+    closeCardIcon.setFitHeight(20);
     closeCardsButton.setGraphic(closeCardIcon);
     closeCardsButton.setStyle("-fx-background-radius: 15px;");
     closeCardsButton.setFocusTraversable(false);
