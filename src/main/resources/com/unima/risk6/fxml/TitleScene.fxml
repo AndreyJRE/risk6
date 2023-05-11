@@ -13,7 +13,8 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-<AnchorPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/19" fx:id="root"
+
+<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/19"
   xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="com.unima.risk6.gui.controllers.TitleSceneController">
   <children>
@@ -95,37 +96,13 @@
         </VBox>
       </center>
       <bottom>
-        <VBox BorderPane.alignment="CENTER_LEFT" alignment="CENTER_RIGHT" spacing="10.0">
+        <VBox alignment="CENTER_RIGHT" spacing="10.0" BorderPane.alignment="CENTER_LEFT">
           <BorderPane.margin>
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
           </BorderPane.margin>
           <children>
-            <HBox alignment="CENTER_RIGHT" nodeOrientation="LEFT_TO_RIGHT">
-              <children>
-                <StackPane HBox.hgrow="ALWAYS">
-                  <Circle StackPane.alignment="CENTER_RIGHT" fill="WHITE" radius="22.5" stroke="LIGHTGRAY"
-                    fx:id="trigger">
-                    <StackPane.margin>
-                      <Insets right="45.0"/>
-                    </StackPane.margin>
-                  </Circle>
-                  <Label StackPane.alignment="CENTER_RIGHT" alignment="CENTER_RIGHT" contentDisplay="RIGHT"
-                    text="Host Game" textFill="WHITE">
-                    <StackPane.margin>
-                      <Insets right="110.0"/>
-                    </StackPane.margin>
-                    <font>
-                      <Font size="25.0"/>
-                    </font>
-                  </Label>
-                  <Rectangle StackPane.alignment="CENTER_RIGHT" arcHeight="50.0" arcWidth="50" fill="WHITE"
-                    height="45.0" stroke="LIGHTGRAY" width="90.0"
-                    fx:id="background"/>
-                </StackPane>
-              </children>
-            </HBox>
-            <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="" textFill="#322f2f"
-              fx:id="ipLabel">
+            <Label fx:id="ipLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" text=""
+              textFill="#322f2f">
               <font>
                 <Font size="22.0"/>
               </font>
@@ -133,6 +110,30 @@
                 <Insets right="15.0"/>
               </padding>
             </Label>
+            <HBox alignment="CENTER_RIGHT" nodeOrientation="LEFT_TO_RIGHT">
+              <children>
+                <StackPane HBox.hgrow="ALWAYS">
+                  <Rectangle fx:id="background" arcHeight="50.0" arcWidth="50" fill="WHITE"
+                    height="45.0" stroke="LIGHTGRAY" width="90.0"
+                    StackPane.alignment="CENTER_RIGHT"/>
+                  <Circle fx:id="trigger" fill="WHITE" radius="22.5" stroke="LIGHTGRAY"
+                    StackPane.alignment="CENTER_RIGHT">
+                    <StackPane.margin>
+                      <Insets right="45.0"/>
+                    </StackPane.margin>
+                  </Circle>
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Host Game"
+                    textFill="WHITE" StackPane.alignment="CENTER_RIGHT">
+                    <font>
+                      <Font size="25.0"/>
+                    </font>
+                    <StackPane.margin>
+                      <Insets right="110.0"/>
+                    </StackPane.margin>
+                  </Label>
+                </StackPane>
+              </children>
+            </HBox>
           </children>
         </VBox>
       </bottom>
