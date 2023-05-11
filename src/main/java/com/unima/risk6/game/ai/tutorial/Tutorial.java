@@ -5,6 +5,7 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
@@ -97,7 +98,8 @@ public class Tutorial {
     }
     ((Player) bot.get(0)).setCurrentPhase(GamePhase.NOT_ACTIVE);
     tutorial.getCurrentPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
-
+    DeckController deckController = new DeckController(tutorial.getDeck());
+    deckController.initDeck();
     List<Card> humanCards = humanController.getHandController().getHand().getCards();
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.ALASKA, -1));
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA, -2));
