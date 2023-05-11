@@ -23,6 +23,7 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -251,10 +252,10 @@ public class CountryUi extends Group {
     closeIcon.setFitWidth(20);
     closeIcon.setFitHeight(20);
     closeAmountOfTroopsButton.setGraphic(closeIcon);
-    closeAmountOfTroopsButton.setStyle("-fx-background-radius: 15px;");
+    closeAmountOfTroopsButton.setStyle("-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
 
-    gamePane.setTop(closeAmountOfTroopsButton);
+    moveTroopsPane.setTop(closeAmountOfTroopsButton);
     BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
     HBox chatBox = new HBox();
@@ -364,18 +365,22 @@ public class CountryUi extends Group {
     BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     BorderPane dicePane = new BorderPane();
 
-    Label winningChanceLabel = new Label("Winning Chance:" + 1);
-    winningChanceLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-
     HBox diceHBox = new HBox();
     diceHBox.setAlignment(Pos.CENTER);
     diceHBox.setSpacing(20);
     Popup dicePopup = new Popup();
 
-    //MOCKUP OF ATTACK DIALOG WITH DICE
-
     List<DiceUi> diceUis = new ArrayList<>();
     VBox attackerBox = new VBox();
+    Label attackerUser = new Label(attacker.country.getPlayer().getUser() + ": ");
+    attackerUser.setStyle("-fx-font-size: 18px;");
+    attackerBox.getChildren().add(attackerUser);
+
+    Label attackingCountry = new Label(
+        attacker.country.getCountryName().name().replaceAll("_", " "));
+    attackingCountry.setStyle("-fx-font-size: 18px;");
+    attackingCountry.setPadding(new Insets(0, 0, 15, 0));
+    attackerBox.getChildren().add(attackingCountry);
 
     for (int i = 0; i < lastAttack.getAttackDiceResult().size(); i++) {
       DiceUi dice = new DiceUi(true, lastAttack.getAttackDiceResult().get(i));
@@ -383,14 +388,25 @@ public class CountryUi extends Group {
       diceUis.add(dice);
     }
     attackerBox.setAlignment(Pos.CENTER);
+
     VBox defenderBox = new VBox();
+    Label defenderUser = new Label(defender.country.getPlayer().getUser() + ": ");
+    defenderUser.setStyle("-fx-font-size: 18px;");
+    defenderBox.getChildren().add(defenderUser);
+
+    Label defenderCountry = new Label(
+        defender.country.getCountryName().name().replaceAll("_", " "));
+    defenderCountry.setStyle("-fx-font-size: 18px;");
+    defenderCountry.setPadding(new Insets(0, 0, 15, 0));
+    defenderBox.getChildren().add(defenderCountry);
+
     for (int i = 0; i < lastAttack.getDefendDiceResult().size(); i++) {
       DiceUi dice = new DiceUi(false, lastAttack.getDefendDiceResult().get(i));
       defenderBox.getChildren().add(dice);
       diceUis.add(dice);
     }
     defenderBox.setAlignment(Pos.CENTER);
-    diceHBox.getChildren().addAll(attackerBox, winningChanceLabel, defenderBox);
+    diceHBox.getChildren().addAll(attackerBox, defenderBox);
 
     PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
