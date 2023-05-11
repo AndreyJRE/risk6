@@ -12,7 +12,13 @@ import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
 import javafx.animation.FillTransition;
@@ -126,10 +132,26 @@ public class TitleSceneController implements Initializable {
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
     if (!isOn) {
-      //TODO: IP Adress hinzufügen
+      StringBuilder ipS = new StringBuilder();
+      try {
+        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface netint : Collections.list(nets)) {
+          Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+            String ip = inetAddress.getHostAddress();
+            if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
+                && inetAddress.getAddress().length == 4) {
+              ipS.append(ip);
+              ipS.append(",");
+            }
+          }
+        }
+      } catch (SocketException e) {
+        throw new RuntimeException(e);
+      }
       ipLabel.setStyle(
           "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #2F2E2EFF");
-      ipLabel.setText("Your IP Adress: ");
+      ipLabel.setText("Your IP Addresses: " + Arrays.toString(ipS.toString().split(",")));
     } else {
       ipLabel.setStyle(
           "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #2F2E2EFF");
@@ -238,7 +260,4 @@ public class TitleSceneController implements Initializable {
     parallelTransition.play();
   }
 
-  public BooleanProperty switchedOnProperty() {
-    return switchedOn;
-  }
 }

@@ -3,10 +3,6 @@ package com.unima.risk6.network.configurations;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.network.server.GameServer;
 import com.unima.risk6.network.server.MoveProcessor;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.stream.Collectors;
 
 /**
  * This class is used to configure the network.
@@ -24,12 +20,7 @@ public class NetworkConfiguration {
     serverLobby = new ServerLobby("Multiplayer server");
     gameServerThread = new Thread(gameServer);
     gameServerThread.start();
-    try {
-      NetworkInterface.getNetworkInterfaces().asIterator().forEachRemaining(x -> System.out.println(
-          x.inetAddresses().map(InetAddress::getHostAddress).collect(Collectors.toList())));
-    } catch (SocketException e) {
-      throw new RuntimeException(e);
-    }
+
 
   }
 
@@ -39,13 +30,6 @@ public class NetworkConfiguration {
     serverLobby = new ServerLobby("Single player server");
     gameServerThread = new Thread(gameServer);
     gameServerThread.start();
-    try {
-      NetworkInterface.getNetworkInterfaces().asIterator().forEachRemaining(x -> System.out.println(
-          x.inetAddresses().map(y -> y.getHostAddress()).collect(Collectors.toList())));
-    } catch (SocketException e) {
-      throw new RuntimeException(e);
-    }
-
   }
 
   public static void stopGameServer() {
@@ -60,4 +44,5 @@ public class NetworkConfiguration {
   public static Thread getGameServerThread() {
     return gameServerThread;
   }
+
 }
