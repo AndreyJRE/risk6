@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
@@ -64,14 +65,28 @@ public class LoginSceneController {
     Button createButton = createCustomCreateButton();
     Label selectUser = new Label("Select User Profile");
     selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+        + "-fx-font-weight: bold; -fx-text-fill: white;");
     root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(75);
-    Image image = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.png").toString());
-    BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+    // Load the image into an ImageView
+    Image originalImage = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.png").toString());
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
+
   }
 
   private GridPane createUsersGridPanePage(List<User> usersPage) {
@@ -162,15 +177,15 @@ public class LoginSceneController {
     Button createButton = new Button("New Account needed?");
     // set the button's properties
     createButton.setAlignment(Pos.CENTER);
-    createButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #000000; "
+    createButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; "
         + "-fx-font-style: italic; -fx-font-size: 24; -fx-underline: false");
 
 // Hinzufügen von Hover-Style für Textfarbe und Unterstreichung
     createButton.setOnMouseEntered(e -> createButton.setStyle("-fx-background-color: transparent;"
-        + " -fx-text-fill: #0000FF; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
+        + " -fx-text-fill: white; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
         + "24"));
     createButton.setOnMouseExited(e -> createButton.setStyle("-fx-background-color: transparent; "
-        + "-fx-text-fill: #000000; -fx-underline: false; -fx-font-style: italic;  -fx-font-size: "
+        + "-fx-text-fill: white; -fx-underline: false; -fx-font-style: italic;  -fx-font-size: "
         + "24"));
 
     // add an event handler for the button
