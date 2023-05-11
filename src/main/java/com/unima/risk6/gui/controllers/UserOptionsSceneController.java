@@ -80,7 +80,7 @@ public class UserOptionsSceneController {
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
-    // Initialize the user name TextField
+    // Initialize the username TextField
     TextField userNameField = new TextField(user.getUsername());
     userNameField.setEditable(false);
     userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
