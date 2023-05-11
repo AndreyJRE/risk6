@@ -41,8 +41,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -55,7 +57,7 @@ public class TitleSceneController implements Initializable {
   private AnchorPane root;
 
   @FXML
-  private ImageView backgroundImageView;
+  private MediaView backgroundVideoView;
   @FXML
   private Label titleLabel;
 
@@ -64,6 +66,8 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private Button multiPlayerButton;
+  @FXML
+  private Button tutorialButton;
 
   @FXML
   private Button optionsButton;
@@ -91,6 +95,26 @@ public class TitleSceneController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    applyButtonStyle(singlePlayerButton);
+    applyButtonStyle(multiPlayerButton);
+    applyButtonStyle(tutorialButton);
+    applyButtonStyle(optionsButton);
+    applyButtonStyle(quitButton);
+    URL mediaUrl = getClass().getResource("/com/unima/risk6/pictures/backgroundVideo.mp4");
+    String mediaStringUrl = mediaUrl.toExternalForm();
+    Media media = new Media(mediaStringUrl);
+    MediaPlayer mediaPlayer = new MediaPlayer(media);
+    backgroundVideoView.setMediaPlayer(mediaPlayer);
+    mediaPlayer.setOnEndOfMedia(new Runnable() {
+      @Override
+      public void run() {
+        // Das Video von vorne beginnen
+        mediaPlayer.seek(Duration.ZERO);
+      }
+    });
+    mediaPlayer.play();
+    backgroundVideoView.fitWidthProperty().bind(root.widthProperty());
+    backgroundVideoView.fitHeightProperty().bind(root.heightProperty());
     switchedOn = new SimpleBooleanProperty(false);
     translateAnimation = new TranslateTransition(Duration.seconds(0.25));
     fillAnimation = new FillTransition(Duration.seconds(0.25));
@@ -107,8 +131,6 @@ public class TitleSceneController implements Initializable {
     animateTitleLabel();
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefWidth(SceneConfiguration.getWidth());
-    backgroundImageView.fitWidthProperty().bind(root.widthProperty());
-    backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     // Set the style of the buttons
     applyButtonStyle(singlePlayerButton);
     applyButtonStyle(multiPlayerButton);
@@ -192,7 +214,7 @@ public class TitleSceneController implements Initializable {
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
       SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
+          scene, false);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
@@ -218,7 +240,35 @@ public class TitleSceneController implements Initializable {
     sceneController.activate(SceneName.JOIN_ONLINE);
 
   }
-  // Define the event handler for the options button
+
+  @FXML
+  private void handleTutorial(){
+    //TODO: Play Tutorial
+
+    //
+
+    NetworkConfiguration.startGameServer();
+    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.startGameClient();
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    gameLobby = new GameLobby("Single Player Lobby", 2,
+        SessionManager.getUser().getUsername(), false,
+        0, 60,
+        GameConfiguration.getMyGameUser());
+    gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
+    LobbyConfiguration.sendCreateLobby(gameLobby);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene, true);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+  }
+
 
   @FXML
   private void handleOptions() {

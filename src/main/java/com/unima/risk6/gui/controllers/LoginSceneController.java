@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -21,6 +22,11 @@ import javafx.scene.control.Pagination;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -63,6 +69,10 @@ public class LoginSceneController {
     root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(75);
+    Image image = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.jpeg").toString());
+    BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
   }
 
   private GridPane createUsersGridPanePage(List<User> usersPage) {

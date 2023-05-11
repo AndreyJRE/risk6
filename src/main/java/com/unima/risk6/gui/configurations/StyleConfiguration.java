@@ -17,16 +17,14 @@ import javafx.scene.shape.Path;
 
 public class StyleConfiguration {
 
-  private static final String NORMAL_BUTTON_STYLE = "-fx-background-color: linear-gradient"
-      + "(#FFDAB9, #FFA07A)"
-      + "; -fx-background-radius: 40; -fx-border-radius: 40;"
-      + " -fx-text-fill: #FFFFFF;";
-  private static final String HOVER_BUTTON_STYLE = "-fx-background-color: linear-gradient"
-      + "(#FFA07A, "
-      + "#FFDAB9)"
-      + "; -fx-background-radius: 40; -fx-border-radius: 40"
-      + "; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);"
-      + " -fx-text-fill: #FFFFFF;";
+  private static final String NORMAL_BUTTON_STYLE = "-fx-background-color: linear-gradient(#5a5c5e, #3e3f41);"
+      + " -fx-background-radius: 20; -fx-border-radius: 20;"
+      + " -fx-text-fill: #FFFFFF";
+
+  private static final String HOVER_BUTTON_STYLE = "-fx-background-color: linear-gradient(#6a6c6e, #4e4f51);"
+      + " -fx-background-radius: 20; -fx-border-radius: 20;"
+      + "-fx-text-fill: #FFFFFF";
+
 
   public static void applyButtonStyle(Button button) {
     button.setStyle(NORMAL_BUTTON_STYLE);

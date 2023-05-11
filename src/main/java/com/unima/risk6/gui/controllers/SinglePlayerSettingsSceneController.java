@@ -52,11 +52,13 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private StackPane plus;
   private UserDto myUser;
   private GameLobby gameLobby;
+  private boolean tutorial;
 
-  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
+  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene, boolean tutorial) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addGameLobbyObserver(this);
+    this.tutorial = tutorial;
   }
 
   public void init() {
@@ -116,16 +118,20 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     HBox centralHBox = new HBox();
     VBox userVBox = createPlayerVBox(myUser);
     centralHBox.getChildren().add(userVBox);
-    for (String bot : gameLobby.getBots()) {
-      int i = 0;
-      if (bot.contains("Medium")) {
-        i = 1;
+    if(tutorial){
+      //TODO: Add Tutorial Bot
+    }else {
+      for (String bot : gameLobby.getBots()) {
+        int i = 0;
+        if (bot.contains("Medium")) {
+          i = 1;
+        }
+        if (bot.contains("Hard")) {
+          i = 2;
+        }
+        VBox botVBox = createBotVBox(i, bot);
+        centralHBox.getChildren().add(botVBox);
       }
-      if (bot.contains("Hard")) {
-        i = 2;
-      }
-      VBox botVBox = createBotVBox(i, bot);
-      centralHBox.getChildren().add(botVBox);
     }
     if (gameLobby.getBots().size() + gameLobby.getUsers().size() < gameLobby.getMaxPlayers()) {
       StackPane plus = createPlusStackpane();
@@ -134,7 +140,6 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     centralHBox.setAlignment(Pos.CENTER);
     centralHBox.setSpacing(20.0);
     root.setCenter(centralHBox);
-
   }
 
   private VBox createPlayerVBox(UserDto userDto) {
@@ -288,6 +293,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   private void handlePlayButton() {
+    //TODO: GameState aus Tutorial Klasse
+
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();
     if (together < 2 || together > gameLobby.getMaxPlayers()) {

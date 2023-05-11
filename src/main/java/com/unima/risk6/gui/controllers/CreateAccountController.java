@@ -1,6 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
 
+import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
@@ -37,7 +38,7 @@ public class CreateAccountController implements Initializable {
   private PasswordField passwordField;
 
   @FXML
-  private Button loginButton;
+  private Button createButton;
 
   @FXML
   private PasswordField checkPasswordField;
@@ -62,20 +63,6 @@ public class CreateAccountController implements Initializable {
     String username = usernameField.getText();
     String password = passwordField.getText();
 
-    // Change the style of the button to simulate a press
-    loginButton.setStyle("-fx-background-color: linear-gradient(#FFA07A, #FFDAB9); "
-        + "-fx-text-fill: #FFFFFF; -fx-background-radius: 20;"
-        + " -fx-border-radius: 20; -fx-effect:"
-        + " dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
-    // Change it back after 200 milliseconds
-    PauseTransition pause = new PauseTransition(Duration.millis(200));
-    pause.setOnFinished(e -> loginButton.setStyle(
-        "-fx-background-color:" + " linear-gradient(#FFDAB9, #FFA07A); -fx-text-fill: #FFFFFF;"
-            + " -fx-background-radius: 20;" + " -fx-border-radius: 20;"
-            + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);"));
-    pause.play();
-
-    pause = new PauseTransition(Duration.millis(500));
     User user = new User(username, password, "/com/unima/risk6/pictures/playerIcon.png");
     try {
       userService.saveUser(user);
@@ -121,6 +108,7 @@ public class CreateAccountController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    applyButtonStyle(createButton);
     userService = DatabaseConfiguration.getUserService();
     checkPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue.equals(passwordField.getText())) {
