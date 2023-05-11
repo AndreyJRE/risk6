@@ -3,7 +3,7 @@ package com.unima.risk6.game.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameLobby extends Lobby {
+public class GameLobby {
 
   private final String lobbyName;
   private String name;
@@ -66,6 +66,7 @@ public class GameLobby extends Lobby {
   public UserDto getLobbyOwner() {
     return lobbyOwner;
   }
+
   public void setLobbyOwner(UserDto lobbyOwner) {
     this.lobbyOwner = lobbyOwner;
     this.name = lobbyOwner.getUsername();

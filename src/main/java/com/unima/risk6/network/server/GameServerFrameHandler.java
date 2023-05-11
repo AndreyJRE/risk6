@@ -560,7 +560,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             return (AiBot) new HardBot(x);
           }
         }).toList());
-    System.out.println(gameState.getActivePlayers());
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());

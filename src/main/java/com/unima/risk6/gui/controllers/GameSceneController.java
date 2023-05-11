@@ -392,10 +392,12 @@ public class GameSceneController implements GameStateObserver {
         .toList();
     for (Card card : cardsToAdd) {
       CardUi cardUi =
-          (card.hasCountry()) ? new CardUi(card, getCountryUiByCountryName(card.getCountry()))
-              : new CardUi(card);
+          (card.hasCountry()) ? new CardUi(card, getCountryUiByCountryName(card.getCountry()),
+              cardUis)
+              : new CardUi(card, cardUis);
       cardUis.add(cardUi);
     }
+
     cardsBox.getChildren().addAll(cardUis);
     cardsBox.setSpacing(30);
     cardsBox.setAlignment(Pos.CENTER);

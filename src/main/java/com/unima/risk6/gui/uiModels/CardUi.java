@@ -5,6 +5,7 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -30,12 +31,15 @@ public class CardUi extends StackPane {
 
   private ImageView cardSymbolImage;
 
-  private List<CardUi> cardUis = new ArrayList<>();
-
   private boolean clicked = false;
 
-  public CardUi(Card card, CountryUi countryUi) {
+  private final List<CardUi> selectedCardsUi = new ArrayList<>();
+
+  private final Stack<CardUi> allCardsUis;
+
+  public CardUi(Card card, CountryUi countryUi, Stack<CardUi> allCardsUis) {
     super();
+    this.allCardsUis = allCardsUis;
     this.card = card;
     cardFrame = new Rectangle(250, 450);
     cardFrame.setFill(Color.WHITE);
@@ -75,8 +79,9 @@ public class CardUi extends StackPane {
     this.initMouseListener();
   }
 
-  public CardUi(Card card) {
+  public CardUi(Card card, Stack<CardUi> allCardsUis) {
     super();
+    this.allCardsUis = allCardsUis;
     this.card = card;
     cardFrame = new Rectangle(100, 185);
     cardFrame.setArcHeight(25);
@@ -132,7 +137,6 @@ public class CardUi extends StackPane {
     BorderPane.setMargin(newBottomBox, new Insets(10));
     BorderPane cardPane = (BorderPane) this.getParent().getParent();
     HandController handController = GameSceneController.getPlayerController().getHandController();
-    int counter = 0;
     for (Node cardNode : cardBox.getChildren()) {
       if (((CardUi) cardNode).isClicked()) {
         handController.selectCardThroughCard(((CardUi) cardNode).getCard());
@@ -160,7 +164,8 @@ public class CardUi extends StackPane {
 
   private void handleHandInButton() {
     HBox cardBox = (HBox) this.getParent();
-    cardBox.getChildren().clear();
+    cardBox.getChildren().removeAll(selectedCardsUi);
+    allCardsUis.removeAll(selectedCardsUi);
     GameSceneController.getPlayerController().sendHandIn();
   }
 
