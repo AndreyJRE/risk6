@@ -53,10 +53,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   private GameLobbyChannels gameLobbyChannels;
   private MoveProcessor moveProcessor;
 
-  GameServerFrameHandler(ChannelGroup channels, MoveProcessor moveProcessor,
-      GameLobbyChannels gameLobbyChannels) {
+  GameServerFrameHandler(ChannelGroup channels, GameLobbyChannels gameLobbyChannels) {
     GameServerFrameHandler.channels = channels;
-    this.moveProcessor = moveProcessor;
     this.gameLobbyChannels = gameLobbyChannels;
   }
 
@@ -66,163 +64,18 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     return gameLobbyFromServer;
   }
 
-  private void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
-    aiBot.setGameState(moveProcessor.getGameController().getGameState());
-    Player player = (Player) aiBot;
-    moveProcessor.getPlayerController().setPlayer(player);
-    try {
-      switch (player.getCurrentPhase()) {
-        case CLAIM_PHASE -> {
-          Thread.sleep(500);
-          Reinforce reinforce = aiBot.claimCountry();
-          moveProcessor.processReinforce(reinforce);
-          sendGamestate(channelGroup);
-          moveProcessor.clearLastMoves();
-          Thread.sleep(500);
-          moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-          sendGamestate(channelGroup);
-          moveProcessor.clearLastMoves();
-          Thread.sleep(500);
-          Player currentPlayer = moveProcessor.getGameController().getGameState()
-              .getCurrentPlayer();
-          if (!player.getUser().equals(currentPlayer.getUser())
-              && currentPlayer instanceof AiBot aiBot1) {
-            processBotMove(aiBot1, channelGroup);
-          }
-        }
-        case REINFORCEMENT_PHASE -> {
-          processBotReinforcementPhase(aiBot, channelGroup, player);
-          Thread.sleep(3000);
-          processBotAttackPhase(aiBot, channelGroup, player);
-          Thread.sleep(3000);
-          processBotFortifyPhase(aiBot, channelGroup, player);
-          Thread.sleep(500);
-          Player currentPlayer = moveProcessor.getGameController().getGameState()
-              .getCurrentPlayer();
-          if (!player.getUser().equals(currentPlayer.getUser())
-              && currentPlayer instanceof AiBot aiBot1) {
-            processBotMove(aiBot1, channelGroup);
-          }
-
-        }
-
-
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-
-  }
-
-  private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
-      throws InterruptedException {
-    processBotHandIn(channelGroup);
-    Thread.sleep(1000);
-    List<Reinforce> reinforces = aiBot.createAllReinforcements();
-    reinforces.stream().filter(x -> x.getToAdd() > 0).forEach(x -> {
-      moveProcessor.processReinforce(x);
-      sendGamestate(channelGroup);
-      moveProcessor.clearLastMoves();
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-
-    });
-    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-    sendGamestate(channelGroup);
-    moveProcessor.clearLastMoves();
-  }
-
-  private void processBotHandIn(ChannelGroup channelGroup) {
-    HandController handController = moveProcessor.getPlayerController().getHandController();
-    if (handController.holdsExchangeable()) {
-      handController.selectExchangeableCards();
-      HandIn hand = new HandIn(handController.getHand().getSelectedCards());
-      moveProcessor.processHandIn(hand);
-      sendGamestate(channelGroup);
-      moveProcessor.clearLastMoves();
-    }
-  }
-
-  private void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
-      throws InterruptedException {
-    Fortify fortify = aiBot.createFortify();
-    if (fortify != null && fortify.getTroopsToMove() > 0) {
-      moveProcessor.processFortify(fortify);
-      sendGamestate(channelGroup);
-      moveProcessor.clearLastMoves();
-    }
-    Thread.sleep(500);
-    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-    sendGamestate(channelGroup);
-    moveProcessor.clearLastMoves();
-  }
-
-  private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
-      throws InterruptedException {
-    do {
-      CountryPair attack = aiBot.createAttack();
-      if (attack == null) {
-        moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-        sendGamestate(channelGroup);
-        moveProcessor.clearLastMoves();
-      } else {
-        Attack attack1;
-        do {
-          attack1 = attack.createAttack(aiBot.getAttackTroops(attack.getOutgoing()));
-          moveProcessor.processAttack(attack1);
-          sendGamestate(channelGroup);
-          moveProcessor.clearLastMoves();
-          Thread.sleep(3500);
-        } while (!attack1.getHasConquered()
-            && attack1.getAttackingCountry().getTroops() >= 2);
-        aiBot.setGameState(moveProcessor.getGameController().getGameState());
-
-        if (moveProcessor.getGameController().getGameState().isGameOver()) {
-          sendGameOver(channelGroup);
-          break;
-        }
-        if (attack1.getHasConquered()) {
-          Fortify fortify = attack.createFortify(attack1.getTroopNumber());
-          moveProcessor.processFortify(fortify);
-          sendGamestate(channelGroup);
-          Thread.sleep(500);
-          moveProcessor.clearLastMoves();
-          Fortify fortify1 = aiBot.moveAfterAttack(attack);
-          if (fortify1 != null && fortify1.getTroopsToMove() > 0) {
-            moveProcessor.processFortify(fortify1);
-            sendGamestate(channelGroup);
-            moveProcessor.clearLastMoves();
-          }
-        }
-      }
-    } while (aiBot.attackAgain());
-    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-    sendGamestate(channelGroup);
-    moveProcessor.clearLastMoves();
-  }
-
-  private void sendGameOver(ChannelGroup channelGroup) {
-    //TODO
-  }
-
-  private void sendUpdatedServerLobby(ServerLobby serverLobby) {
-    String serialized = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
-    for (Channel ch : channels) {
-      LOGGER.debug("Send updated server lobby to: " + ch.id());
-      ch.writeAndFlush(new TextWebSocketFrame(serialized));
-    }
-  }
-
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
+
 
     if (frame instanceof TextWebSocketFrame) {
       String request = ((TextWebSocketFrame) frame).text();
       JsonObject json = null;
+      try {
+        moveProcessor = gameLobbyChannels.getMoveProcessor(ctx.channel());
+      } catch (Exception e) {
+        System.out.println("cant get Moveprocessor " + e);
+      }
       try {
         LOGGER.debug("Server: Trying to read message");
         json = JsonParser.parseString(request).getAsJsonObject();
@@ -377,7 +230,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                       myServerGameLobby.getUsers().size() + myServerGameLobby.getBots().size();
                   myServerGameLobby.setMaxPlayers(newMaxPlayers);
                   sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
-
+                  moveProcessor = gameLobbyChannels.createMoveProcessor(ctx.channel());
                   processStartGame(myServerGameLobby);
 
                 }
@@ -502,6 +355,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       throw new UnsupportedOperationException(message);
     }
 
+  }
+
+  private void sendGameOver(ChannelGroup channelGroup) {
+    //TODO
   }
 
   private void sendGamestate(ChannelGroup channelGroup) {
@@ -647,6 +504,153 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         });
 
 
+  }
+
+  private void sendUpdatedServerLobby(ServerLobby serverLobby) {
+    String serialized = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
+    for (Channel ch : channels) {
+      LOGGER.debug("Send updated server lobby to: " + ch.id());
+      ch.writeAndFlush(new TextWebSocketFrame(serialized));
+    }
+  }
+
+  private void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
+    aiBot.setGameState(moveProcessor.getGameController().getGameState());
+    Player player = (Player) aiBot;
+    moveProcessor.getPlayerController().setPlayer(player);
+    try {
+      switch (player.getCurrentPhase()) {
+        case CLAIM_PHASE -> {
+          Thread.sleep(500);
+          Reinforce reinforce = aiBot.claimCountry();
+          moveProcessor.processReinforce(reinforce);
+          sendGamestate(channelGroup);
+          moveProcessor.clearLastMoves();
+          Thread.sleep(500);
+          moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+          sendGamestate(channelGroup);
+          moveProcessor.clearLastMoves();
+          Thread.sleep(500);
+          Player currentPlayer = moveProcessor.getGameController().getGameState()
+              .getCurrentPlayer();
+          if (!player.getUser().equals(currentPlayer.getUser())
+              && currentPlayer instanceof AiBot aiBot1) {
+            processBotMove(aiBot1, channelGroup);
+          }
+        }
+        case REINFORCEMENT_PHASE -> {
+          processBotReinforcementPhase(aiBot, channelGroup, player);
+          Thread.sleep(3000);
+          processBotAttackPhase(aiBot, channelGroup, player);
+          Thread.sleep(3000);
+          processBotFortifyPhase(aiBot, channelGroup, player);
+          Thread.sleep(500);
+          Player currentPlayer = moveProcessor.getGameController().getGameState()
+              .getCurrentPlayer();
+          if (!player.getUser().equals(currentPlayer.getUser())
+              && currentPlayer instanceof AiBot aiBot1) {
+            processBotMove(aiBot1, channelGroup);
+          }
+
+        }
+
+
+      }
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+      throws InterruptedException {
+    processBotHandIn(channelGroup);
+    Thread.sleep(1000);
+    List<Reinforce> reinforces = aiBot.createAllReinforcements();
+    reinforces.stream().filter(x -> x.getToAdd() > 0).forEach(x -> {
+      moveProcessor.processReinforce(x);
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+
+    });
+    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+    sendGamestate(channelGroup);
+    moveProcessor.clearLastMoves();
+  }
+
+  private void processBotHandIn(ChannelGroup channelGroup) {
+    HandController handController = moveProcessor.getPlayerController().getHandController();
+    if (handController.holdsExchangeable()) {
+      handController.selectExchangeableCards();
+      HandIn hand = new HandIn(handController.getHand().getSelectedCards());
+      moveProcessor.processHandIn(hand);
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+    }
+  }
+
+  private void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+      throws InterruptedException {
+    Fortify fortify = aiBot.createFortify();
+    if (fortify != null && fortify.getTroopsToMove() > 0) {
+      moveProcessor.processFortify(fortify);
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+    }
+    Thread.sleep(500);
+    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+    sendGamestate(channelGroup);
+    moveProcessor.clearLastMoves();
+  }
+
+  private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+      throws InterruptedException {
+    do {
+      CountryPair attack = aiBot.createAttack();
+      if (attack == null) {
+        moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+        sendGamestate(channelGroup);
+        moveProcessor.clearLastMoves();
+      } else {
+        Attack attack1;
+        do {
+          attack1 = attack.createAttack(aiBot.getAttackTroops(attack.getOutgoing()));
+          moveProcessor.processAttack(attack1);
+          sendGamestate(channelGroup);
+          moveProcessor.clearLastMoves();
+          Thread.sleep(3500);
+        } while (!attack1.getHasConquered()
+            && attack1.getAttackingCountry().getTroops() >= 2);
+        aiBot.setGameState(moveProcessor.getGameController().getGameState());
+
+        if (moveProcessor.getGameController().getGameState().isGameOver()) {
+          sendGameOver(channelGroup);
+          break;
+        }
+        if (attack1.getHasConquered()) {
+          Fortify fortify = attack.createFortify(attack1.getTroopNumber());
+          moveProcessor.processFortify(fortify);
+          sendGamestate(channelGroup);
+          Thread.sleep(500);
+          moveProcessor.clearLastMoves();
+          Fortify fortify1 = aiBot.moveAfterAttack(attack);
+          if (fortify1 != null && fortify1.getTroopsToMove() > 0) {
+            moveProcessor.processFortify(fortify1);
+            sendGamestate(channelGroup);
+            moveProcessor.clearLastMoves();
+          }
+        }
+      }
+    } while (aiBot.attackAgain());
+    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+    sendGamestate(channelGroup);
+    moveProcessor.clearLastMoves();
   }
 
   //TODO Handle verbindungsabbruch with channelInactive

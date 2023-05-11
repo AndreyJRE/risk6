@@ -102,5 +102,17 @@ public class GameLobbyChannels {
     return users;
   }
 
+  public MoveProcessor getMoveProcessor(Channel channel) {
+    return moveProcessors.inverse()
+        .get(moveProcessors.values().stream().filter(x -> x.contains(channel)).findFirst().get());
+  }
+
+  public MoveProcessor createMoveProcessor(Channel channel) {
+    ChannelGroup channelGroup = gameChannels.values().stream().filter(x -> x.contains(channel))
+        .findFirst().get();
+    moveProcessors.put(new MoveProcessor(), channelGroup);
+    return moveProcessors.inverse().get(channelGroup);
+  }
+
 
 }

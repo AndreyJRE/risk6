@@ -4,18 +4,13 @@ package com.unima.risk6.network;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
-import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
-import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.network.client.GameClient;
 import com.unima.risk6.network.configurations.GameClientFactory;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.server.GameServer;
-import com.unima.risk6.network.server.MoveProcessor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +38,7 @@ public class GamestateSendTest {
              */
       gameState = GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>());
       gameClient = GameClientFactory.createGameClient("ws://localhost:8080/game");
-      gameServer = new GameServer(new MoveProcessor(new PlayerController(),
-          new GameController(GameConfiguration.configureGame(
-              Arrays.asList("Test"), new ArrayList<>())), new DeckController(new Deck())));
+      gameServer = new GameServer();
     } catch (Exception e) {
       System.out.println(e.toString());
     }

@@ -19,7 +19,7 @@ public class NetworkConfiguration {
 
   public static void startGameServer() {
     MoveProcessor moveProcessor = new MoveProcessor();
-    GameServer gameServer = new GameServer(moveProcessor);
+    GameServer gameServer = new GameServer();
     serverLobby = new ServerLobby("Andrey's server");
     gameServerThread = new Thread(gameServer);
     gameServerThread.start();
@@ -34,7 +34,7 @@ public class NetworkConfiguration {
 
   public static void startSinglePlayerServer() {
     MoveProcessor moveProcessor = new MoveProcessor();
-    GameServer gameServer = new GameServer(moveProcessor, "127.0.0.1");
+    GameServer gameServer = new GameServer("127.0.0.1");
     serverLobby = new ServerLobby("Single player server");
     gameServerThread = new Thread(gameServer);
     gameServerThread.start();

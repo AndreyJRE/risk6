@@ -15,12 +15,11 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
   private static final String WEBSOCKET_PATH = "/game";
   private static ChannelGroup channels;
 
-  private MoveProcessor moveProcessor;
+
   private GameLobbyChannels gameLobbyChannels;
 
-  public GameServerInitializer(ChannelGroup channels, MoveProcessor moveProcessor) {
+  public GameServerInitializer(ChannelGroup channels) {
     GameServerInitializer.channels = channels;
-    this.moveProcessor = moveProcessor;
     this.gameLobbyChannels = new GameLobbyChannels();
   }
 
@@ -31,7 +30,7 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
     pipeline.addLast(new HttpObjectAggregator(65536));
     pipeline.addLast(new WebSocketServerCompressionHandler());
     pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-    pipeline.addLast(new GameServerFrameHandler(channels, moveProcessor, gameLobbyChannels));
+    pipeline.addLast(new GameServerFrameHandler(channels, gameLobbyChannels));
   }
 
 }
