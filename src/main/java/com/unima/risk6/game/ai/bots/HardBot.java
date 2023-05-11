@@ -24,7 +24,7 @@ public class HardBot extends GreedyBot implements AiBot {
   private Fortify fortify;
 
   private GameState gameState;
-  private boolean firstAttack;
+  private boolean firstAttack = true;
 
 
   public HardBot(String username) {
