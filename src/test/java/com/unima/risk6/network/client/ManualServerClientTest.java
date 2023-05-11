@@ -1,25 +1,15 @@
 package com.unima.risk6.network.client;
 
-import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.controllers.DeckController;
-import com.unima.risk6.game.logic.controllers.GameController;
-import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.Deck;
 import com.unima.risk6.network.server.GameServer;
-import com.unima.risk6.network.server.MoveProcessor;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public class ManualServerClientTest {
 
   public static void main(String[] args) {
     try {
       GameClient gameClient = new GameClient("ws://localhost:8080/game");
-      GameServer gameServer = new GameServer(
-          new MoveProcessor(new PlayerController(), new GameController(
-              GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())),
-              new DeckController(new Deck())));
+      GameServer gameServer = new GameServer();
 
       Thread server = new Thread(gameServer);
       server.start();
