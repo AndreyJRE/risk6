@@ -91,6 +91,7 @@ public class GameSceneController implements GameStateObserver {
   private ChatUi chatUi;
 
   private HandUi handUi;
+  private Button cardsButton;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -345,7 +346,7 @@ public class GameSceneController implements GameStateObserver {
       }
     });
 
-    Button cardsButton = new Button();
+    cardsButton = new Button();
     ImageView cardsGroup = new ImageView(
         new Image(getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
     cardsGroup.setFitWidth(150);
@@ -519,6 +520,12 @@ public class GameSceneController implements GameStateObserver {
     Platform.runLater(() -> {
       playerUis.forEach(PlayerUi::updateAmountOfTroops);
       handUi.setHand(myPlayerUi.getPlayer().getHand());
+      if (PLAYER_CONTROLLER.getHandController().holdsExchangeable()) {
+        cardsButton.setStyle(
+            "-fx-background-color: rgb(88,8,8); -fx-border-color: rgb(88,8,8);");
+      } else {
+        cardsButton.setStyle("-fx-background-radius: 15px;");
+      }
     });
 
   }

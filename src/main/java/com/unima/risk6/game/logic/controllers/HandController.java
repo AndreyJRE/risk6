@@ -77,6 +77,12 @@ public class HandController {
     selectedCards.remove(cards.get(i));
   }
 
+  public void deselectCardsThroughCard(Card card) {
+    if (selectedCards.contains(card)) {
+      selectedCards.remove(card);
+    }
+  }
+
   /**
    * Deselects all cards from the hand.
    */
@@ -99,27 +105,6 @@ public class HandController {
   public void exchangeCards() {
     selectedCards.stream().filter(cards::contains).forEach(cards::remove);
     deselectAllCards();
-  }
-
-  /**
-   * Returns the set of bonus countries based on the selected cards.
-   *
-   * @param countries The set of countries to consider for bonus.
-   * @return The set of bonus countries.
-   */
-  public Set<CountryName> getBonusCountries(Set<Country> countries) {
-    HashSet<CountryName> bonusCountries = new HashSet<>();
-    countries.forEach(country -> selectedCards.forEach(card -> {
-              if (card.hasCountry()) {
-                if (card.getCountry().equals(country.getCountryName())) {
-                  bonusCountries.add(country.getCountryName());
-                }
-              }
-            }
-        )
-
-    );
-    return bonusCountries;
   }
 
   /**
@@ -168,14 +153,6 @@ public class HandController {
         && numberOfInfantryCards == 0);
   }
 
-  /**
-   * Determines if the selected cards are exchangeable.
-   *
-   * @return true if the selected cards are exchangeable, false otherwise.
-   */
-  public boolean isExchangeable() {
-    return isExchangeable(selectedCards);
-  }
 
   /**
    * Determines if the given list of cards is exchangeable.
@@ -220,6 +197,28 @@ public class HandController {
         (exchange.get(CardSymbol.CAVALRY) == null) ? 0 : exchange.get(CardSymbol.CAVALRY);
 
   }
+
+  /**
+   * Returns the set of bonus countries based on the selected cards.
+   *
+   * @param countries The set of countries to consider for bonus.
+   * @return The set of bonus countries.
+   */
+  public Set<CountryName> getBonusCountries(Set<Country> countries) {
+    HashSet<CountryName> bonusCountries = new HashSet<>();
+    countries.forEach(country -> selectedCards.forEach(card -> {
+              if (card.hasCountry()) {
+                if (card.getCountry().equals(country.getCountryName())) {
+                  bonusCountries.add(country.getCountryName());
+                }
+              }
+            }
+        )
+
+    );
+    return bonusCountries;
+  }
+
 
   /**
    * Adds a card to the hand.
