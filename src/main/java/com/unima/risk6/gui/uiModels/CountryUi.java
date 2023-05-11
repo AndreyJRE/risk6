@@ -252,7 +252,8 @@ public class CountryUi extends Group {
     closeIcon.setFitWidth(20);
     closeIcon.setFitHeight(20);
     closeAmountOfTroopsButton.setGraphic(closeIcon);
-    closeAmountOfTroopsButton.setStyle("-fx-background-radius: 10px;");
+    closeAmountOfTroopsButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);"
+        + "-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
 
     moveTroopsPane.setTop(closeAmountOfTroopsButton);
@@ -331,11 +332,8 @@ public class CountryUi extends Group {
 
     moveTroopsPane.setCenter(chatBox);
     moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
-    moveTroopsPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setRadius(10);
-    moveTroopsPane.setEffect(dropShadow);
+    moveTroopsPane.setStyle(
+        "-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
@@ -422,11 +420,7 @@ public class CountryUi extends Group {
 
     dicePane.setCenter(diceHBox);
     dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
-    dicePane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setRadius(10);
-    dicePane.setEffect(dropShadow);
+    dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
