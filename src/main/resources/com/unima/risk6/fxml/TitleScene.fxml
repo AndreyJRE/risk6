@@ -3,7 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,7 +17,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.TitleSceneController">
+<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.TitleSceneController">
   <children>
     <MediaView fx:id="backgroundVideoView" opacity="0.9" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
     </MediaView>
@@ -115,6 +118,18 @@
                </children>
             </AnchorPane>
       </bottom>
+         <top>
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="1080.0" spacing="10.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="34.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../pictures/soundIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Slider prefHeight="25.0" prefWidth="351.0" />
+               </children>
+            </HBox>
+         </top>
     </BorderPane>
   </children>
 </AnchorPane>

@@ -108,7 +108,7 @@ public class UserOptionsSceneController {
     userNameField.setEditable(false);
     userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
         + "70px; -fx-background-color: transparent; "
-        + "-fx-border-color: transparent;");
+        + "-fx-border-color: transparent;; -fx-fill: white");
     userNameField.setAlignment(Pos.CENTER);
 
     // Add a Tooltip to the userNameField
@@ -123,7 +123,7 @@ public class UserOptionsSceneController {
         userNameField.setEditable(true);
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: lightgrey; "
-            + "-fx-border-color: transparent;");
+            + "-fx-border-color: transparent;; -fx-fill: white");
         userNameField.requestFocus();
       }
     };

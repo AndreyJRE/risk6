@@ -152,7 +152,7 @@ public class SelectedUserSceneController {
 
   private void initElements() {
     Label selectedUserName = new Label(user.getUsername());
-    selectedUserName.setStyle("-fx-font-size: 40");
+    selectedUserName.setStyle("-fx-font-size: 40; -fx-fill: white");
 
     passwordField = new PasswordField();
     passwordField.setPromptText("Enter password");
@@ -169,7 +169,7 @@ public class SelectedUserSceneController {
 
     welcomeBack = new Label("Welcome Back!");
     welcomeBack.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D; -fx-fill: white");
 
     passwordEntryBox = new VBox(userStackPane, selectedUserName, passwordField,
         loginButton);

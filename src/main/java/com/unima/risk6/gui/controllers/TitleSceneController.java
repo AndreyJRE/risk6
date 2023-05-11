@@ -198,7 +198,6 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private void handleSinglePlayer() {
-
     //TODO: initialize Game Lobby
     NetworkConfiguration.startGameServer();
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
@@ -244,9 +243,6 @@ public class TitleSceneController implements Initializable {
   @FXML
   private void handleTutorial(){
     //TODO: Play Tutorial
-
-    //
-
     NetworkConfiguration.startGameServer();
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
