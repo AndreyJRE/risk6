@@ -11,7 +11,11 @@ import com.google.gson.JsonSerializer;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.montecarlo.MonteCarloBot;
+import com.unima.risk6.game.ai.tutorial.TutorialBot;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
@@ -20,6 +24,8 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.lang.reflect.Type;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +117,9 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
       case "MonteCarloBot":
         player = new MonteCarloBot(user);
         break;
+      case "TutorialBot":
+        player = new TutorialBot(user);
+        break;
       default:
         player = new Player();
         LOGGER.debug("PlayerType should be Player, EasyBot, MediumBot or Hardbot");
@@ -150,6 +159,44 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     player.setDeployableTroops(deployableTroops);
     player.setInitialTroops(initialTroops);
     player.setStatistic(context.deserialize(jsonObject.get("statistic"), Statistic.class));
+    if (jsonObject.get("type").getAsString().equals("TutorialBot")) {
+      Queue<Reinforce> deterministicClaims = new LinkedList<>();
+      jsonObject.get("deterministicClaims").getAsJsonArray().forEach(x -> {
+        deterministicClaims.add(context.deserialize(x.getAsJsonObject(), Reinforce.class));
+      });
+      ((TutorialBot) player).setDeterministicClaims(deterministicClaims);
+
+      Queue<Reinforce> deterministicReinforces = new LinkedList<>();
+      jsonObject.get("deterministicReinforces").getAsJsonArray().forEach(x -> {
+        deterministicReinforces.add(context.deserialize(x.getAsJsonObject(), Reinforce.class));
+      });
+      ((TutorialBot) player).setDeterministicReinforces(deterministicReinforces);
+
+      Queue<CountryPair> deterministicAttacks = new LinkedList<>();
+      jsonObject.get("deterministicAttacks").getAsJsonArray().forEach(x -> {
+        JsonArray pair = x.getAsJsonObject().get("CountryPair").getAsJsonArray();
+        Country item1 = gameState.getCountries().stream()
+            .filter(c -> c.getCountryName().toString().equals(pair.get(0).getAsString())).findAny()
+            .get();
+        Country item2 = gameState.getCountries().stream()
+            .filter(c -> c.getCountryName().toString().equals(pair.get(1).getAsString())).findAny()
+            .get();
+        deterministicAttacks.add(new CountryPair(item1, item2));
+      });
+      ((TutorialBot) player).setDeterministicAttacks(deterministicAttacks);
+
+      Queue<Fortify> deterministicAfterAttacks = new LinkedList<>();
+      jsonObject.get("deterministicAfterAttacks").getAsJsonArray().forEach(x -> {
+        deterministicAfterAttacks.add(context.deserialize(x.getAsJsonObject(), Fortify.class));
+      });
+      ((TutorialBot) player).setDeterministicAfterAttacks(deterministicAfterAttacks);
+
+      Queue<Fortify> deterministicFortify = new LinkedList<>();
+      jsonObject.get("deterministicFortifies").getAsJsonArray().forEach(x -> {
+        deterministicFortify.add(context.deserialize(x.getAsJsonObject(), Fortify.class));
+      });
+      ((TutorialBot) player).setDeterministicFortifies(deterministicFortify);
+    }
     return player;
   }
 

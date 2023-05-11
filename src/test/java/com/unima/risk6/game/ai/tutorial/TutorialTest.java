@@ -5,9 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.network.message.StandardMessage;
+import com.unima.risk6.network.serialization.Deserializer;
+import com.unima.risk6.network.serialization.Serializer;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +50,18 @@ class TutorialTest {
     assertEquals(GamePhase.NOT_ACTIVE, tutorialBotPlayer.getCurrentPhase());
     assertEquals(GamePhase.CLAIM_PHASE, humanPlayer.getCurrentPhase());
     System.out.println(tutorial.getNextMessage());
+  }
+
+  @Test
+  void serializeTest() {
+    GameState empty = GameConfiguration.configureGame(new ArrayList<>(), List.of(tutorialBot));
+    String result = Serializer.serialize(new StandardMessage<GameState>(empty));
+    GameState copy = (GameState) Deserializer.deserialize(result, empty).getContent();
+    TutorialBot botCopy = (TutorialBot) copy.getCurrentPlayer();
+    assertTrue(botCopy.getDeterministicClaims().size() > 0);
+    assertTrue(botCopy.getDeterministicReinforces().size() > 0);
+    assertTrue(botCopy.getDeterministicAttacks().size() > 0);
+    assertTrue(botCopy.getDeterministicAfterAttacks().size() > 0);
+    assertTrue(botCopy.getDeterministicFortifies().size() > 0);
   }
 }

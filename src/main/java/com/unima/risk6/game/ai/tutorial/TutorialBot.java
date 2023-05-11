@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
  */
 public class TutorialBot extends Player implements AiBot {
 
-  private final Queue<Reinforce> deterministicClaims;
-  private final Queue<Reinforce> deterministicReinforces;
-  private final Queue<CountryPair> deterministicAttacks;
-  private final Queue<Fortify> deterministicAfterAttacks;
-  private final Queue<Fortify> deterministicFortifies;
+  private Queue<Reinforce> deterministicClaims;
+  private Queue<Reinforce> deterministicReinforces;
+  private Queue<CountryPair> deterministicAttacks;
+  private Queue<Fortify> deterministicAfterAttacks;
+  private Queue<Fortify> deterministicFortifies;
   private final Map<CountryName, Country> countryMap;
 
   /**
@@ -171,4 +171,48 @@ public class TutorialBot extends Player implements AiBot {
 
   }
 
+  public Queue<Reinforce> getDeterministicClaims() {
+    return deterministicClaims;
+  }
+
+  public void setDeterministicClaims(
+      Queue<Reinforce> deterministicClaims) {
+    this.deterministicClaims = deterministicClaims;
+  }
+
+  public Queue<Reinforce> getDeterministicReinforces() {
+    return deterministicReinforces;
+  }
+
+  public void setDeterministicReinforces(
+      Queue<Reinforce> deterministicReinforces) {
+    this.deterministicReinforces = deterministicReinforces;
+  }
+
+  public Queue<CountryPair> getDeterministicAttacks() {
+    return deterministicAttacks;
+  }
+
+  public void setDeterministicAttacks(
+      Queue<CountryPair> deterministicAttacks) {
+    this.deterministicAttacks = deterministicAttacks;
+  }
+
+  public Queue<Fortify> getDeterministicAfterAttacks() {
+    return deterministicAfterAttacks;
+  }
+
+  public void setDeterministicAfterAttacks(
+      Queue<Fortify> deterministicAfterAttacks) {
+    this.deterministicAfterAttacks = deterministicAfterAttacks;
+  }
+
+  public Queue<Fortify> getDeterministicFortifies() {
+    return deterministicFortifies;
+  }
+
+  public void setDeterministicFortifies(
+      Queue<Fortify> deterministicFortifies) {
+    this.deterministicFortifies = deterministicFortifies;
+  }
 }
