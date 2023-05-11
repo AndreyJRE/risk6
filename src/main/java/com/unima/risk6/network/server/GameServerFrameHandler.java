@@ -211,6 +211,12 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
+                  //Send max players to current players
+                  int newMaxPlayers =
+                      myServerGameLobby.getUsers().size() + myServerGameLobby.getBots().size();
+                  myServerGameLobby.setMaxPlayers(newMaxPlayers);
+                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+
                   processStartGame(myServerGameLobby);
                   sendFirstGamestate(myServerGameLobby);
                   moveProcessor.clearLastMoves();
