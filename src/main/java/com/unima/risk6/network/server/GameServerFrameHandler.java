@@ -218,8 +218,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
                   processStartGame(myServerGameLobby);
-                  sendFirstGamestate(myServerGameLobby);
-                  moveProcessor.clearLastMoves();
 
                 }
                 case LEAVE_SERVER_LOBBY -> {
@@ -576,6 +574,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
+    sendFirstGamestate(gameLobby);
+    moveProcessor.clearLastMoves();
   }
 
   public void sendChatMessage(Channel channel, String request) {
