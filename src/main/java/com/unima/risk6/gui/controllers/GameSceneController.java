@@ -12,11 +12,10 @@ import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.game.models.enums.PlayerColor;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
@@ -24,19 +23,17 @@ import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
-import com.unima.risk6.gui.uiModels.CardUi;
 import com.unima.risk6.gui.uiModels.ChatUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.gui.uiModels.DiceUi;
+import com.unima.risk6.gui.uiModels.HandUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.TimeUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -79,7 +76,6 @@ public class GameSceneController implements GameStateObserver {
   private final GameScene gameScene;
   private final SceneController sceneController;
   private GameState gameState;
-  private Stack<CardUi> cardUis;
   private BorderPane root;
   private Set<CountryUi> countriesUis;
   private double originalScreenWidth;
@@ -93,6 +89,8 @@ public class GameSceneController implements GameStateObserver {
   boolean isStatisticsShowing = false;
 
   private ChatUi chatUi;
+
+  private HandUi handUi;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -116,6 +114,10 @@ public class GameSceneController implements GameStateObserver {
     this.countriesGroup = new Group();
     this.initializeGameScene();
     this.chatUi = new ChatUi(gameScene);
+    this.handUi = new HandUi(gameScene, countriesUis);
+    Hand hand = gameState.getActivePlayers().stream()
+        .filter(player -> player.equals(myPlayerUi.getPlayer())).findFirst().get().getHand();
+    this.handUi.setHand(hand);
     GameConfiguration.addObserver(this);
     this.addListeners();
   }
@@ -252,7 +254,6 @@ public class GameSceneController implements GameStateObserver {
     countriesGroup.getChildren().addAll(countriesUis);
     StackPane countriesPane = new StackPane();
 
-    cardUis = new Stack<>();
     for (CountryUi countryUi : countriesUis) {
       Bounds bounds = countryUi.getCountryPath().getBoundsInParent();
       double ellipseX = bounds.getMinX() + bounds.getWidth() * 0.5;
@@ -372,66 +373,7 @@ public class GameSceneController implements GameStateObserver {
   }
 
   private void showCardsPopup() {
-    Button closeCardsButton = new Button();
-    closeCardsButton.setPrefSize(20, 20);
-    ImageView closeCardIcon = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
-    closeCardIcon.setFitWidth(20);
-    closeCardIcon.setFitHeight(20);
-    closeCardsButton.setGraphic(closeCardIcon);
-    closeCardsButton.setStyle("-fx-background-radius: 15px;");
-    closeCardsButton.setFocusTraversable(false);
-
-    BorderPane cardsPane = new BorderPane();
-    cardsPane.setTop(closeCardsButton);
-    BorderPane.setAlignment(closeCardsButton, Pos.TOP_RIGHT);
-
-    HBox cardsBox = new HBox();
-    List<Card> currentHandCards = cardUis.stream().map(CardUi::getCard).toList();
-    List<Card> cards = PLAYER_CONTROLLER.getHandController().getHand().getCards();
-    List<Card> cardsToAdd = cards.stream().filter(card -> !currentHandCards.contains(card))
-        .toList();
-    for (Card card : cardsToAdd) {
-      CardUi cardUi =
-          (card.hasCountry()) ? new CardUi(card, getCountryUiByCountryName(card.getCountry()),
-              cardUis)
-              : new CardUi(card, cardUis);
-      cardUis.add(cardUi);
-    }
-
-    cardsBox.getChildren().addAll(cardUis);
-    cardsBox.setSpacing(30);
-    cardsBox.setAlignment(Pos.CENTER);
-
-    cardsPane.setCenter(cardsBox);
-
-    cardsPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-
-    Popup cardsPopup = new Popup();
-    cardsPopup.getContent().add(cardsPane);
-
-    closeCardsButton.setOnAction(event -> cardsPopup.hide());
-
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setRadius(10);
-    cardsPane.setEffect(dropShadow);
-
-    cardsPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
-
-    Bounds rootBounds = root.localToScreen(root.getBoundsInLocal());
-
-    double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
-    double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
-
-    // Get the width and height of the popup
-    double popupWidth = cardsPane.getPrefWidth();
-    double popupHeight = cardsPane.getPrefHeight();
-
-    // Set the position of the chat popup to center it in the root Scene
-    cardsPopup.setX(centerX - popupWidth / 2);
-    cardsPopup.setY(centerY - popupHeight / 2);
-    cardsPopup.show(gameScene.getWindow());
+    handUi.show();
   }
 
   private void addListeners() {
@@ -580,7 +522,10 @@ public class GameSceneController implements GameStateObserver {
       }
       iterator.remove();
     }
-    Platform.runLater(() -> playerUis.forEach(PlayerUi::updateAmountOfTroops));
+    Platform.runLater(() -> {
+      playerUis.forEach(PlayerUi::updateAmountOfTroops);
+      handUi.setHand(myPlayerUi.getPlayer().getHand());
+    });
 
   }
 
@@ -615,7 +560,7 @@ public class GameSceneController implements GameStateObserver {
                 countryUi1 -> countryUi1.getCountry().getCountryName()
                     .equals(adjacentCountryUi.getCountry().getCountryName())).findFirst().get()
             .getCountry())));
-
+    handUi.setHand(myPlayerUi.getPlayer().getHand());
     //TODO Update reference for the deckUi,handUi, etc
   }
 
@@ -624,11 +569,6 @@ public class GameSceneController implements GameStateObserver {
         .findFirst().get();
   }
 
-  public CountryUi getCountryUiByCountryName(CountryName countryName) {
-    return countriesUis.stream()
-        .filter(countryUi -> countryUi.getCountry().getCountryName().equals(countryName))
-        .findFirst().get();
-  }
 
   public void animateTroopsMovement(Fortify fortify) {
     double maxOffsetX = 2.5;

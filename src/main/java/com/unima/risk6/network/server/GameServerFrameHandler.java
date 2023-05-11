@@ -594,6 +594,12 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
+    //TODO Delete this
+    moveProcessor.drawCard();
+    moveProcessor.drawCard();
+    moveProcessor.drawCard();
+    moveProcessor.drawCard();
+    moveProcessor.drawCard();
     Probabilities.init();
     sendFirstGamestate(gameLobby);
     moveProcessor.clearLastMoves();
