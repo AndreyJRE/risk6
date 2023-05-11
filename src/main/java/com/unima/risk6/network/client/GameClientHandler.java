@@ -155,18 +155,19 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                     textFrame.text()).getContent();
                 LobbyConfiguration.setServerLobby(content);
               }
-              case "DROP_USER_LOBBY" -> {
-                //TODO Error Messsage
+              case "DROP_USER_GAME_LOBBY", "DROP_USER_SERVER_LOBBY" -> {
+                String content = (String) Deserializer.deserializeConnectionMessage(
+                    textFrame.text()).getContent();
+                LOGGER.error("Error Connecting to game lobby: " + content);
               }
-              case "DROP_USER_GAME" -> {
-                //TODO Error Message
-              }
+              default -> LOGGER.debug("Client received a faulty connection message");
 
 
             }
           }
 
-          default -> LOGGER.debug("The Message received wasnt a gamestate or a connection message");
+          default -> LOGGER.debug(
+              "The Message received wasnt a gamestate, a chat message or a connection message");
         }
       }
 

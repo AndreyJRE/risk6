@@ -111,7 +111,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
           }
-          //TODO Serializers
           case "HAND_IN" -> {
             LOGGER.debug("The server received a hand in object");
             HandIn handIn = (HandIn) Deserializer.deserialize(request).getContent();
@@ -166,20 +165,28 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
-                  //TODO Maximale Größe beachten
                   LOGGER.debug(
                       "At JOIN_GAME_LOBBY " + connectionMessage.getContent()
                           .getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
-                  channels.remove(ctx.channel());
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
-                  //Add users channel to the ChannelGroup from the gamelobby
-                  gameLobbyFromServer.getUsers()
-                      .add(users.inverse().get(ctx.channel()));
-                  gameChannels.get(gameLobbyFromServer).add(ctx.channel());
-                  sendGameLobby(gameLobbyFromServer);
-                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+                  System.out.println("Lobbysize: " + gameLobbyFromServer.getBots().size()
+                      + gameLobbyFromServer.getMaxPlayers() + " Max players "
+                      + gameLobbyFromServer.getMaxPlayers());
+                  if (gameLobbyFromServer.getBots().size() + gameLobbyFromServer.getUsers().size()
+                      < gameLobbyFromServer.getMaxPlayers()) {
+                    channels.remove(ctx.channel());
+                    //Add users channel to the ChannelGroup from the gamelobby
+                    gameLobbyFromServer.getUsers()
+                        .add(users.inverse().get(ctx.channel()));
+                    gameChannels.get(gameLobbyFromServer).add(ctx.channel());
+                    sendGameLobby(gameLobbyFromServer);
+                    sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+                  } else {
+                    sendDropMessage(ctx.channel(), ConnectionActions.DROP_USER_GAME_LOBBY,
+                        "The GameLobby is full");
+                  }
                 }
                 case JOIN_BOT_GAME_LOBBY -> {
                   LOGGER.debug(
@@ -219,9 +226,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
+                  //Send max players to current players
+                  int newMaxPlayers =
+                      myServerGameLobby.getUsers().size() + myServerGameLobby.getBots().size();
+                  myServerGameLobby.setMaxPlayers(newMaxPlayers);
+                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+
                   processStartGame(myServerGameLobby);
-                  sendFirstGamestate(myServerGameLobby);
-                  moveProcessor.clearLastMoves();
 
                 }
                 case LEAVE_SERVER_LOBBY -> {
@@ -581,6 +592,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
+    sendFirstGamestate(gameLobby);
+    moveProcessor.clearLastMoves();
   }
 
   public void sendChatMessage(Channel channel, String request) {
@@ -598,6 +611,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         });
 
 
+  }
+
+  public void sendDropMessage(Channel channel, ConnectionActions connectionActions, String string) {
+    channel.writeAndFlush(new TextWebSocketFrame(
+        Serializer.serialize(new ConnectionMessage<String>(connectionActions, string))));
   }
 
   //TODO Handle verbindungsabbruch

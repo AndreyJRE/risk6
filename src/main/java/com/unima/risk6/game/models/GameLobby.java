@@ -7,7 +7,9 @@ public class GameLobby {
 
   private final String lobbyName;
   private String name;
-  private final int maxPlayers;
+
+
+  private int maxPlayers;
 
   private final boolean isChatEnabled;
 
@@ -41,6 +43,10 @@ public class GameLobby {
 
   public int getMaxPlayers() {
     return maxPlayers;
+  }
+
+  public void setMaxPlayers(int maxPlayers) {
+    this.maxPlayers = maxPlayers;
   }
 
   public String getName() {
