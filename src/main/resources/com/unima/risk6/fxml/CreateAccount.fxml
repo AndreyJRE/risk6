@@ -5,71 +5,82 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane style="-fx-background-image: url('../pictures/titleSceneBackground.png');" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.CreateAccountController">
-   <center>
-      <VBox fx:id="root" alignment="CENTER" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: transparent;">
-        <children>
-          <HBox alignment="CENTER" style="-fx-background-color: transparent;" VBox.vgrow="NEVER">
-            <children>
-              <AnchorPane prefHeight="495.0" prefWidth="600.0" style="-fx-background-color: transparent;" HBox.hgrow="NEVER">
-                <children>
-                  <VBox alignment="CENTER" spacing="22.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <Label contentDisplay="CENTER" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;" text="Create new User">
-                      <font>
-                        <Font name="BentonSans Bold" size="41.0" />
-                      </font>
-                    </Label>
-                    <TextField fx:id="usernameField" prefHeight="38.0" prefWidth="470.0" promptText="Enter Username" style="-fx-background-radius: 20; -fx-border-radius: 20;">
-                      <font>
-                        <Font size="18.0" />
-                      </font>
-                    </TextField>
-                    <PasswordField fx:id="passwordField" prefHeight="39.0" prefWidth="470.0" promptText="Enter Password" style="-fx-background-radius: 20; -fx-border-radius: 20;">
-                      <font>
-                        <Font size="18.0" />
-                      </font>
-                    </PasswordField>
-                    <PasswordField fx:id="checkPasswordField" prefHeight="40.0" prefWidth="470.0" promptText="Enter Password again" style="-fx-background-radius: 20; -fx-border-radius: 20;">
-                      <font>
-                        <Font size="18.0" />
-                      </font>
-                    </PasswordField>
-                    <Label fx:id="passwordMismatchLabel" textFill="#FF0000">
-                      <font>
-                        <Font size="14.0" />
-                      </font>
+<AnchorPane fx:id="root" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.CreateAccountController">
+   <children>
+      <ImageView fx:id="backgroundImageView" disable="true" fitHeight="720.0" fitWidth="1080.0" opacity="0.7" smooth="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <image>
+            <Image url="@../pictures/createAccountBackground.png" />
+         </image>
+      </ImageView>
+      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <VBox fx:id="centerVBox" alignment="CENTER" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: transparent;">
+              <children>
+                <HBox alignment="CENTER" style="-fx-background-color: transparent;" VBox.vgrow="NEVER">
+                  <children>
+                    <AnchorPane prefHeight="495.0" prefWidth="600.0" style="-fx-background-color: transparent;" HBox.hgrow="NEVER">
+                      <children>
+                        <VBox alignment="CENTER" spacing="22.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <Label contentDisplay="CENTER" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;" text="Create new User">
+                            <font>
+                              <Font name="BentonSans Bold" size="41.0" />
+                            </font>
+                          </Label>
+                          <TextField fx:id="usernameField" prefHeight="38.0" prefWidth="470.0" promptText="Enter Username" style="-fx-background-radius: 20; -fx-border-radius: 20;">
+                            <font>
+                              <Font size="18.0" />
+                            </font>
+                          </TextField>
+                          <PasswordField fx:id="passwordField" prefHeight="39.0" prefWidth="470.0" promptText="Enter Password" style="-fx-background-radius: 20; -fx-border-radius: 20;">
+                            <font>
+                              <Font size="18.0" />
+                            </font>
+                          </PasswordField>
+                          <PasswordField fx:id="checkPasswordField" prefHeight="40.0" prefWidth="470.0" promptText="Enter Password again" style="-fx-background-radius: 20; -fx-border-radius: 20;">
+                            <font>
+                              <Font size="18.0" />
+                            </font>
+                          </PasswordField>
+                          <Label fx:id="passwordMismatchLabel" textFill="#FF0000">
+                            <font>
+                              <Font size="14.0" />
+                            </font>
+                            <padding>
+                              <Insets bottom="-10.0" top="-10.0" />
+                            </padding>
+                          </Label>
+                          <Button fx:id="createButton" alignment="CENTER" onAction="#handleCreateButton" prefHeight="40.0" prefWidth="470.0" text="Create">
+                            <font>
+                              <Font size="18.0" />
+                            </font>
+                          </Button>
+                          <Label onMouseClicked="#handleLoginToAccount" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-text-fill: #BEBEBE; -fx-underline: true;" text="Login to existing account">
+                            <font>
+                              <Font size="24.0" />
+                            </font>
+                          </Label>
+                          <padding>
+                            <Insets left="15.0" right="15.0" />
+                          </padding>
+                        </VBox>
+                      </children>
                       <padding>
-                        <Insets bottom="-10.0" top="-10.0" />
+                        <Insets bottom="40.0" left="30.0" right="30.0" top="40.0" />
                       </padding>
-                    </Label>
-                    <Button fx:id="createButton" alignment="CENTER" onAction="#handleCreateButton" prefHeight="40.0" prefWidth="470.0" text="Create">
-                      <font>
-                        <Font size="18.0" />
-                      </font>
-                    </Button>
-                    <Label onMouseClicked="#handleLoginToAccount" onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-text-fill: #BEBEBE; -fx-underline: true;" text="Login to existing account">
-                      <font>
-                        <Font size="24.0" />
-                      </font>
-                    </Label>
-                    <padding>
-                      <Insets left="15.0" right="15.0" />
-                    </padding>
-                  </VBox>
-                </children>
-                <padding>
-                  <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
-                </padding>
-              </AnchorPane>
-            </children>
-          </HBox>
-        </children>
-      </VBox>
-   </center>
-</BorderPane>
+                    </AnchorPane>
+                  </children>
+                </HBox>
+              </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>

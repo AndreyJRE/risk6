@@ -10,6 +10,7 @@ import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.ai.tutorial.TutorialBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
@@ -120,6 +121,11 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     centralHBox.getChildren().add(userVBox);
     if(tutorial){
       //TODO: Add Tutorial Bot
+      TutorialBot tutorialBot = new TutorialBot();
+      gameLobby.getBots().add(tutorialBot.getUser());
+      LobbyConfiguration.sendBotJoinLobby(gameLobby);
+      VBox botVBox = createBotVBox(3, tutorialBot.getUser());
+      centralHBox.getChildren().add(botVBox);
     }else {
       for (String bot : gameLobby.getBots()) {
         int i = 0;
@@ -266,6 +272,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
       case 0 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
       case 1 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
       case 2 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
+      case 3 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/tutorialIcon.png", true);
     }
     Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
@@ -277,11 +284,16 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     botBox.setAlignment(Pos.CENTER);
     botBox.setSpacing(-10);
 
-    Button removeButton = new Button("Remove");
-    removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
-        + "-fx-background-color: lightgrey; -fx-border-color: black;");
-    removeButton.setOnMouseClicked(e -> removeBot(botName));
-    VBox removeBox = new VBox(removeButton, botBox);
+    VBox removeBox = new VBox();
+    if(tutorial){
+      removeBox = botBox;
+    }else{
+      Button removeButton = new Button("Remove");
+      removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
+          + "-fx-background-color: lightgrey; -fx-border-color: black;");
+      removeButton.setOnMouseClicked(e -> removeBot(botName));
+      removeBox = new VBox(removeButton, botBox);
+    }
     removeBox.setAlignment(Pos.CENTER);
     removeBox.setSpacing(10);
     return removeBox;
