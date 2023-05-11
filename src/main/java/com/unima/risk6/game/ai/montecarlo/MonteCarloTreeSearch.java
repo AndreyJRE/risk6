@@ -100,10 +100,11 @@ public class MonteCarloTreeSearch {
       System.out.print("i = " + i + " ");
       MonteCarloNode node = select(root);
       boolean advantageous = false;
+      double oldStrength = Probabilities.getPlayerStrength(node.getGameState(), player);
       if (!node.getGameState().isGameOver() && node.getGameState().getActivePlayers()
           .contains(this.player)) {
         node = expand(node);
-        advantageous = simulate(node.getGameState());
+        advantageous = simulate(node.getGameState(), oldStrength);
       }
       backpropagate(node, advantageous);
     }
@@ -168,8 +169,7 @@ public class MonteCarloTreeSearch {
    * @param game The GameState from which the simulation will begin.
    * @return The strongest player once the game has stopped being simulated.
    */
-  private boolean simulate(GameState game) {
-    double oldStrength = Probabilities.getPlayerStrength(game, player);
+  private boolean simulate(GameState game, double oldStrength) {
     GameState simulation = this.copyGameState(game);
     GameController simulationController = new GameController(simulation);
     PlayerController playerController = new PlayerController();
