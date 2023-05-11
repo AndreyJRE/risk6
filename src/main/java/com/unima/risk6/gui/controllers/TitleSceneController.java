@@ -8,8 +8,8 @@ import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
-import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import java.net.URL;
@@ -33,8 +33,6 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -48,16 +46,6 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private ImageView backgroundImageView;
-
-  @FXML
-  private VBox vBox;
-
-  @FXML
-  private HBox hBox;
-
-  @FXML
-  private VBox titleBox;
-
   @FXML
   private Label titleLabel;
 
@@ -77,6 +65,8 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private Circle trigger;
+  @FXML
+  private Label ipLabel;
 
   private BooleanProperty switchedOn = new SimpleBooleanProperty(false);
   private TranslateTransition translateAnimation = new TranslateTransition(Duration.seconds(0.25));
@@ -131,6 +121,16 @@ public class TitleSceneController implements Initializable {
 
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
+    if (isOn) {
+      //TODO: IP Adress hinzufügen
+      ipLabel.setStyle(
+          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: darkgray");
+      ipLabel.setText("Your IP Adress: ");
+    } else {
+      ipLabel.setStyle(
+          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: darkgray");
+      ipLabel.setText("");
+    }
     switchedOn.set(!isOn);
     translateAnimation.setToX(isOn ? 0 : 100 - 55);
     fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
@@ -145,17 +145,16 @@ public class TitleSceneController implements Initializable {
     NetworkConfiguration.startGameServer();
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.CREATE_LOBBY);
     if (scene == null) {
-      scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
-      scene.setController(singlePlayerSettingsSceneController);
-      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+      scene = new CreateLobbyScene();
+      CreateLobbySceneController createLobbySceneController = new CreateLobbySceneController(scene);
+      scene.setController(createLobbySceneController);
+      sceneController.addScene(SceneName.CREATE_LOBBY, scene);
     }
     pauseTitleSound();
-    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+    sceneController.activate(SceneName.CREATE_LOBBY);
   }
 
   // Define the event handler for the multi player button
