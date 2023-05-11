@@ -10,6 +10,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.network.serialization.Deserializer;
 import io.netty.channel.Channel;
@@ -159,6 +160,13 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 String content = (String) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
                 LOGGER.error("Error Connecting to game lobby: " + content);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    == SceneName.JOIN_ONLINE) {
+                  Platform.runLater(() -> StyleConfiguration.handleUsernameExists(
+                      "Error Connecting to game lobby: " + content,
+                      "Username", "New username"));
+
+                }
               }
               default -> LOGGER.debug("Client received a faulty connection message");
 

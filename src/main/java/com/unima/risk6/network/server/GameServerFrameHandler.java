@@ -155,14 +155,17 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   System.out.println(channels.size());
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
-                  if (users.containsKey(userDto)) {
+                  boolean userInLobby = users.keySet().stream().anyMatch(x -> x.equals(userDto));
+                  if (userInLobby) {
                     LOGGER.error("User already in the Lobby");
+                    sendDropMessage(ctx.channel(), ConnectionActions.DROP_USER_SERVER_LOBBY,
+                        "User already in the Lobby");
                   } else {
                     users.put(userDto, ctx.channel());
                     NetworkConfiguration.getServerLobby().getUsers()
                         .add(userDto);
+                    sendServerLobby(NetworkConfiguration.getServerLobby());
                   }
-                  sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
                   LOGGER.debug(

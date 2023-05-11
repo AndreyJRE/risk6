@@ -105,7 +105,7 @@ public class StyleConfiguration {
   }
 
 
-  public void handleUsernameExists(String problem, String title, String body) {
+  public static void handleUsernameExists(String problem, String title, String body) {
     Alert alert = new Alert(Alert.AlertType.WARNING, problem,
         ButtonType.OK);
     alert.showAndWait();
@@ -122,4 +122,5 @@ public class StyleConfiguration {
       }
     }
   }
+
 }
