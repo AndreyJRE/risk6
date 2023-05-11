@@ -111,7 +111,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
           }
-          //TODO Serializers
           case "HAND_IN" -> {
             LOGGER.debug("The server received a hand in object");
             HandIn handIn = (HandIn) Deserializer.deserialize(request).getContent();
@@ -172,7 +171,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
-                  if (gameLobbyFromServer.getBots().size() + gameLobbyFromServer.getMaxPlayers()
+                  System.out.println("Lobbysize: " + gameLobbyFromServer.getBots().size()
+                      + gameLobbyFromServer.getMaxPlayers() + " Max players "
+                      + gameLobbyFromServer.getMaxPlayers());
+                  if (gameLobbyFromServer.getBots().size() + gameLobbyFromServer.getUsers().size()
                       < gameLobbyFromServer.getMaxPlayers()) {
                     channels.remove(ctx.channel());
                     //Add users channel to the ChannelGroup from the gamelobby
