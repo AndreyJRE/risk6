@@ -170,10 +170,11 @@ public class UserOptionsSceneController {
     });
 
     Button changePasswordButton = createChangePasswordButton();
+    Button deleteUser = createDeleteUserButton();
     // Create a VBox to hold the userNameField, userStackPane, and the labels
     VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
         changePasswordButton,
-        changeUserButton);
+        changeUserButton, deleteUser);
     centerVBox.setSpacing(20);
     centerVBox.setAlignment(Pos.CENTER);
 
@@ -204,6 +205,34 @@ public class UserOptionsSceneController {
       sceneController.activate(SceneName.CHANGE_PASSWORD);
     });
     return changePasswordButton;
+  }
+
+  private Button createDeleteUserButton() {
+    Button deleteUserButton = new Button("Delete User");
+    deleteUserButton.setPrefWidth(470);
+    deleteUserButton.setPrefHeight(40);
+    deleteUserButton.setAlignment(Pos.CENTER);
+    applyButtonStyle(deleteUserButton);
+    deleteUserButton.setFont(new Font(18));
+
+    deleteUserButton.setOnAction(e -> {
+      boolean confirm = showConfirmationDialog("Delete User",
+          "Are you sure that you want to delete your user? All Statistics will be permanently deleted and you will be redirected to the Log-in View.");
+      if (confirm) {
+        UserService userService = DatabaseConfiguration.getUserService();
+        Long id = SessionManager.getUser().getId();
+        userService.deleteUserById(id);
+        if (sceneController.getSceneBySceneName(SceneName.LOGIN) == null) {
+          LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
+          LoginSceneController loginSceneController = new LoginSceneController(loginScene);
+          loginScene.setLoginSceneController(loginSceneController);
+          sceneController.addScene(SceneName.LOGIN, loginScene);
+        }
+        SessionManager.logout();
+        sceneController.activate(SceneName.LOGIN);
+      }
+    });
+    return deleteUserButton;
   }
 
   private void changeUsernameConfirmation(TextField userNameField) {
