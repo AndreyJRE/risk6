@@ -6,10 +6,12 @@ import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.controllers.MultiplayerLobbySceneController;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.SelectMultiplayerLobbySceneController;
+import com.unima.risk6.gui.controllers.SinglePlayerSettingsSceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
+import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -102,6 +104,20 @@ public class SceneConfiguration {
     }
     pauseTitleSound();
     sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
+  }
+
+  public static void startSinglePlayer() {
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene, false);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
   public static SceneController getSceneController() {

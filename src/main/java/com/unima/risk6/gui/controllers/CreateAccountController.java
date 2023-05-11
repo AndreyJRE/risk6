@@ -18,19 +18,31 @@ import java.util.ResourceBundle;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class CreateAccountController implements Initializable {
 
   private UserService userService;
   @FXML
-  private VBox root;
+  private VBox centerVBox;
+  @FXML
+  private AnchorPane root;
   @FXML
   private TextField usernameField;
 
@@ -45,6 +57,8 @@ public class CreateAccountController implements Initializable {
 
   @FXML
   private Label passwordMismatchLabel;
+  @FXML
+  private ImageView backgroundImageView;
 
   private SceneController sceneController;
 
@@ -108,6 +122,8 @@ public class CreateAccountController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    backgroundImageView.fitWidthProperty().bind(root.widthProperty());
+    backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     applyButtonStyle(createButton);
     userService = DatabaseConfiguration.getUserService();
     checkPasswordField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -126,6 +142,5 @@ public class CreateAccountController implements Initializable {
     });
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefHeight(SceneConfiguration.getWidth());
-
   }
 }

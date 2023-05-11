@@ -8,6 +8,7 @@ import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
@@ -197,37 +198,25 @@ public class TitleSceneController implements Initializable {
   // Define the event handler for the single player button
 
   @FXML
-  private void handleSinglePlayer() {
-
-    //TODO: initialize Game Lobby
+  private void handleSinglePlayer() throws InterruptedException {
     NetworkConfiguration.startGameServer();
+    Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
-    gameLobby = new GameLobby("Single Player Lobby", 6,
-        SessionManager.getUser().getUsername(), false,
-        0, 60,
-        GameConfiguration.getMyGameUser());
+
+    Thread.sleep(200);
+    GameConfiguration.setMyGameUser(
+        new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
+    gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
+        false, 0, 60, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     LobbyConfiguration.sendCreateLobby(gameLobby);
-    if (scene == null) {
-      scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene, false);
-      scene.setController(singlePlayerSettingsSceneController);
-      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
-    }
-    pauseTitleSound();
-    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
   // Define the event handler for the multi player button
 
   @FXML
   private void handleMultiPlayer() {
-    //TODO: Implement MultiPlayer
-
     JoinOnlineScene scene = (JoinOnlineScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.JOIN_ONLINE);
     if (scene == null) {
@@ -242,20 +231,15 @@ public class TitleSceneController implements Initializable {
   }
 
   @FXML
-  private void handleTutorial(){
+  private void handleTutorial() {
     //TODO: Play Tutorial
-
-    //
-
     NetworkConfiguration.startGameServer();
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
     SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
-    gameLobby = new GameLobby("Single Player Lobby", 2,
-        SessionManager.getUser().getUsername(), false,
-        0, 60,
-        GameConfiguration.getMyGameUser());
+    gameLobby = new GameLobby("Single Player Lobby", 2, SessionManager.getUser().getUsername(),
+        false, 0, 60, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     LobbyConfiguration.sendCreateLobby(gameLobby);
     if (scene == null) {
