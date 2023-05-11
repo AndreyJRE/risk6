@@ -3,6 +3,7 @@ package com.unima.risk6;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.LoginSceneController;
@@ -57,6 +58,7 @@ public class RisikoMain extends Application {
     Platform.runLater(() -> {
       DatabaseConfiguration.startDatabaseConfiguration();
       SoundConfiguration.loadSounds();
+      ImageConfiguration.loadImages();
     });
 
     // updating of progress bar -> currently disabled for UI testing

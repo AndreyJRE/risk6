@@ -107,11 +107,13 @@ public class HandUi extends BorderPane {
     });
     cardUi.setOnMouseClicked(event -> {
       if (!cardUi.isClicked()) {
-        cardUi.setClicked(true);
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setColor(Color.DARKRED);
-        cardUi.getCardFrame().setEffect(dropShadow);
-        checkAmountOfSelectedCards();
+        if (hand.getSelectedCards().size() < 3) {
+          cardUi.setClicked(true);
+          DropShadow dropShadow = new DropShadow();
+          dropShadow.setColor(Color.DARKRED);
+          cardUi.getCardFrame().setEffect(dropShadow);
+          checkAmountOfSelectedCards();
+        }
       } else {
         cardUi.getCardFrame().setEffect(null);
         cardUi.setClicked(false);
@@ -125,6 +127,11 @@ public class HandUi extends BorderPane {
     cardUis.removeAll(selectedCardsUi);
     PlayerController playerController = GameSceneController.getPlayerController();
     playerController.sendHandIn();
+    popup.hide();
+    GameSceneController.getPlayerController().getHandController().deselectAllCards();
+    cardUis.forEach(x -> x.setClicked(false));
+    cardBox.getChildren().clear();
+
   }
 
   private void checkAmountOfSelectedCards() {
@@ -135,11 +142,13 @@ public class HandUi extends BorderPane {
     for (Node cardNode : cardBox.getChildren()) {
       if (((CardUi) cardNode).isClicked()) {
         handController.selectCardThroughCard(((CardUi) cardNode).getCard());
+      } else {
+        handController.deselectCardsThroughCard(((CardUi) cardNode).getCard());
       }
     }
     selectedCardsUi.forEach(x -> System.out.println(x.getCard()));
     this.setBottom(newBottomBox);
-    if (handController.isExchangeable()) {
+    if (handController.isExchangeable(handController.getHand().getSelectedCards())) {
       Button handInButton = new Button("Hand in the cards!");
       handInButton.setStyle(
           "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
@@ -148,7 +157,10 @@ public class HandUi extends BorderPane {
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(handInButton);
 
-    } else if (handController.getHand().getSelectedCards().size() > 3) {
+    } //TODO der fall wird nie auftreten, da ich in Logic mache,
+    // dass er nicht mehr als 3 selecten kann.
+    //TODO check through the Anzahl an card UI, die glowhaben ode clicked sind.
+    else if (handController.getHand().getSelectedCards().size() > 3) {
       Label removeCardLabel = new Label("You selected too many cards! Only three are allowed!");
       removeCardLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: red; -fx-font-weight: bold;");
       newBottomBox.getChildren().clear();
