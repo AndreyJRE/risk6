@@ -3,29 +3,31 @@
     "Welcome to RISK Tutorial mode! This game mode intends to teach you the basics of the game and",
     "provide an understanding of how to play a match of risk. Usually, the game starts with every",
     "player rolling a die to determine turn order in order of highest rolls to lowest. In the",
-    "Tutorial however, we start in the middle of the first phase after the dice rolls, the claim",
+    "Tutorial however, we start in the middle of the first phase after the dice rolls; the claim",
     "phase. Each player takes turns placing one troop on one unclaimed country. Try it out by",
     "clicking on the highlighted country."
   ],
   [
     "Once all countries are claimed, each player gets an additional amount of troops depending on",
-    "the amount of players in the game which they can use to strengthen their countries. Notice",
-    "how the other player has almost taken over South America. Try to prevent the bot from",
-    "succeeding, but also get ready to take over Argentina. Owning entire continents nets you more",
-    "troops per round!"
+    "the amount of players in the game which they can use to strengthen their countries. In the",
+    "tutorial, this number is smaller. Notice how the other player has almost taken over South",
+    "America. Try to prevent the bot from succeeding, but also get ready to take over Argentina.",
+    "Distribute your troops evenly on the two countries. Don't forget, owning entire continents",
+    "nets you more troops per round!"
   ],
   [
     "Now the game can begin! There are three phases each round: Reinforce, Attack, Fortify. Let's",
     "check them out. At the beginning of each reinforce phase, you get a certain amount of troops",
     "and can place them on any of the countries that belong to you. Let's prepare to take over",
-    "Australia."
+    "Australia. Place all your troops here, as you can only end the phase once your deployable",
+    "troops."
   ],
   [
     "Now we get to the attack phase: Select a country you own, then select one of the adjacent",
-    "enemy territories and choose with how many troops you want to attack. Once you confirm your choice, dice are rolled to",
-    "decide a winner. If the attacker wins, they must choose an amount of troops to move to the",
-    "defeated country. Here, it would make sense to move fewer troops, as Indonesia is the only",
-    "bordering country protecting the continent."
+    "enemy territories and choose with how many troops you want to attack. Once you confirm your",
+    "choice, dice are rolled to decide a winner. If the attacker wins, they must choose an amount",
+    "of troops to move to the defeated country. Here, it would make sense to move fewer troops, as",
+    "Indonesia is the only bordering country protecting the continent."
   ],
   [
     "Finally, the fortify phase: The player has the ability to pick exactly one country and",
@@ -54,6 +56,7 @@
   ],
   [
     "That's all for our introduction to the game RISK. You can now play this specific match further",
-    "with a bot of your chosen difficulty or practice matches"
+    "with a bot of your chosen difficulty or play single player with multiple bots of different",
+    "difficulties if you want to practice further."
   ]
 ]

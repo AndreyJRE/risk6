@@ -73,7 +73,7 @@ public class Probabilities {
    *
    * @param attackerTotal The total amount of troops the attacking country has.
    * @param defenderTotal The total amount of troops the defending country has.
-   * @return the probability of the attacker winning an entire battle, rounded as an Integer
+   * @return The probability of the attacker winning an entire battle, rounded as an Integer.
    */
   public static int getWinProbability(int attackerTotal, int defenderTotal) {
     // attacker always needs to have at least 1 troop

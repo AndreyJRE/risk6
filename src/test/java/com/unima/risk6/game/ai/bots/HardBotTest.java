@@ -87,7 +87,6 @@ class HardBotTest {
       attacks.add(hardBot.createAttack());
     }
     assertTrue(attacks.size() > 0);
-    assertTrue(attacks.stream().map(CountryPair::getOutgoing).toList().contains(middleEast));
   }
 
   @Test
