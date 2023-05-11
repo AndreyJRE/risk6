@@ -100,7 +100,7 @@ public class TitleSceneController implements Initializable {
     applyButtonStyle(tutorialButton);
     applyButtonStyle(optionsButton);
     applyButtonStyle(quitButton);
-    URL mediaUrl = getClass().getResource("/com/unima/risk6/pictures/backgroundVideo.mp4");
+    URL mediaUrl = getClass().getResource("/com/unima/risk6/pictures/backgroundVideo.png");
     String mediaStringUrl = mediaUrl.toExternalForm();
     Media media = new Media(mediaStringUrl);
     MediaPlayer mediaPlayer = new MediaPlayer(media);

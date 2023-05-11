@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -69,7 +68,7 @@ public class LoginSceneController {
     root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(75);
-    Image image = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.jpeg").toString());
+    Image image = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.png").toString());
     BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
