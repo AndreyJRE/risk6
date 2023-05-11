@@ -243,7 +243,7 @@ public class CountryUi extends Group {
     BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     BorderPane moveTroopsPane = new BorderPane();
     Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
-    chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+    chatLabel.setStyle("-fx-font-size: 18px;");
 
     Button closeAmountOfTroopsButton = new Button();
     closeAmountOfTroopsButton.setPrefSize(20, 20);

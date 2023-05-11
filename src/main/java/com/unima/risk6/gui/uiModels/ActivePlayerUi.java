@@ -23,6 +23,9 @@ import javafx.scene.shape.Rectangle;
 public class ActivePlayerUi extends Group {
 
   private final StackPane iconsPane;
+
+  private StackPane troopsPane;
+
   private Ellipse ellipse;
 
   private Rectangle rectangle;
@@ -41,10 +44,15 @@ public class ActivePlayerUi extends Group {
 
   private Rectangle userRectangle;
 
+  private boolean displayDeployable;
+
+  private Label deployableTroops;
+
   public ActivePlayerUi(double radiusX, double radiusY, double rectangleWidth,
       double rectangleHeight, PlayerUi playerUi) {
     this.setId("activePlayerUi");
     this.playerUi = playerUi;
+    this.displayDeployable = true;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
     ImageView userImage;
     Player player = playerUi.getPlayer();
@@ -74,6 +82,11 @@ public class ActivePlayerUi extends Group {
     rectangle.setArcHeight(rectangleHeight);
     rectangle.setLayoutX(0);
     rectangle.setLayoutY(0 - rectangleHeight / 2);
+    troopsPane = new StackPane();
+    troopsPane.setAlignment(Pos.CENTER);
+    troopsPane.setPrefSize(rectangleWidth - 80, rectangleHeight - 10);
+    troopsPane.setLayoutY(5 - rectangleHeight / 2);
+
     iconsPane = new StackPane();
     iconsPane.setPrefSize(rectangleWidth - 80, rectangleHeight - 10);
     iconsPane.setAlignment(Pos.CENTER);
@@ -215,7 +228,40 @@ public class ActivePlayerUi extends Group {
       iconsPane.getChildren().remove(0);
     }
     iconsPane.getChildren().add(iconsAndNameBox);
+  }
 
+  public void controlDeployableTroops() {
+    if (displayDeployable) {
+      rectangle.setWidth(rectangle.getWidth() + 90);
+      rectangle.setLayoutX(-129);
+      Image soldierImage = new Image(
+          getClass().getResource("/com/unima/risk6/pictures/soldier.png").toString());
+      ImagePattern soldierImagePattern = new ImagePattern(soldierImage);
+      Rectangle soldierIcon = new Rectangle(ellipse.getRadiusX(), ellipse.getRadiusY());
+      soldierIcon.setFill(soldierImagePattern);
 
+      deployableTroops = new Label(Integer.toString(playerUi.getPlayer().getDeployableTroops()));
+      deployableTroops.setStyle("-fx-font-size: 16px;-fx-font-weight: bold;");
+
+      VBox centeredVBox = new VBox();
+      centeredVBox.setAlignment(Pos.CENTER);
+
+      HBox deployableBox = new HBox();
+      deployableBox.getChildren().addAll(deployableTroops, soldierIcon);
+      deployableBox.setSpacing(8);
+      deployableBox.setAlignment(Pos.CENTER);
+      centeredVBox.getChildren().add(deployableBox);
+      troopsPane.getChildren().add(centeredVBox);
+      troopsPane.setLayoutX(-190);
+      this.getChildren().add(troopsPane);
+    } else {
+      rectangle.setWidth(rectangle.getWidth() - 90);
+      rectangle.setLayoutX(0);
+      troopsPane.setVisible(false);
+    }
+  }
+
+  public void setDisplayDeployable(boolean displayDeployable) {
+    this.displayDeployable = displayDeployable;
   }
 }

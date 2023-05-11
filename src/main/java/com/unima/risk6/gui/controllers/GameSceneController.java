@@ -331,6 +331,7 @@ public class GameSceneController implements GameStateObserver {
     });
 
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
+    activePlayerUi.controlDeployableTroops();
     nextPhaseButton = new Button();
     ImageView rightArrowIcon = new ImageView(new Image(
         getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
