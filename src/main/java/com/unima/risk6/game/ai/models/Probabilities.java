@@ -89,13 +89,13 @@ public class Probabilities {
   }
 
   /**
-   * Finds the strongest player in the game based on the ratio of troops they have compared to the
-   * amount of all troops.
+   * Returns the relative percentage of troops that a player has over the total amount of troops.
    *
    * @param gameState The current GameState object containing the game information.
-   * @return The strongest player based on their troop control ratio.
+   * @param player    The player which is to be tested.
+   * @return The troop control ratio of the player.
    */
-  public static Player findStrongestPlayer(GameState gameState) {
+  public static double getPlayerStrength(GameState gameState, Player player) {
     Map<Player, Integer> playerTroopCount = new HashMap<>();
     double totalTroopCount = 0;
     for (Country country : gameState.getCountries()) {
@@ -103,16 +103,8 @@ public class Probabilities {
       totalTroopCount += countryCount;
       playerTroopCount.merge(country.getPlayer(), countryCount, Integer::sum);
     }
-    Player strongest = null;
-    double strongestPercent = 0.0;
-    double currentPercent;
-    // total troop count can't be 0 when this method is called
-    for (Player player : playerTroopCount.keySet()) {
-      if ((currentPercent = playerTroopCount.get(player) / totalTroopCount) > strongestPercent) {
-        strongestPercent = currentPercent;
-        strongest = player;
-      }
-    }
-    return strongest;
+    Player newReference = playerTroopCount.keySet().stream().filter(p -> p.equals(player))
+        .findFirst().orElse(null);
+    return newReference != null ? playerTroopCount.get(newReference) / totalTroopCount : 0;
   }
 }

@@ -76,7 +76,7 @@ class HardBotTest {
     botTestController.changeDeployableTroops(3);
     ((Player) hardBot).setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
     enemy.setCurrentPhase(GamePhase.NOT_ACTIVE);
-    ((HardBot) hardBot).setGameState(gameState);
+    hardBot.setGameState(gameState);
     List<Reinforce> decisions = hardBot.createAllReinforcements();
     assertEquals(3, decisions.stream().mapToInt(Reinforce::getToAdd).sum());
     List<CountryPair> attacks = new ArrayList<>();
@@ -153,7 +153,7 @@ class HardBotTest {
     });
     easy.setGameState(gameState);
     med.setGameState(gameState);
-    ((HardBot) hardBot).setGameState(gameState);
+    hardBot.setGameState(gameState);
     gameState.getActivePlayers().forEach(p -> p.setInitialTroops(0));
     botTestController.getPlayer().setCurrentPhase(GamePhase.REINFORCEMENT_PHASE);
     botTestController.getPlayer().setDeployableTroops(3);
