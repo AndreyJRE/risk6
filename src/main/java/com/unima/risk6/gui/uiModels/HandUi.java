@@ -137,7 +137,7 @@ public class HandUi extends BorderPane {
         handController.selectCardThroughCard(((CardUi) cardNode).getCard());
       }
     }
-    System.out.println(handController.getHand().getSelectedCards());
+    selectedCardsUi.forEach(x -> System.out.println(x.getCard()));
     this.setBottom(newBottomBox);
     if (handController.isExchangeable()) {
       Button handInButton = new Button("Hand in the cards!");
@@ -147,7 +147,6 @@ public class HandUi extends BorderPane {
       handInButton.setOnMouseClicked(event -> handleHandInButton());
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(handInButton);
-      System.out.println("Test");
 
     } else if (handController.getHand().getSelectedCards().size() > 3) {
       Label removeCardLabel = new Label("You selected too many cards! Only three are allowed!");

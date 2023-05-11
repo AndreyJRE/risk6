@@ -126,7 +126,13 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LobbyConfiguration.setGameLobby(
                     (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
                         .getContent());
-                Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    == SceneName.TITLE) {
+                  Platform.runLater(SceneConfiguration::startSinglePlayer);
+
+                } else {
+                  Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                }
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
@@ -146,7 +152,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                     textFrame.text()).getContent();
                 LobbyConfiguration.setGameLobby(gameLobby);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
-                    != SceneName.MULTIPLAYER_LOBBY) {
+                    == SceneName.SELECT_LOBBY) {
                   Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
                 }
               }
@@ -163,8 +169,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.JOIN_ONLINE) {
                   Platform.runLater(() -> StyleConfiguration.handleUsernameExists(
-                      "Error Connecting to game lobby: " + content,
-                      "Username", "New username"));
+                      "Error Connecting to game lobby: " + content, "Username", "New username"));
 
                 }
               }
