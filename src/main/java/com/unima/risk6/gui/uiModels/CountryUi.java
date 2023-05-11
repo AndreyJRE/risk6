@@ -296,7 +296,6 @@ public class CountryUi extends Group {
             .toString());
     confirmCircle.setFill(new ImagePattern(confirmImage));
     confirmCircle.setOnMouseClicked(confirmEvent -> {
-      //TODO fortify or attack depending
       popUp.hide();
       PlayerController playerController = GameSceneController.getPlayerController();
       if (gamePhase == FORTIFY_PHASE) {

@@ -286,7 +286,7 @@ public class GameSceneController implements GameStateObserver {
     int colorIndex = 0;
     playerUis = new LinkedList<>();
     for (Player player : gameState.getActivePlayers()) {
-      PlayerUi playerUi = new PlayerUi(player, possibleColors[colorIndex].getColor(), 35, 35, 100,
+      PlayerUi playerUi = new PlayerUi(player, possibleColors[colorIndex].getColor(), 35, 35, 120,
           45);
       playerUis.offer(playerUi);
       if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
@@ -338,7 +338,7 @@ public class GameSceneController implements GameStateObserver {
     rightArrowIcon.setFitWidth(50);
     rightArrowIcon.setFitHeight(50);
     nextPhaseButton.setGraphic(rightArrowIcon);
-    nextPhaseButton.setStyle("-fx-background-radius: 25px;");
+    nextPhaseButton.setStyle("-fx-background-radius: 20px;");
     nextPhaseButton.setFocusTraversable(false);
     nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe()
         && activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE);
@@ -362,7 +362,7 @@ public class GameSceneController implements GameStateObserver {
 
     bottomPane.getChildren().addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton);
     bottomPane.setAlignment(Pos.CENTER);
-    StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 0, 450));
+    StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 5, 525));
     StackPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
     StackPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
     StackPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
@@ -569,13 +569,25 @@ public class GameSceneController implements GameStateObserver {
       } else if (lastMove instanceof Attack attack) {
         Platform.runLater(() -> animateAttack(attack));
       } else if (lastMove instanceof Reinforce reinforce) {
-        Platform.runLater(() -> animateReinforce(reinforce));
+        Platform.runLater(() -> {
+          animateReinforce(reinforce);
+          updateActivePlayerTroops();
+        });
       } else if (lastMove instanceof HandIn handIn) {
         Platform.runLater(() -> animateHandIn(handIn));
       } else if (lastMove instanceof EndPhase endPhase) {
-        Platform.runLater(this::animateEndPhase);
+        Platform.runLater(() -> animateEndPhase(endPhase));
       }
       iterator.remove();
+    }
+    Platform.runLater(() -> playerUis.forEach(PlayerUi::updateAmountOfTroops));
+
+  }
+
+  private void updateActivePlayerTroops() {
+    if (activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase()
+        == GamePhase.REINFORCEMENT_PHASE) {
+      activePlayerUi.updateActivePlayerTroops();
     }
   }
 
@@ -681,16 +693,26 @@ public class GameSceneController implements GameStateObserver {
 
   }
 
-  private void animateEndPhase() {
+  private void animateEndPhase(EndPhase endPhase) {
     updateActivePlayerUi();
+    if (endPhase.getPhaseToEnd() == GamePhase.FORTIFY_PHASE) {
+      StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 5, 525));
+      activePlayerUi.setDisplayDeployable(true);
+      activePlayerUi.controlDeployableTroops();
+    }
+    if (endPhase.getPhaseToEnd() == GamePhase.REINFORCEMENT_PHASE) {
+      StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 5, 450));
+      activePlayerUi.setDisplayDeployable(false);
+      activePlayerUi.controlDeployableTroops();
+    }
     nextPhaseButton.setVisible(
         checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
             != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
             != GamePhase.CLAIM_PHASE));
-
   }
 
   private void animateHandIn(HandIn handIn) {
+    activePlayerUi.updateActivePlayerTroops();
   }
 
   public boolean checkIfCurrentPlayerIsMe() {

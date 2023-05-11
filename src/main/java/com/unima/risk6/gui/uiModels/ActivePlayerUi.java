@@ -48,9 +48,12 @@ public class ActivePlayerUi extends Group {
 
   private Label deployableTroops;
 
+  private static final double NORMAL_ACTIVE_PLAYER_WIDTH = 300;
+
+  private static final double WIDE_ACTIVE_PLAYER_WIDTH = 390;
+
   public ActivePlayerUi(double radiusX, double radiusY, double rectangleWidth,
       double rectangleHeight, PlayerUi playerUi) {
-    this.setId("activePlayerUi");
     this.playerUi = playerUi;
     this.displayDeployable = true;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
@@ -90,7 +93,7 @@ public class ActivePlayerUi extends Group {
     iconsPane = new StackPane();
     iconsPane.setPrefSize(rectangleWidth - 80, rectangleHeight - 10);
     iconsPane.setAlignment(Pos.CENTER);
-    iconsPane.setLayoutX(50);
+    iconsPane.setLayoutX(35);
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
     phaseLabel = new Label("Test vor Phasen");
     phaseLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold;");
@@ -174,6 +177,7 @@ public class ActivePlayerUi extends Group {
     rectangle.setStroke(playerUi.getPlayerColor());
     userRectangle.setStroke(playerUi.getPlayerColor());
     userLabel.setText(player.getUser());
+    updateActivePlayerTroops();
     switch (playerUi.getPlayer().getCurrentPhase()) {
       case REINFORCEMENT_PHASE -> {
         phaseLabel.setText("Reinforcement");
@@ -232,32 +236,46 @@ public class ActivePlayerUi extends Group {
 
   public void controlDeployableTroops() {
     if (displayDeployable) {
-      rectangle.setWidth(rectangle.getWidth() + 90);
+      rectangle.setWidth(WIDE_ACTIVE_PLAYER_WIDTH);
       rectangle.setLayoutX(-129);
+      iconsPane.setLayoutX(35);
       Image soldierImage = new Image(
           getClass().getResource("/com/unima/risk6/pictures/soldier.png").toString());
       ImagePattern soldierImagePattern = new ImagePattern(soldierImage);
       Rectangle soldierIcon = new Rectangle(ellipse.getRadiusX(), ellipse.getRadiusY());
       soldierIcon.setFill(soldierImagePattern);
-
-      deployableTroops = new Label(Integer.toString(playerUi.getPlayer().getDeployableTroops()));
+      deployableTroops = new Label();
+      updateActivePlayerTroops();
       deployableTroops.setStyle("-fx-font-size: 16px;-fx-font-weight: bold;");
 
-      VBox centeredVBox = new VBox();
-      centeredVBox.setAlignment(Pos.CENTER);
+      if (troopsPane.getChildren().size() == 0) {
+        VBox centeredVBox = new VBox();
+        centeredVBox.setAlignment(Pos.CENTER);
 
-      HBox deployableBox = new HBox();
-      deployableBox.getChildren().addAll(deployableTroops, soldierIcon);
-      deployableBox.setSpacing(8);
-      deployableBox.setAlignment(Pos.CENTER);
-      centeredVBox.getChildren().add(deployableBox);
-      troopsPane.getChildren().add(centeredVBox);
-      troopsPane.setLayoutX(-190);
-      this.getChildren().add(troopsPane);
+        HBox deployableBox = new HBox();
+        deployableBox.getChildren().addAll(deployableTroops, soldierIcon);
+        deployableBox.setSpacing(8);
+        deployableBox.setAlignment(Pos.CENTER);
+        centeredVBox.getChildren().add(deployableBox);
+        troopsPane.getChildren().add(centeredVBox);
+        troopsPane.setLayoutX(-190);
+        this.getChildren().add(troopsPane);
+      }
+      troopsPane.setVisible(true);
     } else {
       rectangle.setWidth(rectangle.getWidth() - 90);
       rectangle.setLayoutX(0);
+      iconsPane.setLayoutX(65);
       troopsPane.setVisible(false);
+    }
+  }
+
+  public void updateActivePlayerTroops() {
+    Player player = playerUi.getPlayer();
+    if (player.getCurrentPhase() == GamePhase.CLAIM_PHASE) {
+      deployableTroops.setText(Integer.toString(player.getInitialTroops()));
+    } else {
+      deployableTroops.setText(Integer.toString(player.getDeployableTroops()));
     }
   }
 
