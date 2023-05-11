@@ -124,14 +124,14 @@ public class TitleSceneController implements Initializable {
 
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
-    if (isOn) {
+    if (!isOn) {
       //TODO: IP Adress hinzufügen
       ipLabel.setStyle(
-          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: darkgray");
+          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #2F2E2EFF");
       ipLabel.setText("Your IP Adress: ");
     } else {
       ipLabel.setStyle(
-          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: darkgray");
+          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #2F2E2EFF");
       ipLabel.setText("");
     }
     switchedOn.set(!isOn);
