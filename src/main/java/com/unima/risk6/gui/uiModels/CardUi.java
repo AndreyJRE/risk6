@@ -5,6 +5,7 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -179,5 +180,22 @@ public class CardUi extends StackPane {
 
   public boolean isClicked() {
     return clicked;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CardUi cardUi = (CardUi) o;
+    return Objects.equals(card, cardUi.card);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(card);
   }
 }
