@@ -5,9 +5,11 @@ import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.services.GameStatisticService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
 import java.util.List;
@@ -44,8 +46,8 @@ public class UserStatisticsSceneController {
   private GameStatisticRepository gameStatisticRepository;
   private final GameStatisticService gameStatisticService;
   private GridPane statisticsGridPane;
-  private String numberStyle = "-fx-font-size: 26px;";
-  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
+  private String numberStyle = "-fx-font-size: 26px; -fx-text-fill: white";
+  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
 
 
   public UserStatisticsSceneController(UserStatisticsScene userStatisticsScene) {
@@ -64,11 +66,11 @@ public class UserStatisticsSceneController {
     initGridPane();
     initElements();
     // Load the image into an ImageView
-    Image originalImage = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.png").toString());
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.STATISTICS_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
-    imageView.setOpacity(0.9);
+    imageView.setOpacity(0.8);
 
 // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
@@ -93,7 +95,7 @@ public class UserStatisticsSceneController {
     // Initialize the user name TextField
     Label userName = new Label(user.getUsername());
     userName.setAlignment(Pos.CENTER);
-    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px;");
+    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
 
     // Wrap the userNameField in an HBox to center it
     HBox userNameFieldContainer = new HBox(userName);

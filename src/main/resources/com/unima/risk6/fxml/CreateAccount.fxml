@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.CreateAccountController">
+<AnchorPane fx:id="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.CreateAccountController">
    <children>
       <ImageView fx:id="backgroundImageView" disable="true" fitHeight="720.0" fitWidth="1080.0" opacity="0.7" smooth="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -28,7 +28,7 @@
                   <children>
                     <AnchorPane prefHeight="495.0" prefWidth="600.0" style="-fx-background-color: transparent;" HBox.hgrow="NEVER">
                       <children>
-                        <VBox alignment="CENTER" spacing="22.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox alignment="CENTER" spacing="22.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-opacity: 0.9;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <Label contentDisplay="CENTER" style="-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;" text="Create new User">
                             <font>
                               <Font name="BentonSans Bold" size="41.0" />
@@ -57,7 +57,7 @@
                               <Insets bottom="-10.0" top="-10.0" />
                             </padding>
                           </Label>
-                          <Button fx:id="createButton" alignment="CENTER" onAction="#handleCreateButton" prefHeight="40.0" prefWidth="470.0" text="Create">
+                          <Button fx:id="createButton" alignment="CENTER" onAction="#handleCreateButton" prefHeight="40.0" prefWidth="510.0" text="Create">
                             <font>
                               <Font size="18.0" />
                             </font>

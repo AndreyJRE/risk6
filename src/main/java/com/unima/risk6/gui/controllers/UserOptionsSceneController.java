@@ -9,9 +9,11 @@ import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
@@ -76,7 +78,7 @@ public class UserOptionsSceneController {
     initUserStackPane();
     initElements();
     // Load the image into an ImageView
-    Image originalImage = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.png").toString());
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.OPTION_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -108,7 +110,7 @@ public class UserOptionsSceneController {
     userNameField.setEditable(false);
     userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
         + "70px; -fx-background-color: transparent; "
-        + "-fx-border-color: transparent;; -fx-fill: white");
+        + "-fx-border-color: transparent;; -fx-text-fill: white");
     userNameField.setAlignment(Pos.CENTER);
 
     // Add a Tooltip to the userNameField
@@ -123,7 +125,7 @@ public class UserOptionsSceneController {
         userNameField.setEditable(true);
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: lightgrey; "
-            + "-fx-border-color: transparent;; -fx-fill: white");
+            + "-fx-border-color: transparent; -fx-text-fill: white");
         userNameField.requestFocus();
       }
     };
@@ -134,7 +136,7 @@ public class UserOptionsSceneController {
       if (!newValue && !enterPressed.get()) {
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: transparent; "
-            + "-fx-border-color: transparent;");
+            + "-fx-border-color: transparent; -fx-text-fill: white");
         userNameField.setEditable(false);
         changeUsernameConfirmation(userNameField);
       }
@@ -144,7 +146,7 @@ public class UserOptionsSceneController {
       if (event.getCode() == KeyCode.ENTER) {
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: transparent; "
-            + "-fx-border-color: transparent;");
+            + "-fx-border-color: transparent; -fx-text-fill: white");
         userNameField.setEditable(false);
         enterPressed.set(true);
         changeUsernameConfirmation(userNameField);
@@ -203,7 +205,7 @@ public class UserOptionsSceneController {
     VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
         changePasswordButton,
         changeUserButton, deleteUser);
-    centerVBox.setSpacing(20);
+    centerVBox.setSpacing(10);
     centerVBox.setAlignment(Pos.CENTER);
 
     root.setLeft(backButton);
@@ -301,7 +303,7 @@ public class UserOptionsSceneController {
     }
     userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
         + "70px; -fx-background-color: transparent; "
-        + "-fx-border-color: transparent;");
+        + "-fx-border-color: transparent; -fx-text-fill: white");
   }
 
   private void initUserStackPane() {

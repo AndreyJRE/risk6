@@ -44,7 +44,7 @@ public class StyleConfiguration {
     arrow.getElements().add(new MoveTo(30, 30));
     arrow.getElements().add(new LineTo(10, 15));
     arrow.setStrokeWidth(3);
-    arrow.setStroke(Color.BLACK);
+    arrow.setStroke(Color.WHITE);
     arrow.setFill(Color.TRANSPARENT);
     return arrow;
   }
@@ -75,19 +75,7 @@ public class StyleConfiguration {
     Button noButtonNode = (Button) dialogPane.lookupButton(noButton);
 
     for (Button button : new Button[]{yesButtonNode, noButtonNode}) {
-      button.setStyle("-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);"
-          + " -fx-text-fill: white;"
-          + " -fx-background-radius: 5;"
-          + " -fx-padding: 5 15 5 15;");
-
-      button.setOnMouseEntered(event -> button.setStyle("-fx-background-color: #FFDAB9; "
-          + "-fx-text-fill: white;"));
-      button.setOnMouseExited(event -> button.setStyle("-fx-background-color: linear-gradient"
-          + "(#FFDAB9, #FFA07A); -fx-text-fill: white;"));
-      button.setOnMousePressed(event -> button.setStyle("-fx-background-color: #FFA07A; "
-          + "-fx-text-fill: white;"));
-      button.setOnMouseReleased(event -> button.setStyle("-fx-background-color: linear-gradient"
-          + "(#FFDAB9, #FFA07A); -fx-text-fill: white;"));
+      applyButtonStyle(button);
     }
 
     Optional<ButtonType> result = alert.showAndWait();
@@ -99,6 +87,19 @@ public class StyleConfiguration {
     alert.setTitle(title);
     alert.setHeaderText(null);
     alert.setContentText(message);
+
+    // Set styles directly in JavaFX
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.setStyle("-fx-background-color: linear-gradient(to top, #ffffff, #f2f2f2);"
+        + " -fx-border-color: #bbb;"
+        + " -fx-border-width: 1;"
+        + " -fx-border-style: solid;");
+    dialogPane.lookup(".label").setStyle("-fx-font-size: 14;"
+        + " -fx-font-weight: bold;"
+        + " -fx-text-fill: #444;");
+
+    Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+    applyButtonStyle(okButton);
     alert.showAndWait();
   }
 

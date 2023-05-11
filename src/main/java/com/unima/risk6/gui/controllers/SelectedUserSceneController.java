@@ -6,9 +6,11 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBack
 import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
@@ -84,7 +86,7 @@ public class SelectedUserSceneController {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
 
     // Load the image into an ImageView
-    Image originalImage = new Image(getClass().getResource("/com/unima/risk6/pictures/logInBackground.png").toString());
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.SELECTED_USER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -152,7 +154,7 @@ public class SelectedUserSceneController {
 
   private void initElements() {
     Label selectedUserName = new Label(user.getUsername());
-    selectedUserName.setStyle("-fx-font-size: 40; -fx-fill: white");
+    selectedUserName.setStyle("-fx-font-size: 40; -fx-text-fill: white");
 
     passwordField = new PasswordField();
     passwordField.setPromptText("Enter password");
@@ -169,8 +171,7 @@ public class SelectedUserSceneController {
 
     welcomeBack = new Label("Welcome Back!");
     welcomeBack.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D; -fx-fill: white");
-
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D; -fx-text-fill: white");
     passwordEntryBox = new VBox(userStackPane, selectedUserName, passwordField,
         loginButton);
     passwordEntryBox.setAlignment(Pos.CENTER);

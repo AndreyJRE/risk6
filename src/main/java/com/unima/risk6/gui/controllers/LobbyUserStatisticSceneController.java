@@ -1,15 +1,23 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LobbyUserStatisticScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -30,8 +38,8 @@ public class LobbyUserStatisticSceneController {
   private ImageView userImage;
   private StackPane userStackPane;
   private GridPane statisticsGridPane;
-  private String numberStyle = "-fx-font-size: 26px;";
-  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
+  private String numberStyle = "-fx-font-size: 26px; -fx-text-fill: white";
+  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
 
 
   public LobbyUserStatisticSceneController(LobbyUserStatisticScene lobbyUserStatisticScene) {
@@ -61,7 +69,7 @@ public class LobbyUserStatisticSceneController {
     // Initialize the user name TextField
     Label userName = new Label(user.getUsername());
     userName.setAlignment(Pos.CENTER);
-    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px;");
+    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
 
     // Wrap the userNameField in an HBox to center it
     HBox userNameFieldContainer = new HBox(userName);
@@ -74,6 +82,24 @@ public class LobbyUserStatisticSceneController {
     VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, gridPaneContainer);
     centerVBox.setSpacing(20);
     centerVBox.setAlignment(Pos.CENTER);
+
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.MULTIPLAYER_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
 
     root.setLeft(backButton);
     // Add some spacing around backButton
@@ -123,7 +149,7 @@ public class LobbyUserStatisticSceneController {
 
   private void initUserStackPane() {
     userImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+        ImageConfiguration.getBackgroundByName(ImageName.PLAYER_ICON));
     userImage.setFitHeight(150);
     userImage.setFitWidth(150);
 

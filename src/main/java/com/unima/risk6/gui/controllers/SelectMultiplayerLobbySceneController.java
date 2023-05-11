@@ -13,7 +13,9 @@ import com.unima.risk6.game.configurations.observers.ServerLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
@@ -24,6 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -31,12 +34,20 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -113,11 +124,30 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     HBox bottomBox = new HBox(create, seperator, join);
     bottomBox.setAlignment(Pos.CENTER);
     initSplitPane();
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.MULTIPLAYER_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
 
     root.setLeft(backButton);
     root.setTop(titleBox);
     root.setBottom(bottomBox);
     root.setCenter(lobbyChatSplit);
+
+    lobbyChatSplit.setOpacity(0.95);
 
     BorderPane.setMargin(backButton, new Insets(10, 10, 10, 10));
     BorderPane.setMargin(bottomBox, new Insets(10, 20, 20, 10));
@@ -153,6 +183,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       }
     });
 
+    lobbyList.setOpacity(0.9);
+
     lobbyList.setItems(lobbies);
 
     lobbyList.setOnKeyPressed(event -> {
@@ -171,6 +203,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     chatArea.setWrapText(true);
     VBox.setVgrow(chatArea, Priority.ALWAYS);
 
+    chatArea.setOpacity(0.9);
+
     TextField chatInput = new TextField();
     chatInput.setPromptText("Enter your message...");
     chatInput.setOnKeyPressed(event -> {
@@ -183,6 +217,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         event.consume();
       }
     });
+
+    chatInput.setOpacity(0.95);
 
     VBox chatBox = new VBox(chatArea, chatInput);
 
