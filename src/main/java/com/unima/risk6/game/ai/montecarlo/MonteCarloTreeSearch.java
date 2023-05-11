@@ -333,7 +333,7 @@ public class MonteCarloTreeSearch {
         Fortify forcedFortify = attacks.createFortify(toProcess.getTroopNumber());
         moveProcessor.processFortify(forcedFortify); // always possible
         Fortify afterAttack = current.moveAfterAttack(attacks);
-        if (afterAttack != null) {
+        if (afterAttack != null && afterAttack.getTroopsToMove() > 0) {
           moveProcessor.processFortify(afterAttack);
         } else {
           allAttacks.remove(attacks); // we lost, don't try it!

@@ -47,6 +47,13 @@ public class TutorialBot extends Player implements AiBot {
   }
 
   /**
+   * Constructs a TutorialBot instance with a default username.
+   */
+  public TutorialBot() {
+    this("Johnny Test");
+  }
+
+  /**
    * Creates a queue of deterministic after-attack moves for the bot during the tutorial.
    *
    * @return a queue of Fortify objects representing the bot's deterministic after-attack moves.
@@ -89,7 +96,6 @@ public class TutorialBot extends Player implements AiBot {
    */
   private Queue<Reinforce> createDeterministicReinforces() {
     Queue<Reinforce> reinforces = new LinkedList<>();
-    reinforces.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 40));
     reinforces.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 4));
     return reinforces;
   }
@@ -144,6 +150,9 @@ public class TutorialBot extends Player implements AiBot {
   private Queue<Reinforce> createDeterministicClaims() {
     Queue<Reinforce> claims = new LinkedList<>();
     claims.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 1));
+    for (int i = 0; i < 8; i++) {
+      claims.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 1));
+    }
     return claims;
   }
 

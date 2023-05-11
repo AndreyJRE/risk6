@@ -82,14 +82,20 @@ public abstract class GreedyBot extends Player implements AiBot {
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
     int troopsAffordable = Integer.MIN_VALUE;
-    for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
-      if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
-        int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
-        if (diff > troopsAffordable) {
-          troopsAffordable = diff;
+    if (winPair.getOutgoing().getAdjacentCountries().stream()
+        .allMatch(c -> c.getPlayer().equals(winPair.getOutgoing().getPlayer()))) {
+      troopsAffordable = -winPair.getOutgoing().getTroops();
+    } else {
+      for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
+        if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
+          int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
+          if (diff > troopsAffordable) {
+            troopsAffordable = diff;
+          }
         }
       }
     }
+
     if (troopsAffordable == Integer.MIN_VALUE) {
       troopsAffordable = 1;
     }

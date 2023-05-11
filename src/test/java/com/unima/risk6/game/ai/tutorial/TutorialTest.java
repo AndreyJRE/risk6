@@ -7,8 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.unima.risk6.game.models.enums.GamePhase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +20,7 @@ class TutorialTest {
 
   @BeforeAll
   static void beforeAll() {
-    InputStream data = TutorialTest.class.getResourceAsStream(
-        "/com/unima/risk6/json/messages.json");
-    assert data != null;
-    InputStreamReader dataReader = new InputStreamReader(data);
-    tutorial = new Tutorial("Gameplay Gabe", dataReader);
+    tutorial = new Tutorial("Gameplay Gabe");
     tutorialState = tutorial.getTutorialState();
     tutorialBot = tutorial.getTutorialBot();
     humanPlayer = tutorialState.getActivePlayers().stream()
@@ -44,6 +39,10 @@ class TutorialTest {
     assertTrue(tutorialBotPlayer.getCountries().size() < 42);
     assertEquals(2, tutorialState.getActivePlayers().size());
     assertEquals(humanPlayer, tutorialState.getCurrentPlayer());
+    assertEquals(8, humanPlayer.getInitialTroops());
+    assertEquals(8, tutorialBotPlayer.getInitialTroops());
+    assertEquals(GamePhase.NOT_ACTIVE, tutorialBotPlayer.getCurrentPhase());
+    assertEquals(GamePhase.CLAIM_PHASE, humanPlayer.getCurrentPhase());
     System.out.println(tutorial.getNextMessage());
   }
 }

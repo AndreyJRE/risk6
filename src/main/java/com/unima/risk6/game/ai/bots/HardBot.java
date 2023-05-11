@@ -22,7 +22,6 @@ public class HardBot extends GreedyBot implements AiBot {
   private List<Reinforce> reinforces;
   private Queue<CountryPair> attacks;
   private Fortify fortify;
-
   private GameState gameState;
   private boolean firstAttack = true;
 
