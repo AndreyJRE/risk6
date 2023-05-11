@@ -1,11 +1,15 @@
 package com.unima.risk6.gui.configurations;
 
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.models.UserDto;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -98,5 +102,24 @@ public class StyleConfiguration {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
+  }
+
+
+  public void handleUsernameExists(String problem, String title, String body) {
+    Alert alert = new Alert(Alert.AlertType.WARNING, problem,
+        ButtonType.OK);
+    alert.showAndWait();
+    if (alert.getResult() == ButtonType.OK) {
+      TextInputDialog dialog = new TextInputDialog();
+      dialog.setTitle(title);
+      dialog.setHeaderText(null);
+      dialog.setContentText(body);
+      Optional<String> result = dialog.showAndWait();
+      if (result.isPresent()) {
+        UserDto userDto = GameConfiguration.getMyGameUser();
+        userDto.setUsername(result.get());
+        LobbyConfiguration.sendJoinServer(userDto);
+      }
+    }
   }
 }
