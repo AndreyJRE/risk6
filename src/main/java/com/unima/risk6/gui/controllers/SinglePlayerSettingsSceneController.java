@@ -1,21 +1,24 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
 
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
+import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.UserDto;
-import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.LobbyUserStatisticScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,26 +41,29 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 
-public class SinglePlayerSettingsSceneController {
+public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
 
   private final SinglePlayerSettingsScene singlePlayerSettingsScene;
   private final SceneController sceneController;
   private User user;
   private BorderPane root;
   private HBox centralHBox;
-  private List<AiBot> aiBots = new ArrayList<>();
+  private final List<AiBot> aiBots = new ArrayList<>();
   private StackPane plus;
+  private UserDto myUser;
+  private GameLobby gameLobby;
 
   public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
     this.sceneController = SceneConfiguration.getSceneController();
+    LobbyConfiguration.addGameLobbyObserver(this);
   }
 
   public void init() {
-    this.user = SessionManager.getUser();
+    this.gameLobby = LobbyConfiguration.getGameLobby();
+    this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) singlePlayerSettingsScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     // Initialize elements
     initHBox();
     initElements();
@@ -68,16 +74,15 @@ public class SinglePlayerSettingsSceneController {
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
+    backButton.setOnMouseClicked(e -> handleQuitGameLobby());
 
     // Initialize the username TextField
-    Label title = new Label("Single Player Settings");
+    Label title = new Label("Singleplayer Lobby");
     title.setAlignment(Pos.CENTER);
     title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px;");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
-
     Button play = new Button("Play");
     applyButtonStyle(play);
     play.setPrefWidth(470);
@@ -87,121 +92,77 @@ public class SinglePlayerSettingsSceneController {
 
     HBox playButton = new HBox(play);
     playButton.setAlignment(Pos.CENTER);
-
     play.setOnMouseClicked(e -> handlePlayButton());
-
     root.setBottom(playButton);
+    BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
+
     root.setTop(titleBox);
     root.setLeft(backButton);
-    root.setCenter(centralHBox);
 
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
-    BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
+
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
-
   }
 
-// Weitere Imports ...
-
-  private void botAdded() {
-    // Erstellen Sie eine Liste der Auswahlmöglichkeiten
-    List<String> choices = new ArrayList<>();
-    choices.add("Easy");
-    choices.add("Medium");
-    choices.add("Hard");
-
-    // Erstellen Sie einen ChoiceDialog
-    ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Easy", choices);
-    choiceDialog.setTitle("Choice");
-    choiceDialog.setHeaderText("Please choose difficulty level");
-    choiceDialog.setContentText("Difficulties:");
-
-    // Zeigen Sie den Dialog und speichern Sie das Ergebnis in einer Optional-Variable
-    Optional<String> result = choiceDialog.showAndWait();
-
-    // Überprüfen Sie das Ergebnis und führen Sie entsprechende Aktionen durch
-    result.ifPresent(selectedOption -> {
-      // Führen Sie Aktionen basierend auf der ausgewählten Option durch
-      int difficulty = 0;
-      switch (result.get()) {
-        case "Easy":
-          difficulty = 0;
-          break;
-        case "Medium":
-          difficulty = 1;
-          break;
-        case "Hard":
-          difficulty = 2;
-          break;
-      }
-      VBox botBox = createBotVBox(difficulty);
-      StackPane plus = (StackPane) centralHBox.getChildren()
-          .remove(centralHBox.getChildren().size() - 1);
-      centralHBox.getChildren().add(botBox);
-      if (centralHBox.getChildren().size() < 6) {
-        centralHBox.getChildren().add(plus);
-      }
-    });
-  }
-
-  private void removeBot(AiBot botToRemove) {
-    // Find the index of the botToRemove in the aiBots list
-    int botIndex = aiBots.indexOf(botToRemove);
-
-    boolean full =
-        (centralHBox.getChildren().size() == 6) && (!centralHBox.getChildren()
-            .get(centralHBox.getChildren().size() - 1).equals(plus));
-    System.out.println(full);
-
-    // Remove the VBox containing the bot and the remove button from the centralHBox
-    centralHBox.getChildren().remove(botIndex + 1); // Add 1 to account for the user VBox at index 0
-
-    // Remove the botToRemove from the aiBots list
-    aiBots.remove(botToRemove);
-
-    // If the size of centralHBox is 5, ensure the plusStackPane is present
-    if (full) {
-      centralHBox.getChildren().add(plus);
+  private void handleQuitGameLobby() {
+    if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
+        "Are you sure that you want to leave the Lobby?")) {
+      LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser());
+      sceneController.activate(SceneName.TITLE);
     }
   }
 
   private void initHBox() {
-    VBox userVBox = createPlayerVBox(user);
-    VBox botBox1 = createBotVBox(0);
-    plus = createPlusStackpane();
-
-    centralHBox = new HBox(userVBox, botBox1, plus);
+    HBox centralHBox = new HBox();
+    VBox userVBox = createPlayerVBox(myUser);
+    centralHBox.getChildren().add(userVBox);
+    for (String bot : gameLobby.getBots()) {
+      int i = 0;
+      if (bot.contains("Medium")) {
+        i = 1;
+      }
+      if (bot.contains("Hard")) {
+        i = 2;
+      }
+      VBox botVBox = createBotVBox(i, bot);
+      centralHBox.getChildren().add(botVBox);
+    }
+    if (gameLobby.getBots().size() + gameLobby.getUsers().size() < gameLobby.getMaxPlayers()) {
+      StackPane plus = createPlusStackpane();
+      centralHBox.getChildren().add(plus);
+    }
     centralHBox.setAlignment(Pos.CENTER);
     centralHBox.setSpacing(20.0);
+    root.setCenter(centralHBox);
+
   }
 
-  private StackPane createPlusStackpane() {
-    ImageView plusImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
-    plusImage.setFitHeight(20);
-    plusImage.setFitWidth(20);
-    Circle circle = new Circle();
-    circle.setRadius(20);
-    circle.setStroke(Color.BLACK);
-    circle.setFill(Color.LIGHTGRAY);
-    circle.setStrokeWidth(2.0);
+  private VBox createPlayerVBox(UserDto userDto) {
+    StackPane userImage = createPlayerStackPane("/com/unima/risk6/pictures/playerIcon.png"
+        , false);
+    Label userName = new Label(userDto.getUsername());
+    userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
+        + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
+        + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
+    VBox playerBox = new VBox(userImage, userName);
+    playerBox.setAlignment(Pos.CENTER);
+    playerBox.setSpacing(-10);
 
-    Circle clip = new Circle(plusImage.getFitWidth() / 2, plusImage.getFitHeight() / 2,
-        circle.getRadius());
+    Button removeButton = new Button("");
+    removeButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
 
-    plusImage.setClip(clip);
+    VBox removeBox = new VBox(removeButton, playerBox);
+    removeBox.setAlignment(Pos.CENTER);
+    removeBox.setSpacing(15);
 
-    StackPane plusStackPane = new StackPane();
-    plusStackPane.getChildren().addAll(circle, plusImage);
-    plusStackPane.setOnMouseClicked(e -> botAdded());
-    return plusStackPane;
+    return removeBox;
   }
 
-
-  private StackPane createPlayerStackPane(String imagePath, boolean bot) {
+  private StackPane createPlayerStackPane(String imagePath, boolean isBot) {
     Circle circle = new Circle();
     ImageView userImage = new ImageView(new Image(getClass().getResource(imagePath).toString()));
-    if (bot) {
+    if (isBot) {
       userImage.setFitHeight(130);
       userImage.setFitWidth(130);
       circle.setRadius(65);
@@ -229,30 +190,79 @@ public class SinglePlayerSettingsSceneController {
     return userStackPane;
   }
 
-  private VBox createBotVBox(int difficultyNumber) {
-    StackPane botImage = new StackPane();
-    String difficulty = "";
-    switch (difficultyNumber) {
-      case 0:
-        botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
-        EasyBot easyBot = new EasyBot();
-        aiBots.add(easyBot);
-        difficulty = easyBot.getUser();
-        break;
-      case 1:
-        botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
-        MediumBot mediumBot = new MediumBot();
-        aiBots.add(mediumBot);
-        difficulty = mediumBot.getUser();
-        break;
-      case 2:
-        botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
-        HardBot hardBot = new HardBot();
-        aiBots.add(hardBot);
-        difficulty = hardBot.getUser();
-        break;
+  private StackPane createPlusStackpane() {
+    ImageView plusImage = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
+    plusImage.setFitHeight(20);
+    plusImage.setFitWidth(20);
+    Circle circle = new Circle();
+    circle.setRadius(20);
+    circle.setStroke(Color.BLACK);
+    circle.setFill(Color.LIGHTGRAY);
+    circle.setStrokeWidth(2.0);
+
+    Circle clip = new Circle(plusImage.getFitWidth() / 2, plusImage.getFitHeight() / 2,
+        circle.getRadius());
+
+    plusImage.setClip(clip);
+
+    StackPane plusStackPane = new StackPane();
+    plusStackPane.getChildren().addAll(circle, plusImage);
+    plusStackPane.setOnMouseClicked(e -> handlePlusButton());
+    return plusStackPane;
+  }
+
+  private void handlePlusButton() {
+    if (gameLobby.getUsers().size() + gameLobby.getBots().size() < gameLobby.getMaxPlayers()) {
+      botAdded();
+    } else {
+      showErrorDialog("Maximum number of players reached",
+          "You can not add more players to this game lobby.");
     }
-    Label userName = new Label(difficulty);
+  }
+  private void botAdded() {
+    List<String> choices = new ArrayList<>();
+    choices.add("Easy");
+    choices.add("Medium");
+    choices.add("Hard");
+
+    ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Easy", choices);
+    choiceDialog.setTitle("Choice");
+    choiceDialog.setHeaderText("Please choose difficulty level");
+    choiceDialog.setContentText("Difficulties:");
+
+    Optional<String> result = choiceDialog.showAndWait();
+
+    result.ifPresent(selectedOption -> {
+      int difficulty = switch (result.get()) {
+        case "Medium" -> {
+          MediumBot mediumBot = new MediumBot();
+          gameLobby.getBots().add(mediumBot.getUser());
+          yield 1;
+        }
+        case "Hard" -> {
+          HardBot hardBot = new HardBot();
+          gameLobby.getBots().add(hardBot.getUser());
+          yield 2;
+        }
+        default -> {
+          EasyBot easyBot = new EasyBot();
+          gameLobby.getBots().add(easyBot.getUser());
+          yield 0;
+        }
+      };
+      LobbyConfiguration.sendBotJoinLobby(gameLobby);
+    });
+  }
+
+  private VBox createBotVBox(int difficultyNumber, String botName) {
+    StackPane botImage = new StackPane();
+    switch (difficultyNumber) {
+      case 0 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
+      case 1 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
+      case 2 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
+    }
+    Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
         + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
@@ -265,54 +275,31 @@ public class SinglePlayerSettingsSceneController {
     Button removeButton = new Button("Remove");
     removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
         + "-fx-background-color: lightgrey; -fx-border-color: black;");
-
-    AiBot bot = aiBots.get(aiBots.size() - 1);
-
-    removeButton.setOnMouseClicked(e -> removeBot(bot));
-
+    removeButton.setOnMouseClicked(e -> removeBot(botName));
     VBox removeBox = new VBox(removeButton, botBox);
     removeBox.setAlignment(Pos.CENTER);
     removeBox.setSpacing(10);
-
     return removeBox;
   }
 
-  private VBox createPlayerVBox(User user) {
-    StackPane userImage = createPlayerStackPane(user.getImagePath(), false);
-    Label userName = new Label(user.getUsername());
-    userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
-        + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
-        + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
-
-    VBox playerBox = new VBox(userImage, userName);
-    playerBox.setAlignment(Pos.CENTER);
-    playerBox.setSpacing(-10);
-
-    Button removeButton = new Button("");
-    removeButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent");
-
-    VBox removeBox = new VBox(removeButton, playerBox);
-    removeBox.setAlignment(Pos.CENTER);
-    removeBox.setSpacing(15);
-
-    return removeBox;
+  public void removeBot(String bot) {
+    gameLobby.getBots().remove(bot);
+    LobbyConfiguration.sendRemoveBotFromLobby(gameLobby);
   }
 
   private void handlePlayButton() {
-    // TODO: Implement the single player game
+    int usersSize = gameLobby.getUsers().size();
+    int together = usersSize + gameLobby.getBots().size();
+    if (together < 2 || together > gameLobby.getMaxPlayers()) {
+      showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
+      return;
+    }
+    LobbyConfiguration.sendStartGame(gameLobby);
+  }
 
-    List<String> users = new ArrayList<>();
-    users.add(SessionManager.getUser().getUsername());
-
-    GameState gameState = GameConfiguration.configureGame(users, aiBots);
-    User myUser = SessionManager.getUser();
-    GameConfiguration.setMyGameUser(UserDto.mapUserAndHisGameStatistics(myUser,
-        DatabaseConfiguration.getGameStatisticService().getAllStatisticsByUserId(myUser.getId())));
-    GameConfiguration.setGameState(gameState);
-    CountriesUiConfiguration.configureCountries(gameState.getCountries());
-    Platform.runLater(SceneConfiguration::startGame);
-
-
+  @Override
+  public void updateGameLobby(GameLobby gameLobby) {
+    this.gameLobby = gameLobby;
+    Platform.runLater(this::init);
   }
 }

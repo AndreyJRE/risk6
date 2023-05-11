@@ -171,7 +171,6 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
 
   private VBox createPlayerVBox(UserDto userDto) {
-    //TODO: Image Path für UserDto nachfragen
     StackPane userImage = createPlayerStackPane("/com/unima/risk6/pictures/playerIcon.png"
         , false);
     Label userName = new Label(userDto.getUsername());
@@ -258,28 +257,22 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     } else {
       showMessage();
     }
-
   }
 
   private void botAdded() {
-    // Erstellen Sie eine Liste der Auswahlmöglichkeiten
     List<String> choices = new ArrayList<>();
     choices.add("Easy");
     choices.add("Medium");
     choices.add("Hard");
 
-    // Erstellen Sie einen ChoiceDialog
     ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Easy", choices);
     choiceDialog.setTitle("Choice");
     choiceDialog.setHeaderText("Please choose difficulty level");
     choiceDialog.setContentText("Difficulties:");
 
-    // Zeigen Sie den Dialog und speichern Sie das Ergebnis in einer Optional-Variable
     Optional<String> result = choiceDialog.showAndWait();
 
-    // Überprüfen Sie das Ergebnis und führen Sie entsprechende Aktionen durch
     result.ifPresent(selectedOption -> {
-      // Führen Sie Aktionen basierend auf der ausgewählten Option durch
       int difficulty = switch (result.get()) {
         case "Medium" -> {
           MediumBot mediumBot = new MediumBot();
@@ -335,19 +328,17 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   }
 
   private void showMessage() {
-    showErrorDialog("Wait for other user to join", "You can not add players yourself. "
-        + "You have to wait till other users join your game lobby.");
+    showErrorDialog("No admin rights",
+        "You can not add players or bots as you are not the admin of the Game Lobby.");
   }
 
   private void handlePlayButton() {
-
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();
     if (together < 2 || together > gameLobby.getMaxPlayers()) {
       showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
       return;
     }
-
     LobbyConfiguration.sendStartGame(gameLobby);
   }
 
