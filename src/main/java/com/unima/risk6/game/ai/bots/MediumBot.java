@@ -7,6 +7,7 @@ import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
+import com.unima.risk6.game.models.Player;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,11 +25,29 @@ public class MediumBot extends GreedyBot implements AiBot {
   private int reinforceTroopsCopy;
   private int lastAttackSize;
 
+  /**
+   * Constructs a new MediumBot as a copy of a player.
+   *
+   * @param player The player to be copied.
+   */
+  public MediumBot(Player player) {
+    super(player);
+    this.lastAttackSize = 0;
+  }
+
+  /**
+   * Constructs a MediumBot with the specified username.
+   *
+   * @param username The username of the MediumBot.
+   */
   public MediumBot(String username) {
     super(username);
     this.lastAttackSize = 0;
   }
 
+  /**
+   * Constructs a default MediumBot.
+   */
   public MediumBot() {
     this("MediumBot #" + RNG.nextInt(1000));
   }
