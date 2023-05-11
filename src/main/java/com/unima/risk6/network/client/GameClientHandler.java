@@ -150,11 +150,19 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LOGGER.debug("At ACCEPT_JOIN_GAME_LOBBY: Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
+
                 LobbyConfiguration.setGameLobby(gameLobby);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.SELECT_LOBBY) {
                   Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
                 }
+              }
+              case "ACCEPT_TUTORIAL_CREATE_LOBBY" -> {
+                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                LobbyConfiguration.setGameLobby(
+                    (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent());
+                Platform.runLater(SceneConfiguration::joinTutorialLobbyScene);
               }
               case "ACCEPT_UPDATE_SERVER_LOBBY" -> {
                 LOGGER.debug("Got updated server Lobby, overwrite serverlobby");

@@ -1,6 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
@@ -10,7 +9,6 @@ import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
-import com.unima.risk6.game.ai.tutorial.TutorialBot;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.GameLobbyObserver;
@@ -19,7 +17,6 @@ import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.LobbyUserStatisticScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +50,10 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private StackPane plus;
   private UserDto myUser;
   private GameLobby gameLobby;
-  private boolean tutorial;
+  private final boolean tutorial;
 
-  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene, boolean tutorial) {
+  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene,
+      boolean tutorial) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addGameLobbyObserver(this);
@@ -116,17 +114,16 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   private void initHBox() {
+    System.out.println("initHBox");
     HBox centralHBox = new HBox();
     VBox userVBox = createPlayerVBox(myUser);
     centralHBox.getChildren().add(userVBox);
-    if(tutorial){
-      //TODO: Add Tutorial Bot
-      TutorialBot tutorialBot = new TutorialBot();
-      gameLobby.getBots().add(tutorialBot.getUser());
-      LobbyConfiguration.sendBotJoinLobby(gameLobby);
-      VBox botVBox = createBotVBox(3, tutorialBot.getUser());
-      centralHBox.getChildren().add(botVBox);
-    }else {
+    if (tutorial) {
+      for (String s : gameLobby.getBots()) {
+        VBox botVBox = createBotVBox(3, s);
+        centralHBox.getChildren().add(botVBox);
+      }
+    } else {
       for (String bot : gameLobby.getBots()) {
         int i = 0;
         if (bot.contains("Medium")) {
@@ -231,6 +228,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
           "You can not add more players to this game lobby.");
     }
   }
+
   private void botAdded() {
     List<String> choices = new ArrayList<>();
     choices.add("Easy");
@@ -272,7 +270,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
       case 0 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
       case 1 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
       case 2 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
-      case 3 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/tutorialIcon.png", true);
+      case 3 ->
+          botImage = createPlayerStackPane("/com/unima/risk6/pictures/tutorialIcon.png", true);
     }
     Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
@@ -285,9 +284,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     botBox.setSpacing(-10);
 
     VBox removeBox = new VBox();
-    if(tutorial){
+    if (tutorial) {
       removeBox = botBox;
-    }else{
+    } else {
       Button removeButton = new Button("Remove");
       removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
           + "-fx-background-color: lightgrey; -fx-border-color: black;");
@@ -313,7 +312,13 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
       showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
       return;
     }
-    LobbyConfiguration.sendStartGame(gameLobby);
+    LobbyConfiguration.sendStartTutorial(gameLobby);
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    SceneConfiguration.startGame();
   }
 
   @Override

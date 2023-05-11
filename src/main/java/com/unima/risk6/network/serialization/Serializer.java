@@ -33,7 +33,6 @@ public class Serializer {
         .registerTypeAdapter(MediumBot.class, new MediumBotTypeAdapter())
         .registerTypeAdapter(HardBot.class, new HardBotTypeAdapter())
         .registerTypeAdapter(TutorialBot.class, new TutorialBotTypeAdapter())
-
         .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
         .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
         .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())

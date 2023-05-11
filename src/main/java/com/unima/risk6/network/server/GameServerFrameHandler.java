@@ -10,6 +10,7 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
+import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
@@ -25,6 +26,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
@@ -66,7 +68,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
-
 
     if (frame instanceof TextWebSocketFrame) {
       String request = ((TextWebSocketFrame) frame).text();
@@ -193,6 +194,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                         "The GameLobby is full");
                   }
                 }
+                case CREATE_TUTORIAL_LOBBY -> {
+                  LOGGER.debug(
+                      "At CREATE_TUTORIAL_GAME_LOBBY" + connectionMessage.getContent()
+                          .getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
+                  sendCreatedTutorialGameLobby(gameLobby);
+                }
                 case JOIN_BOT_GAME_LOBBY -> {
                   LOGGER.debug(
                       "At JOIN_BOT_GAME_LOBBY " + connectionMessage.getContent()
@@ -200,6 +209,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
+                  System.out.println(gameLobby);
                   String bot = gameLobby.getBots().stream()
                       .filter(x -> !gameLobbyFromServer.getBots().contains(x))
                       .findFirst().get();
@@ -287,6 +297,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                       gameLobby);
 
                 }
+                case START_TUTORIAL -> {
+                  LOGGER.debug(
+                      "At START_TUTORIAL" + connectionMessage.getContent()
+                          .getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
+                      NetworkConfiguration.getServerLobby());
+                  moveProcessor = gameLobbyChannels.createMoveProcessor(ctx.channel());
+                  processStartTutorial(myServerGameLobby);
+                }
                 default -> LOGGER.error("Server received a faulty connection message");
               }
             } catch (NullPointerException ignored) {
@@ -305,6 +325,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       throw new UnsupportedOperationException(message);
     }
 
+  }
+
+  private void sendCreatedTutorialGameLobby(GameLobby gameLobby) {
+    String serialized1 = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_TUTORIAL_CREATE_LOBBY, gameLobby));
+    for (Channel channel : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      LOGGER.debug("Send game lobby to : " + channel.id());
+      channel.writeAndFlush(new TextWebSocketFrame(serialized1));
+
+    }
   }
 
   private void sendGameOver(ChannelGroup channelGroup) {
@@ -373,7 +403,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             return (AiBot) new HardBot(x);
           }
         }).toList());
-    System.out.println(gameState.getActivePlayers());
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
@@ -398,6 +427,21 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     sendFirstGamestate(gameLobby);
     moveProcessor.clearLastMoves();
   }
+
+  private void processStartTutorial(GameLobby myServerGameLobby) {
+    Tutorial tutorial = new Tutorial(myServerGameLobby.getUsers().get(0).getUsername());
+    moveProcessor.setGameController(new GameController(tutorial.getTutorialState()));
+    moveProcessor.setDeckController(new DeckController(tutorial.getTutorialState().getDeck()));
+    PlayerController playerController = new PlayerController();
+    playerController.setPlayer(tutorial.getTutorialState().getCurrentPlayer());
+    moveProcessor.setPlayerController(playerController);
+    Probabilities.init();
+    CountriesUiConfiguration.configureCountries(tutorial.getTutorialState().getCountries());
+    GameConfiguration.setTutorial(tutorial);
+
+
+  }
+
 
   protected void sendGameLobby(GameLobby gameLobby) {
     String serializedGameLobby = Serializer.serialize(

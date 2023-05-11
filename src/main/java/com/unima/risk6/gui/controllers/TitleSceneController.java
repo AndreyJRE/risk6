@@ -13,7 +13,6 @@ import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
-import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import java.net.InetAddress;
@@ -231,26 +230,20 @@ public class TitleSceneController implements Initializable {
   }
 
   @FXML
-  private void handleTutorial() {
+  private void handleTutorial() throws InterruptedException {
     //TODO: Play Tutorial
     NetworkConfiguration.startGameServer();
+    Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    Thread.sleep(200);
+    GameConfiguration.setMyGameUser(
+        new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     gameLobby = new GameLobby("Single Player Lobby", 2, SessionManager.getUser().getUsername(),
         false, 0, 60, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
-    LobbyConfiguration.sendCreateLobby(gameLobby);
-    if (scene == null) {
-      scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene, true);
-      scene.setController(singlePlayerSettingsSceneController);
-      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
-    }
-    pauseTitleSound();
-    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+    gameLobby.getBots().add("Johnny Test");
+    LobbyConfiguration.sendTutorialCreateLobby(gameLobby);
   }
 
 

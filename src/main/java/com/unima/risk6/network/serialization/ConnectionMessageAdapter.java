@@ -30,7 +30,8 @@ public class ConnectionMessageAdapter implements JsonDeserializer<ConnectionMess
         message = new ConnectionMessage<>(connectionAction, statusCode, userDto);
       }
       case JOIN_GAME_LOBBY, CREATE_GAME_LOBBY, START_GAME, ACCEPT_JOIN_GAME_LOBBY,
-          JOIN_BOT_GAME_LOBBY, ACCEPT_CREATE_LOBBY, REMOVE_BOT_FROM_LOBBY -> {
+          JOIN_BOT_GAME_LOBBY, ACCEPT_CREATE_LOBBY, REMOVE_BOT_FROM_LOBBY,
+          START_TUTORIAL, CREATE_TUTORIAL_LOBBY, ACCEPT_TUTORIAL_CREATE_LOBBY -> {
         GameLobby gameLobby = context.deserialize(jsonObject.get("content"), GameLobby.class);
         message = new ConnectionMessage<>(connectionAction, statusCode, gameLobby);
       }

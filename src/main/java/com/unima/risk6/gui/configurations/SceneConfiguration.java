@@ -131,4 +131,18 @@ public class SceneConfiguration {
   public static double getHeight() {
     return height;
   }
+
+  public static void joinTutorialLobbyScene() {
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene, true);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+  }
 }

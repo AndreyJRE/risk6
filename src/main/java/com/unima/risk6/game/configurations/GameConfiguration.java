@@ -1,6 +1,7 @@
 package com.unima.risk6.game.configurations;
 
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
@@ -25,6 +26,9 @@ public class GameConfiguration {
 
   private static final List<GameStateObserver> observers = new ArrayList<>();
   private static UserDto myGameUser;
+
+
+  private static Tutorial tutorial;
 
   /**
    * Configures the game by initializing the countries, continents, players and creating a GameState
@@ -124,5 +128,13 @@ public class GameConfiguration {
     int finalNumberOfInitialTroops = numberOfInitialTroops;
     blankState.getActivePlayers().forEach(n -> n.setInitialTroops(finalNumberOfInitialTroops));
 
+  }
+
+  public static Tutorial getTutorial() {
+    return tutorial;
+  }
+
+  public static void setTutorial(Tutorial tutorial) {
+    GameConfiguration.tutorial = tutorial;
   }
 }

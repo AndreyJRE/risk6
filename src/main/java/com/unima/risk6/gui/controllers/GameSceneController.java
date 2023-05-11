@@ -3,6 +3,7 @@ package com.unima.risk6.gui.controllers;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
@@ -106,10 +107,17 @@ public class GameSceneController implements GameStateObserver {
   }
 
   public void init() {
-    this.gameState = GameConfiguration.getGameState();
+    Tutorial tutorial = GameConfiguration.getTutorial();
+    if (tutorial != null) {
+      System.out.println("Tutorial is not null");
+      this.gameState = tutorial.getTutorialState();
+      System.out.println(gameState);
+    } else {
+      this.gameState = GameConfiguration.getGameState();
+    }
+    this.countriesUis = CountriesUiConfiguration.getCountriesUis();
     this.originalScreenWidth = SceneConfiguration.getWidth();
     this.originalScreenHeight = SceneConfiguration.getHeight();
-    this.countriesUis = CountriesUiConfiguration.getCountriesUis();
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.initializeGameScene();
@@ -662,6 +670,10 @@ public class GameSceneController implements GameStateObserver {
     Player currentPlayer = gameState.getCurrentPlayer();
     return playerUis.stream().filter(playerUi -> currentPlayer.equals(playerUi.getPlayer()))
         .findFirst().get();
+  }
+
+  public void initTutorial() {
+
   }
 }
 
