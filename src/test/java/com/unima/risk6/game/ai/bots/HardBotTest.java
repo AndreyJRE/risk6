@@ -1,6 +1,7 @@
 package com.unima.risk6.game.ai.bots;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
@@ -173,6 +174,42 @@ class HardBotTest {
       attacks.add(hardBot.createAttack());
     }
     assertTrue(attacks.size() > 0);
+  }
+
+  @Test
+  void endOfGameTest() {
+    hardBot = new HardBot();
+    gameState = GameConfiguration.configureGame(List.of("My Man"), List.of(hardBot));
+    hardBot.setGameState(gameState);
+    DeckController deckController = new DeckController(gameState.getDeck());
+    deckController.initDeck();
+    enemy = new Player();
+    for (Player p : gameState.getActivePlayers()) {
+      if (p.getUser().equals("My Man")) {
+        enemy = p;
+      }
+    }
+    enemyController = new PlayerController();
+    enemyController.setPlayer(enemy);
+    if (!gameState.getCurrentPlayer().equals(hardBot)) {
+      gameState.getActivePlayers().poll();
+      gameState.getActivePlayers().add(enemy);
+      gameState.setCurrentPlayer((Player) hardBot);
+    }
+    botTestController = new PlayerController();
+    botTestController.setPlayer((Player) hardBot);
+    gameState.getCountries().forEach(c -> {
+      botTestController.addCountry(c);
+      c.setTroops(5);
+    });
+    Country midEast = getMiddleEast();
+    botTestController.removeCountry(midEast);
+    enemyController.addCountry(midEast);
+    midEast.setTroops(1);
+    ((Player) hardBot).setCurrentPhase(GamePhase.ATTACK_PHASE);
+    CountryPair attack = hardBot.createAttack();
+    assertNotNull(attack);
+    assertEquals(midEast, attack.getIncoming());
   }
 
   static Country getMiddleEast() {
