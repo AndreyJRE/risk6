@@ -7,6 +7,7 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -54,6 +55,7 @@ public class ActivePlayerUi extends Group {
 
   public ActivePlayerUi(double radiusX, double radiusY, double rectangleWidth,
       double rectangleHeight, PlayerUi playerUi) {
+    this.deployableTroops = new Label("");
     this.playerUi = playerUi;
     this.displayDeployable = true;
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
@@ -177,7 +179,7 @@ public class ActivePlayerUi extends Group {
     rectangle.setStroke(playerUi.getPlayerColor());
     userRectangle.setStroke(playerUi.getPlayerColor());
     userLabel.setText(player.getUser());
-    updateActivePlayerTroops();
+    Platform.runLater(this::updateActivePlayerTroops);
     switch (playerUi.getPlayer().getCurrentPhase()) {
       case REINFORCEMENT_PHASE -> {
         phaseLabel.setText("Reinforcement");
@@ -244,7 +246,6 @@ public class ActivePlayerUi extends Group {
       ImagePattern soldierImagePattern = new ImagePattern(soldierImage);
       Rectangle soldierIcon = new Rectangle(ellipse.getRadiusX(), ellipse.getRadiusY());
       soldierIcon.setFill(soldierImagePattern);
-      deployableTroops = new Label();
       updateActivePlayerTroops();
       deployableTroops.setStyle("-fx-font-size: 16px;-fx-font-weight: bold;");
 

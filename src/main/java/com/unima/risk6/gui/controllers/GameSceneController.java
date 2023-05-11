@@ -143,7 +143,6 @@ public class GameSceneController implements GameStateObserver {
   public void showOrderPopup() {
 
     BorderPane orderPane = new BorderPane();
-
     Popup orderPopup = new Popup();
     orderPopup.getContent().add(orderPane);
 
@@ -226,12 +225,7 @@ public class GameSceneController implements GameStateObserver {
     orderPane.setBottom(hBox);
     BorderPane.setMargin(hBox, new Insets(10));
 
-    orderPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setRadius(10);
-    orderPane.setEffect(dropShadow);
+    orderPane.setStyle("-fx-background-radius: 10;-fx-background-color: rgba(255, 255, 255, 0.3);");
 
     orderPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
 
