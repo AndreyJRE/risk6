@@ -61,7 +61,6 @@ public class CreateAccountController implements Initializable {
   private void handleCreateButton() {
     String username = usernameField.getText();
     String password = passwordField.getText();
-    String checkPassword = checkPasswordField.getText();
 
     // Change the style of the button to simulate a press
     loginButton.setStyle("-fx-background-color: linear-gradient(#FFA07A, #FFDAB9); "
@@ -95,8 +94,12 @@ public class CreateAccountController implements Initializable {
       sceneController.activate(SceneName.SELECTED_USER);
     } catch (IllegalArgumentException illegalArgumentException) {
       showErrorDialog("Error", "Password and username should be non-empty!");
+      passwordField.setText("");
+      checkPasswordField.setText("");
     } catch (UsernameNotUniqueException | NotValidPasswordException validationException) {
       showErrorDialog("Error", validationException.getMessage());
+      passwordField.setText("");
+      checkPasswordField.setText("");
     }
   }
 

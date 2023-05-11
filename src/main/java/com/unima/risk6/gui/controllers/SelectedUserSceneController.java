@@ -41,6 +41,7 @@ public class SelectedUserSceneController {
   private StackPane userStackPane;
   private Label welcomeBack;
   private VBox passwordEntryBox;
+  private PasswordField passwordField;
 
 
   public SelectedUserSceneController(SelectedUserScene selectedUserScene) {
@@ -121,6 +122,7 @@ public class SelectedUserSceneController {
     } else {
       StyleConfiguration.showErrorDialog("Incorrect Password",
           "The password you entered is incorrect. Please try again.");
+      passwordField.setText("");
     }
   }
 
@@ -129,7 +131,7 @@ public class SelectedUserSceneController {
     Label selectedUserName = new Label(user.getUsername());
     selectedUserName.setStyle("-fx-font-size: 40");
 
-    PasswordField passwordField = new PasswordField();
+    passwordField = new PasswordField();
     passwordField.setPromptText("Enter password");
     passwordField.setStyle("-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");
     passwordField.setPrefWidth(470);
