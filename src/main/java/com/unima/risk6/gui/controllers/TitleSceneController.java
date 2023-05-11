@@ -8,7 +8,6 @@ import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
@@ -34,8 +33,6 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -71,10 +68,10 @@ public class TitleSceneController implements Initializable {
   @FXML
   private Label ipLabel;
 
-  private BooleanProperty switchedOn = new SimpleBooleanProperty(false);
-  private TranslateTransition translateAnimation = new TranslateTransition(Duration.seconds(0.25));
-  private FillTransition fillAnimation = new FillTransition(Duration.seconds(0.25));
-  private ParallelTransition animation = new ParallelTransition(translateAnimation, fillAnimation);
+  private BooleanProperty switchedOn;
+  private TranslateTransition translateAnimation;
+  private FillTransition fillAnimation;
+  private ParallelTransition animation;
 
 
   private SceneController sceneController;
@@ -83,6 +80,10 @@ public class TitleSceneController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    switchedOn = new SimpleBooleanProperty(false);
+    translateAnimation = new TranslateTransition(Duration.seconds(0.25));
+    fillAnimation = new FillTransition(Duration.seconds(0.25));
+    animation = new ParallelTransition(translateAnimation, fillAnimation);
     userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
@@ -145,19 +146,22 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private void handleSinglePlayer() {
+
+    //TODO: initialize Game Lobby
     NetworkConfiguration.startGameServer();
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
-    CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.CREATE_LOBBY);
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
-      scene = new CreateLobbyScene();
-      CreateLobbySceneController createLobbySceneController = new CreateLobbySceneController(scene);
-      scene.setController(createLobbySceneController);
-      sceneController.addScene(SceneName.CREATE_LOBBY, scene);
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
     pauseTitleSound();
-    sceneController.activate(SceneName.CREATE_LOBBY);
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
   // Define the event handler for the multi player button

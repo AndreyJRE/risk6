@@ -4,6 +4,7 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.showConfirmationDialog;
 
+import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
@@ -16,11 +17,15 @@ import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
+import java.io.IOException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -222,14 +227,34 @@ public class UserOptionsSceneController {
         UserService userService = DatabaseConfiguration.getUserService();
         Long id = SessionManager.getUser().getId();
         userService.deleteUserById(id);
-        if (sceneController.getSceneBySceneName(SceneName.LOGIN) == null) {
-          LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
-          LoginSceneController loginSceneController = new LoginSceneController(loginScene);
-          loginScene.setLoginSceneController(loginSceneController);
-          sceneController.addScene(SceneName.LOGIN, loginScene);
+        if (userService.getAllUsers().size() == 0) {
+          FXMLLoader fxmlLoader = new FXMLLoader(
+              RisikoMain.class.getResource("fxml/CreateAccount" + ".fxml"));
+          Parent root;
+          try {
+            root = fxmlLoader.load();
+            Scene createScene = sceneController.getSceneBySceneName(SceneName.CREATE_ACCOUNT);
+            if (createScene == null) {
+              createScene = new Scene(root);
+              sceneController.addScene(SceneName.CREATE_ACCOUNT, createScene);
+            } else {
+              createScene.setRoot(root);
+            }
+            sceneController.activate(SceneName.CREATE_ACCOUNT);
+
+          } catch (IOException exception) {
+            throw new RuntimeException(exception);
+          }
+        } else {
+          if (sceneController.getSceneBySceneName(SceneName.LOGIN) == null) {
+            LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
+            LoginSceneController loginSceneController = new LoginSceneController(loginScene);
+            loginScene.setLoginSceneController(loginSceneController);
+            sceneController.addScene(SceneName.LOGIN, loginScene);
+          }
+          SessionManager.logout();
+          sceneController.activate(SceneName.LOGIN);
         }
-        SessionManager.logout();
-        sceneController.activate(SceneName.LOGIN);
       }
     });
     return deleteUserButton;

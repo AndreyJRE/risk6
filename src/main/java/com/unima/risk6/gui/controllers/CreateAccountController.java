@@ -48,9 +48,13 @@ public class CreateAccountController implements Initializable {
   private SceneController sceneController;
 
   @FXML
-  private void handleSkipToTitleScreen() {
-    sceneController = SceneConfiguration.getSceneController();
-    sceneController.activate(SceneName.LOGIN);
+  private void handleLoginToAccount() {
+    if(userService.getAllUsers().size() == 0) {
+      showErrorDialog("No existing User", "There is no user in the database you can log into. Please create a User first!");
+    }else{
+      sceneController = SceneConfiguration.getSceneController();
+      sceneController.activate(SceneName.LOGIN);
+    }
   }
 
   @FXML
