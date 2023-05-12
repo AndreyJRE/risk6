@@ -264,6 +264,9 @@ public class ChatUi extends BorderPane implements ChatObserver {
 
       chatBox.getChildren().add(messageBox);
     });
+  }
 
+  public Popup getChatPopup() {
+    return chatPopup;
   }
 }

@@ -5,6 +5,7 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.observers.ChatObserver;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
@@ -33,6 +34,7 @@ import com.unima.risk6.gui.uiModels.HandUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -72,7 +74,7 @@ import javafx.scene.shape.Path;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
-public class GameSceneController implements GameStateObserver {
+public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
   private static PlayerUi myPlayerUi;
@@ -95,6 +97,8 @@ public class GameSceneController implements GameStateObserver {
 
   private HandUi handUi;
   private Button cardsButton;
+
+  private Circle notifyCircle;
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -156,7 +160,6 @@ public class GameSceneController implements GameStateObserver {
 
 
   public void showOrderPopup() {
-
     BorderPane orderPane = new BorderPane();
     Popup orderPopup = new Popup();
     orderPopup.getContent().add(orderPane);
@@ -332,6 +335,10 @@ public class GameSceneController implements GameStateObserver {
       chatUi.show();
     });
 
+    notifyCircle = new Circle(10);
+    notifyCircle.setFill(Color.RED);
+    notifyCircle.setVisible(false);
+
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     activePlayerUi.controlDeployableTroops();
     nextPhaseButton = new Button();
@@ -362,15 +369,27 @@ public class GameSceneController implements GameStateObserver {
     cardsButton.setFocusTraversable(false);
     cardsButton.setOnAction(event -> showCardsPopup());
 
-    bottomPane.getChildren().addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton);
+    bottomPane.getChildren()
+        .addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton, notifyCircle);
     bottomPane.setAlignment(Pos.CENTER);
     StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 5, 525));
     StackPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
     StackPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
     StackPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
     StackPane.setMargin(chatButton, new Insets(0, 15, 0, 0));
+    StackPane.setAlignment(notifyCircle, Pos.CENTER_RIGHT);
+    StackPane.setMargin(notifyCircle, new Insets(0, 10, 40, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));
     return bottomPane;
+  }
+
+  @Override
+  public void updateChat(ArrayList<String> string) {
+    if (chatUi.getChatPopup().isShowing()) {
+      notifyCircle.setVisible(false);
+    } else {
+      notifyCircle.setVisible(true);
+    }
   }
 
   private void showCardsPopup() {
