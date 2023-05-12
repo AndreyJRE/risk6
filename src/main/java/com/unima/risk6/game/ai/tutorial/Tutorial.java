@@ -209,7 +209,6 @@ public class Tutorial {
     Queue<Fortify> fortifies = new LinkedList<>();
     fortifies.add(new Fortify(this.countryMap.get(CountryName.VENEZUELA),
         this.countryMap.get(CountryName.CENTRAL_AMERICA), 20));
-    this.setHandInEnabled(true);
     return fortifies;
   }
 
@@ -264,6 +263,7 @@ public class Tutorial {
   }
 
   public Fortify getCurrentFortify() {
+    this.setHandInEnabled(true);
     return currentFortify;
   }
 
