@@ -138,14 +138,24 @@ public class UserStatisticsSceneController {
     numberCountriesLost.setStyle(numberStyle);
     numberTroopsLost.setStyle(numberStyle);
     numberTroopsWon.setStyle(numberStyle);
-    if (!statisticList.isEmpty()) {
+    int i = 0;
+    int intCountriesWon = 0;
+    int intCountriesLost = 0;
+    int intTroopsWon = 0;
+    int intTroopsLost = 0;
+
+    while (!statisticList.isEmpty()) {
       //TODO: Statistiken aufsummieren
-      GameStatistic userStatistics = statisticList.get(0);
-      numberCountriesLost.setText(Integer.toString(userStatistics.getCountriesLost()));
-      numberTroopsWon.setText(Integer.toString(userStatistics.getTroopsGained()));
-      numberTroopsLost.setText(Integer.toString(userStatistics.getTroopsLost()));
-      numberCountriesWon.setText(Integer.toString(userStatistics.getCountriesWon()));
+      GameStatistic userStatistics = statisticList.get(i);
+      intCountriesLost += userStatistics.getCountriesLost();
+      intTroopsWon += userStatistics.getTroopsGained();
+      intTroopsLost += userStatistics.getTroopsLost();
+      intCountriesWon += userStatistics.getCountriesWon();
     }
+    numberCountriesLost.setText(Integer.toString(intCountriesLost));
+    numberTroopsWon.setText(Integer.toString(intTroopsWon));
+    numberTroopsLost.setText(Integer.toString(intTroopsLost));
+    numberCountriesWon.setText(Integer.toString(intCountriesWon));
     statisticsGridPane.add(troopsLost, 0, 0);
     statisticsGridPane.add(troopsWon, 0, 1);
     statisticsGridPane.add(numberTroopsLost, 1, 0);
@@ -156,7 +166,7 @@ public class UserStatisticsSceneController {
     statisticsGridPane.add(numberCountriesWon, 1, 3);
     statisticsGridPane.setAlignment(Pos.CENTER);
     statisticsGridPane.setHgap(30); // Set horizontal gap
-    statisticsGridPane.setVgap(20); // Set vertical gap
+    statisticsGridPane.setVgap(40); // Set vertical gap
   }
 
   private void initUserStackPane() {

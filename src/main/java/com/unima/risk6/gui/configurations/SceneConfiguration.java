@@ -24,6 +24,7 @@ public class SceneConfiguration {
   private static SceneController sceneController;
   private static double width;
   private static double height;
+  private boolean isFullscreen;
 
   public static void startSceneControllerConfiguration(Stage stage) {
     configureListeners(stage);
@@ -39,6 +40,12 @@ public class SceneConfiguration {
     };
     stage.widthProperty().addListener(stageSizeListener);
     stage.heightProperty().addListener(stageSizeListener);
+
+    stage.setFullScreenExitHint("");
+
+    stage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
+      sceneController.setPreviousWindowFullscreen(oldValue);
+    });
   }
 
   public static void startGame() {

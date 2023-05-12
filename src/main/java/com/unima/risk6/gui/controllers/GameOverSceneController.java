@@ -115,36 +115,39 @@ public class GameOverSceneController {
 
   private void initGridPane() {
     statisticsGridPane = new GridPane();
-    Label troopsLost = new Label("Number of Troops lost: ");
-    Label troopsWon = new Label("Number of Troops defeated: ");
-    Label countriesLost = new Label("Number of countries lost: ");
-    Label countriesWon = new Label("Number of countries conquered: ");
-    Label numberTroopsLost = new Label("0");
-    Label numberTroopsWon = new Label("0");
-    Label numberCountriesLost = new Label("0");
-    Label numberCountriesWon = new Label("0");
-    troopsWon.setStyle(labelStyle);
-    troopsLost.setStyle(labelStyle);
-    countriesLost.setStyle(labelStyle);
-    countriesWon.setStyle(labelStyle);
-    numberCountriesWon.setStyle(numberStyle);
-    numberCountriesLost.setStyle(numberStyle);
-    numberTroopsLost.setStyle(numberStyle);
-    numberTroopsWon.setStyle(numberStyle);
+    Label gamesLost = new Label("Games lost: ");
+    Label gamesWon = new Label("Games won: ");
+    Label countriesConquered = new Label("Total countries conquered: ");
+    Label hoursPlayed = new Label("Total hours played: ");
+    Label winLossRatio = new Label("Win / Loss Ratio: ");
+    Label numberGamesLost = new Label(Integer.toString(winner.getGamesLost()));
+    Label numberGamesWon = new Label(Integer.toString(winner.getGamesWon()));
+    Label numberCountriesConquered = new Label(Integer.toString(winner.getCountriesConquered()));
+    Label numberHoursPlayed = new Label(Double.toString(winner.getHoursPlayed()));
+    Label elo = new Label(Double.toString(winner.getWinLossRatio()));
 
-    numberCountriesLost.setText(Double.toString(winner.getWinLossRatio()));
-    numberTroopsWon.setText(Integer.toString(winner.getGamesLost()));
-    numberTroopsLost.setText(Integer.toString(winner.getGamesWon()));
-    numberCountriesWon.setText(Integer.toString(winner.getCountriesConquered()));
+    gamesWon.setStyle(labelStyle);
+    gamesLost.setStyle(labelStyle);
+    countriesConquered.setStyle(labelStyle);
+    hoursPlayed.setStyle(labelStyle);
+    winLossRatio.setStyle(labelStyle);
+    numberGamesLost.setStyle(numberStyle);
+    numberGamesWon.setStyle(numberStyle);
+    numberCountriesConquered.setStyle(numberStyle);
+    numberHoursPlayed.setStyle(numberStyle);
+    elo.setStyle(numberStyle);
 
-    statisticsGridPane.add(troopsLost, 0, 0);
-    statisticsGridPane.add(troopsWon, 0, 1);
-    statisticsGridPane.add(numberTroopsLost, 1, 0);
-    statisticsGridPane.add(numberTroopsWon, 1, 1);
-    statisticsGridPane.add(countriesLost, 0, 2);
-    statisticsGridPane.add(numberCountriesLost, 1, 2);
-    statisticsGridPane.add(countriesWon, 0, 3);
-    statisticsGridPane.add(numberCountriesWon, 1, 3);
+    statisticsGridPane.add(gamesWon, 0, 0);
+    statisticsGridPane.add(gamesLost, 0, 1);
+    statisticsGridPane.add(numberGamesWon, 1, 0);
+    statisticsGridPane.add(numberGamesLost, 1, 1);
+    statisticsGridPane.add(countriesConquered, 0, 2);
+    statisticsGridPane.add(numberCountriesConquered, 1, 2);
+    statisticsGridPane.add(hoursPlayed, 0, 3);
+    statisticsGridPane.add(numberHoursPlayed, 1, 3);
+    statisticsGridPane.add(winLossRatio, 0, 4);
+    statisticsGridPane.add(elo, 1, 4);
+
     statisticsGridPane.setAlignment(Pos.CENTER);
     statisticsGridPane.setHgap(30); // Set horizontal gap
     statisticsGridPane.setVgap(20); // Set vertical gap
@@ -152,8 +155,8 @@ public class GameOverSceneController {
 
   private void initUserStackPane() {
     userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
-    userImage.setFitHeight(150);
-    userImage.setFitWidth(150);
+    userImage.setFitHeight(200);
+    userImage.setFitWidth(200);
 
     Circle circle = new Circle();
     circle.setRadius(95);

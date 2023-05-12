@@ -21,6 +21,8 @@ public class SceneController {
 
   private final HashMap<SceneName, Scene> scenes;
   private final Stage stage;
+  private boolean previousWindowFullscreen;
+
 
   private SceneName currentSceneName;
 
@@ -38,6 +40,8 @@ public class SceneController {
   }
 
   public void activate(SceneName name) {
+    boolean fullscreen = (stage != null && stage.isFullScreen()) || previousWindowFullscreen;
+
     Scene scene = scenes.get(name);
     if (scene instanceof InitializableScene scene1) {
       scene1.init();
@@ -51,6 +55,9 @@ public class SceneController {
     switch (name) {
       case TITLE -> SoundConfiguration.playTitleSound();
       case GAME -> SoundConfiguration.playInGameMusic();
+    }
+    if (fullscreen) {
+      stage.setFullScreen(true);
     }
     fadeIn(scene);
   }
@@ -92,6 +99,9 @@ public class SceneController {
 
   public SceneName getCurrentSceneName() {
     return currentSceneName;
+  }
+  public void setPreviousWindowFullscreen(boolean fullscreen) {
+    previousWindowFullscreen = fullscreen;
   }
 }
 

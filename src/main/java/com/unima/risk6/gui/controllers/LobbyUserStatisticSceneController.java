@@ -85,7 +85,7 @@ public class LobbyUserStatisticSceneController {
     centerVBox.setAlignment(Pos.CENTER);
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity

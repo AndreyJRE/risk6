@@ -159,6 +159,11 @@ public class JoinOnlineSceneController {
 
     anchorPane.getChildren().add(vBox);
 
+    ipAdressTextField.setOnAction(
+        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
+    portTextField.setOnAction(
+        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
+
     joinButton.setOnAction(
         e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
 
