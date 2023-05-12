@@ -35,8 +35,10 @@ import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import javafx.animation.PathTransition;
@@ -171,10 +173,25 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
     Group otherDiceGroup = new Group();
 
-    //TODO LOGIC: REPLACE IMAGES WITH PREDETERMINED DICEUI. AS SOON AS OTHER PLAYERS HAVE CLICKED
-    // THEIR DICE BUTTON IT SHOULD UPDATE THE OTHERS
+    //HashMap<String, Integer> hashMapOfPlayerDice = GameConfiguration.getDiceRolls();
+    //TODO: PLEASE USE UPPER METHOD, INSTEAD OF BELOW
+    HashMap<String, Integer> hashMapOfPlayerDice = new HashMap<>();
+    hashMapOfPlayerDice.put(myPlayerUi.getPlayer().getUser(), 2);
+    hashMapOfPlayerDice.put("Jeff", 1);
 
-    if (numImages <= 2) {
+    int myValue = hashMapOfPlayerDice.get(myPlayerUi.getPlayer().getUser());
+
+    List<DiceUi> diceUis = new ArrayList<>();
+
+//    gameState.getActivePlayers().forEach(x -> {
+//      if (x.getUser() != myPlayerUi.getPlayer().getUser()) {
+//        diceUis.add(new DiceUi(false, hashMapOfPlayerDice.get(x.getUser())));
+//      }
+//  });
+//  TODO: PLEASE USE METHOD ABOVE INSTEAD OF BELOW
+    diceUis.add(new DiceUi(false, hashMapOfPlayerDice.get("Jeff")));
+
+    if (diceUis.size() >= 2) {
       Arc semicircle = new Arc();
       semicircle.setCenterX(0);
       semicircle.setCenterY(0);
@@ -184,29 +201,33 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       semicircle.setLength(-180);
       double imageWidth = image.getWidth();
       double imageHeight = image.getHeight();
-      for (int i = 0; i < numImages; i++) {
+      for (int i = 0; i < diceUis.size(); i++) {
         double angle = Math.toRadians(
             semicircle.getStartAngle() + i * semicircle.getLength() / (numImages));
         double x =
             semicircle.getCenterX() + semicircle.getRadiusX() * Math.cos(angle) - imageWidth / 2;
         double y =
             semicircle.getCenterY() + semicircle.getRadiusY() * Math.sin(angle) - imageHeight / 2;
-        ImageView imageView = new ImageView(image);
-        imageView.setX(x);
-        imageView.setY(y);
-        otherDiceGroup.getChildren().add(imageView);
+        DiceUi currentDice = diceUis.get(i);
+        currentDice.setLayoutX(x);
+        currentDice.setLayoutY(y);
+        otherDiceGroup.getChildren().add(currentDice);
         orderPane.setCenter(otherDiceGroup);
       }
     } else {
-      otherDiceGroup.getChildren().add(new ImageView(image));
+      otherDiceGroup.getChildren().add(diceUis.get(0));
       orderPane.setTop(otherDiceGroup);
+      BorderPane.setAlignment(otherDiceGroup, Pos.CENTER);
+
+      gameState.getActivePlayers();
+
     }
 
     VBox myDiceBox = new VBox();
 
-    //TODO LOGIC: REPLACE THIS MOCKED DICEUI WITH PREDETERMINED RESULT VALUE FROM LOGIC
+    DiceUi myDice = new DiceUi(false, myValue);
 
-    DiceUi myDice = new DiceUi(false, 3);
+    diceUis.add(myDice);
 
     Button rollMyDiceButton = new Button("Roll the Dice!");
     rollMyDiceButton.setStyle(
@@ -227,11 +248,17 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       orderBox.getChildren().add(orderLabel);
       orderPane.setCenter(orderBox);
       delayTransitionHidePopup.play();
+
+      //TODO: CREATE LIST HERE AND CHANGE GAMESTATE AND INITIALISE PLAYERPANE:
+
     });
 
     rollMyDiceButton.setOnAction(event -> {
-      myDice.rollDice();
+      for (DiceUi dice : diceUis) {
+        dice.rollDice();
+      }
       delayTransitionShowOrder.play();
+
     });
 
     myDiceBox.getChildren().addAll(myDice, rollMyDiceButton);
@@ -386,9 +413,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   @Override
   public void updateChat(ArrayList<String> string) {
     if (chatUi.getChatPopup().isShowing()) {
-      notifyCircle.setVisible(false);
+      Platform.runLater(() -> notifyCircle.setVisible(false));
     } else {
-      notifyCircle.setVisible(true);
+      Platform.runLater(() -> notifyCircle.setVisible(true));
     }
   }
 
