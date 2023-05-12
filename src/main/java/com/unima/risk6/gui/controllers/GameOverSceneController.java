@@ -1,7 +1,6 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
@@ -62,7 +61,7 @@ public class GameOverSceneController {
     initGridPane();
     initElements();
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.WON_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.WON_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -152,7 +151,7 @@ public class GameOverSceneController {
   }
 
   private void initUserStackPane() {
-    userImage = new ImageView(ImageConfiguration.getBackgroundByName(ImageName.PLAYER_ICON));
+    userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
     userImage.setFitHeight(150);
     userImage.setFitWidth(150);
 

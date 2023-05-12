@@ -94,7 +94,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
     Label title = new Label("Select Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
-    title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
+    title.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -125,7 +126,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     bottomBox.setAlignment(Pos.CENTER);
     initSplitPane();
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.SELECT_LOBBY_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECT_LOBBY_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -138,7 +139,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
 

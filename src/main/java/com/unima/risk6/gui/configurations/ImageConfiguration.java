@@ -24,6 +24,15 @@ public class ImageConfiguration {
   private static final String HARDBOT_ICON = "/com/unima/risk6/pictures/hardBot.png";
   private static final String TUTORIAL_ICON = "/com/unima/risk6/pictures/tutorialIcon.png";
 
+  private static final String CANNON_ICON = "/com/unima/risk6/pictures/cannonCard.png";
+  private static final String INFANTRY_ICON = "/com/unima/risk6/pictures/infantryCard.png";
+
+  private static final String CAVALRY_ICON = "/com/unima/risk6/pictures/cavalryCard.png";
+
+  private static final String WILD_CARD = "/com/unima/risk6/pictures/wildCard.png";
+
+  private static final String PLUS_ICON = "/com/unima/risk6/pictures/plusIcon.png";
+
 
   private static HashMap<ImageName, Image> images;
   private static Media titleBackgroundVideo;
@@ -61,6 +70,16 @@ public class ImageConfiguration {
     images.put(ImageName.HARDBOT_ICON, hardBotIcon);
     Image tutorialBotIcon = initImage(TUTORIAL_ICON);
     images.put(ImageName.TUTORIAL_ICON, tutorialBotIcon);
+    Image cannonIcon = initImage(CANNON_ICON);
+    images.put(ImageName.CANNON_ICON, cannonIcon);
+    Image infantryIcon = initImage(INFANTRY_ICON);
+    images.put(ImageName.INFANTRY_ICON, infantryIcon);
+    Image cavalryIcon = initImage(CAVALRY_ICON);
+    images.put(ImageName.CAVALRY_ICON, cavalryIcon);
+    Image wildCardIcon = initImage(WILD_CARD);
+    images.put(ImageName.WILDCARD_ICON, wildCardIcon);
+    Image plusIcon = initImage(PLUS_ICON);
+    images.put(ImageName.PLUS_ICON, plusIcon);
     URL mediaUrl = ImageConfiguration.class.getResource(
         "/com/unima/risk6/pictures/backgroundVideo.png");
     String mediaStringUrl = mediaUrl.toExternalForm();
@@ -68,7 +87,7 @@ public class ImageConfiguration {
 
   }
 
-  public static Image getBackgroundByName(ImageName imageName) {
+  public static Image getImageByName(ImageName imageName) {
     return images.get(imageName);
   }
 

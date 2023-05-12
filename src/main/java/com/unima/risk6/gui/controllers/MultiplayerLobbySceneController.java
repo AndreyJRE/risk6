@@ -81,7 +81,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     // Initialize the username TextField
     Label title = new Label("Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
-    title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
+    title.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -100,7 +101,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
       BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
     } else {
       Label waiting = new Label("Waiting for the host to start the game...");
-      waiting.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: white");
+      waiting.setStyle(
+          "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: white");
       HBox waitingLabelBox = new HBox(waiting);
       waitingLabelBox.setAlignment(Pos.CENTER);
       root.setBottom(waitingLabelBox);
@@ -111,7 +113,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     //TODO: Implement Gridpane for Multiplayer Settings
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.MULTIPLAYER_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -124,7 +126,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
 
@@ -197,8 +201,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
 
   private VBox createPlayerVBox(UserDto userDto) {
-    StackPane userImage = createPlayerStackPane("/com/unima/risk6/pictures/playerIcon.png"
-        , false);
+    StackPane userImage = createPlayerStackPane(ImageName.PLAYER_ICON, false);
     Label userName = new Label(userDto.getUsername());
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
@@ -219,9 +222,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     return removeBox;
   }
 
-  private StackPane createPlayerStackPane(String imagePath, boolean isBot) {
+  private StackPane createPlayerStackPane(ImageName imageName, boolean isBot) {
     Circle circle = new Circle();
-    ImageView userImage = new ImageView(new Image(getClass().getResource(imagePath).toString()));
+    ImageView userImage = new ImageView(ImageConfiguration.getImageByName(imageName));
     if (isBot) {
       userImage.setFitHeight(130);
       userImage.setFitWidth(130);
@@ -251,8 +254,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   }
 
   private StackPane createPlusStackpane() {
-    ImageView plusImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
+    ImageView plusImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLUS_ICON));
     plusImage.setFitHeight(20);
     plusImage.setFitWidth(20);
     Circle circle = new Circle();
@@ -323,9 +325,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   private VBox createBotVBox(int difficultyNumber, String botName) {
     StackPane botImage = new StackPane();
     switch (difficultyNumber) {
-      case 0 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
-      case 1 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
-      case 2 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
+      case 0 -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
+      case 1 -> botImage = createPlayerStackPane(ImageName.MEDIUMBOT_ICON, true);
+      case 2 -> botImage = createPlayerStackPane(ImageName.HARDBOT_ICON, true);
     }
     Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "

@@ -106,9 +106,8 @@ public class CreateLobbySceneController {
     anchorPane.setPrefSize(900, 600);
     anchorPane.setPadding(new Insets(60, 100, 60, 100));
 
-    vBox.setStyle(
-        "-fx-background-color: #FFFFFF; -fx-background-radius: 20;"
-            + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-opacity: 0.9");
+    vBox.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 20;"
+        + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-opacity: 0.9");
     AnchorPane.setTopAnchor(vBox, 0.0);
     AnchorPane.setRightAnchor(vBox, 0.0);
     AnchorPane.setBottomAnchor(vBox, 0.0);
@@ -119,7 +118,7 @@ public class CreateLobbySceneController {
     anchorPane.getChildren().add(vBox);
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.CREATE_LOBBY_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.CREATE_LOBBY_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -132,7 +131,9 @@ public class CreateLobbySceneController {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
 

@@ -107,7 +107,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     BorderPane.setMargin(playButton, new Insets(10, 20, 20, 10));
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.SINGLEPLAYER_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.SINGLEPLAYER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity

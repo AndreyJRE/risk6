@@ -31,7 +31,7 @@ public class SoundConfiguration {
 
   private static AudioClip troopsMoveSound;
 
-  private static SimpleDoubleProperty volume = new SimpleDoubleProperty(0.1);
+  private static final SimpleDoubleProperty VOLUME = new SimpleDoubleProperty(0.1);
 
 
   public static void playTitleSound() {
@@ -43,37 +43,38 @@ public class SoundConfiguration {
         Objects.requireNonNull(SoundConfiguration.class.getResource(TITLE_SOUND_PATH))
             .toExternalForm());
     titleSound = new MediaPlayer(media);
-    titleSound.setVolume(volume.get());
+    titleSound.setVolume(VOLUME.get());
     titleSound.setStartTime(Duration.ZERO);
     titleSound.setStopTime(Duration.seconds(10));
     titleSound.setCycleCount(MediaPlayer.INDEFINITE);
-    titleSound.volumeProperty().bind(volume);
+    titleSound.volumeProperty().bind(VOLUME);
     rollDiceSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(ROLL_DICE_SOUND_PATH))
             .toExternalForm());
-    rollDiceSound.setVolume(volume.get());
-    rollDiceSound.volumeProperty().bind(volume);
+    rollDiceSound.setVolume(VOLUME.get());
+    rollDiceSound.volumeProperty().bind(VOLUME);
     inGameMusic = new MediaPlayer(new Media(
         Objects.requireNonNull(SoundConfiguration.class.getResource(IN_GAME_MUSIC_PATH))
             .toExternalForm()));
     inGameMusic.setCycleCount(MediaPlayer.INDEFINITE);
-    inGameMusic.setVolume(volume.get());
-    inGameMusic.volumeProperty().bind(new SimpleDoubleProperty(volume.get() / 3));
+    inGameMusic.setVolume(VOLUME.get());
+    SimpleDoubleProperty observableValue = new SimpleDoubleProperty(VOLUME.get() / 3);
+    inGameMusic.volumeProperty().bind(observableValue);
     yourTurnSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(YOUR_TURN_SOUND_PATH))
             .toExternalForm());
-    yourTurnSound.setVolume(volume.get());
-    yourTurnSound.volumeProperty().bind(volume);
+    yourTurnSound.setVolume(VOLUME.get());
+    yourTurnSound.volumeProperty().bind(VOLUME);
     startGameSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(ALARM_FOR_START_GAME))
             .toExternalForm());
-    startGameSound.setVolume(volume.get());
-    startGameSound.volumeProperty().bind(volume);
+    startGameSound.setVolume(VOLUME.get());
+    startGameSound.volumeProperty().bind(VOLUME);
     troopsMoveSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(TROOPS_MOVE_SOUND))
             .toExternalForm());
-    troopsMoveSound.setVolume(volume.get());
-    troopsMoveSound.volumeProperty().bind(volume);
+    troopsMoveSound.setVolume(VOLUME.get());
+    troopsMoveSound.volumeProperty().bind(VOLUME);
 
 
   }
@@ -109,11 +110,11 @@ public class SoundConfiguration {
   }
 
   public static double getVolume() {
-    return volume.get();
+    return VOLUME.get();
   }
 
   public static void setVolume(double volume) {
-    SoundConfiguration.volume.set(volume);
+    SoundConfiguration.VOLUME.set(volume);
   }
 
 }

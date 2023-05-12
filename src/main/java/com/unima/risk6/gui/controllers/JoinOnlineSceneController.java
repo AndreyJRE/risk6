@@ -64,7 +64,7 @@ public class JoinOnlineSceneController {
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.MULTIPLAYER_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -77,7 +77,9 @@ public class JoinOnlineSceneController {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
 

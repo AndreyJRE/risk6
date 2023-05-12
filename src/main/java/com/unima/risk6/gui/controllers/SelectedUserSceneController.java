@@ -86,7 +86,7 @@ public class SelectedUserSceneController {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.SELECTED_USER_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECTED_USER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -99,7 +99,9 @@ public class SelectedUserSceneController {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
     // Add passwordEntryBox to the center of the BorderPane

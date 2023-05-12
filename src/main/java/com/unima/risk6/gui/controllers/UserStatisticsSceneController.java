@@ -66,7 +66,7 @@ public class UserStatisticsSceneController {
     initGridPane();
     initElements();
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.STATISTICS_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
@@ -79,7 +79,9 @@ public class UserStatisticsSceneController {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
@@ -95,7 +97,8 @@ public class UserStatisticsSceneController {
     // Initialize the user name TextField
     Label userName = new Label(user.getUsername());
     userName.setAlignment(Pos.CENTER);
-    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
+    userName.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
 
     // Wrap the userNameField in an HBox to center it
     HBox userNameFieldContainer = new HBox(userName);

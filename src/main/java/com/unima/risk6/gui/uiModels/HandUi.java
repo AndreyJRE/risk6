@@ -88,7 +88,7 @@ public class HandUi extends BorderPane {
   }
 
   public void show() {
-    this.setPrefSize(gameRoot.getWidth() * 0.65, gameRoot.getHeight() * 0.65);
+    this.setPrefSize(gameRoot.getWidth() * 0.5, gameRoot.getHeight() * 0.5);
     Bounds rootBounds = gameRoot.localToScreen(gameRoot.getBoundsInLocal());
     double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
     double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
