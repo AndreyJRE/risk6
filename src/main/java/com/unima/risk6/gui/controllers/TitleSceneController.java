@@ -207,14 +207,21 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private void handleSinglePlayer() throws InterruptedException {
+    if (switchedOn.get()) {
+      NetworkConfiguration.stopGameServer();
+      switchedOn.setValue(false);
+    }
+    Thread.sleep(100);
     NetworkConfiguration.startGameServer();
-    Thread.sleep(200);
+    Thread.sleep(150);
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
 
-    Thread.sleep(200);
+    Thread.sleep(100);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
+    LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
+    Thread.sleep(20);
     gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
         false, 0, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
@@ -241,6 +248,10 @@ public class TitleSceneController implements Initializable {
   @FXML
   private void handleTutorial() throws InterruptedException {
     //TODO: Play Tutorial
+    if (switchedOn.get()) {
+      NetworkConfiguration.stopGameServer();
+      switchedOn.setValue(false);
+    }
     NetworkConfiguration.startGameServer();
     Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
@@ -248,8 +259,10 @@ public class TitleSceneController implements Initializable {
     Thread.sleep(200);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
-    gameLobby = new GameLobby("Single Player Lobby", 2, SessionManager.getUser().getUsername(),
-        false, 0, GameConfiguration.getMyGameUser());
+    LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
+    Thread.sleep(20);
+    gameLobby = new GameLobby("Tutorial Lobby", 2, SessionManager.getUser().getUsername(), false, 0,
+        GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     gameLobby.getBots().add("Johnny Test");
     LobbyConfiguration.sendTutorialCreateLobby(gameLobby);

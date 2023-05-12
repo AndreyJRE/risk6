@@ -26,12 +26,11 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -103,6 +102,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
+            Thread.sleep(300);
             if (g.isGameOver()) {
               Platform.runLater(() -> SceneConfiguration.gameOverScene(g));
             }
@@ -114,8 +114,11 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             LobbyConfiguration.setLastChatMessage(message);
           }
           case "ORDER" -> {
-            HashMap<String, Integer> hashMap2 = (HashMap<String, Integer>) Deserializer.deserialize(textFrame.text()).getContent();
+            HashMap<String, Integer> hashMap2 = (HashMap<String, Integer>) Deserializer.deserialize(
+                textFrame.text()).getContent();
             LOGGER.debug("Client got a order message ");
+            GameConfiguration.setDiceRolls(hashMap2);
+
             //TODO
           }
           case "CONNECTION" -> {
@@ -154,6 +157,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 GameConfiguration.setGameState(g);
                 Probabilities.init();
                 CountriesUiConfiguration.configureCountries(g.getCountries());
+                System.out.println("Test");
                 Platform.runLater(SceneConfiguration::startGame);
               }
               case "ACCEPT_JOIN_GAME_LOBBY" -> {

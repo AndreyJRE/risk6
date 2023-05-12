@@ -359,7 +359,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         new ConnectionMessage<>(ConnectionActions.ACCEPT_START_GAME,
             moveProcessor.getGameController().getGameState()));
     LOGGER.debug(message);
+    System.out.println(gameLobbyChannels.getChannelsByGameLobby(gameLobby).size());
     for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      System.out.println("Test");
       LOGGER.debug("Send new gamestate to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(message));
     }
@@ -386,15 +388,19 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     PlayerController playerController = new PlayerController();
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
-    for (int i = gameState.getActivePlayers().size(); i > 0; i--) {
-      diceRolls.put(moveProcessor.getGameController().getGameState().getActivePlayers().poll(),
+    int queueSize = gameState.getActivePlayers().size();
+    GameController gameController = moveProcessor.getGameController();
+    for (int i = queueSize; i > 0; i--) {
+      Player player = gameController.getGameState().getActivePlayers().poll();
+      diceRolls.put(player,
           Dice.rollDice());
+      gameState.getActivePlayers().add(player);
     }
     HashMap<String, Integer> diceRollsString = new HashMap<>();
     diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
-    Player activePlayer = moveProcessor.getGameController().getGameState().getActivePlayers()
+    Player activePlayer = gameController.getGameState().getActivePlayers()
         .peek();
-    moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
+    gameController.getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
@@ -416,11 +422,18 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
-    moveProcessor.getGameController()
-        .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
+    gameController
+        .setNewPlayerOrder(gameController.getNewPlayerOrder(diceRolls));
     sendGamestate(gameLobbyChannels.getChannelsByGameLobby(gameLobby));
-
     moveProcessor.clearLastMoves();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    if (gameController.getCurrentPlayer() instanceof AiBot aiBot) {
+      processBotMove(aiBot, gameLobbyChannels.getChannelsByGameLobby(gameLobby));
+    }
   }
 
   private void processStartTutorial(GameLobby myServerGameLobby) {

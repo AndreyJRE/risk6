@@ -35,11 +35,11 @@ import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import javafx.animation.PathTransition;
@@ -180,24 +180,17 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
     Group otherDiceGroup = new Group();
 
-    //HashMap<String, Integer> hashMapOfPlayerDice = GameConfiguration.getDiceRolls();
-    //TODO: PLEASE USE UPPER METHOD, INSTEAD OF BELOW
-    HashMap<String, Integer> hashMapOfPlayerDice = new HashMap<>();
-    hashMapOfPlayerDice.put(myPlayerUi.getPlayer().getUser(), 2);
-    hashMapOfPlayerDice.put("Jeff", 1);
-
+    HashMap<String, Integer> hashMapOfPlayerDice = GameConfiguration.getDiceRolls();
+    System.out.println(gameState.getActivePlayers());
     int myValue = hashMapOfPlayerDice.get(myPlayerUi.getPlayer().getUser());
 
     List<DiceUi> diceUis = new ArrayList<>();
 
-//    gameState.getActivePlayers().forEach(x -> {
-//      if (x.getUser() != myPlayerUi.getPlayer().getUser()) {
-//        diceUis.add(new DiceUi(false, hashMapOfPlayerDice.get(x.getUser())));
-//      }
-//  });
-//  TODO: PLEASE USE METHOD ABOVE INSTEAD OF BELOW
-    diceUis.add(new DiceUi(false, hashMapOfPlayerDice.get("Jeff")));
-
+    gameState.getActivePlayers().forEach(x -> {
+      if (!Objects.equals(x.getUser(), myPlayerUi.getPlayer().getUser())) {
+        diceUis.add(new DiceUi(false, hashMapOfPlayerDice.get(x.getUser())));
+      }
+    });
     if (diceUis.size() >= 2) {
       Arc semicircle = new Arc();
       semicircle.setCenterX(0);
@@ -233,18 +226,29 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
     diceUis.add(myDice);
 
-    Button rollMyDiceButton = new Button("Roll the Dice!");
-    rollMyDiceButton.setStyle(
-        "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
-    rollMyDiceButton.setFocusTraversable(false);
-
-    PauseTransition delayTransitionHidePopup = new PauseTransition(Duration.millis(2500));
-    delayTransitionHidePopup.setOnFinished(delayTransitionEvent -> orderPopup.hide());
+    PauseTransition delayTransitionHidePopup = new PauseTransition(Duration.millis(1000));
+    delayTransitionHidePopup.setOnFinished(delayTransitionEvent -> {
+      orderPopup.hide();
+      StackPane stackPane = initializePlayersPane();
+      activePlayerUi.changeActivePlayerUi(getCurrentPlayerUi());
+      nextPhaseButton.setVisible(
+          checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
+              != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
+              != GamePhase.CLAIM_PHASE));
+      root.setLeft(stackPane);
+    });
 
     PauseTransition delayTransitionShowOrder = new PauseTransition(Duration.millis(3000));
     delayTransitionShowOrder.setOnFinished(delayTransitionEvent -> {
       orderPane.getChildren().clear();
-      Label orderLabel = new Label("You are " + myDice.getResult() + ". Place. Good Luck!");
+      int i = 1;
+      for (Player player : gameState.getActivePlayers()) {
+        if (player.equals(myPlayerUi.getPlayer())) {
+          break;
+        }
+        i++;
+      }
+      Label orderLabel = new Label("You are in position " + i + ".\n" + "Good Luck!");
       orderLabel.setStyle("-fx-font-size: 29px;");
 
       HBox orderBox = new HBox();
@@ -253,33 +257,14 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       orderPane.setCenter(orderBox);
       delayTransitionHidePopup.play();
 
-      //TODO: CREATE LIST HERE AND CHANGE GAMESTATE AND INITIALISE PLAYERPANE:
-      Queue<Player> currentOrder = gameState.getActivePlayers();
-
-      List<Player> tempList = new ArrayList<>();
-
-      while (!currentOrder.isEmpty()) {
-        Player currentPlayer = currentOrder.poll();
-        String username = currentPlayer.getUser();
-        if (hashMapOfPlayerDice.containsKey(username)) {
-          tempList.add(currentPlayer);
-        }
-      }
-      tempList.sort(Comparator.comparingInt(player -> hashMapOfPlayerDice.get(player.getUser())));
-      gameState.getActivePlayers().clear();
-      gameState.getActivePlayers().addAll(tempList);
-
     });
+    for (DiceUi dice : diceUis) {
+      dice.rollDice();
+    }
+    delayTransitionShowOrder.play();
+    System.out.println(gameState.getActivePlayers());
 
-    rollMyDiceButton.setOnAction(event -> {
-      for (DiceUi dice : diceUis) {
-        dice.rollDice();
-      }
-      delayTransitionShowOrder.play();
-
-    });
-
-    myDiceBox.getChildren().addAll(myDice, rollMyDiceButton);
+    myDiceBox.getChildren().addAll(myDice);
     myDiceBox.setSpacing(10);
 
     HBox hBox = new HBox(myDiceBox);
@@ -302,6 +287,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     orderPopup.setY(centerY - popupHeight / 2);
     orderPopup.show(gameScene.getWindow());
   }
+
 
   private StackPane initializeCountriesPane() {
     double widthRatio = gameScene.getWidth() / originalScreenWidth;
@@ -365,7 +351,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     return playerPane;
   }
 
-
   private StackPane initializeBottomPane() {
     StackPane bottomPane = new StackPane();
     Button chatButton = new Button();
@@ -394,8 +379,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     nextPhaseButton.setGraphic(rightArrowIcon);
     nextPhaseButton.setStyle("-fx-background-radius: 20px;");
     nextPhaseButton.setFocusTraversable(false);
-    nextPhaseButton.setVisible(checkIfCurrentPlayerIsMe()
-        && activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE);
+    nextPhaseButton.setVisible(false);
     nextPhaseButton.setOnAction(event -> {
       GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
       PLAYER_CONTROLLER.sendEndPhase(currentPhase);
@@ -634,7 +618,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     return countriesUis.stream().filter(countryUi -> countryUi.getCountry().equals(country))
         .findFirst().get();
   }
-
 
   public void animateTroopsMovement(Fortify fortify) {
     double maxOffsetX = 2.5;

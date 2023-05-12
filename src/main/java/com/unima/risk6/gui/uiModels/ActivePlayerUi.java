@@ -5,7 +5,6 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
-import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -117,7 +116,7 @@ public class ActivePlayerUi extends Group {
     attackRectangle.setFill(attackImagePattern);
     fortifyRectangle = new Rectangle(radiusX, radiusY);
     fortifyRectangle.setFill(fortifyImagePattern);
-    phaseLabel.setText("Claim a territory");
+    phaseLabel.setText("Order");
     iconsPane.getChildren().add(phaseLabel);
     StackPane.setAlignment(phaseLabel, Pos.CENTER);
 
@@ -154,7 +153,8 @@ public class ActivePlayerUi extends Group {
         && this.playerUi.getPlayer().getUser()
         .equals(GameSceneController.getPlayerController().getPlayer().getUser())
         && playerUi.getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE) {
-      SoundConfiguration.playYourTurnSound();
+      //todo change to work
+      // SoundConfiguration.playYourTurnSound();
     }
     this.playerUi = playerUi;
     Player player = playerUi.getPlayer();
@@ -207,7 +207,6 @@ public class ActivePlayerUi extends Group {
         iconsPane.getChildren().remove(0);
         iconsPane.getChildren().add(phaseLabel);
         StackPane.setAlignment(phaseLabel, Pos.CENTER);
-
 
       }
       case ORDER_PHASE -> {

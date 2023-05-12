@@ -1,5 +1,7 @@
 package com.unima.risk6.network.server;
 
+import static com.unima.risk6.network.server.GameServer.channels;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.unima.risk6.game.models.GameLobby;
@@ -12,8 +14,6 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.unima.risk6.network.server.GameServer.channels;
 
 public class GameLobbyChannels {
 
@@ -28,8 +28,8 @@ public class GameLobbyChannels {
 
   public ChannelGroup getChannelGroupByChannel(Channel channel) {
     return gameChannels.values().stream()
-            .filter(x -> x.contains(channel)).findFirst()
-            .orElse(channels);
+        .filter(x -> x.contains(channel)).findFirst()
+        .orElse(channels);
   }
 
   public void putUsers(UserDto userDto, Channel channel) {
@@ -37,12 +37,13 @@ public class GameLobbyChannels {
   }
 
 
-  public void removeUserFromGameLobby(Channel channel, GameServerFrameHandler gameServerFrameHandler, boolean isDead) {
+  public void removeUserFromGameLobby(Channel channel,
+      GameServerFrameHandler gameServerFrameHandler, boolean isDead) {
     System.out.println(channel.id() + " left");
     UserDto deadUser = getUserByChannel(channel);
     //leave gameChannel
     GameLobby gameLobby = gameChannels.keySet().stream()
-            .filter(x -> x.getUsers().contains(deadUser)).findFirst().get();
+        .filter(x -> x.getUsers().contains(deadUser)).findFirst().get();
 
     //remove from game lobby
     gameLobby.getUsers().remove(users.inverse().get(channel));
@@ -52,19 +53,19 @@ public class GameLobbyChannels {
     }
     //delete gamelobby if empty or change owner
     if (gameLobby.getUsers().size()
-            == 0) {
+        == 0) {
 
       NetworkConfiguration.getServerLobby().getGameLobbies()
-              .remove(NetworkConfiguration.getServerLobby()
-                      .getGameLobbies().stream().filter(
-                              x -> x.getLobbyName().equals(
-                                      gameLobby.getLobbyName())).findFirst().get());
+          .remove(NetworkConfiguration.getServerLobby()
+              .getGameLobbies().stream().filter(
+                  x -> x.getLobbyName().equals(
+                      gameLobby.getLobbyName())).findFirst().get());
       gameChannels.remove(gameLobby);
     } else {
       //Change owner
       gameLobby.setLobbyOwner(
-              gameLobby.getUsers()
-                      .get(0));
+          gameLobby.getUsers()
+              .get(0));
       gameServerFrameHandler.sendGameLobby(gameLobby);
     }
     if (isDead) {
@@ -76,17 +77,18 @@ public class GameLobbyChannels {
   public void removeUserFromServerLobby(Channel channel) {
     LOGGER.debug("Remove from server lobby: " + users.inverse().get(channel));
     NetworkConfiguration.getServerLobby().getUsers()
-            .remove(users.inverse().get(channel));
-    NetworkConfiguration.getServerLobby().getUsers().forEach(x -> System.out.println(x.getUsername() + " is in ServerLobby"));
+        .remove(users.inverse().get(channel));
+    NetworkConfiguration.getServerLobby().getUsers()
+        .forEach(x -> System.out.println(x.getUsername() + " is in ServerLobby"));
     users.inverse().remove(channel);
     channels.remove(channel);
   }
 
   public void createGameLobby(GameLobby gameLobby, Channel channel) {
     NetworkConfiguration.getServerLobby().getGameLobbies()
-            .add(gameLobby);
+        .add(gameLobby);
     gameChannels.put(gameLobby,
-            new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
+        new DefaultChannelGroup(GlobalEventExecutor.INSTANCE));
     addUserToGameLobby(gameLobby, channel);
   }
 
@@ -95,9 +97,8 @@ public class GameLobbyChannels {
     channels.remove(channel);
     if (!gameLobby.getUsers().contains(users.inverse().get(channel))) {
       gameLobby.getUsers()
-              .add(users.inverse().get(channel));
+          .add(users.inverse().get(channel));
     }
-
     gameChannels.get(gameLobby).add(channel);
   }
 
@@ -121,12 +122,12 @@ public class GameLobbyChannels {
 
   public MoveProcessor getMoveProcessor(Channel channel) {
     return moveProcessors.inverse()
-            .get(moveProcessors.values().stream().filter(x -> x.contains(channel)).findFirst().get());
+        .get(moveProcessors.values().stream().filter(x -> x.contains(channel)).findFirst().get());
   }
 
   public MoveProcessor createMoveProcessor(Channel channel) {
     ChannelGroup channelGroup = gameChannels.values().stream().filter(x -> x.contains(channel))
-            .findFirst().get();
+        .findFirst().get();
     moveProcessors.put(new MoveProcessor(), channelGroup);
     return moveProcessors.inverse().get(channelGroup);
   }
@@ -135,11 +136,13 @@ public class GameLobbyChannels {
     System.out.println(gameChannels.size());
     System.out.println(users.inverse().get(channel).getUsername() + " left");
 
-    if (gameChannels.keySet().stream().anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
+    if (gameChannels.keySet().stream()
+        .anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
       if (moveProcessors.values().contains(getChannelGroupByChannel(channel))) {
         //In Running Game
         System.out.println("In Running game");
-        GameState gameState = moveProcessors.inverse().get(getChannelGroupByChannel(channel)).getGameController().getGameState();
+        GameState gameState = moveProcessors.inverse().get(getChannelGroupByChannel(channel))
+            .getGameController().getGameState();
         //TODO passt der Vergleich
         if (gameState.getCurrentPlayer().equals(users.inverse().get(channel))) {
           //player is current player
