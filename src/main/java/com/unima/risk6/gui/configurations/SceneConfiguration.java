@@ -66,8 +66,8 @@ public class SceneConfiguration {
       Alert alert = new Alert(AlertType.WARNING);
       alert.setTitle("Warning: Exiting Game");
       alert.setHeaderText("Are you sure you want to to leave the game?");
-      alert.setContentText("If you leave, you cannot rejoin the game! Your place will be replaced "
-          + "by a bot.");
+      alert.setContentText(
+          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
       ButtonType buttonYes = new ButtonType("Yes, exit game");
       ButtonType buttonNo = new ButtonType("No, continue playing");
       alert.getButtonTypes().setAll(buttonYes, buttonNo);
@@ -118,11 +118,12 @@ public class SceneConfiguration {
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
       SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene, false);
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
     pauseTitleSound();
+    scene.setTutorial(false);
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
@@ -144,11 +145,12 @@ public class SceneConfiguration {
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
       SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene, true);
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
     pauseTitleSound();
+    scene.setTutorial(true);
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 

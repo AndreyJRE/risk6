@@ -7,6 +7,7 @@ import javafx.scene.layout.BorderPane;
 public class SinglePlayerSettingsScene extends Scene implements InitializableScene {
 
   private SinglePlayerSettingsSceneController singlePlayerSettingsSceneController;
+  private boolean tutorial;
 
   public SinglePlayerSettingsScene() {
     super(new BorderPane());
@@ -24,5 +25,12 @@ public class SinglePlayerSettingsScene extends Scene implements InitializableSce
     this.singlePlayerSettingsSceneController = singlePlayerSettingsSceneController;
   }
 
+  public void setTutorial(boolean tutorial) {
+    this.tutorial = tutorial;
+  }
+
+  public boolean isTutorial() {
+    return tutorial;
+  }
 }
 

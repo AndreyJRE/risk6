@@ -58,27 +58,26 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private StackPane plus;
   private UserDto myUser;
   private GameLobby gameLobby;
-  private final boolean tutorial;
+  private boolean tutorial;
 
-  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene,
-      boolean tutorial) {
+  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addGameLobbyObserver(this);
-    this.tutorial = tutorial;
   }
 
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) singlePlayerSettingsScene.getRoot();
+    this.tutorial = singlePlayerSettingsScene.isTutorial();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     // Initialize elements
     initHBox();
-    initElements();
+    initElements(tutorial ? "Tutorial" : "Singleplayer");
   }
 
-  private void initElements() {
+  private void initElements(String lobbyName) {
     Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
@@ -86,7 +85,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     backButton.setOnMouseClicked(e -> handleQuitGameLobby());
 
     // Initialize the username TextField
-    Label title = new Label("Singleplayer Lobby");
+    Label title = new Label(lobbyName);
     title.setAlignment(Pos.CENTER);
     title.setStyle(
         "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
@@ -359,6 +358,10 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
       }
     }
 
+  }
+
+  public void setTutorial(boolean tutorial) {
+    this.tutorial = tutorial;
   }
 
   @Override
