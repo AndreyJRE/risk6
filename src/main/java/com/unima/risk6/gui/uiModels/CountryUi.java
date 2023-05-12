@@ -503,10 +503,10 @@ public class CountryUi extends Group {
 
     if (playerColor.equals(countryPathColor)) {
       Color brightHighlightColor = playerColor.deriveColor(0, 0, 0, 0.8);
-      FillTransition highlightTransition = new FillTransition(Duration.seconds(0.5),
+      FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2),
           this.countryPath, countryPathColor, brightHighlightColor);
       highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
-      FillTransition revertTransition = new FillTransition(Duration.seconds(0.5), this.countryPath,
+      FillTransition revertTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
           brightHighlightColor, countryPathColor);
       revertTransition.setInterpolator(Interpolator.EASE_BOTH);
       SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
@@ -514,7 +514,7 @@ public class CountryUi extends Group {
       sequentialTransition.play();
       return;
     }
-    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.65),
+    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2),
         this.countryPath, countryPathColor, playerColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     glowEffect.setColor(playerColor);
