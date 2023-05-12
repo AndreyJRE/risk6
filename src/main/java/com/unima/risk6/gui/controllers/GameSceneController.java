@@ -1,7 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
@@ -25,11 +23,8 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
-import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.GameOverScene;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.ChatUi;
 import com.unima.risk6.gui.uiModels.CountryUi;

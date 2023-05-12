@@ -17,7 +17,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 public class SceneConfiguration {
@@ -43,7 +42,6 @@ public class SceneConfiguration {
     stage.heightProperty().addListener(stageSizeListener);
 
     stage.setFullScreenExitHint("");
-    stage.initStyle(StageStyle.UTILITY);
   }
 
   public static void startGame() {

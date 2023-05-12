@@ -9,6 +9,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.UserDto;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -26,6 +27,8 @@ public class GameConfiguration {
 
   private static final List<GameStateObserver> observers = new ArrayList<>();
   private static UserDto myGameUser;
+
+  private static HashMap<String, Integer> diceRolls;
 
 
   private static Tutorial tutorial;
@@ -136,5 +139,13 @@ public class GameConfiguration {
 
   public static void setTutorial(Tutorial tutorial) {
     GameConfiguration.tutorial = tutorial;
+  }
+
+  public void setDiceRolls(HashMap<String, Integer> diceRolls) {
+    GameConfiguration.diceRolls = diceRolls;
+  }
+
+  public static HashMap<String, Integer> getDiceRolls() {
+    return diceRolls;
   }
 }
