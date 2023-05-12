@@ -360,17 +360,26 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     HashMap<Player, Integer> diceRolls = new HashMap<>();
     for (int i = gameState.getActivePlayers().size(); i > 0; i--) {
       diceRolls.put(
-          moveProcessor.getGameController().getGameState().getActivePlayers().poll(), i);
+              moveProcessor.getGameController().getGameState().getActivePlayers().poll(), Dice.rollDice());
     }
+    HashMap<String, Integer> diceRollsString = new HashMap<>();
+    diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
     moveProcessor.getGameController()
-        .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
+            .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
     Player activePlayer = moveProcessor.getGameController().getGameState().getActivePlayers()
-        .peek();
+            .peek();
     moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
     sendFirstGamestate(gameLobby);
+
+    String message = Serializer.serialize(new StandardMessage<HashMap<String, Integer>>(diceRollsString));
+    for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      LOGGER.debug("Send new diceRolls to: " + ch.id());
+      ch.writeAndFlush(new TextWebSocketFrame(message));
+    }
+
     moveProcessor.clearLastMoves();
   }
 
