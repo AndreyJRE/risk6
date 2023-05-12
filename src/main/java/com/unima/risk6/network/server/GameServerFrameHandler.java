@@ -435,8 +435,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     playerController.setPlayer(tutorial.getTutorialState().getCurrentPlayer());
     moveProcessor.setPlayerController(playerController);
     Probabilities.init();
-    CountriesUiConfiguration.configureCountries(tutorial.getTutorialState().getCountries());
     GameConfiguration.setTutorial(tutorial);
+    CountriesUiConfiguration.configureCountries(tutorial.getTutorialState().getCountries());
+    GameConfiguration.setGameState(tutorial.getTutorialState());
 
 
   }

@@ -35,7 +35,6 @@ import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -103,6 +102,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private Button cardsButton;
 
   private Circle notifyCircle;
+  private Tutorial tutorial;
+
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
@@ -118,7 +119,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   public void init() {
-    Tutorial tutorial = GameConfiguration.getTutorial();
+    tutorial = GameConfiguration.getTutorial();
     if (tutorial != null) {
       this.gameState = tutorial.getTutorialState();
     } else {
@@ -137,6 +138,10 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     this.handUi.setHand(hand);
     GameConfiguration.addObserver(this);
     this.addListeners();
+
+    if (tutorial != null) {
+      initTutorial();
+    }
   }
 
   private void initializeGameScene() {
@@ -706,18 +711,20 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       activePlayerUi.setDisplayDeployable(false);
       activePlayerUi.controlDeployableTroops();
     }
-    /*if(gameState.isGameOver()){
-      GameOverScene scene = (GameOverScene) SceneConfiguration.getSceneController()
-          .getSceneBySceneName(SceneName.GAME_OVER);
-      if (scene == null) {
-        scene = new GameOverScene();
-        GameOverSceneController gameOverSceneController = new GameOverSceneController(scene,gameState.getCurrentPlayer().getStatistic(), gameState);
-        scene.setController(gameOverSceneController);
-        sceneController.addScene(SceneName.GAME_OVER, scene);
+    if (tutorial != null && checkIfCurrentPlayerIsMe()) {
+      switch (activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase()) {
+        case CLAIM_PHASE -> {
+          tutorial.updatePlayerClaim();
+          Reinforce reinforce = tutorial.getCurrentClaim();
+          System.out.println(reinforce);
+          if (reinforce != null) {
+            CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
+            countryUi.animateTutorialCountry();
+          }
+        }
+
       }
-      pauseTitleSound();
-      sceneController.activate(SceneName.GAME_OVER);
-    }*/
+    }
     nextPhaseButton.setVisible(
         checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
             != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
@@ -744,7 +751,29 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   public void initTutorial() {
+    for (CountryUi countryUi : countriesUis) {
+      if (countryUi.getCountry().hasPlayer()) {
+        Color colorByPlayer = getColorByPlayer(countryUi.getCountry().getPlayer());
+        countryUi.getCountryPath().setFill(colorByPlayer);
+        countryUi.setColor(colorByPlayer);
+      }
+
+    }
+    tutorial.updatePlayerClaim();
+
+    Reinforce reinforce = tutorial.getCurrentClaim();
+    if (reinforce != null) {
+      CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
+      countryUi.animateTutorialCountry();
+    }
 
   }
+
+  public Color getColorByPlayer(Player player) {
+    return playerUis.stream().filter(p -> p.getPlayer().equals(player)).findFirst().orElse(null)
+        .getPlayerColor();
+  }
+
+
 }
 

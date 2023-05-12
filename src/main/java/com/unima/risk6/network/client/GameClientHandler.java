@@ -101,6 +101,9 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
+            if (g.isGameOver()) {
+              Platform.runLater(() -> SceneConfiguration.gameOverScene(g));
+            }
           }
           case "CHAT_MESSAGE" -> {
             String message = (String) Deserializer.deserializeChatMessage(textFrame.text())
