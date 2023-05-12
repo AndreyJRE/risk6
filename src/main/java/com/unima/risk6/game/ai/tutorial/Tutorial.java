@@ -193,8 +193,8 @@ public class Tutorial {
    */
   private Queue<Attack> createAttacks() {
     Queue<Attack> attacks = new LinkedList<>();
-    attacks.add(new Attack(this.countryMap.get(CountryName.INDONESIA),
-        this.countryMap.get(CountryName.NEW_GUINEA), 3));
+    attacks.add(new Attack(this.countryMap.get(CountryName.NEW_GUINEA),
+        this.countryMap.get(CountryName.INDONESIA), 3));
     return attacks;
   }
 
@@ -205,8 +205,8 @@ public class Tutorial {
    */
   private Queue<Fortify> createFortifies() {
     Queue<Fortify> fortifies = new LinkedList<>();
-    fortifies.add(new Fortify(this.countryMap.get(CountryName.INDONESIA),
-        this.countryMap.get(CountryName.NEW_GUINEA), 2));
+    fortifies.add(new Fortify(this.countryMap.get(CountryName.NEW_GUINEA),
+        this.countryMap.get(CountryName.INDONESIA), 2));
     fortifies.add(new Fortify(this.countryMap.get(CountryName.VENEZUELA),
         this.countryMap.get(CountryName.CENTRAL_AMERICA), 20));
     return fortifies;
