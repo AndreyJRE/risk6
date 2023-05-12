@@ -3,6 +3,7 @@ package com.unima.risk6.gui.configurations;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Objects;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 
@@ -11,7 +12,7 @@ public class ImageConfiguration {
   private static final String LOG_IN_IMAGE = "/com/unima/risk6/pictures/logInBackground.png";
   private static final String WON_IMAGE = "/com/unima/risk6/pictures/wonBackground.png";
   private static final String SINGLEPLAYER_IMAGE = "/com/unima/risk6/pictures/singlePlayerBackground.png";
-  private static final String MULTIPLAYER_IMAGE = "/com/unima/risk6/pictures/multiPlayerBackground.png";
+  private static final String MULTIPLAYER_IMAGE = "/com/unima/risk6/pictures/multiplayerBackground.png";
   private static final String CREATE_ACCOUNT_IMAGE = "/com/unima/risk6/pictures/createAccountBackground.png";
   private static final String OPTIONS_IMAGE = "/com/unima/risk6/pictures/optionsBackground.png";
   private static final String STATISTICS_IMAGE = "/com/unima/risk6/pictures/statisticsBackground.png";
@@ -93,8 +94,7 @@ public class ImageConfiguration {
 
   public static Image initImage(String path) {
     // Load the image into an ImageView
-    Image image = new Image(ImageConfiguration.class.getResource(path).toString());
-    return image;
+    return new Image(Objects.requireNonNull(ImageConfiguration.class.getResource(path)).toString());
   }
 
   public static Media getTitleBackgroundVideo() {
