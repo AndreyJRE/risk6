@@ -12,23 +12,16 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.network.serialization.Deserializer;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
+import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import java.util.ArrayList;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -98,24 +91,29 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           case "GAME_STATE" -> {
             LOGGER.debug("Overwrite GameState with new GameState from Server");
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
-                GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
+                    GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
           }
           case "CHAT_MESSAGE" -> {
             String message = (String) Deserializer.deserializeChatMessage(textFrame.text())
-                .getContent();
+                    .getContent();
             LOGGER.debug("Client got a chat message " + message);
             LobbyConfiguration.setLastChatMessage(message);
+          }
+          case "ORDER" -> {
+            HashMap<String, Integer> hashMap2 = (HashMap<String, Integer>) Deserializer.deserialize(textFrame.text()).getContent();
+            LOGGER.debug("Client got a order message ");
+            //TODO
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
               case "ACCEPT_JOIN_SERVER_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
-                    textFrame.text()).getContent();
+                        textFrame.text()).getContent();
                 LobbyConfiguration.setServerLobby(content);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
-                    != SceneName.SELECT_LOBBY) {
+                        != SceneName.SELECT_LOBBY) {
                   Platform.runLater(SceneConfiguration::joinServerLobbyScene);
                 }
 
