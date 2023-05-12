@@ -21,5 +21,9 @@ public enum ImageName {
   CAVALRY_ICON,
   WILDCARD_ICON,
   PLUS_ICON,
+  FORTIFY_ICON,
+  REINFORCE_ICON,
+
+  SWORD_ICON,
 
 }

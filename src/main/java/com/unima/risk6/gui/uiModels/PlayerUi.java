@@ -90,7 +90,27 @@ public class PlayerUi extends Group {
     iconsPane.getChildren().addAll(amountOfTroops, icon1);
     StackPane.setAlignment(icon1, Pos.CENTER);
 
-    getChildren().addAll(rectangle, ellipse, iconsPane);
+    StackPane playerNameStack = new StackPane();
+    Label userLabel = new Label(player.getUser());
+    Rectangle userRectangle;
+    if (userLabel.getWidth() > ellipse.getRadiusX() * 2 + 15) {
+      userRectangle = new Rectangle(userLabel.getWidth(), userLabel.getHeight() + 20);
+    } else {
+      userRectangle = new Rectangle(ellipse.getRadiusX() * 2 + 15, userLabel.getHeight() + 20);
+    }
+    userRectangle.setFill(Color.WHITE);
+    userRectangle.setStroke(this.getPlayerColor());
+    userRectangle.setStrokeWidth(2);
+    userRectangle.setArcWidth(ellipse.getRadiusX() - 10);
+    userRectangle.setArcHeight(userRectangle.getHeight());
+    userLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
+    playerNameStack.setPrefSize(userRectangle.getWidth(), userRectangle.getHeight());
+    playerNameStack.setLayoutX(0 - ellipse.getRadiusX() - 10);
+    playerNameStack.setLayoutY(ellipse.getRadiusY() - 10);
+    playerNameStack.getChildren().addAll(userRectangle, userLabel);
+    StackPane.setAlignment(userLabel, Pos.CENTER);
+
+    getChildren().addAll(rectangle, ellipse, iconsPane, playerNameStack);
 
     DropShadow dropShadow = new DropShadow();
     dropShadow.setColor(Color.BLACK);

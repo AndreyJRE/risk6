@@ -396,6 +396,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     cardsButton.setGraphic(cardsGroup);
     cardsButton.setStyle("-fx-background-radius: 15px;");
     cardsButton.setFocusTraversable(false);
+    if (tutorial != null) {
+      cardsButton.setVisible(false);
+    }
     cardsButton.setOnAction(event -> showCardsPopup());
 
     bottomPane.getChildren()
@@ -699,9 +702,33 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         case CLAIM_PHASE -> {
           tutorial.updatePlayerClaim();
           Reinforce reinforce = tutorial.getCurrentClaim();
-          System.out.println(reinforce);
           if (reinforce != null) {
             CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
+            countryUi.animateTutorialCountry();
+          }
+        }
+        case REINFORCEMENT_PHASE -> {
+          tutorial.updatePlayerReinforce();
+          Reinforce reinforce = tutorial.getCurrentReinforce();
+          cardsButton.setVisible(tutorial.isHandInEnabled());
+          if (reinforce != null) {
+            CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
+            countryUi.animateTutorialCountry();
+          }
+        }
+        case ATTACK_PHASE -> {
+          tutorial.updatePlayerAttack();
+          Attack attack = tutorial.getCurrentAttack();
+          if (attack != null) {
+            CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
+            countryUi.animateTutorialCountry();
+          }
+        }
+        case FORTIFY_PHASE -> {
+          tutorial.updatePlayerFortify();
+          Fortify fortify = tutorial.getCurrentFortify();
+          if (fortify != null) {
+            CountryUi countryUi = getCountryUiByCountry(fortify.getOutgoing());
             countryUi.animateTutorialCountry();
           }
         }
