@@ -84,7 +84,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     int troopsAffordable = Integer.MIN_VALUE;
     if (winPair.getOutgoing().getAdjacentCountries().stream()
         .allMatch(c -> c.getPlayer().equals(winPair.getOutgoing().getPlayer()))) {
-      troopsAffordable = -winPair.getOutgoing().getTroops();
+      return winPair.createFortify(winPair.getOutgoing().getTroops() - 1);
     } else {
       for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
         if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {

@@ -59,10 +59,9 @@ import java.util.Queue;
  */
 public class MonteCarloTreeSearch {
 
-
   private static int counter = 0;
-  private static final int SIMULATION_COUNT = 40; // best choice is more, but shorter simulations
-  private static final int SIMULATION_TIME_LIMIT = 300;
+  private static final int SIMULATION_COUNT = 200; // best choice is more, but shorter simulations
+  private static final int SIMULATION_TIME_LIMIT = 150;
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -98,6 +97,7 @@ public class MonteCarloTreeSearch {
     MonteCarloNode root = new MonteCarloNode(game, null);
     for (int i = 0; i < SIMULATION_COUNT; i++) {
       System.out.print("i = " + i + " ");
+      counter = 0;
       MonteCarloNode node = select(root);
       boolean advantageous = false;
       double oldStrength = Probabilities.getPlayerStrength(node.getGameState(), player);
@@ -107,6 +107,7 @@ public class MonteCarloTreeSearch {
         advantageous = simulate(node.getGameState(), oldStrength);
       }
       backpropagate(node, advantageous);
+      System.out.printf("Rounds per simulation: %s%n", counter);
     }
     System.out.println();
     return chooseBestMove(root);

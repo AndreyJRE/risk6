@@ -35,7 +35,7 @@ public class EasyBot extends Player implements AiBot {
     super(username);
     playerController = new PlayerController();
     playerController.setPlayer(this);
-    this.attackProbability = 0.8;
+    this.resetAttackProbability();
   }
 
   /**
@@ -73,7 +73,7 @@ public class EasyBot extends Player implements AiBot {
   @Override
   public boolean attackAgain() {
     boolean answer = RNG.nextDouble() < this.attackProbability;
-    this.attackProbability *= 0.6;
+    this.attackProbability *= 0.55;
     return answer;
   }
 
@@ -93,8 +93,8 @@ public class EasyBot extends Player implements AiBot {
 
   @Override
   public Fortify createFortify() {
-    this.attackProbability = 0.8;
-    if (RNG.nextDouble() < 0.25) {
+    this.resetAttackProbability();
+    if (RNG.nextDouble() < 0.175) {
       return null;
     }
     List<CountryPair> decisions = this.playerController.getAllValidFortifies();
@@ -162,6 +162,13 @@ public class EasyBot extends Player implements AiBot {
    */
   private CountryPair getRandomCountryPair(List<CountryPair> decision) {
     return !decision.isEmpty() ? decision.get(RNG.nextInt(decision.size())) : null;
+  }
+
+  /**
+   * Resets the attack probability of the bot to its default value.
+   */
+  private void resetAttackProbability() {
+    this.attackProbability = 0.7;
   }
 
   /**
