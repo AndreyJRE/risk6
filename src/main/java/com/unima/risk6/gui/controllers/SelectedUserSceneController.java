@@ -6,9 +6,11 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBack
 import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
 import java.io.IOException;
@@ -17,11 +19,17 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -41,6 +49,7 @@ public class SelectedUserSceneController {
   private StackPane userStackPane;
   private Label welcomeBack;
   private VBox passwordEntryBox;
+  private PasswordField passwordField;
 
 
   public SelectedUserSceneController(SelectedUserScene selectedUserScene) {
@@ -53,8 +62,8 @@ public class SelectedUserSceneController {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) selectedUserScene.getRoot();
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
-    userImage.setFitHeight(200);
-    userImage.setFitWidth(200);
+    userImage.setFitHeight(260);
+    userImage.setFitWidth(260);
 
     initUserStackPane();
     initElements();
@@ -76,6 +85,25 @@ public class SelectedUserSceneController {
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
 
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECTED_USER_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
     // Add passwordEntryBox to the center of the BorderPane
     root.setCenter(vBox);
   }
@@ -121,15 +149,16 @@ public class SelectedUserSceneController {
     } else {
       StyleConfiguration.showErrorDialog("Incorrect Password",
           "The password you entered is incorrect. Please try again.");
+      passwordField.setText("");
     }
   }
 
 
   private void initElements() {
     Label selectedUserName = new Label(user.getUsername());
-    selectedUserName.setStyle("-fx-font-size: 40");
+    selectedUserName.setStyle("-fx-font-size: 40; -fx-text-fill: white");
 
-    PasswordField passwordField = new PasswordField();
+    passwordField = new PasswordField();
     passwordField.setPromptText("Enter password");
     passwordField.setStyle("-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");
     passwordField.setPrefWidth(470);
@@ -144,8 +173,7 @@ public class SelectedUserSceneController {
 
     welcomeBack = new Label("Welcome Back!");
     welcomeBack.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
-
+        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D; -fx-text-fill: white");
     passwordEntryBox = new VBox(userStackPane, selectedUserName, passwordField,
         loginButton);
     passwordEntryBox.setAlignment(Pos.CENTER);

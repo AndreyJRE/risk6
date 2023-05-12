@@ -37,6 +37,7 @@ class ProbabilitiesTest {
     gameState.setCurrentPlayer(player);
     playerController.setPlayer(player);
     enemyController.setPlayer(enemy);
+    gameState.getCountries().forEach(c -> enemyController.addCountry(c));
     Country brazil = getCountryByName(CountryName.BRAZIL);
     playerController.addCountry(brazil);
     brazil.setTroops(15);
@@ -72,7 +73,8 @@ class ProbabilitiesTest {
 
   @Test
   void findStrongestPlayerTest() {
-    assertEquals(player, Probabilities.findStrongestPlayer(gameState));
+    assertEquals(0.625, Probabilities.getPlayerStrength(gameState, player));
+    assertEquals(0.375, Probabilities.getPlayerStrength(gameState, enemy));
   }
 
   @Test

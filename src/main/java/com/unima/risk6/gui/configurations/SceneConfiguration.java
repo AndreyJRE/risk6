@@ -6,10 +6,12 @@ import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.controllers.MultiplayerLobbySceneController;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.SelectMultiplayerLobbySceneController;
+import com.unima.risk6.gui.controllers.SinglePlayerSettingsSceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
+import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -22,6 +24,7 @@ public class SceneConfiguration {
   private static SceneController sceneController;
   private static double width;
   private static double height;
+  private boolean isFullscreen;
 
   public static void startSceneControllerConfiguration(Stage stage) {
     configureListeners(stage);
@@ -37,6 +40,8 @@ public class SceneConfiguration {
     };
     stage.widthProperty().addListener(stageSizeListener);
     stage.heightProperty().addListener(stageSizeListener);
+
+    stage.setFullScreenExitHint("");
   }
 
   public static void startGame() {
@@ -51,7 +56,7 @@ public class SceneConfiguration {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
-    sceneController.getStage().setFullScreen(true);
+    sceneController.getStage().setMaximized(true);
     gameSceneController.showOrderPopup();
     sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
       event.consume();
@@ -104,6 +109,20 @@ public class SceneConfiguration {
     sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
   }
 
+  public static void startSinglePlayer() {
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene, false);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+  }
+
   public static SceneController getSceneController() {
     return sceneController;
   }
@@ -114,5 +133,19 @@ public class SceneConfiguration {
 
   public static double getHeight() {
     return height;
+  }
+
+  public static void joinTutorialLobbyScene() {
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    if (scene == null) {
+      scene = new SinglePlayerSettingsScene();
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene, true);
+      scene.setController(singlePlayerSettingsSceneController);
+      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 }

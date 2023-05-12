@@ -5,14 +5,25 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
+import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
-import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
 import javafx.animation.FillTransition;
@@ -30,11 +41,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -44,20 +56,12 @@ import javafx.util.Duration;
 public class TitleSceneController implements Initializable {
 
   @FXML
+  public Slider volumeSlider;
+  @FXML
   private AnchorPane root;
 
   @FXML
-  private ImageView backgroundImageView;
-
-  @FXML
-  private VBox vBox;
-
-  @FXML
-  private HBox hBox;
-
-  @FXML
-  private VBox titleBox;
-
+  private MediaView backgroundVideoView;
   @FXML
   private Label titleLabel;
 
@@ -66,6 +70,8 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private Button multiPlayerButton;
+  @FXML
+  private Button tutorialButton;
 
   @FXML
   private Button optionsButton;
@@ -77,11 +83,14 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private Circle trigger;
+  @FXML
+  private TextField ipLabel;
 
-  private BooleanProperty switchedOn = new SimpleBooleanProperty(false);
-  private TranslateTransition translateAnimation = new TranslateTransition(Duration.seconds(0.25));
-  private FillTransition fillAnimation = new FillTransition(Duration.seconds(0.25));
-  private ParallelTransition animation = new ParallelTransition(translateAnimation, fillAnimation);
+  private BooleanProperty switchedOn;
+  private TranslateTransition translateAnimation;
+  private FillTransition fillAnimation;
+  private ParallelTransition animation;
+  private GameLobby gameLobby;
 
 
   private SceneController sceneController;
@@ -90,6 +99,28 @@ public class TitleSceneController implements Initializable {
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    applyButtonStyle(singlePlayerButton);
+    applyButtonStyle(multiPlayerButton);
+    applyButtonStyle(tutorialButton);
+    applyButtonStyle(optionsButton);
+    applyButtonStyle(quitButton);
+    volumeSlider.setValue(SoundConfiguration.getVolume() * 100);
+    volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+      SoundConfiguration.setVolume(newValue.doubleValue() / 100.0);
+    });
+    MediaPlayer mediaPlayer = new MediaPlayer(ImageConfiguration.getTitleBackgroundVideo());
+    backgroundVideoView.setMediaPlayer(mediaPlayer);
+    mediaPlayer.setOnEndOfMedia(() -> {
+      // Das Video von vorne beginnen
+      mediaPlayer.seek(Duration.ZERO);
+    });
+    mediaPlayer.play();
+    backgroundVideoView.fitWidthProperty().bind(root.widthProperty());
+    backgroundVideoView.fitHeightProperty().bind(root.heightProperty());
+    switchedOn = new SimpleBooleanProperty(false);
+    translateAnimation = new TranslateTransition(Duration.seconds(0.25));
+    fillAnimation = new FillTransition(Duration.seconds(0.25));
+    animation = new ParallelTransition(translateAnimation, fillAnimation);
     userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
@@ -102,8 +133,6 @@ public class TitleSceneController implements Initializable {
     animateTitleLabel();
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefWidth(SceneConfiguration.getWidth());
-    backgroundImageView.fitWidthProperty().bind(root.widthProperty());
-    backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     // Set the style of the buttons
     applyButtonStyle(singlePlayerButton);
     applyButtonStyle(multiPlayerButton);
@@ -116,7 +145,7 @@ public class TitleSceneController implements Initializable {
     background.setOnMouseClicked(event -> toggleButtonClicked());
     trigger.setOnMouseClicked(e -> toggleButtonClicked());
     switchedOn.addListener((obs, oldState, newState) -> {
-      boolean isOn = newState.booleanValue();
+      boolean isOn = newState;
       if (isOn) {
         NetworkConfiguration.startGameServer();
       } else {
@@ -131,6 +160,42 @@ public class TitleSceneController implements Initializable {
 
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
+    int multipleIpAd = 0;
+    if (!isOn) {
+      StringBuilder ipS = new StringBuilder();
+      try {
+        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface netint : Collections.list(nets)) {
+          Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+            String ip = inetAddress.getHostAddress();
+            if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
+                && inetAddress.getAddress().length == 4) {
+              ipS.append(ip);
+              ipS.append(",");
+              multipleIpAd++;
+            }
+          }
+        }
+      } catch (SocketException e) {
+        throw new RuntimeException(e);
+      }
+      System.out.println(ipS.toString());
+      ipLabel.setStyle(
+          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #ffffff");
+      if (multipleIpAd > 1) {
+        ipLabel.setText("Your IP Addresses: " + Arrays.toString(ipS.toString().split(",")));
+      } else {
+        ipLabel.setText("Your IP Address: " + Arrays.toString(ipS.toString().split(",")));
+      }
+      ipLabel.setEditable(false);
+      ipLabel.setPrefWidth(500.0);
+    } else {
+      ipLabel.setStyle(
+          "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #ffffff");
+      ipLabel.setText("");
+      ipLabel.setEditable(false);
+    }
     switchedOn.set(!isOn);
     translateAnimation.setToX(isOn ? 0 : 100 - 55);
     fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
@@ -141,29 +206,25 @@ public class TitleSceneController implements Initializable {
   // Define the event handler for the single player button
 
   @FXML
-  private void handleSinglePlayer() {
+  private void handleSinglePlayer() throws InterruptedException {
     NetworkConfiguration.startGameServer();
+    Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
-    if (scene == null) {
-      scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
-      scene.setController(singlePlayerSettingsSceneController);
-      sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
-    }
-    pauseTitleSound();
-    sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+
+    Thread.sleep(200);
+    GameConfiguration.setMyGameUser(
+        new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
+    gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
+        false, 0, GameConfiguration.getMyGameUser());
+    gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
+    LobbyConfiguration.sendCreateLobby(gameLobby);
   }
 
   // Define the event handler for the multi player button
 
   @FXML
   private void handleMultiPlayer() {
-    //TODO: Implement MultiPlayer
-
     JoinOnlineScene scene = (JoinOnlineScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.JOIN_ONLINE);
     if (scene == null) {
@@ -176,7 +237,24 @@ public class TitleSceneController implements Initializable {
     sceneController.activate(SceneName.JOIN_ONLINE);
 
   }
-  // Define the event handler for the options button
+
+  @FXML
+  private void handleTutorial() throws InterruptedException {
+    //TODO: Play Tutorial
+    NetworkConfiguration.startGameServer();
+    Thread.sleep(200);
+    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.startGameClient();
+    Thread.sleep(200);
+    GameConfiguration.setMyGameUser(
+        new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
+    gameLobby = new GameLobby("Single Player Lobby", 2, SessionManager.getUser().getUsername(),
+        false, 0, GameConfiguration.getMyGameUser());
+    gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
+    gameLobby.getBots().add("Johnny Test");
+    LobbyConfiguration.sendTutorialCreateLobby(gameLobby);
+  }
+
 
   @FXML
   private void handleOptions() {
@@ -232,7 +310,4 @@ public class TitleSceneController implements Initializable {
     parallelTransition.play();
   }
 
-  public BooleanProperty switchedOnProperty() {
-    return switchedOn;
-  }
 }

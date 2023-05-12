@@ -4,8 +4,10 @@ import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
@@ -15,12 +17,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -59,10 +67,28 @@ public class LoginSceneController {
     Button createButton = createCustomCreateButton();
     Label selectUser = new Label("Select User Profile");
     selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 80px; "
-        + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+        + "-fx-font-weight: bold; -fx-text-fill: white;");
     root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(75);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.LOGIN_BACKGROUND);
+    javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(originalImage);
+
+    // Set the opacity
+    imageView.setOpacity(0.9);
+
+    // Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
   }
 
   private GridPane createUsersGridPanePage(List<User> usersPage) {
@@ -71,23 +97,20 @@ public class LoginSceneController {
     usersGridPane.setVgap(10);
     usersGridPane.setAlignment(Pos.CENTER);
 
-    ImageView riskImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/risk.png").toString()));
-
     int column = 0;
     int row = 1;
 
     for (User user : usersPage) {
       ImageView userImage = new ImageView(
           new Image(getClass().getResource(user.getImagePath()).toString()));
-      userImage.setFitHeight(120);
-      userImage.setFitWidth(120);
+      userImage.setFitHeight(150);
+      userImage.setFitWidth(150);
 
       // create a circle with a black outline and a grey fill
       Circle circle = new Circle();
       circle.setRadius(75);
       circle.setStroke(Color.BLACK);
-      circle.setFill(Color.LIGHTGRAY);
+      circle.setFill(Color.WHITESMOKE);
       circle.setStrokeWidth(3.0);
 
       // create a clip for the user image
@@ -153,15 +176,15 @@ public class LoginSceneController {
     Button createButton = new Button("New Account needed?");
     // set the button's properties
     createButton.setAlignment(Pos.CENTER);
-    createButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #000000; "
+    createButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; "
         + "-fx-font-style: italic; -fx-font-size: 24; -fx-underline: false");
 
 // Hinzufügen von Hover-Style für Textfarbe und Unterstreichung
     createButton.setOnMouseEntered(e -> createButton.setStyle("-fx-background-color: transparent;"
-        + " -fx-text-fill: #0000FF; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
+        + " -fx-text-fill: white; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
         + "24"));
     createButton.setOnMouseExited(e -> createButton.setStyle("-fx-background-color: transparent; "
-        + "-fx-text-fill: #000000; -fx-underline: false; -fx-font-style: italic;  -fx-font-size: "
+        + "-fx-text-fill: white; -fx-underline: false; -fx-font-style: italic;  -fx-font-size: "
         + "24"));
 
     // add an event handler for the button

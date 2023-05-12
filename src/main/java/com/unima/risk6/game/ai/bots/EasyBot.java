@@ -35,7 +35,7 @@ public class EasyBot extends Player implements AiBot {
     super(username);
     playerController = new PlayerController();
     playerController.setPlayer(this);
-    this.attackProbability = 0.8;
+    this.resetAttackProbability();
   }
 
   /**
@@ -54,7 +54,7 @@ public class EasyBot extends Player implements AiBot {
   public Reinforce claimCountry() {
     List<Country> unclaimed = this.currentGameState.getCountries().stream()
         .filter(country -> !country.hasPlayer()).toList();
-    if (unclaimed.size() == 0) {
+    if (unclaimed.isEmpty()) {
       return new Reinforce(this.getRandomCountryFromSet(this.getCountries()), 1);
     } else {
       return new Reinforce(unclaimed.get(RNG.nextInt(unclaimed.size())), 1);
@@ -73,7 +73,7 @@ public class EasyBot extends Player implements AiBot {
   @Override
   public boolean attackAgain() {
     boolean answer = RNG.nextDouble() < this.attackProbability;
-    this.attackProbability *= 0.6;
+    this.attackProbability *= 0.55;
     return answer;
   }
 
@@ -93,8 +93,8 @@ public class EasyBot extends Player implements AiBot {
 
   @Override
   public Fortify createFortify() {
-    this.attackProbability = 0.8;
-    if (RNG.nextDouble() < 0.25) {
+    this.resetAttackProbability();
+    if (RNG.nextDouble() < 0.175) {
       return null;
     }
     List<CountryPair> decisions = this.playerController.getAllValidFortifies();
@@ -161,11 +161,14 @@ public class EasyBot extends Player implements AiBot {
    * @return A randomly chosen CountryPair from the list.
    */
   private CountryPair getRandomCountryPair(List<CountryPair> decision) {
-    if (decision.size() == 0) {
-      return null;
-    } else {
-      return decision.get(RNG.nextInt(decision.size()));
-    }
+    return !decision.isEmpty() ? decision.get(RNG.nextInt(decision.size())) : null;
+  }
+
+  /**
+   * Resets the attack probability of the bot to its default value.
+   */
+  private void resetAttackProbability() {
+    this.attackProbability = 0.7;
   }
 
   /**

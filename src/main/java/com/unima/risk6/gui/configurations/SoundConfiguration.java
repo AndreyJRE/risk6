@@ -1,6 +1,7 @@
 package com.unima.risk6.gui.configurations;
 
 import java.util.Objects;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -16,8 +17,8 @@ public class SoundConfiguration {
 
   private static final String YOUR_TURN_SOUND_PATH = "/com/unima/risk6/sounds/your_turn_sound.mp3";
 
-  private static final String ALARM_FOR_START_GAME = "/com/unima/risk6/sounds/alarm_for_game_start"
-      + ".mp3";
+  private static final String ALARM_FOR_START_GAME =
+      "/com/unima/risk6/sounds/alarm_for_game_start" + ".mp3";
   private static final String TROOPS_MOVE_SOUND = "/com/unima/risk6/sounds/marching_1.mp3";
   private static MediaPlayer titleSound;
 
@@ -30,9 +31,11 @@ public class SoundConfiguration {
 
   private static AudioClip troopsMoveSound;
 
+  private static final SimpleDoubleProperty VOLUME = new SimpleDoubleProperty(0.1);
+
 
   public static void playTitleSound() {
-    //titleSound.play();
+    titleSound.play();
   }
 
   public static void loadSounds() {
@@ -40,32 +43,43 @@ public class SoundConfiguration {
         Objects.requireNonNull(SoundConfiguration.class.getResource(TITLE_SOUND_PATH))
             .toExternalForm());
     titleSound = new MediaPlayer(media);
-    titleSound.setVolume(0.4);
+    titleSound.setVolume(VOLUME.get());
     titleSound.setStartTime(Duration.ZERO);
     titleSound.setStopTime(Duration.seconds(10));
     titleSound.setCycleCount(MediaPlayer.INDEFINITE);
+    titleSound.volumeProperty().bind(VOLUME);
     rollDiceSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(ROLL_DICE_SOUND_PATH))
             .toExternalForm());
+    rollDiceSound.setVolume(VOLUME.get());
+    rollDiceSound.volumeProperty().bind(VOLUME);
     inGameMusic = new MediaPlayer(new Media(
         Objects.requireNonNull(SoundConfiguration.class.getResource(IN_GAME_MUSIC_PATH))
             .toExternalForm()));
     inGameMusic.setCycleCount(MediaPlayer.INDEFINITE);
-    inGameMusic.setVolume(0.4);
+    inGameMusic.setVolume(VOLUME.get());
+    VOLUME.addListener((observable, oldValue, newValue) -> {
+      inGameMusic.setVolume(newValue.doubleValue() / 3.0);
+    });
     yourTurnSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(YOUR_TURN_SOUND_PATH))
             .toExternalForm());
-    yourTurnSound.setVolume(0.5);
+    yourTurnSound.setVolume(VOLUME.get());
+    yourTurnSound.volumeProperty().bind(VOLUME);
     startGameSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(ALARM_FOR_START_GAME))
             .toExternalForm());
-    startGameSound.setVolume(0.3);
-    troopsMoveSound = new AudioClip(Objects.requireNonNull(SoundConfiguration.class
-        .getResource(TROOPS_MOVE_SOUND)).toExternalForm());
-    troopsMoveSound.setVolume(0.4);
+    startGameSound.setVolume(VOLUME.get());
+    startGameSound.volumeProperty().bind(VOLUME);
+    troopsMoveSound = new AudioClip(
+        Objects.requireNonNull(SoundConfiguration.class.getResource(TROOPS_MOVE_SOUND))
+            .toExternalForm());
+    troopsMoveSound.setVolume(VOLUME.get());
+    troopsMoveSound.volumeProperty().bind(VOLUME);
 
 
   }
+
 
   public static void playTroopsMoveSound() {
     troopsMoveSound.play();
@@ -76,15 +90,15 @@ public class SoundConfiguration {
   }
 
   public static void playInGameMusic() {
-    // inGameMusic.play();
+    inGameMusic.play();
   }
 
   public static void playYourTurnSound() {
-    //yourTurnSound.play();
+    yourTurnSound.play();
   }
 
   public static void playStartGameSound() {
-    //startGameSound.play();
+    startGameSound.play();
   }
 
 
@@ -96,5 +110,12 @@ public class SoundConfiguration {
     rollDiceSound.play();
   }
 
+  public static double getVolume() {
+    return VOLUME.get();
+  }
+
+  public static void setVolume(double volume) {
+    SoundConfiguration.VOLUME.set(volume);
+  }
 
 }

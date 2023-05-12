@@ -100,7 +100,7 @@ public class GameLobbyChannels {
   }
 
   public boolean containsUser(UserDto userDto) {
-    return users.containsKey(userDto);
+    return users.keySet().stream().anyMatch(x -> x.equals(userDto));
   }
 
   public BiMap<UserDto, Channel> getUsers() {

@@ -25,7 +25,6 @@ import java.util.ArrayList;
 public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     JsonDeserializer<GameState> {
 
-  private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countries.json";
   private GameState gameState;
 
   public GameStateTypeAdapter(GameState gameState) {
@@ -72,7 +71,6 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     jsonObject.add("deck", deckJsonArray);
     jsonObject.addProperty("isGameOver", gameState.isGameOver());
     jsonObject.addProperty("chatEnabled", gameState.isChatEnabled());
-    jsonObject.addProperty("phaseTime", gameState.getPhaseTime());
 
     return jsonObject;
   }
@@ -105,9 +103,7 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
         }.getType());
     boolean isGameOver = jsonObject.get("isGameOver").getAsBoolean();
     boolean chatEnabled = jsonObject.get("chatEnabled").getAsBoolean();
-    int phaseTime = jsonObject.get("phaseTime").getAsInt();
 
-    gameState.setPhaseTime(phaseTime);
     gameState.setChatEnabled(chatEnabled);
     gameState.setNumberOfHandIns(numberOfHandIns);
 

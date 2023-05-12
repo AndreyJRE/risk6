@@ -112,13 +112,6 @@ public class GameState {
     isGameOver = gameOver;
   }
 
-  public int getPhaseTime() {
-    return phaseTime;
-  }
-
-  public void setPhaseTime(int phaseTime) {
-    this.phaseTime = phaseTime;
-  }
 
   public boolean isChatEnabled() {
     return chatEnabled;

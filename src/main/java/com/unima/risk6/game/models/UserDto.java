@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class UserDto {
 
-  private final String username;
+  private String username;
   private final double winLossRatio;
 
   private final double hoursPlayed;
@@ -94,6 +94,10 @@ public class UserDto {
     }
     UserDto userDto = (UserDto) o;
     return Objects.equals(username, userDto.username);
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
 }

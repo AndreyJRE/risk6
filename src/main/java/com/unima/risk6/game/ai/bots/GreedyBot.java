@@ -43,9 +43,9 @@ public abstract class GreedyBot extends Player implements AiBot {
 
   @Override
   public void setGameState(GameState gameState) {
-    this.allContinents = new ArrayList<>();
+    this.allContinents.clear();
     this.allContinents.addAll(gameState.getContinents());
-    this.allCountries = new ArrayList<>();
+    this.allCountries.clear();
     this.allCountries.addAll(gameState.getCountries());
   }
 
@@ -59,6 +59,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     playerController = new PlayerController();
     playerController.setPlayer(this);
     this.allContinents = new ArrayList<>();
+    this.allCountries = new ArrayList<>();
   }
 
   /**
@@ -71,6 +72,7 @@ public abstract class GreedyBot extends Player implements AiBot {
     playerController = new PlayerController();
     playerController.setPlayer(this);
     this.allContinents = new ArrayList<>();
+    this.allCountries = new ArrayList<>();
   }
 
   public abstract List<Reinforce> createAllReinforcements();
@@ -80,14 +82,20 @@ public abstract class GreedyBot extends Player implements AiBot {
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
     int troopsAffordable = Integer.MIN_VALUE;
-    for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
-      if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
-        int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
-        if (diff > troopsAffordable) {
-          troopsAffordable = diff;
+    if (winPair.getOutgoing().getAdjacentCountries().stream()
+        .allMatch(c -> c.getPlayer().equals(winPair.getOutgoing().getPlayer()))) {
+      return winPair.createFortify(winPair.getOutgoing().getTroops() - 1);
+    } else {
+      for (Country adj : winPair.getOutgoing().getAdjacentCountries()) {
+        if (!adj.getPlayer().equals(winPair.getOutgoing().getPlayer())) {
+          int diff = this.calculateTroopWeakness(winPair.getOutgoing(), adj);
+          if (diff > troopsAffordable) {
+            troopsAffordable = diff;
+          }
         }
       }
     }
+
     if (troopsAffordable == Integer.MIN_VALUE) {
       troopsAffordable = 1;
     }

@@ -10,13 +10,23 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
+import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.*;
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.*;
+import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.ServerLobby;
+import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
@@ -59,7 +69,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
-
 
     if (frame instanceof TextWebSocketFrame) {
       String request = ((TextWebSocketFrame) frame).text();
@@ -154,12 +163,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
                   if (gameLobbyChannels.containsUser(userDto)) {
                     LOGGER.error("User already in the Lobby");
+                    sendDropMessage(ctx.channel(), ConnectionActions.DROP_USER_SERVER_LOBBY,
+                        "User already in the Lobby");
                   } else {
                     gameLobbyChannels.putUsers(userDto, ctx.channel());
                     NetworkConfiguration.getServerLobby().getUsers()
                         .add(userDto);
+                    sendServerLobby(NetworkConfiguration.getServerLobby());
                   }
-                  sendServerLobby(NetworkConfiguration.getServerLobby());
                 }
                 case JOIN_GAME_LOBBY -> {
                   LOGGER.debug(
@@ -183,6 +194,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                         "The GameLobby is full");
                   }
                 }
+                case CREATE_TUTORIAL_LOBBY -> {
+                  LOGGER.debug(
+                      "At CREATE_TUTORIAL_GAME_LOBBY" + connectionMessage.getContent()
+                          .getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
+                  sendCreatedTutorialGameLobby(gameLobby);
+                }
                 case JOIN_BOT_GAME_LOBBY -> {
                   LOGGER.debug(
                       "At JOIN_BOT_GAME_LOBBY " + connectionMessage.getContent()
@@ -190,6 +209,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
+                  System.out.println(gameLobby);
                   String bot = gameLobby.getBots().stream()
                       .filter(x -> !gameLobbyFromServer.getBots().contains(x))
                       .findFirst().get();
@@ -198,6 +218,21 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendGameLobby(gameLobbyFromServer);
                   sendUpdatedServerLobby(serverLobby);
 
+                }
+                case REMOVE_BOT_FROM_LOBBY -> {
+                  LOGGER.debug(
+                      "At REMOVE_BOT_FROM_LOBBY " + connectionMessage.getContent()
+                          .getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
+                      NetworkConfiguration.getServerLobby());
+                  String bot = gameLobbyFromServer.getBots().stream()
+                      .filter(x -> !gameLobby.getBots().contains(x))
+                      .findFirst().get();
+                  gameLobbyFromServer.getBots().remove(bot);
+                  ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
+                  sendGameLobby(gameLobbyFromServer);
+                  sendUpdatedServerLobby(serverLobby);
                 }
                 case START_GAME -> {
                   //TODO MOVE_CONTROLLER
@@ -262,6 +297,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                       gameLobby);
 
                 }
+                case START_TUTORIAL -> {
+                  LOGGER.debug(
+                      "At START_TUTORIAL" + connectionMessage.getContent()
+                          .getClass());
+                  GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
+                  GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
+                      NetworkConfiguration.getServerLobby());
+                  moveProcessor = gameLobbyChannels.createMoveProcessor(ctx.channel());
+                  processStartTutorial(myServerGameLobby);
+                }
                 default -> LOGGER.error("Server received a faulty connection message");
               }
             } catch (NullPointerException ignored) {
@@ -280,6 +325,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       throw new UnsupportedOperationException(message);
     }
 
+  }
+
+  private void sendCreatedTutorialGameLobby(GameLobby gameLobby) {
+    String serialized1 = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_TUTORIAL_CREATE_LOBBY, gameLobby));
+    for (Channel channel : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      LOGGER.debug("Send game lobby to : " + channel.id());
+      channel.writeAndFlush(new TextWebSocketFrame(serialized1));
+
+    }
   }
 
   private void sendGameOver(ChannelGroup channelGroup) {
@@ -348,11 +403,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             return (AiBot) new HardBot(x);
           }
         }).toList());
-    System.out.println(gameState.getActivePlayers());
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
-    gameState.setPhaseTime(gameLobby.getPhaseTime());
     moveProcessor.setGameController(new GameController(gameState));
     moveProcessor.setDeckController(new DeckController(gameState.getDeck()));
     PlayerController playerController = new PlayerController();
@@ -360,14 +413,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     HashMap<Player, Integer> diceRolls = new HashMap<>();
     for (int i = gameState.getActivePlayers().size(); i > 0; i--) {
       diceRolls.put(
-              moveProcessor.getGameController().getGameState().getActivePlayers().poll(), Dice.rollDice());
+          moveProcessor.getGameController().getGameState().getActivePlayers().poll(), i);
     }
     HashMap<String, Integer> diceRollsString = new HashMap<>();
     diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
     moveProcessor.getGameController()
-            .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
+        .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
     Player activePlayer = moveProcessor.getGameController().getGameState().getActivePlayers()
-            .peek();
+        .peek();
     moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
@@ -383,6 +436,21 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
+  private void processStartTutorial(GameLobby myServerGameLobby) {
+    Tutorial tutorial = new Tutorial(myServerGameLobby.getUsers().get(0).getUsername());
+    moveProcessor.setGameController(new GameController(tutorial.getTutorialState()));
+    moveProcessor.setDeckController(new DeckController(tutorial.getTutorialState().getDeck()));
+    PlayerController playerController = new PlayerController();
+    playerController.setPlayer(tutorial.getTutorialState().getCurrentPlayer());
+    moveProcessor.setPlayerController(playerController);
+    Probabilities.init();
+    CountriesUiConfiguration.configureCountries(tutorial.getTutorialState().getCountries());
+    GameConfiguration.setTutorial(tutorial);
+
+
+  }
+
+
   protected void sendGameLobby(GameLobby gameLobby) {
     String serializedGameLobby = Serializer.serialize(
         new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_GAME_LOBBY, gameLobby));
@@ -392,10 +460,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  public void sendDropMessage(Channel channel, ConnectionActions connectionActions, String string) {
-    channel.writeAndFlush(new TextWebSocketFrame(
-        Serializer.serialize(new ConnectionMessage<String>(connectionActions, string))));
-  }
 
   public void sendChatMessage(Channel channel, String request) {
     ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
@@ -414,7 +478,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   protected void sendUpdatedServerLobby(ServerLobby serverLobby) {
     String serialized = Serializer.serialize(
-            new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
     for (Channel ch : channels) {
       LOGGER.debug("Send updated server lobby to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(serialized));
@@ -446,6 +510,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
         }
         case REINFORCEMENT_PHASE -> {
+          processBotHandIn(channelGroup);
+          Thread.sleep(1500);
           processBotReinforcementPhase(aiBot, channelGroup, player);
           Thread.sleep(3000);
           processBotAttackPhase(aiBot, channelGroup, player);
@@ -471,8 +537,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
-    processBotHandIn(channelGroup);
-    Thread.sleep(1000);
+    player.setDeployableTroops( // to ensure numbers are right
+        moveProcessor.getPlayerController().getPlayer().getDeployableTroops());
     List<Reinforce> reinforces = aiBot.createAllReinforcements();
     reinforces.stream().filter(x -> x.getToAdd() > 0).forEach(x -> {
       moveProcessor.processReinforce(x);
@@ -483,7 +549,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
-
     });
     moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
     sendGamestate(channelGroup);
@@ -517,12 +582,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
+    boolean quitEarly = false;
     do {
       CountryPair attack = aiBot.createAttack();
       if (attack == null) {
         moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
         sendGamestate(channelGroup);
         moveProcessor.clearLastMoves();
+        quitEarly = true;
       } else {
         Attack attack1;
         do {
@@ -534,7 +601,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         } while (!attack1.getHasConquered()
             && attack1.getAttackingCountry().getTroops() >= 2);
         aiBot.setGameState(moveProcessor.getGameController().getGameState());
-
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
           sendGameOver(channelGroup);
           break;
@@ -554,9 +620,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         }
       }
     } while (aiBot.attackAgain());
-    moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
-    sendGamestate(channelGroup);
-    moveProcessor.clearLastMoves();
+    if (!quitEarly) {
+      moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+      sendGamestate(channelGroup);
+      moveProcessor.clearLastMoves();
+    }
   }
 
   @Override
@@ -566,6 +634,12 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
+  public void sendDropMessage(Channel channel, ConnectionActions connectionActions, String string) {
+    channel.writeAndFlush(new TextWebSocketFrame(
+        Serializer.serialize(new ConnectionMessage<String>(connectionActions, string))));
+  }
+
+  //TODO Handle verbindungsabbruch
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     channels.add(ctx.channel());

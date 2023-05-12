@@ -93,7 +93,6 @@ public class MoveProcessor {
         countryToReinforce.setTroops(countryToReinforce.getTroops() + reinforce.getToAdd());
         currentPlayer.setDeployableTroops(
             currentPlayer.getDeployableTroops() - reinforce.getToAdd());
-        this.updateInGameStatistics();
       }
       gameController.addLastMove(reinforce);
     } else {
@@ -114,6 +113,7 @@ public class MoveProcessor {
       }
       throw new InvalidMoveException("The Reinforce is not valid because of unexpected Situation");
     }
+    this.updateInGameStatistics();
   }
 
   /**
@@ -174,7 +174,7 @@ public class MoveProcessor {
         if (playerController.getNumberOfCountries() == 0) {
           gameController.removeLostPlayer(defender);
         }
-        this.updateInGameStatistics();
+
       }
       playerController.setPlayer(attacker);
     } else {
@@ -197,6 +197,7 @@ public class MoveProcessor {
       }
 
     }
+    this.updateInGameStatistics();
 
   }
 
@@ -251,7 +252,7 @@ public class MoveProcessor {
 
     //Checks if HandIn is valid.
     if (gameController.getCurrentPlayer().getCurrentPhase().equals(REINFORCEMENT_PHASE)
-        && handController.isExchangeable()) {
+        && handController.isExchangeable(handController.getHand().getSelectedCards())) {
       deckController.addHandIn(handIn.getCards());
       gameController.addLastMove(handIn);
       //Adds the deployable troops according to the number of hand in.

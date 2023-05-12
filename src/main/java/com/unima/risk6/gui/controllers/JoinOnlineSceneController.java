@@ -7,23 +7,27 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDia
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
-import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
-import java.util.List;
-import java.util.Optional;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -59,6 +63,26 @@ public class JoinOnlineSceneController {
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
+
     root.setCenter(centralBox);
     root.setLeft(backButton);
 
@@ -78,7 +102,7 @@ public class JoinOnlineSceneController {
     vBox.setAlignment(Pos.CENTER);
     vBox.setSpacing(22);
     vBox.setStyle(
-        "-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+        "-fx-opacity:0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     AnchorPane.setTopAnchor(vBox, 0.0);
     AnchorPane.setRightAnchor(vBox, 0.0);
     AnchorPane.setBottomAnchor(vBox, 0.0);
@@ -98,6 +122,7 @@ public class JoinOnlineSceneController {
     TextField portTextField = new TextField();
     portTextField.setPrefSize(800, 40);
     portTextField.setFont(Font.font(18));
+    portTextField.setText("8080");
     portTextField.setPromptText("Enter Port");
     portTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
@@ -134,7 +159,12 @@ public class JoinOnlineSceneController {
 
     anchorPane.getChildren().add(vBox);
 
-    joinButton.setOnMouseClicked(
+    ipAdressTextField.setOnAction(
+        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
+    portTextField.setOnAction(
+        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
+
+    joinButton.setOnAction(
         e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
 
     return anchorPane;
@@ -150,6 +180,8 @@ public class JoinOnlineSceneController {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
+        showErrorDialog("Error",
+            "Failed to connect to Server. Please correct your inputs if necessary.");
         throw new RuntimeException(e);
       }
       i++;
@@ -163,57 +195,15 @@ public class JoinOnlineSceneController {
           DatabaseConfiguration.getGameStatisticService()
               .getAllStatisticsByUserId(SessionManager.getUser().getId()));
       GameConfiguration.setMyGameUser(userDto);
+      try {
+        Thread.sleep(200);
+      } catch (InterruptedException e) {
+        showErrorDialog("Error",
+            "Failed to connect to Server. Please correct your inputs if necessary.");
+        throw new RuntimeException(e);
+      }
       LobbyConfiguration.sendJoinServer(userDto);
 
     }
-    //TODO Rework this maybe
-   /* String username = SessionManager.getUser().getUsername();
-    ServerLobby serverLobby = LobbyConfiguration.getServerLobby();
-    List<UserDto> users = serverLobby.getUsers();
-    for (UserDto userDto : users) {
-      if (userDto.getUsername().equals(username)) {
-        usernameExists = true;
-        break;
-      }
-    }
-    if (usernameExists) {
-      String newUserName = handleUsernameExists("Your username " + username
-              + " already exists in this lobby. Please select a unique username.", "New username",
-          "Enter your unique username: ");
-      SessionManager.getUser().setUsername(newUserName);
-    } */
-  }
-
-  private String handleUsernameExists(String problem, String title, String body) {
-    Alert alert = new Alert(Alert.AlertType.WARNING, problem,
-        ButtonType.OK);
-    boolean exists = false;
-    String newUsername = "";
-    alert.showAndWait();
-    ServerLobby serverLobby = LobbyConfiguration.getServerLobby();
-    List<UserDto> users = serverLobby.getUsers();
-    if (alert.getResult() == ButtonType.OK) {
-      TextInputDialog dialog = new TextInputDialog();
-      dialog.setTitle(title);
-      dialog.setHeaderText(null);
-      dialog.setContentText(body);
-      Optional<String> result = dialog.showAndWait();
-      if (result.isPresent()) {
-        for (UserDto userDto : users) {
-          if (userDto.getUsername().equals(result.get())) {
-            exists = true;
-            break;
-          }
-        }
-        if (exists) {
-          newUsername = handleUsernameExists("Your username " + result.get()
-                  + " already exists in this lobby. Please select a unique username.", "New username",
-              "Enter your unique username for this lobby: ");
-        } else {
-          newUsername = result.get();
-        }
-      }
-    }
-    return newUsername;
   }
 }

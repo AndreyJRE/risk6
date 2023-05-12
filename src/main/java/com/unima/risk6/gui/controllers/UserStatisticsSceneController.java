@@ -5,17 +5,25 @@ import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.services.GameStatisticService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
 import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -38,8 +46,8 @@ public class UserStatisticsSceneController {
   private GameStatisticRepository gameStatisticRepository;
   private final GameStatisticService gameStatisticService;
   private GridPane statisticsGridPane;
-  private String numberStyle = "-fx-font-size: 26px;";
-  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
+  private String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-text-fill: white";
+  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
 
 
   public UserStatisticsSceneController(UserStatisticsScene userStatisticsScene) {
@@ -57,6 +65,25 @@ public class UserStatisticsSceneController {
     initUserStackPane();
     initGridPane();
     initElements();
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
   }
 
   private void initElements() {
@@ -70,7 +97,8 @@ public class UserStatisticsSceneController {
     // Initialize the user name TextField
     Label userName = new Label(user.getUsername());
     userName.setAlignment(Pos.CENTER);
-    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px;");
+    userName.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
 
     // Wrap the userNameField in an HBox to center it
     HBox userNameFieldContainer = new HBox(userName);
@@ -110,14 +138,24 @@ public class UserStatisticsSceneController {
     numberCountriesLost.setStyle(numberStyle);
     numberTroopsLost.setStyle(numberStyle);
     numberTroopsWon.setStyle(numberStyle);
-    if (!statisticList.isEmpty()) {
+    int i = 0;
+    int intCountriesWon = 0;
+    int intCountriesLost = 0;
+    int intTroopsWon = 0;
+    int intTroopsLost = 0;
+
+    while (!statisticList.isEmpty()) {
       //TODO: Statistiken aufsummieren
-      GameStatistic userStatistics = statisticList.get(0);
-      numberCountriesLost.setText(Integer.toString(userStatistics.getCountriesLost()));
-      numberTroopsWon.setText(Integer.toString(userStatistics.getTroopsGained()));
-      numberTroopsLost.setText(Integer.toString(userStatistics.getTroopsLost()));
-      numberCountriesWon.setText(Integer.toString(userStatistics.getCountriesWon()));
+      GameStatistic userStatistics = statisticList.get(i);
+      intCountriesLost += userStatistics.getCountriesLost();
+      intTroopsWon += userStatistics.getTroopsGained();
+      intTroopsLost += userStatistics.getTroopsLost();
+      intCountriesWon += userStatistics.getCountriesWon();
     }
+    numberCountriesLost.setText(Integer.toString(intCountriesLost));
+    numberTroopsWon.setText(Integer.toString(intTroopsWon));
+    numberTroopsLost.setText(Integer.toString(intTroopsLost));
+    numberCountriesWon.setText(Integer.toString(intCountriesWon));
     statisticsGridPane.add(troopsLost, 0, 0);
     statisticsGridPane.add(troopsWon, 0, 1);
     statisticsGridPane.add(numberTroopsLost, 1, 0);
@@ -128,13 +166,13 @@ public class UserStatisticsSceneController {
     statisticsGridPane.add(numberCountriesWon, 1, 3);
     statisticsGridPane.setAlignment(Pos.CENTER);
     statisticsGridPane.setHgap(30); // Set horizontal gap
-    statisticsGridPane.setVgap(20); // Set vertical gap
+    statisticsGridPane.setVgap(40); // Set vertical gap
   }
 
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
-    userImage.setFitHeight(150);
-    userImage.setFitWidth(150);
+    userImage.setFitHeight(200);
+    userImage.setFitWidth(200);
 
     Circle circle = new Circle();
     circle.setRadius(95);

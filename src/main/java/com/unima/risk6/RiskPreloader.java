@@ -1,7 +1,9 @@
 package com.unima.risk6;
 
 import com.unima.risk6.gui.controllers.SplashScreenController;
+import java.util.Objects;
 import javafx.application.Preloader;
+import javafx.application.Preloader.StateChangeNotification.Type;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -45,13 +47,8 @@ public class RiskPreloader extends Preloader {
   @Override
   public void handleStateChangeNotification(Preloader.StateChangeNotification info) {
     StateChangeNotification.Type type = info.getType();
-    switch (type) {
-
-      case BEFORE_START:
-        System.out.println("BEFORE_START");
-        preloaderStage.hide();
-        break;
-
+    if (Objects.requireNonNull(type) == Type.BEFORE_START) {
+      preloaderStage.hide();
     }
 
   }

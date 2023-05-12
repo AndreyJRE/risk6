@@ -5,6 +5,7 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Country;
@@ -12,7 +13,9 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CardSymbol;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.json.JsonParser;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,7 +36,6 @@ import java.util.stream.Collectors;
  */
 public class Tutorial {
 
-  private static final Random RNG = new Random();
   private final Queue<String> messages;
   private final GameState tutorialState;
   private final Queue<Reinforce> humanReinforcements;
@@ -45,16 +46,16 @@ public class Tutorial {
   private final Map<CountryName, Country> countryMap;
   private final List<String> human;
   private final List<AiBot> bot;
+  private static final String MESSAGES_FILE = "/com/unima/risk6/json/messages.json";
 
   /**
    * Initializes the tutorial with the specified username and loads messages with the fileReader.
    *
-   * @param username   The username of the human player.
-   * @param fileReader The InputStreamReader for the JSON file containing tutorial messages.
+   * @param username The username of the human player.
    */
-  public Tutorial(String username, InputStreamReader fileReader) {
+  public Tutorial(String username) {
     this.human = Collections.singletonList(username);
-    this.bot = Collections.singletonList(new TutorialBot("Johnny Test"));
+    this.bot = Collections.singletonList(new TutorialBot());
     this.humanCountries = this.initializeHumanCountries();
     this.botCountries = this.initializeBotCountries();
     this.tutorialState = this.createTutorial();
@@ -62,7 +63,7 @@ public class Tutorial {
     this.humanReinforcements = this.createReinforcements();
     this.humanAttacks = this.createAttacks();
     this.humanFortifies = this.createFortifies();
-    this.messages = this.createMessages(fileReader);
+    this.messages = this.createMessages();
   }
 
   private GameState createTutorial() {
@@ -95,11 +96,15 @@ public class Tutorial {
       tutorialState.getActivePlayers().add(botTemp);
       tutorial.setCurrentPlayer(tutorial.getActivePlayers().peek());
     }
-
+    ((Player) bot.get(0)).setCurrentPhase(GamePhase.NOT_ACTIVE);
+    tutorial.getCurrentPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
+    DeckController deckController = new DeckController(tutorial.getDeck());
+    deckController.initDeck();
     List<Card> humanCards = humanController.getHandController().getHand().getCards();
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.ALASKA, -1));
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA, -2));
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.CONGO, -3));
+    tutorial.getActivePlayers().forEach(p -> p.setInitialTroops(8));
     return tutorial;
   }
 
@@ -128,10 +133,13 @@ public class Tutorial {
   /**
    * Creates a queue of messages for the tutorial from the given fileReader.
    *
-   * @param fileReader The InputStreamReader for the JSON file containing tutorial messages.
    * @return A queue of tutorial messages.
    */
-  public Queue<String> createMessages(InputStreamReader fileReader) {
+  public Queue<String> createMessages() {
+    InputStream data =
+        Tutorial.class.getResourceAsStream(MESSAGES_FILE);
+    assert data != null;
+    InputStreamReader fileReader = new InputStreamReader(data);
     LinkedList<ArrayList<String>> msgArray = JsonParser.parseJsonFile(fileReader, LinkedList.class);
     return msgArray.stream().map(arr -> String.join(" ", arr))
         .collect(Collectors.toCollection(LinkedList::new));
@@ -146,9 +154,13 @@ public class Tutorial {
   private Queue<Reinforce> createReinforcements() {
     Queue<Reinforce> reinforcements = new LinkedList<>();
     reinforcements.add(new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 1));
-    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.VENEZUELA), 20));
-    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 20));
-    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 4));
+    for (int i = 0; i < 4; i++) {
+      reinforcements.add(new Reinforce(this.countryMap.get(CountryName.VENEZUELA), 1));
+    }
+    for (int i = 0; i < 4; i++) {
+      reinforcements.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 1));
+    }
+    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 3));
     return reinforcements;
   }
 

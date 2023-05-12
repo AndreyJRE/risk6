@@ -10,11 +10,21 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.network.serialization.Deserializer;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
 import javafx.application.Platform;
 import org.slf4j.Logger;
@@ -91,12 +101,12 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
           case "GAME_STATE" -> {
             LOGGER.debug("Overwrite GameState with new GameState from Server");
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
-                    GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
+                GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
           }
           case "CHAT_MESSAGE" -> {
             String message = (String) Deserializer.deserializeChatMessage(textFrame.text())
-                    .getContent();
+                .getContent();
             LOGGER.debug("Client got a chat message " + message);
             LobbyConfiguration.setLastChatMessage(message);
           }
@@ -110,10 +120,10 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               case "ACCEPT_JOIN_SERVER_LOBBY" -> {
                 LOGGER.debug("Got a Lobby, overwrite serverlobby");
                 ServerLobby content = (ServerLobby) Deserializer.deserializeConnectionMessage(
-                        textFrame.text()).getContent();
+                    textFrame.text()).getContent();
                 LobbyConfiguration.setServerLobby(content);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
-                        != SceneName.SELECT_LOBBY) {
+                    == SceneName.JOIN_ONLINE) {
                   Platform.runLater(SceneConfiguration::joinServerLobbyScene);
                 }
 
@@ -123,7 +133,13 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LobbyConfiguration.setGameLobby(
                     (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
                         .getContent());
-                Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    == SceneName.TITLE) {
+                  Platform.runLater(SceneConfiguration::startSinglePlayer);
+
+                } else {
+                  Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
+                }
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
@@ -141,11 +157,19 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LOGGER.debug("At ACCEPT_JOIN_GAME_LOBBY: Got a Lobby, overwrite game lobby");
                 GameLobby gameLobby = (GameLobby) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
+
                 LobbyConfiguration.setGameLobby(gameLobby);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
-                    != SceneName.MULTIPLAYER_LOBBY) {
+                    == SceneName.SELECT_LOBBY) {
                   Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
                 }
+              }
+              case "ACCEPT_TUTORIAL_CREATE_LOBBY" -> {
+                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                LobbyConfiguration.setGameLobby(
+                    (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
+                        .getContent());
+                Platform.runLater(SceneConfiguration::joinTutorialLobbyScene);
               }
               case "ACCEPT_UPDATE_SERVER_LOBBY" -> {
                 LOGGER.debug("Got updated server Lobby, overwrite serverlobby");
@@ -157,6 +181,12 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 String content = (String) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
                 LOGGER.error("Error Connecting to game lobby: " + content);
+                if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    == SceneName.JOIN_ONLINE) {
+                  Platform.runLater(() -> StyleConfiguration.handleUsernameExists(
+                      "Error Connecting to game lobby: " + content, "Username", "New username"));
+
+                }
               }
               default -> LOGGER.debug("Client received a faulty connection message");
 

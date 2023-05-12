@@ -1,6 +1,7 @@
 package com.unima.risk6.game.configurations;
 
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
@@ -8,6 +9,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.UserDto;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -25,6 +27,11 @@ public class GameConfiguration {
 
   private static final List<GameStateObserver> observers = new ArrayList<>();
   private static UserDto myGameUser;
+
+  private static HashMap<String, Integer> diceRolls;
+
+
+  private static Tutorial tutorial;
 
   /**
    * Configures the game by initializing the countries, continents, players and creating a GameState
@@ -124,5 +131,21 @@ public class GameConfiguration {
     int finalNumberOfInitialTroops = numberOfInitialTroops;
     blankState.getActivePlayers().forEach(n -> n.setInitialTroops(finalNumberOfInitialTroops));
 
+  }
+
+  public static Tutorial getTutorial() {
+    return tutorial;
+  }
+
+  public static void setTutorial(Tutorial tutorial) {
+    GameConfiguration.tutorial = tutorial;
+  }
+
+  public void setDiceRolls(HashMap<String, Integer> diceRolls) {
+    GameConfiguration.diceRolls = diceRolls;
+  }
+
+  public static HashMap<String, Integer> getDiceRolls() {
+    return diceRolls;
   }
 }

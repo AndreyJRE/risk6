@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.ai.tutorial.TutorialBot;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
@@ -31,7 +32,7 @@ public class Serializer {
         .registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
         .registerTypeAdapter(MediumBot.class, new MediumBotTypeAdapter())
         .registerTypeAdapter(HardBot.class, new HardBotTypeAdapter())
-
+        .registerTypeAdapter(TutorialBot.class, new TutorialBotTypeAdapter())
         .registerTypeAdapter(Attack.class, new AttackTypeAdapter())
         .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter())
         .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter())

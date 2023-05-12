@@ -23,14 +23,17 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -57,6 +60,8 @@ public class CountryUi extends Group {
 
   private static boolean isCountrySelected = false;
 
+  private Color color;
+
 
   public CountryUi(Country country, String SVGPath) {
     super();
@@ -64,7 +69,8 @@ public class CountryUi extends Group {
     this.countryPath = new SVGPath();
     this.troopsCounterUi = null;
     this.countryPath.setContent(SVGPath);
-    this.countryPath.setFill(Color.WHITE);
+    this.color = Color.WHITE;
+    this.countryPath.setFill(color);
     this.countryPath.setStroke(Color.BLACK);
     this.getChildren().add(new Group(this.countryPath));
     glowEffect = new DropShadow();
@@ -109,6 +115,9 @@ public class CountryUi extends Group {
                 .filter(country1 -> !country1.hasPlayer()).toList().size();
             if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
                 || !country.hasPlayer()) {
+              if (this.color == Color.WHITE) {
+                this.countryPath.setFill(Color.LIGHTGRAY);
+              }
               this.setCursor(Cursor.CROSSHAIR);
             }
           }
@@ -126,6 +135,7 @@ public class CountryUi extends Group {
           }
         }
       } else {
+        this.countryPath.setFill(color);
         this.setCursor(Cursor.DEFAULT);
       }
     });
@@ -240,13 +250,29 @@ public class CountryUi extends Group {
     BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     BorderPane moveTroopsPane = new BorderPane();
     Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
-    chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
+    chatLabel.setStyle("-fx-font-size: 18px;");
+
+    Button closeAmountOfTroopsButton = new Button();
+    closeAmountOfTroopsButton.setPrefSize(20, 20);
+    ImageView closeIcon = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeIcon.setFitWidth(20);
+    closeIcon.setFitHeight(20);
+    closeAmountOfTroopsButton.setGraphic(closeIcon);
+    closeAmountOfTroopsButton.setStyle(
+        "-fx-background-color: rgba(255, 255, 255, 0.3);" + "-fx-background-radius: 10px;");
+    closeAmountOfTroopsButton.setFocusTraversable(false);
+
+    moveTroopsPane.setTop(closeAmountOfTroopsButton);
+    BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
     HBox chatBox = new HBox();
     chatBox.setAlignment(Pos.CENTER);
     chatBox.setSpacing(15);
 
     Popup popUp = new Popup();
+
+    closeAmountOfTroopsButton.setOnAction(event -> popUp.hide());
 
     Circle leftCircle = new Circle(25);
     Image leftImage = new Image(
@@ -278,7 +304,6 @@ public class CountryUi extends Group {
             .toString());
     confirmCircle.setFill(new ImagePattern(confirmImage));
     confirmCircle.setOnMouseClicked(confirmEvent -> {
-      //TODO fortify or attack depending
       popUp.hide();
       PlayerController playerController = GameSceneController.getPlayerController();
       if (gamePhase == FORTIFY_PHASE) {
@@ -314,11 +339,8 @@ public class CountryUi extends Group {
 
     moveTroopsPane.setCenter(chatBox);
     moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
-    moveTroopsPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setRadius(10);
-    moveTroopsPane.setEffect(dropShadow);
+    moveTroopsPane.setStyle(
+        "-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
@@ -335,7 +357,7 @@ public class CountryUi extends Group {
     popUp.show(gamePane.getScene().getWindow());
   }
 
-  private void removeArrowsAndAdjacentCountries() {
+  public void removeArrowsAndAdjacentCountries() {
     Group countriesGroup = (Group) this.getParent();
     countriesGroup.getChildren().removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
         || countriesGroupNode instanceof SVGPath);
@@ -347,18 +369,22 @@ public class CountryUi extends Group {
     BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     BorderPane dicePane = new BorderPane();
 
-    Label winningChanceLabel = new Label("Winning Chance:" + 1);
-    winningChanceLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white;");
-
     HBox diceHBox = new HBox();
     diceHBox.setAlignment(Pos.CENTER);
     diceHBox.setSpacing(20);
     Popup dicePopup = new Popup();
 
-    //MOCKUP OF ATTACK DIALOG WITH DICE
-
     List<DiceUi> diceUis = new ArrayList<>();
     VBox attackerBox = new VBox();
+    Label attackerUser = new Label(attacker.country.getPlayer().getUser() + ": ");
+    attackerUser.setStyle("-fx-font-size: 18px;");
+    attackerBox.getChildren().add(attackerUser);
+
+    Label attackingCountry = new Label(
+        attacker.country.getCountryName().name().replaceAll("_", " "));
+    attackingCountry.setStyle("-fx-font-size: 18px;");
+    attackingCountry.setPadding(new Insets(0, 0, 15, 0));
+    attackerBox.getChildren().add(attackingCountry);
 
     for (int i = 0; i < lastAttack.getAttackDiceResult().size(); i++) {
       DiceUi dice = new DiceUi(true, lastAttack.getAttackDiceResult().get(i));
@@ -366,19 +392,31 @@ public class CountryUi extends Group {
       diceUis.add(dice);
     }
     attackerBox.setAlignment(Pos.CENTER);
+
     VBox defenderBox = new VBox();
+    Label defenderUser = new Label(defender.country.getPlayer().getUser() + ": ");
+    defenderUser.setStyle("-fx-font-size: 18px;");
+    defenderBox.getChildren().add(defenderUser);
+
+    Label defenderCountry = new Label(
+        defender.country.getCountryName().name().replaceAll("_", " "));
+    defenderCountry.setStyle("-fx-font-size: 18px;");
+    defenderCountry.setPadding(new Insets(0, 0, 15, 0));
+    defenderBox.getChildren().add(defenderCountry);
+
     for (int i = 0; i < lastAttack.getDefendDiceResult().size(); i++) {
       DiceUi dice = new DiceUi(false, lastAttack.getDefendDiceResult().get(i));
       defenderBox.getChildren().add(dice);
       diceUis.add(dice);
     }
     defenderBox.setAlignment(Pos.CENTER);
-    diceHBox.getChildren().addAll(attackerBox, winningChanceLabel, defenderBox);
+    diceHBox.getChildren().addAll(attackerBox, defenderBox);
 
     PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
       dicePopup.hide();
-      if (lastAttack.getAttackingCountry().getTroops() > 1 && lastAttack.getHasConquered()
+      //TODO last attack attacker check if he has more than 1 troop
+      if (attacker.getCountry().getTroops() > 1 && lastAttack.getHasConquered()
           && activePlayerUi.getPlayerUi().getPlayer()
           .equals(GameSceneController.getPlayerController().getPlayer())) {
         attacker.showAmountOfTroopsPopUp(
@@ -389,11 +427,7 @@ public class CountryUi extends Group {
 
     dicePane.setCenter(diceHBox);
     dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
-    dicePane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setRadius(10);
-    dicePane.setEffect(dropShadow);
+    dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
@@ -469,28 +503,23 @@ public class CountryUi extends Group {
 
     if (playerColor.equals(countryPathColor)) {
       Color brightHighlightColor = playerColor.deriveColor(0, 0, 0, 0.8);
-      FillTransition highlightTransition = new FillTransition(Duration.seconds(0.5),
+      FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2),
           this.countryPath, countryPathColor, brightHighlightColor);
       highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
-      FillTransition revertTransition = new FillTransition(Duration.seconds(0.5), this.countryPath,
+      FillTransition revertTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
           brightHighlightColor, countryPathColor);
       revertTransition.setInterpolator(Interpolator.EASE_BOTH);
       SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
           revertTransition);
-      DropShadow glow = new DropShadow();
-      glow.setColor(Color.WHITE);
-      glow.setRadius(6.5);
-      glow.setSpread(0.1);
-      this.countryPath.setEffect(glow);
-      sequentialTransition.setOnFinished(e -> this.countryPath.setEffect(null));
       sequentialTransition.play();
       return;
     }
-    FillTransition highlightTransition = new FillTransition(Duration.seconds(1), this.countryPath,
-        countryPathColor, playerColor);
+    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2),
+        this.countryPath, countryPathColor, playerColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     glowEffect.setColor(playerColor);
     highlightTransition.play();
+    this.color = playerColor;
   }
 
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
@@ -502,6 +531,7 @@ public class CountryUi extends Group {
           attacker.getCountryPath(), (Color) attacker.getCountryPath().getFill(), playerColor);
       highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
       highlightTransition.play();
+      this.color = playerColor;
       if (GameSceneController.getMyPlayerUi().getPlayer()
           .equals(activePlayerUi.getPlayerUi().getPlayer())) {
         GameSceneController.getPlayerController()

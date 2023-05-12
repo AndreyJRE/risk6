@@ -6,20 +6,30 @@ import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.NotValidPasswordException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -55,6 +65,25 @@ public class ChangePasswordSceneController {
 
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
     root.setCenter(anchorPane);
     root.setLeft(backButton);
 
@@ -80,7 +109,7 @@ public class ChangePasswordSceneController {
     vBox.setAlignment(Pos.CENTER);
     vBox.setSpacing(22);
     vBox.setStyle(
-        "-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+        "-fx-opacity: 0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     AnchorPane.setTopAnchor(vBox, 0.0);
     AnchorPane.setRightAnchor(vBox, 0.0);
     AnchorPane.setBottomAnchor(vBox, 0.0);

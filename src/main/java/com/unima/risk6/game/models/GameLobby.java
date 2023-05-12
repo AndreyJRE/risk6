@@ -3,7 +3,7 @@ package com.unima.risk6.game.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameLobby extends Lobby {
+public class GameLobby {
 
   private final String lobbyName;
   private String name;
@@ -15,8 +15,6 @@ public class GameLobby extends Lobby {
 
   private final int matchMakingElo;
 
-  private final int phaseTime;
-
   private UserDto lobbyOwner;
 
   private final List<UserDto> users;
@@ -25,13 +23,12 @@ public class GameLobby extends Lobby {
 
 
   public GameLobby(String lobbyName, int maxPlayers, String hostName,
-      boolean isChatEnabled, int matchMakingElo, int phaseTime, UserDto lobbyOwner) {
+      boolean isChatEnabled, int matchMakingElo, UserDto lobbyOwner) {
     this.lobbyName = lobbyName;
     this.maxPlayers = maxPlayers;
     this.name = hostName;
     this.isChatEnabled = isChatEnabled;
     this.matchMakingElo = matchMakingElo;
-    this.phaseTime = phaseTime;
     this.lobbyOwner = lobbyOwner;
     this.users = new ArrayList<>();
     this.bots = new ArrayList<>();
@@ -61,10 +58,6 @@ public class GameLobby extends Lobby {
     return matchMakingElo;
   }
 
-  public int getPhaseTime() {
-    return phaseTime;
-  }
-
   public List<UserDto> getUsers() {
     return users;
   }
@@ -72,6 +65,7 @@ public class GameLobby extends Lobby {
   public UserDto getLobbyOwner() {
     return lobbyOwner;
   }
+
   public void setLobbyOwner(UserDto lobbyOwner) {
     this.lobbyOwner = lobbyOwner;
     this.name = lobbyOwner.getUsername();
@@ -85,15 +79,8 @@ public class GameLobby extends Lobby {
   @Override
   public String toString() {
     return "GameLobby{" +
-        "lobbyName='" + lobbyName + '\'' +
-        ", name='" + name + '\'' +
-        ", maxPlayers=" + maxPlayers +
-        ", isChatEnabled=" + isChatEnabled +
-        ", matchMakingElo=" + matchMakingElo +
-        ", phaseTime=" + phaseTime +
-        ", lobbyOwner=" + lobbyOwner +
-        ", users=" + users +
-        ", bots=" + bots +
-        '}';
+        "lobbyName='" + lobbyName + '\'' + ", name='" + name + '\'' + ", maxPlayers=" + maxPlayers
+        + ", isChatEnabled=" + isChatEnabled + ", matchMakingElo=" + matchMakingElo
+        + ", lobbyOwner=" + lobbyOwner + ", users=" + users + ", bots=" + bots + '}';
   }
 }

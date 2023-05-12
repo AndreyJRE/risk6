@@ -16,7 +16,7 @@ import java.util.Set;
 public class MonteCarloNode {
 
   private static final double EXPLORATION_PARAMETER = Math.sqrt(2);
-  private static final int EXPANSION_AMOUNT = 10;
+  private static final int EXPANSION_AMOUNT = 15;
   private final GameState gameState;
   private int wins;
   private int visits;

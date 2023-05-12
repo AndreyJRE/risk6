@@ -4,23 +4,31 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.showConfirmationDialog;
 
+import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.exceptions.UsernameNotUniqueException;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.ChangePasswordScene;
 import com.unima.risk6.gui.scenes.LogInScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.scenes.UserStatisticsScene;
+import java.io.IOException;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -28,6 +36,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -64,6 +77,25 @@ public class UserOptionsSceneController {
     // Initialize elements
     initUserStackPane();
     initElements();
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.OPTION_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
   }
 
   private void initElements() {
@@ -75,12 +107,12 @@ public class UserOptionsSceneController {
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
-    // Initialize the user name TextField
+    // Initialize the username TextField
     TextField userNameField = new TextField(user.getUsername());
     userNameField.setEditable(false);
     userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
         + "70px; -fx-background-color: transparent; "
-        + "-fx-border-color: transparent;");
+        + "-fx-border-color: transparent;; -fx-text-fill: white");
     userNameField.setAlignment(Pos.CENTER);
 
     // Add a Tooltip to the userNameField
@@ -95,7 +127,7 @@ public class UserOptionsSceneController {
         userNameField.setEditable(true);
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: lightgrey; "
-            + "-fx-border-color: transparent;");
+            + "-fx-border-color: transparent; -fx-text-fill: white");
         userNameField.requestFocus();
       }
     };
@@ -106,7 +138,7 @@ public class UserOptionsSceneController {
       if (!newValue && !enterPressed.get()) {
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: transparent; "
-            + "-fx-border-color: transparent;");
+            + "-fx-border-color: transparent; -fx-text-fill: white");
         userNameField.setEditable(false);
         changeUsernameConfirmation(userNameField);
       }
@@ -116,7 +148,7 @@ public class UserOptionsSceneController {
       if (event.getCode() == KeyCode.ENTER) {
         userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
             + "70px; -fx-background-color: transparent; "
-            + "-fx-border-color: transparent;");
+            + "-fx-border-color: transparent; -fx-text-fill: white");
         userNameField.setEditable(false);
         enterPressed.set(true);
         changeUsernameConfirmation(userNameField);
@@ -170,11 +202,12 @@ public class UserOptionsSceneController {
     });
 
     Button changePasswordButton = createChangePasswordButton();
+    Button deleteUser = createDeleteUserButton();
     // Create a VBox to hold the userNameField, userStackPane, and the labels
     VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
         changePasswordButton,
-        changeUserButton);
-    centerVBox.setSpacing(20);
+        changeUserButton, deleteUser);
+    centerVBox.setSpacing(10);
     centerVBox.setAlignment(Pos.CENTER);
 
     root.setLeft(backButton);
@@ -206,6 +239,54 @@ public class UserOptionsSceneController {
     return changePasswordButton;
   }
 
+  private Button createDeleteUserButton() {
+    Button deleteUserButton = new Button("Delete User");
+    deleteUserButton.setPrefWidth(470);
+    deleteUserButton.setPrefHeight(40);
+    deleteUserButton.setAlignment(Pos.CENTER);
+    applyButtonStyle(deleteUserButton);
+    deleteUserButton.setFont(new Font(18));
+
+    deleteUserButton.setOnAction(e -> {
+      boolean confirm = showConfirmationDialog("Delete User",
+          "Are you sure that you want to delete your user? All Statistics will be permanently deleted and you will be redirected to the Log-in View.");
+      if (confirm) {
+        UserService userService = DatabaseConfiguration.getUserService();
+        Long id = SessionManager.getUser().getId();
+        userService.deleteUserById(id);
+        if (userService.getAllUsers().size() == 0) {
+          FXMLLoader fxmlLoader = new FXMLLoader(
+              RisikoMain.class.getResource("fxml/CreateAccount" + ".fxml"));
+          Parent root;
+          try {
+            root = fxmlLoader.load();
+            Scene createScene = sceneController.getSceneBySceneName(SceneName.CREATE_ACCOUNT);
+            if (createScene == null) {
+              createScene = new Scene(root);
+              sceneController.addScene(SceneName.CREATE_ACCOUNT, createScene);
+            } else {
+              createScene.setRoot(root);
+            }
+            sceneController.activate(SceneName.CREATE_ACCOUNT);
+
+          } catch (IOException exception) {
+            throw new RuntimeException(exception);
+          }
+        } else {
+          if (sceneController.getSceneBySceneName(SceneName.LOGIN) == null) {
+            LogInScene loginScene = new LogInScene(); // Create instance of the LogInScene
+            LoginSceneController loginSceneController = new LoginSceneController(loginScene);
+            loginScene.setLoginSceneController(loginSceneController);
+            sceneController.addScene(SceneName.LOGIN, loginScene);
+          }
+          SessionManager.logout();
+          sceneController.activate(SceneName.LOGIN);
+        }
+      }
+    });
+    return deleteUserButton;
+  }
+
   private void changeUsernameConfirmation(TextField userNameField) {
     if (!user.getUsername().equals(userNameField.getText())) {
       boolean confirm = showConfirmationDialog("Change username",
@@ -224,13 +305,13 @@ public class UserOptionsSceneController {
     }
     userNameField.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: "
         + "70px; -fx-background-color: transparent; "
-        + "-fx-border-color: transparent;");
+        + "-fx-border-color: transparent; -fx-text-fill: white");
   }
 
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
-    userImage.setFitHeight(150);
-    userImage.setFitWidth(150);
+    userImage.setFitHeight(200);
+    userImage.setFitWidth(200);
 
     Circle circle = new Circle();
     circle.setRadius(95);

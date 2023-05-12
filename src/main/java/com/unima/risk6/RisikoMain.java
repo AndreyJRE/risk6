@@ -3,6 +3,7 @@ package com.unima.risk6;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.UserService;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.LoginSceneController;
@@ -12,7 +13,8 @@ import com.unima.risk6.gui.scenes.LogInScene;
 import java.io.IOException;
 import java.util.List;
 import javafx.application.Application;
-import javafx.application.Platform;
+import javafx.application.Preloader;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -53,17 +55,26 @@ public class RisikoMain extends Application {
 
   @Override
   public void init() throws Exception {
+    Task<Void> task = new Task<>() {
+      @Override
+      protected Void call() {
+        DatabaseConfiguration.startDatabaseConfiguration();
+        SoundConfiguration.loadSounds();
+        ImageConfiguration.loadImages();
+        return null;
+      }
+    };
+    Thread thread = new Thread(task);
+    thread.start();
+    double progress = 0;
+    while (!task.isDone()) {
+      progress += 0.001;
+      if (progress > 100) {
+        progress = 100;
+      }
+      notifyPreloader(new Preloader.ProgressNotification(Math.round(progress)));
+    }
 
-    Platform.runLater(() -> {
-      DatabaseConfiguration.startDatabaseConfiguration();
-      SoundConfiguration.loadSounds();
-    });
-
-    // updating of progress bar -> currently disabled for UI testing
-//    for (int i = 0; i < 100000; i++) {
-//      double progress = (100 * i) / 100000;
-//      notifyPreloader(new Preloader.ProgressNotification(progress));
-//    }
   }
 
   public static void main(String[] args) {

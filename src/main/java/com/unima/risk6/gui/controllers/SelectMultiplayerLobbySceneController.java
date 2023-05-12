@@ -13,7 +13,9 @@ import com.unima.risk6.game.configurations.observers.ServerLobbyObserver;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
@@ -24,6 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -31,12 +34,20 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
@@ -66,8 +77,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     this.serverLobby = LobbyConfiguration.getServerLobby();
     this.user = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) selectMultiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     for (int i = lobbyChatSplit.getItems().size(); i > 0; i--) {
       lobbyChatSplit.getItems().remove(i - 1);
     }
@@ -84,7 +94,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
     Label title = new Label("Select Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
-    title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px;");
+    title.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -114,11 +125,32 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     HBox bottomBox = new HBox(create, seperator, join);
     bottomBox.setAlignment(Pos.CENTER);
     initSplitPane();
+    // Load the image into an ImageView
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECT_LOBBY_BACKGROUND);
+    ImageView imageView = new ImageView(originalImage);
+
+// Set the opacity
+    imageView.setOpacity(0.9);
+
+// Create a snapshot of the ImageView
+    SnapshotParameters parameters = new SnapshotParameters();
+    parameters.setFill(Color.TRANSPARENT);
+    Image semiTransparentImage = imageView.snapshot(parameters, null);
+
+// Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
+    Background background = new Background(backgroundImage);
+    root.setBackground(background);
 
     root.setLeft(backButton);
     root.setTop(titleBox);
     root.setBottom(bottomBox);
     root.setCenter(lobbyChatSplit);
+
+    lobbyChatSplit.setOpacity(0.95);
 
     BorderPane.setMargin(backButton, new Insets(10, 10, 10, 10));
     BorderPane.setMargin(bottomBox, new Insets(10, 20, 20, 10));
@@ -146,15 +178,15 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
           setText(null);
           setGraphic(null);
         } else {
-          setText(
-              item.getLobbyName() + "  hosted by " + item.getName() + "              "
-                  + (item.getUsers().size() + item.getBots().size())
-                  + "/" + item.getMaxPlayers() + " Players" + "              min. Elo: "
-                  + item.getMatchMakingElo());
+          setText(item.getLobbyName() + "  hosted by " + item.getName() + "              " + (
+              item.getUsers().size() + item.getBots().size()) + "/" + item.getMaxPlayers()
+              + " Players" + "              min. Elo: " + item.getMatchMakingElo());
           setPadding(new Insets(20, 30, 20, 30)); // Padding für die Zellen
         }
       }
     });
+
+    lobbyList.setOpacity(0.9);
 
     lobbyList.setItems(lobbies);
 
@@ -174,6 +206,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     chatArea.setWrapText(true);
     VBox.setVgrow(chatArea, Priority.ALWAYS);
 
+    chatArea.setOpacity(0.9);
+
     TextField chatInput = new TextField();
     chatInput.setPromptText("Enter your message...");
     chatInput.setOnKeyPressed(event -> {
@@ -187,6 +221,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       }
     });
 
+    chatInput.setOpacity(0.95);
+
     VBox chatBox = new VBox(chatArea, chatInput);
 
     lobbyChatSplit.getItems().addAll(lobbyList, chatBox);
@@ -195,43 +231,29 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
 
   private void handleJoinButton() {
-   /* if (lobbyList.getSelectionModel().getSelectedIndex() == -1) {
-    } else {
-      GameLobby gameLobby = gameLobbies.get(lobbyList.getSelectionModel().getSelectedIndex());
-      MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
-          .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
-      if (scene == null) {
-        scene = new MultiplayerLobbyScene();
-        MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-            scene, gameLobby);
-        scene.setController(multiplayerLobbySceneController);
-        sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
-      }
-      pauseTitleSound();
-      lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-      sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
-    }*/
-    //TODO For test purposes
-    if (lobbyList.getSelectionModel().getSelectedItem() != null) {
-      if (lobbyList.getSelectionModel().getSelectedItem().getMatchMakingElo()
-          <= GameConfiguration.getMyGameUser().getWinLossRatio()) {
-        LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
-        lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
-
+    GameLobby selectedLobby = lobbyList.getSelectionModel().getSelectedItem();
+    if (selectedLobby != null) {
+      if ((selectedLobby.getUsers().size() + selectedLobby.getBots().size())
+          == selectedLobby.getMaxPlayers()) {
+        showErrorDialog("Selected lobby is already full", "Please select another lobby!");
       } else {
-        boolean confirm = showConfirmationDialog("Missing experience",
-            "Your Win / Loss Ratio does not match the minimum required"
-                + " Ratio of the selected Lobby. Do you still want to continue?");
-        if (confirm) {
-          LobbyConfiguration.sendJoinLobby(lobbyList.getSelectionModel().getSelectedItem());
+        if (selectedLobby.getMatchMakingElo() <= user.getWinLossRatio()) {
+          LobbyConfiguration.sendJoinLobby(selectedLobby);
           lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+        } else {
+          boolean confirm = showConfirmationDialog("Missing experience",
+              "Your Win / Loss Ratio does not match the minimum required"
+                  + " Ratio of the selected Lobby. Do you still want to continue?");
+          if (confirm) {
+            LobbyConfiguration.sendJoinLobby(selectedLobby);
+            lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
+          }
         }
       }
     } else {
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
     }
   }
-
 
   private void handleCreateButton() {
     CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
