@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,8 +37,14 @@ import java.util.stream.Collectors;
  */
 public class Tutorial {
 
+  private static final Random RNG = new Random();
   private final Queue<String> messages;
   private final GameState tutorialState;
+  private Reinforce currentClaim;
+  private Reinforce currentReinforce;
+  private Attack currentAttack;
+  private Fortify currentFortify;
+  private final Queue<Reinforce> humanClaims;
   private final Queue<Reinforce> humanReinforcements;
   private final Queue<Attack> humanAttacks;
   private final Queue<Fortify> humanFortifies;
@@ -60,6 +67,7 @@ public class Tutorial {
     this.botCountries = this.initializeBotCountries();
     this.tutorialState = this.createTutorial();
     this.countryMap = this.initializeMap();
+    this.humanClaims = this.createClaims();
     this.humanReinforcements = this.createReinforcements();
     this.humanAttacks = this.createAttacks();
     this.humanFortifies = this.createFortifies();
@@ -86,6 +94,10 @@ public class Tutorial {
           humanController.addCountry(country);
         } else if (this.botCountries.contains(country.getCountryName())) {
           botController.addCountry(country);
+        } else if (RNG.nextDouble() < 0.5) {
+          humanController.addCountry(country);
+        } else {
+          botController.addCountry(country);
         }
         country.setTroops(1);
       }
@@ -104,7 +116,7 @@ public class Tutorial {
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.ALASKA, -1));
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA, -2));
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.CONGO, -3));
-    tutorial.getActivePlayers().forEach(p -> p.setInitialTroops(8));
+    tutorial.getActivePlayers().forEach(p -> p.setInitialTroops(9));
     return tutorial;
   }
 
@@ -153,15 +165,25 @@ public class Tutorial {
    */
   private Queue<Reinforce> createReinforcements() {
     Queue<Reinforce> reinforcements = new LinkedList<>();
-    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 1));
-    for (int i = 0; i < 4; i++) {
-      reinforcements.add(new Reinforce(this.countryMap.get(CountryName.VENEZUELA), 1));
-    }
-    for (int i = 0; i < 4; i++) {
-      reinforcements.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 1));
-    }
-    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.INDONESIA), 3));
+    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 3));
     return reinforcements;
+  }
+
+  /**
+   * Creates a queue of claim phase moves for the human player to perform during the tutorial.
+   *
+   * @return A queue of tutorial claim phase moves.
+   */
+  private Queue<Reinforce> createClaims() {
+    Queue<Reinforce> claims = new LinkedList<>();
+    claims.add(new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 1));
+    for (int i = 0; i < 3; i++) {
+      claims.add(new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 1));
+    }
+    for (int i = 0; i < 5; i++) {
+      claims.add(new Reinforce(this.countryMap.get(CountryName.VENEZUELA), 1));
+    }
+    return claims;
   }
 
   /**
@@ -200,16 +222,20 @@ public class Tutorial {
         .collect(Collectors.toMap(Country::getCountryName, Function.identity()));
   }
 
-  public Reinforce getPlayerReinforce() {
-    return this.humanReinforcements.poll();
+  public void updatePlayerClaim() {
+    this.currentClaim = this.humanClaims.poll();
   }
 
-  public Attack getPlayerAttack() {
-    return this.humanAttacks.poll();
+  public void updatePlayerReinforce() {
+    this.currentReinforce = this.humanReinforcements.poll();
   }
 
-  public Fortify getPlayerFortify() {
-    return this.humanFortifies.poll();
+  public void updatePlayerAttack() {
+    this.currentAttack = this.humanAttacks.poll();
+  }
+
+  public void updatePlayerFortify() {
+    this.currentFortify = this.humanFortifies.poll();
   }
 
   public GameState getTutorialState() {
@@ -222,5 +248,21 @@ public class Tutorial {
 
   public String getNextMessage() {
     return this.messages.poll();
+  }
+
+  public Reinforce getCurrentClaim() {
+    return currentClaim;
+  }
+
+  public Reinforce getCurrentReinforce() {
+    return currentReinforce;
+  }
+
+  public Attack getCurrentAttack() {
+    return currentAttack;
+  }
+
+  public Fortify getCurrentFortify() {
+    return currentFortify;
   }
 }
