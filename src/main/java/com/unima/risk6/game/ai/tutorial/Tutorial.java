@@ -52,6 +52,7 @@ public class Tutorial {
   private final Set<CountryName> botCountries;
   private final Map<CountryName, Country> countryMap;
   private final List<String> human;
+  private boolean handInEnabled;
   private final List<AiBot> bot;
   private static final String MESSAGES_FILE = "/com/unima/risk6/json/messages.json";
 
@@ -72,6 +73,7 @@ public class Tutorial {
     this.humanAttacks = this.createAttacks();
     this.humanFortifies = this.createFortifies();
     this.messages = this.createMessages();
+    this.handInEnabled = false;
   }
 
   private GameState createTutorial() {
@@ -205,10 +207,9 @@ public class Tutorial {
    */
   private Queue<Fortify> createFortifies() {
     Queue<Fortify> fortifies = new LinkedList<>();
-    fortifies.add(new Fortify(this.countryMap.get(CountryName.NEW_GUINEA),
-        this.countryMap.get(CountryName.INDONESIA), 2));
     fortifies.add(new Fortify(this.countryMap.get(CountryName.VENEZUELA),
         this.countryMap.get(CountryName.CENTRAL_AMERICA), 20));
+    this.setHandInEnabled(true);
     return fortifies;
   }
 
@@ -264,5 +265,13 @@ public class Tutorial {
 
   public Fortify getCurrentFortify() {
     return currentFortify;
+  }
+
+  public boolean isHandInEnabled() {
+    return handInEnabled;
+  }
+
+  public void setHandInEnabled(boolean handInEnabled) {
+    this.handInEnabled = handInEnabled;
   }
 }
