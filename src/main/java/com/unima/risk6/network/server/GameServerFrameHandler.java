@@ -406,7 +406,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
-    gameState.setPhaseTime(gameLobby.getPhaseTime());
     moveProcessor.setGameController(new GameController(gameState));
     moveProcessor.setDeckController(new DeckController(gameState.getDeck()));
     PlayerController playerController = new PlayerController();

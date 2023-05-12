@@ -58,8 +58,9 @@ public class SoundConfiguration {
             .toExternalForm()));
     inGameMusic.setCycleCount(MediaPlayer.INDEFINITE);
     inGameMusic.setVolume(VOLUME.get());
-    SimpleDoubleProperty observableValue = new SimpleDoubleProperty(VOLUME.get() / 3);
-    inGameMusic.volumeProperty().bind(observableValue);
+    VOLUME.addListener((observable, oldValue, newValue) -> {
+      inGameMusic.setVolume(newValue.doubleValue() / 3.0);
+    });
     yourTurnSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(YOUR_TURN_SOUND_PATH))
             .toExternalForm());

@@ -183,9 +183,9 @@ public class TitleSceneController implements Initializable {
       System.out.println(ipS.toString());
       ipLabel.setStyle(
           "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #ffffff");
-      if(multipleIpAd > 1) {
+      if (multipleIpAd > 1) {
         ipLabel.setText("Your IP Addresses: " + Arrays.toString(ipS.toString().split(",")));
-      } else{
+      } else {
         ipLabel.setText("Your IP Address: " + Arrays.toString(ipS.toString().split(",")));
       }
       ipLabel.setEditable(false);
@@ -216,7 +216,7 @@ public class TitleSceneController implements Initializable {
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
-        false, 0, 60, GameConfiguration.getMyGameUser());
+        false, 0, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     LobbyConfiguration.sendCreateLobby(gameLobby);
   }
@@ -249,7 +249,7 @@ public class TitleSceneController implements Initializable {
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     gameLobby = new GameLobby("Single Player Lobby", 2, SessionManager.getUser().getUsername(),
-        false, 0, 60, GameConfiguration.getMyGameUser());
+        false, 0, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     gameLobby.getBots().add("Johnny Test");
     LobbyConfiguration.sendTutorialCreateLobby(gameLobby);

@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 public class SceneConfiguration {
@@ -42,10 +43,7 @@ public class SceneConfiguration {
     stage.heightProperty().addListener(stageSizeListener);
 
     stage.setFullScreenExitHint("");
-
-    stage.fullScreenProperty().addListener((observable, oldValue, newValue) -> {
-      sceneController.setPreviousWindowFullscreen(oldValue);
-    });
+    stage.initStyle(StageStyle.UTILITY);
   }
 
   public static void startGame() {
@@ -60,7 +58,7 @@ public class SceneConfiguration {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     sceneController.activate(SceneName.GAME);
-    sceneController.getStage().setFullScreen(true);
+    sceneController.getStage().setMaximized(true);
     gameSceneController.showOrderPopup();
     sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
       event.consume();

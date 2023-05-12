@@ -20,8 +20,10 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.game.models.enums.PlayerColor;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.ChatUi;
@@ -29,7 +31,7 @@ import com.unima.risk6.gui.uiModels.CountryUi;
 import com.unima.risk6.gui.uiModels.DiceUi;
 import com.unima.risk6.gui.uiModels.HandUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
-import com.unima.risk6.gui.uiModels.TimeUi;
+import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -83,7 +85,7 @@ public class GameSceneController implements GameStateObserver {
   private double originalScreenHeight;
   private Group countriesGroup;
   private LinkedList<PlayerUi> playerUis;
-  private TimeUi timeUi;
+
   private ActivePlayerUi activePlayerUi;
   private Button nextPhaseButton;
   private Popup statisticPopup;
@@ -140,12 +142,18 @@ public class GameSceneController implements GameStateObserver {
     root.setLeft(playerPane);
     StackPane countriesPane = initializeCountriesPane();
     root.setCenter(countriesPane);
-    StackPane timePane = initializeTimePane();
-    root.setRight(timePane);
     StackPane bottomPane = initializeBottomPane();
     root.setBottom(bottomPane);
+    SettingsUi settingsUi = new SettingsUi(gameScene);
+    this.gameScene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+      if (keyEvent.getCode() == KeyCode.ESCAPE) {
+        keyEvent.consume();
+        settingsUi.show();
+      }
+    });
 
   }
+
 
   public void showOrderPopup() {
 
@@ -202,10 +210,10 @@ public class GameSceneController implements GameStateObserver {
         "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
     rollMyDiceButton.setFocusTraversable(false);
 
-    PauseTransition delayTransitionHidePopup = new PauseTransition(Duration.millis(3000));
+    PauseTransition delayTransitionHidePopup = new PauseTransition(Duration.millis(2500));
     delayTransitionHidePopup.setOnFinished(delayTransitionEvent -> orderPopup.hide());
 
-    PauseTransition delayTransitionShowOrder = new PauseTransition(Duration.millis(4000));
+    PauseTransition delayTransitionShowOrder = new PauseTransition(Duration.millis(3000));
     delayTransitionShowOrder.setOnFinished(delayTransitionEvent -> {
       orderPane.getChildren().clear();
       Label orderLabel = new Label("You are " + myDice.getResult() + ". Place. Good Luck!");
@@ -309,14 +317,6 @@ public class GameSceneController implements GameStateObserver {
     return playerPane;
   }
 
-  private StackPane initializeTimePane() {
-    StackPane timePane = new StackPane();
-    timeUi = new TimeUi(120, 120, gameState.getPhaseTime());
-    timePane.getChildren().add(timeUi);
-    timePane.setAlignment(Pos.CENTER);
-    timePane.setPadding(new Insets(0, 15, 0, 0));
-    return timePane;
-  }
 
   private StackPane initializeBottomPane() {
     StackPane bottomPane = new StackPane();
@@ -444,17 +444,13 @@ public class GameSceneController implements GameStateObserver {
       userCircle.setStroke(Color.BLACK);
       ImageView userImage;
       if (player instanceof EasyBot) {
-        userImage = new ImageView(
-            new Image(getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+        userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.EASYBOT_ICON));
       } else if (player instanceof MediumBot) {
-        userImage = new ImageView(new Image(
-            getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+        userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.MEDIUMBOT_ICON));
       } else if (player instanceof HardBot) {
-        userImage = new ImageView(
-            new Image(getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+        userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.HARDBOT_ICON));
       } else {
-        userImage = new ImageView(new Image(
-            getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+        userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
       }
       userCircle.setFill(new ImagePattern(userImage.getImage()));
       userBox.getChildren().addAll(userLabel, userCircle);
@@ -527,8 +523,7 @@ public class GameSceneController implements GameStateObserver {
       playerUis.forEach(PlayerUi::updateAmountOfTroops);
       handUi.setHand(myPlayerUi.getPlayer().getHand());
       if (PLAYER_CONTROLLER.getHandController().holdsExchangeable()) {
-        cardsButton.setStyle(
-            "-fx-background-color: rgb(88,8,8); -fx-border-color: rgb(88,8,8);");
+        cardsButton.setStyle("-fx-background-color: rgb(88,8,8); -fx-border-color: rgb(88,8,8);");
       } else {
         cardsButton.setStyle("-fx-background-radius: 15px;");
       }

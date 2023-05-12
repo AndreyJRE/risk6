@@ -29,9 +29,7 @@ import javafx.stage.Popup;
 
 public class HandUi extends BorderPane {
 
-  private Bounds bounds;
   private Popup popup;
-
   private Hand hand;
 
   private final Stack<CardUi> cardUis;
@@ -73,7 +71,13 @@ public class HandUi extends BorderPane {
     this.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
 
     popup.getContent().add(this);
-
+    popup.setAutoFix(true);
+    popup.setAutoHide(true);
+    popup.setOnAutoHide(event -> {
+      GameSceneController.getPlayerController().getHandController().deselectAllCards();
+      cardUis.forEach(x -> x.setClicked(false));
+      cardBox.getChildren().clear();
+    });
     closeCardsButton.setOnAction(event -> {
       popup.hide();
       GameSceneController.getPlayerController().getHandController().deselectAllCards();
