@@ -10,10 +10,14 @@ import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.unima.risk6.network.server.GameServer.channels;
 
 public class GameLobbyChannels {
+
+  private final static Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
 
   private final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
   private final BiMap<MoveProcessor, ChannelGroup> moveProcessors = HashBiMap.create();
@@ -33,8 +37,7 @@ public class GameLobbyChannels {
   }
 
 
-  public void removeUserFromGameLobby(Channel channel, //TODO Problem ist, dass inactive channels automatisch aus channelgroups gelösct werden
-                                      GameServerFrameHandler gameServerFrameHandler, boolean isDead) {
+  public void removeUserFromGameLobby(Channel channel, GameServerFrameHandler gameServerFrameHandler, boolean isDead) {
     System.out.println(channel.id() + " left");
     UserDto deadUser = getUserByChannel(channel);
     //leave gameChannel
@@ -64,13 +67,18 @@ public class GameLobbyChannels {
                       .get(0));
       gameServerFrameHandler.sendGameLobby(gameLobby);
     }
+    if (isDead) {
+      users.inverse().remove(channel);
+    }
 
   }
 
   public void removeUserFromServerLobby(Channel channel) {
+    LOGGER.debug("Remove from server lobby: " + users.inverse().get(channel));
     NetworkConfiguration.getServerLobby().getUsers()
             .remove(users.inverse().get(channel));
-    NetworkConfiguration.getServerLobby().getUsers().forEach(x -> System.out.println(x.getUsername() + "Is in ServerLobby"));
+    NetworkConfiguration.getServerLobby().getUsers().forEach(x -> System.out.println(x.getUsername() + " is in ServerLobby"));
+    users.inverse().remove(channel);
     channels.remove(channel);
   }
 
@@ -102,6 +110,8 @@ public class GameLobbyChannels {
   }
 
   public boolean containsUser(UserDto userDto) {
+    LOGGER.debug("Searching for user " + userDto.getUsername());
+    users.keySet().stream().forEach(x -> System.out.println(x.getUsername()));
     return users.keySet().stream().anyMatch(x -> x.equals(userDto));
   }
 

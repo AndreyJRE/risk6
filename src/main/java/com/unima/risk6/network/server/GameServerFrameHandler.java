@@ -152,15 +152,18 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case JOIN_SERVER_LOBBY -> {
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
+                  NetworkConfiguration.getServerLobby().getUsers().forEach(x -> LOGGER.debug(x.getUsername() + " is in ServerLobby"));
+                  LOGGER.debug("On JOIN_SERVER_LOBBY: " + userDto.getUsername() + " wants to join");
+
 
                   if (gameLobbyChannels.containsUser(userDto)) {
                     LOGGER.error("User already in the Lobby");
                     sendDropMessage(ctx.channel(), ConnectionActions.DROP_USER_SERVER_LOBBY,
-                        "User already in the Lobby");
+                            "User already in the Lobby");
                   } else {
                     gameLobbyChannels.putUsers(userDto, ctx.channel());
                     NetworkConfiguration.getServerLobby().getUsers()
-                        .add(userDto);
+                            .add(userDto);
                     sendServerLobby(NetworkConfiguration.getServerLobby());
                   }
                 }
@@ -251,12 +254,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                           + NetworkConfiguration.getServerLobby().getUsers()
                           .size() + " UsersList "
                           + gameLobbyChannels.getUsers().size());
-                  //remove from server lobby channelGroup,
-                  channels.remove(ctx.channel());
                   //remove from LobbyObject
                   gameLobbyChannels.removeUserFromServerLobby(ctx.channel());
-                  //and users list
-                  //Should not be neccesarry: users.inverse().remove(ctx.channel());
                   LOGGER.debug(
                       "Sizes of ChannelGroup " + channels.size() + " ServerLobby "
                           + NetworkConfiguration.getServerLobby().getUsers()
