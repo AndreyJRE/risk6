@@ -106,14 +106,14 @@ public class LoginSceneController {
     for (User user : usersPage) {
       ImageView userImage = new ImageView(
           new Image(getClass().getResource(user.getImagePath()).toString()));
-      userImage.setFitHeight(120);
-      userImage.setFitWidth(120);
+      userImage.setFitHeight(150);
+      userImage.setFitWidth(150);
 
       // create a circle with a black outline and a grey fill
       Circle circle = new Circle();
       circle.setRadius(75);
       circle.setStroke(Color.BLACK);
-      circle.setFill(Color.LIGHTGRAY);
+      circle.setFill(Color.WHITESMOKE);
       circle.setStrokeWidth(3.0);
 
       // create a clip for the user image

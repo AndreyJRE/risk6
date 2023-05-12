@@ -60,7 +60,7 @@
                       mnemonicParsing="false" onAction="#handleTutorial" prefHeight="40.0"
                       prefWidth="640.0"
                       style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
-                      text="Play Tutorial">
+                      text="Tutorial">
                       <font>
                         <Font size="24.0"/>
                       </font>

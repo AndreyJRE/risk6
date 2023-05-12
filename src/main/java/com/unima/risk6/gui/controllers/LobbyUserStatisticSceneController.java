@@ -150,8 +150,8 @@ public class LobbyUserStatisticSceneController {
   private void initUserStackPane() {
     userImage = new ImageView(
         ImageConfiguration.getBackgroundByName(ImageName.PLAYER_ICON));
-    userImage.setFitHeight(150);
-    userImage.setFitWidth(150);
+    userImage.setFitHeight(200);
+    userImage.setFitWidth(200);
 
     Circle circle = new Circle();
     circle.setRadius(95);

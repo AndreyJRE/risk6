@@ -119,7 +119,7 @@ public class CreateLobbySceneController {
     anchorPane.getChildren().add(vBox);
 
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.MULTIPLAYER_BACKGROUND);
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.CREATE_LOBBY_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity

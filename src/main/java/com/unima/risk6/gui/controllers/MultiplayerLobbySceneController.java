@@ -227,8 +227,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
       userImage.setFitWidth(130);
       circle.setRadius(65);
     } else {
-      userImage.setFitHeight(110);
-      userImage.setFitWidth(110);
+      userImage.setFitHeight(140);
+      userImage.setFitWidth(140);
       circle.setRadius(70);
     }
 

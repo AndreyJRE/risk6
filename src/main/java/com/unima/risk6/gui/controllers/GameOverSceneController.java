@@ -2,17 +2,14 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.GameStatistic;
-import com.unima.risk6.database.models.User;
-import com.unima.risk6.database.repositories.GameStatisticRepository;
 import com.unima.risk6.database.services.GameStatisticService;
+import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
-import com.unima.risk6.gui.scenes.UserStatisticsScene;
-import java.util.List;
+import com.unima.risk6.gui.scenes.GameOverScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.SnapshotParameters;
@@ -35,30 +32,29 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 
-public class UserStatisticsSceneController {
+public class GameOverSceneController {
 
-  private final UserStatisticsScene userStatisticsScene;
+  private final GameOverScene gameOverScene;
   private final SceneController sceneController;
-  private User user;
+  private final GameStatisticService gameStatisticService;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
-  private GameStatisticRepository gameStatisticRepository;
-  private final GameStatisticService gameStatisticService;
   private GridPane statisticsGridPane;
   private String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-text-fill: white";
   private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
+  private UserDto winner;
 
 
-  public UserStatisticsSceneController(UserStatisticsScene userStatisticsScene) {
-    this.userStatisticsScene = userStatisticsScene;
+  public GameOverSceneController(GameOverScene gameOverScene, UserDto winner) {
+    this.gameOverScene = gameOverScene;
     this.sceneController = SceneConfiguration.getSceneController();
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
+    this.winner = winner;
   }
 
   public void init() {
-    this.user = SessionManager.getUser();
-    this.root = (BorderPane) userStatisticsScene.getRoot();
+    this.root = (BorderPane) gameOverScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"),
         26);
     // Initialize elements
@@ -66,11 +62,11 @@ public class UserStatisticsSceneController {
     initGridPane();
     initElements();
     // Load the image into an ImageView
-    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.STATISTICS_BACKGROUND);
+    Image originalImage = ImageConfiguration.getBackgroundByName(ImageName.WON_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
 // Set the opacity
-    imageView.setOpacity(0.9);
+    imageView.setOpacity(0.8);
 
 // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
@@ -79,7 +75,9 @@ public class UserStatisticsSceneController {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
@@ -90,12 +88,13 @@ public class UserStatisticsSceneController {
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.USER_OPTION));
+    backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
     // Initialize the user name TextField
-    Label userName = new Label(user.getUsername());
+    Label userName = new Label(winner.getUsername());
     userName.setAlignment(Pos.CENTER);
-    userName.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
+    userName.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
 
     // Wrap the userNameField in an HBox to center it
     HBox userNameFieldContainer = new HBox(userName);
@@ -117,12 +116,10 @@ public class UserStatisticsSceneController {
 
   private void initGridPane() {
     statisticsGridPane = new GridPane();
-    List<GameStatistic> statisticList = gameStatisticService.getAllStatisticsByUserId(user.getId());
-    Label startDate = new Label("Account created on: ");
     Label troopsLost = new Label("Number of Troops lost: ");
     Label troopsWon = new Label("Number of Troops defeated: ");
     Label countriesLost = new Label("Number of countries lost: ");
-    Label countriesWon = new Label("Number of countries defeated: ");
+    Label countriesWon = new Label("Number of countries conquered: ");
     Label numberTroopsLost = new Label("0");
     Label numberTroopsWon = new Label("0");
     Label numberCountriesLost = new Label("0");
@@ -135,14 +132,12 @@ public class UserStatisticsSceneController {
     numberCountriesLost.setStyle(numberStyle);
     numberTroopsLost.setStyle(numberStyle);
     numberTroopsWon.setStyle(numberStyle);
-    if (!statisticList.isEmpty()) {
-      //TODO: Statistiken aufsummieren
-      GameStatistic userStatistics = statisticList.get(0);
-      numberCountriesLost.setText(Integer.toString(userStatistics.getCountriesLost()));
-      numberTroopsWon.setText(Integer.toString(userStatistics.getTroopsGained()));
-      numberTroopsLost.setText(Integer.toString(userStatistics.getTroopsLost()));
-      numberCountriesWon.setText(Integer.toString(userStatistics.getCountriesWon()));
-    }
+
+    numberCountriesLost.setText(Double.toString(winner.getWinLossRatio()));
+    numberTroopsWon.setText(Integer.toString(winner.getGamesLost()));
+    numberTroopsLost.setText(Integer.toString(winner.getGamesWon()));
+    numberCountriesWon.setText(Integer.toString(winner.getCountriesConquered()));
+
     statisticsGridPane.add(troopsLost, 0, 0);
     statisticsGridPane.add(troopsWon, 0, 1);
     statisticsGridPane.add(numberTroopsLost, 1, 0);
@@ -157,9 +152,9 @@ public class UserStatisticsSceneController {
   }
 
   private void initUserStackPane() {
-    userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
-    userImage.setFitHeight(200);
-    userImage.setFitWidth(200);
+    userImage = new ImageView(ImageConfiguration.getBackgroundByName(ImageName.PLAYER_ICON));
+    userImage.setFitHeight(150);
+    userImage.setFitWidth(150);
 
     Circle circle = new Circle();
     circle.setRadius(95);

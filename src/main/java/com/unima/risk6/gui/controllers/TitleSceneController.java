@@ -160,6 +160,7 @@ public class TitleSceneController implements Initializable {
 
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
+    int multipleIpAd = 0;
     if (!isOn) {
       StringBuilder ipS = new StringBuilder();
       try {
@@ -172,15 +173,21 @@ public class TitleSceneController implements Initializable {
                 && inetAddress.getAddress().length == 4) {
               ipS.append(ip);
               ipS.append(",");
+              multipleIpAd++;
             }
           }
         }
       } catch (SocketException e) {
         throw new RuntimeException(e);
       }
+      System.out.println(ipS.toString());
       ipLabel.setStyle(
           "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #ffffff");
-      ipLabel.setText("Your IP Addresses: " + Arrays.toString(ipS.toString().split(",")));
+      if(multipleIpAd > 1) {
+        ipLabel.setText("Your IP Addresses: " + Arrays.toString(ipS.toString().split(",")));
+      } else{
+        ipLabel.setText("Your IP Address: " + Arrays.toString(ipS.toString().split(",")));
+      }
       ipLabel.setEditable(false);
       ipLabel.setPrefWidth(500.0);
     } else {

@@ -308,8 +308,8 @@ public class UserOptionsSceneController {
 
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
-    userImage.setFitHeight(150);
-    userImage.setFitWidth(150);
+    userImage.setFitHeight(200);
+    userImage.setFitWidth(200);
 
     Circle circle = new Circle();
     circle.setRadius(95);

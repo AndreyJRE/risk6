@@ -16,6 +16,8 @@ public class ImageConfiguration {
   private static final String OPTIONS_IMAGE = "/com/unima/risk6/pictures/optionsBackground.png";
   private static final String STATISTICS_IMAGE = "/com/unima/risk6/pictures/statisticsBackground.png";
   private static final String SELECTED_USER_IMAGE = "/com/unima/risk6/pictures/selectedUser.png";
+  private static final String SELECT_LOBBY_BACKGROUND = "/com/unima/risk6/pictures/selectLobbyBackground.png";
+  private static final String CREATE_LOBBY_BACKGROUND = "/com/unima/risk6/pictures/createLobby.png";
   private static final String PLAYER_ICON = "/com/unima/risk6/pictures/playerIcon.png";
   private static final String EASYBOT_ICON = "/com/unima/risk6/pictures/easyBot.png";
   private static final String MEDIUMBOT_ICON = "/com/unima/risk6/pictures/mediumBot.png";
@@ -45,6 +47,10 @@ public class ImageConfiguration {
     images.put(ImageName.STATISTICS_BACKGROUND, statisticsImage);
     Image selectedUserImage = initImage(SELECTED_USER_IMAGE);
     images.put(ImageName.SELECTED_USER_BACKGROUND, selectedUserImage);
+    Image selectLobbyImage = initImage(SELECT_LOBBY_BACKGROUND);
+    images.put(ImageName.SELECT_LOBBY_BACKGROUND, selectLobbyImage);
+    Image createLobbyImage = initImage(CREATE_LOBBY_BACKGROUND);
+    images.put(ImageName.CREATE_LOBBY_BACKGROUND, createLobbyImage);
     Image playerIcon = initImage(PLAYER_ICON);
     images.put(ImageName.PLAYER_ICON, playerIcon);
     Image easyBotIcon = initImage(EASYBOT_ICON);

@@ -62,8 +62,8 @@ public class SelectedUserSceneController {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) selectedUserScene.getRoot();
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
-    userImage.setFitHeight(200);
-    userImage.setFitWidth(200);
+    userImage.setFitHeight(260);
+    userImage.setFitWidth(260);
 
     initUserStackPane();
     initElements();

@@ -120,6 +120,7 @@ public class JoinOnlineSceneController {
     TextField portTextField = new TextField();
     portTextField.setPrefSize(800, 40);
     portTextField.setFont(Font.font(18));
+    portTextField.setText("8080");
     portTextField.setPromptText("Enter Port");
     portTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
@@ -156,7 +157,7 @@ public class JoinOnlineSceneController {
 
     anchorPane.getChildren().add(vBox);
 
-    joinButton.setOnMouseClicked(
+    joinButton.setOnAction(
         e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
 
     return anchorPane;
