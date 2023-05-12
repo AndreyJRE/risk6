@@ -1,12 +1,10 @@
 package com.unima.risk6.network.message;
 
-import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.EndPhase;
-import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
-import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.*;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.network.message.enums.ContentType;
+
+import java.util.HashMap;
 
 public abstract class Message<MessageType> {
 
@@ -43,6 +41,8 @@ public abstract class Message<MessageType> {
       contentType = ContentType.HAND_IN;
     } else if (content.getClass().equals(EndPhase.class)) {
       contentType = ContentType.END_PHASE;
+    } else if (content.getClass().equals(HashMap.class)) {
+      contentType = ContentType.ORDER;
     }
   }
 

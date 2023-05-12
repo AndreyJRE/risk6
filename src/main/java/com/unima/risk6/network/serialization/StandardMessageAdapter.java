@@ -1,19 +1,14 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.EndPhase;
-import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
-import com.unima.risk6.game.logic.Reinforce;
+import com.google.gson.*;
+import com.unima.risk6.game.logic.*;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.message.enums.ContentType;
+
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StandardMessageAdapter implements JsonDeserializer<StandardMessage> {
 
@@ -49,6 +44,13 @@ public class StandardMessageAdapter implements JsonDeserializer<StandardMessage>
       case END_PHASE -> {
         EndPhase endPhase = context.deserialize(jsonObject.get("content"), EndPhase.class);
         message = new StandardMessage<EndPhase>(endPhase, statusCode);
+      }
+      case ORDER -> {
+        HashMap<String, Integer> map = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : jsonObject.get("content").getAsJsonObject().entrySet()) {
+          map.put(entry.getKey(), entry.getValue().getAsInt());
+        }
+        message = new StandardMessage<HashMap<String, Integer>>(map, statusCode);
       }
       case DEFAULT -> {
         String defaultContent = context.deserialize(jsonObject.get("content"), String.class);

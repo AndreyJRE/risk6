@@ -1,11 +1,5 @@
 package com.unima.risk6.gui.controllers;
 
-import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.showConfirmationDialog;
-import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
-
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.ChatObserver;
@@ -15,41 +9,31 @@ import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
-import java.util.ArrayList;
-import java.util.Iterator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.*;
 
 public class SelectMultiplayerLobbySceneController implements ServerLobbyObserver, ChatObserver {
 
@@ -90,7 +74,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
+    backButton.setOnMouseClicked(e -> handleQuitServerLobby());
 
     Label title = new Label("Select Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
@@ -267,6 +251,14 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     pauseTitleSound();
     lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
     sceneController.activate(SceneName.CREATE_LOBBY);
+  }
+
+  private void handleQuitServerLobby() {
+    if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
+            "Are you sure that you want to leave the Lobby?")) {
+      LobbyConfiguration.sendQuitServerLobby(GameConfiguration.getMyGameUser());
+      sceneController.activate(SceneName.TITLE);
+    }
   }
 
   @Override

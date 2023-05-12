@@ -26,10 +26,12 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.util.CharsetUtil;
-import java.util.ArrayList;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -110,6 +112,11 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 .getContent();
             LOGGER.debug("Client got a chat message " + message);
             LobbyConfiguration.setLastChatMessage(message);
+          }
+          case "ORDER" -> {
+            HashMap<String, Integer> hashMap2 = (HashMap<String, Integer>) Deserializer.deserialize(textFrame.text()).getContent();
+            LOGGER.debug("Client got a order message ");
+            //TODO
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
