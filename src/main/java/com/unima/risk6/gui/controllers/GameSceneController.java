@@ -1,5 +1,7 @@
 package com.unima.risk6.gui.controllers;
 
+import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
+
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
@@ -23,8 +25,11 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.GameOverScene;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.gui.scenes.UserOptionsScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
 import com.unima.risk6.gui.uiModels.ChatUi;
 import com.unima.risk6.gui.uiModels.CountryUi;
@@ -647,6 +652,18 @@ public class GameSceneController implements GameStateObserver {
       activePlayerUi.setDisplayDeployable(false);
       activePlayerUi.controlDeployableTroops();
     }
+    /*if(gameState.isGameOver()){
+      GameOverScene scene = (GameOverScene) SceneConfiguration.getSceneController()
+          .getSceneBySceneName(SceneName.GAME_OVER);
+      if (scene == null) {
+        scene = new GameOverScene();
+        GameOverSceneController gameOverSceneController = new GameOverSceneController(scene,gameState.getCurrentPlayer().getStatistic(), gameState);
+        scene.setController(gameOverSceneController);
+        sceneController.addScene(SceneName.GAME_OVER, scene);
+      }
+      pauseTitleSound();
+      sceneController.activate(SceneName.GAME_OVER);
+    }*/
     nextPhaseButton.setVisible(
         checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
             != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()

@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.scenes;
 
+import com.unima.risk6.gui.controllers.GameOverSceneController;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.controllers.UserStatisticsSceneController;
 import javafx.scene.Scene;
@@ -7,7 +8,7 @@ import javafx.scene.layout.BorderPane;
 
 public class GameOverScene extends Scene implements InitializableScene {
 
-  private GameSceneController gameSceneController;
+  private GameOverSceneController gameOverSceneController;
 
   public GameOverScene() {
     super(new BorderPane());
@@ -15,13 +16,13 @@ public class GameOverScene extends Scene implements InitializableScene {
 
   @Override
   public void init() {
-    if (gameSceneController != null) {
-      gameSceneController.init();
+    if (gameOverSceneController != null) {
+      gameOverSceneController.init();
     }
   }
 
-  public void setController(GameSceneController gameSceneController) {
-    this.gameSceneController = gameSceneController;
+  public void setController(GameOverSceneController gameOverSceneController) {
+    this.gameOverSceneController = gameOverSceneController;
   }
 
 }

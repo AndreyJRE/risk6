@@ -2,6 +2,8 @@ package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.services.GameStatisticService;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -42,14 +44,16 @@ public class GameOverSceneController {
   private GridPane statisticsGridPane;
   private String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-text-fill: white";
   private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
-  private UserDto winner;
+  private Statistic statistic;
+  private GameState gameState;
 
 
-  public GameOverSceneController(GameOverScene gameOverScene, UserDto winner) {
+  public GameOverSceneController(GameOverScene gameOverScene, Statistic statistic, GameState gameState) {
     this.gameOverScene = gameOverScene;
     this.sceneController = SceneConfiguration.getSceneController();
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
-    this.winner = winner;
+    this.statistic = statistic;
+    this.gameState = gameState;
   }
 
   public void init() {
@@ -90,7 +94,7 @@ public class GameOverSceneController {
     backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
 
     // Initialize the user name TextField
-    Label userName = new Label(winner.getUsername());
+    Label userName = new Label(gameState.getCurrentPlayer().getUser());
     userName.setAlignment(Pos.CENTER);
     userName.setStyle(
         "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
@@ -107,46 +111,54 @@ public class GameOverSceneController {
     centerVBox.setSpacing(20);
     centerVBox.setAlignment(Pos.CENTER);
 
+    Label winner = new Label("Winner Winner Chicken Dinner!");
+    winner.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 90px; -fx-text-fill: white");
+
+    HBox winnerBox = new HBox(winner);
+    winnerBox.setAlignment(Pos.CENTER);
+
+    root.setTop(winnerBox);
     root.setLeft(backButton);
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
+    BorderPane.setMargin(winnerBox, new Insets(10, 10, 10, 10));
     root.setCenter(centerVBox);
   }
 
   private void initGridPane() {
     statisticsGridPane = new GridPane();
-    Label gamesLost = new Label("Games lost: ");
-    Label gamesWon = new Label("Games won: ");
-    Label countriesConquered = new Label("Total countries conquered: ");
-    Label hoursPlayed = new Label("Total hours played: ");
-    Label winLossRatio = new Label("Win / Loss Ratio: ");
-    Label numberGamesLost = new Label(Integer.toString(winner.getGamesLost()));
-    Label numberGamesWon = new Label(Integer.toString(winner.getGamesWon()));
-    Label numberCountriesConquered = new Label(Integer.toString(winner.getCountriesConquered()));
-    Label numberHoursPlayed = new Label(Double.toString(winner.getHoursPlayed()));
-    Label elo = new Label(Double.toString(winner.getWinLossRatio()));
+    Label countriesWon = new Label("Countries won: ");
+    Label countriesLost = new Label("Countries lost: ");
+    Label troops = new Label("Total troops at the end: ");
+    Label troopsGained = new Label("Troops gained: ");
+    Label troopsLost = new Label("Troops lost: ");
+    Label numberCountriesWon = new Label(Integer.toString(statistic.getCountriesWon()));
+    Label numberCountriesLost = new Label(Integer.toString(statistic.getCountriesLost()));
+    Label numberTroops = new Label(Integer.toString(statistic.getNumberOfTroops()));
+    Label numberTroopsGained = new Label(Integer.toString(statistic.getTroopsGained()));
+    Label numberTroopsLost = new Label(Integer.toString(statistic.getTroopsLost()));
 
-    gamesWon.setStyle(labelStyle);
-    gamesLost.setStyle(labelStyle);
-    countriesConquered.setStyle(labelStyle);
-    hoursPlayed.setStyle(labelStyle);
-    winLossRatio.setStyle(labelStyle);
-    numberGamesLost.setStyle(numberStyle);
-    numberGamesWon.setStyle(numberStyle);
-    numberCountriesConquered.setStyle(numberStyle);
-    numberHoursPlayed.setStyle(numberStyle);
-    elo.setStyle(numberStyle);
+    countriesLost.setStyle(labelStyle);
+    countriesWon.setStyle(labelStyle);
+    troops.setStyle(labelStyle);
+    troopsGained.setStyle(labelStyle);
+    troopsLost.setStyle(labelStyle);
+    numberCountriesWon.setStyle(numberStyle);
+    numberCountriesLost.setStyle(numberStyle);
+    numberTroops.setStyle(numberStyle);
+    numberTroopsGained.setStyle(numberStyle);
+    numberTroopsLost.setStyle(numberStyle);
 
-    statisticsGridPane.add(gamesWon, 0, 0);
-    statisticsGridPane.add(gamesLost, 0, 1);
-    statisticsGridPane.add(numberGamesWon, 1, 0);
-    statisticsGridPane.add(numberGamesLost, 1, 1);
-    statisticsGridPane.add(countriesConquered, 0, 2);
-    statisticsGridPane.add(numberCountriesConquered, 1, 2);
-    statisticsGridPane.add(hoursPlayed, 0, 3);
-    statisticsGridPane.add(numberHoursPlayed, 1, 3);
-    statisticsGridPane.add(winLossRatio, 0, 4);
-    statisticsGridPane.add(elo, 1, 4);
+    statisticsGridPane.add(troops, 0, 0);
+    statisticsGridPane.add(troopsGained, 0, 1);
+    statisticsGridPane.add(numberTroops, 1, 0);
+    statisticsGridPane.add(numberTroopsGained, 1, 1);
+    statisticsGridPane.add(troopsLost, 0, 2);
+    statisticsGridPane.add(numberTroopsLost, 1, 2);
+    statisticsGridPane.add(countriesWon, 0, 3);
+    statisticsGridPane.add(numberCountriesWon, 1, 3);
+    statisticsGridPane.add(countriesLost, 0, 4);
+    statisticsGridPane.add(numberCountriesLost, 1, 4);
 
     statisticsGridPane.setAlignment(Pos.CENTER);
     statisticsGridPane.setHgap(30); // Set horizontal gap
