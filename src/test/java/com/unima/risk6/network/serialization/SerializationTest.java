@@ -1,8 +1,5 @@
 package com.unima.risk6.network.serialization;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
@@ -16,14 +13,16 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
-import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.StandardMessage;
-import com.unima.risk6.network.message.enums.ConnectionActions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for object serialization
@@ -209,8 +208,14 @@ public class SerializationTest {
   }
 
   @Test
-  void testConnectionMessageSerialization() {
-    ConnectionMessage message = new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, "Game1");
+  void testOrderMessageSerializationTest() {
+    HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+    hashMap.put("lel", 1);
+    hashMap.put("lol", 2);
+    StandardMessage<HashMap> message = new StandardMessage<HashMap>(hashMap);
     System.out.println(Serializer.serialize(message));
+    HashMap<String, Integer> hashMap2 = (HashMap<String, Integer>) Deserializer.deserialize(Serializer.serialize(message)).getContent();
+    assertEquals(hashMap.get("lel"), hashMap2.get("lel"));
   }
+
 }
