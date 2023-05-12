@@ -11,20 +11,12 @@ import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.EndPhase;
-import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
-import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.*;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.GameLobby;
-import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.ServerLobby;
-import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.game.models.*;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
@@ -38,10 +30,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import java.util.HashMap;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
@@ -73,8 +66,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       JsonObject json = null;
       try {
         moveProcessor = gameLobbyChannels.getMoveProcessor(ctx.channel());
-      } catch (Exception e) {
-        System.out.println("cant get Moveprocessor " + e);
+      } catch (java.util.NoSuchElementException ignored) {
       }
       try {
         LOGGER.debug("Server: Trying to read message");
@@ -411,9 +403,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
-  private void sendUpdatedServerLobby(ServerLobby serverLobby) {
+  protected void sendUpdatedServerLobby(ServerLobby serverLobby) {
     String serialized = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
+            new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
     for (Channel ch : channels) {
       LOGGER.debug("Send updated server lobby to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(serialized));
@@ -560,7 +552,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    System.out.println("Connection Lost");
+    LOGGER.info("Lost connection to one client.");
+    gameLobbyChannels.handleExit(ctx.channel(), this);
 
   }
 
