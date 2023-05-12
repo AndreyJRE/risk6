@@ -29,7 +29,7 @@ public class TutorialBot extends Player implements AiBot {
   private Queue<CountryPair> deterministicAttacks;
   private Queue<Fortify> deterministicAfterAttacks;
   private Queue<Fortify> deterministicFortifies;
-  private final Map<CountryName, Country> countryMap;
+  private Map<CountryName, Country> countryMap;
 
   /**
    * Constructs a TutorialBot instance with a specified username.
@@ -130,7 +130,9 @@ public class TutorialBot extends Player implements AiBot {
 
   @Override
   public Fortify createFortify() {
-    return this.deterministicFortifies.poll();
+    Country outgoing = this.countryMap.get(CountryName.BRAZIL);
+    Country incoming = this.countryMap.get(CountryName.VENEZUELA);
+    return new Fortify(outgoing, incoming, (outgoing.getTroops() - incoming.getTroops()) / 2);
   }
 
   /**
@@ -167,7 +169,8 @@ public class TutorialBot extends Player implements AiBot {
 
   @Override
   public void setGameState(GameState gameState) {
-
+    this.countryMap = gameState.getCountries().stream()
+        .collect(Collectors.toMap(Country::getCountryName, Function.identity()));
   }
 
   public Queue<Reinforce> getDeterministicClaims() {
