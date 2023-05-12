@@ -141,11 +141,13 @@ public class GameConfiguration {
     GameConfiguration.tutorial = tutorial;
   }
 
-  public void setDiceRolls(HashMap<String, Integer> diceRolls) {
+  public static void setDiceRolls(HashMap<String, Integer> diceRolls) {
     GameConfiguration.diceRolls = diceRolls;
   }
 
   public static HashMap<String, Integer> getDiceRolls() {
     return diceRolls;
   }
+
+
 }
