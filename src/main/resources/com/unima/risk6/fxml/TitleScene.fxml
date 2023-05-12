@@ -16,120 +16,150 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unima.risk6.gui.controllers.TitleSceneController">
+<AnchorPane fx:id="root" prefHeight="720.0" prefWidth="1080.0"
+  xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="com.unima.risk6.gui.controllers.TitleSceneController">
   <children>
-    <MediaView fx:id="backgroundVideoView" opacity="0.9" preserveRatio="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <MediaView fx:id="backgroundVideoView" opacity="0.9" preserveRatio="false"
+      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+      AnchorPane.topAnchor="0.0">
     </MediaView>
-    <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+      AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <center>
         <VBox alignment="CENTER" spacing="30.0">
           <HBox alignment="CENTER">
             <children>
-                     <VBox>
-                        <children>
-                    <VBox alignment="CENTER" prefHeight="295.0" prefWidth="640.0" spacing="15.0" style="-fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);">
-                      <Label fx:id="titleLabel" alignment="CENTER" text="RISK" textFill="WHITE">
-                        <font>
-                          <Font name="72 Bold Italic" size="96.0" />
-                        </font>
-                      </Label>
-                      <Label />
-                      <Button fx:id="singlePlayerButton" mnemonicParsing="false" onAction="#handleSinglePlayer" prefHeight="40.0" prefWidth="640.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Singleplayer">
-                        <font>
-                          <Font size="25.0" />
-                        </font>
-                      </Button>
-                      <Button fx:id="multiPlayerButton" mnemonicParsing="false" onAction="#handleMultiPlayer" prefHeight="40.0" prefWidth="640.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Multiplayer">
-                        <font>
-                          <Font size="24.0" />
-                        </font>
-                      </Button>
-                              <Button fx:id="tutorialButton" layoutX="35.0" layoutY="255.0" mnemonicParsing="false" onAction="#handleTutorial" prefHeight="40.0" prefWidth="640.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Play Tutorial">
-                                 <font>
-                                    <Font size="24.0" />
-                                 </font>
-                              </Button>
-                      <Label alignment="CENTER" prefHeight="0.0" prefWidth="72.0">
-                        <font>
-                          <Font name="BentonSans Bold" size="25.0" />
-                        </font>
-                      </Label>
-                      <HBox alignment="CENTER">
-                        <children>
-                          <Button fx:id="optionsButton" mnemonicParsing="false" onAction="#handleOptions" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;" text="Options">
-                            <font>
-                              <Font size="25.0" />
-                            </font>
-                          </Button>
-                          <Label alignment="CENTER" graphicTextGap="10.0" prefHeight="0.0" prefWidth="72.0" text="....">
-                            <font>
-                              <Font name="BentonSans Bold" size="1.0" />
-                            </font>
-                          </Label>
-                          <Button fx:id="quitButton" mnemonicParsing="false" onAction="#handleQuitGame" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;" text="Quit">
-                            <font>
-                              <Font size="25.0" />
-                            </font>
-                          </Button>
-                        </children>
-                      </HBox>
-                      <padding>
-                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-                      </padding>
-                    </VBox>
-                        </children>
-                     </VBox>
+              <VBox>
+                <children>
+                  <VBox alignment="CENTER" prefHeight="295.0" prefWidth="640.0" spacing="15.0"
+                    style="-fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);">
+                    <Label fx:id="titleLabel" alignment="CENTER" text="RISK" textFill="WHITE">
+                      <font>
+                        <Font name="72 Bold Italic" size="96.0"/>
+                      </font>
+                    </Label>
+                    <Label/>
+                    <Button fx:id="singlePlayerButton" mnemonicParsing="false"
+                      onAction="#handleSinglePlayer" prefHeight="40.0" prefWidth="640.0"
+                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
+                      text="Singleplayer">
+                      <font>
+                        <Font size="25.0"/>
+                      </font>
+                    </Button>
+                    <Button fx:id="multiPlayerButton" mnemonicParsing="false"
+                      onAction="#handleMultiPlayer" prefHeight="40.0" prefWidth="640.0"
+                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
+                      text="Multiplayer">
+                      <font>
+                        <Font size="24.0"/>
+                      </font>
+                    </Button>
+                    <Button fx:id="tutorialButton" layoutX="35.0" layoutY="255.0"
+                      mnemonicParsing="false" onAction="#handleTutorial" prefHeight="40.0"
+                      prefWidth="640.0"
+                      style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 40; -fx-border-radius: 40; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
+                      text="Play Tutorial">
+                      <font>
+                        <Font size="24.0"/>
+                      </font>
+                    </Button>
+                    <Label alignment="CENTER" prefHeight="0.0" prefWidth="72.0">
+                      <font>
+                        <Font name="BentonSans Bold" size="25.0"/>
+                      </font>
+                    </Label>
+                    <HBox alignment="CENTER">
+                      <children>
+                        <Button fx:id="optionsButton" mnemonicParsing="false"
+                          onAction="#handleOptions" prefHeight="35.0" prefWidth="300.0"
+                          style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A);                           -fx-background-radius: 30; -fx-border-radius: 30;                           -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);                           -fx-text-fill: #FFFFFF;"
+                          text="Options">
+                          <font>
+                            <Font size="25.0"/>
+                          </font>
+                        </Button>
+                        <Label alignment="CENTER" graphicTextGap="10.0" prefHeight="0.0"
+                          prefWidth="72.0" text="....">
+                          <font>
+                            <Font name="BentonSans Bold" size="1.0"/>
+                          </font>
+                        </Label>
+                        <Button fx:id="quitButton" mnemonicParsing="false"
+                          onAction="#handleQuitGame" prefHeight="35.0" prefWidth="300.0"
+                          style="-fx-background-color: linear-gradient(#FFDAB9, #FFA07A); -fx-background-radius: 30; -fx-border-radius: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-text-fill: #FFFFFF;"
+                          text="Quit">
+                          <font>
+                            <Font size="25.0"/>
+                          </font>
+                        </Button>
+                      </children>
+                    </HBox>
+                    <padding>
+                      <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                    </padding>
+                  </VBox>
+                </children>
+              </VBox>
             </children>
           </HBox>
         </VBox>
       </center>
       <bottom>
-            <AnchorPane BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-               </BorderPane.margin>
-               <children>
-            <TextField fx:id="ipLabel" editable="false" layoutX="7.0" layoutY="9.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0">
+        <AnchorPane BorderPane.alignment="CENTER">
+          <BorderPane.margin>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+          </BorderPane.margin>
+          <children>
+            <TextField fx:id="ipLabel" editable="false" layoutX="7.0" layoutY="9.0"
+              style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="5.0"
+              AnchorPane.leftAnchor="15.0">
               <font>
-                <Font size="25.0" />
+                <Font size="25.0"/>
               </font>
             </TextField>
-            <HBox alignment="CENTER_RIGHT" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0">
+            <HBox alignment="CENTER_RIGHT" nodeOrientation="LEFT_TO_RIGHT"
+              AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="15.0">
               <children>
                 <StackPane HBox.hgrow="ALWAYS">
-                  <Rectangle fx:id="background" arcHeight="50.0" arcWidth="50" fill="WHITE" height="45.0" stroke="LIGHTGRAY" width="90.0" StackPane.alignment="CENTER_RIGHT" />
-                  <Circle fx:id="trigger" fill="WHITE" radius="22.5" stroke="LIGHTGRAY" StackPane.alignment="CENTER_RIGHT">
+                  <Rectangle fx:id="background" arcHeight="50.0" arcWidth="50" fill="WHITE"
+                    height="45.0" stroke="LIGHTGRAY" width="90.0"
+                    StackPane.alignment="CENTER_RIGHT"/>
+                  <Circle fx:id="trigger" fill="WHITE" radius="22.5" stroke="LIGHTGRAY"
+                    StackPane.alignment="CENTER_RIGHT">
                     <StackPane.margin>
-                      <Insets right="45.0" />
+                      <Insets right="45.0"/>
                     </StackPane.margin>
                   </Circle>
-                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Host Game" textFill="WHITE" StackPane.alignment="CENTER_RIGHT">
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Host Game"
+                    textFill="WHITE" StackPane.alignment="CENTER_RIGHT">
                     <font>
-                      <Font size="25.0" />
+                      <Font size="25.0"/>
                     </font>
                     <StackPane.margin>
-                      <Insets right="110.0" />
+                      <Insets right="110.0"/>
                     </StackPane.margin>
                   </Label>
                 </StackPane>
               </children>
             </HBox>
-               </children>
-            </AnchorPane>
+          </children>
+        </AnchorPane>
       </bottom>
-         <top>
-            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="1080.0" spacing="10.0" BorderPane.alignment="CENTER">
-               <children>
-                  <ImageView fitHeight="34.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../pictures/soundIcon.png" />
-                     </image>
-                  </ImageView>
-                  <Slider prefHeight="25.0" prefWidth="351.0" />
-               </children>
-            </HBox>
-         </top>
+      <top>
+        <HBox alignment="CENTER" prefHeight="40.0" prefWidth="1080.0" spacing="10.0"
+          BorderPane.alignment="CENTER">
+          <children>
+            <ImageView fitHeight="34.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                <Image url="@../pictures/soundIcon.png"/>
+              </image>
+            </ImageView>
+            <Slider fx:id="volumeSlider" prefHeight="25.0" prefWidth="351.0"/>
+          </children>
+        </HBox>
+      </top>
     </BorderPane>
   </children>
 </AnchorPane>

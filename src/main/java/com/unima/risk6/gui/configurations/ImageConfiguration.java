@@ -1,15 +1,10 @@
 package com.unima.risk6.gui.configurations;
 
 import com.unima.risk6.gui.controllers.enums.ImageName;
+import java.net.URL;
 import java.util.HashMap;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.paint.Color;
+import javafx.scene.media.Media;
 
 public class ImageConfiguration {
 
@@ -29,7 +24,7 @@ public class ImageConfiguration {
 
 
   private static HashMap<ImageName, Image> images;
-
+  private static Media titleBackgroundVideo;
 
 
   public static void loadImages() {
@@ -60,14 +55,24 @@ public class ImageConfiguration {
     images.put(ImageName.HARDBOT_ICON, hardBotIcon);
     Image tutorialBotIcon = initImage(TUTORIAL_ICON);
     images.put(ImageName.TUTORIAL_ICON, tutorialBotIcon);
+    URL mediaUrl = ImageConfiguration.class.getResource(
+        "/com/unima/risk6/pictures/backgroundVideo.png");
+    String mediaStringUrl = mediaUrl.toExternalForm();
+    titleBackgroundVideo = new Media(mediaStringUrl);
 
   }
 
-  public static Image getBackgroundByName(ImageName imageName){return images.get(imageName);}
+  public static Image getBackgroundByName(ImageName imageName) {
+    return images.get(imageName);
+  }
 
   public static Image initImage(String path) {
     // Load the image into an ImageView
     Image image = new Image(ImageConfiguration.class.getResource(path).toString());
     return image;
+  }
+
+  public static Media getTitleBackgroundVideo() {
+    return titleBackgroundVideo;
   }
 }

@@ -88,7 +88,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     // Initialize the username TextField
     Label title = new Label("Singleplayer Lobby");
     title.setAlignment(Pos.CENTER);
-    title.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
+    title.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -119,7 +120,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
 
 // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
-    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+    BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
+        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+        backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
     root.setTop(titleBox);
@@ -308,12 +311,12 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     botBox.setSpacing(-10);
 
     VBox removeBox = new VBox();
-    if(tutorial){
+    if (tutorial) {
       Button removeButton = new Button("");
       removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
           + "-fx-background-color: transparent; -fx-border-color: transparent;");
       removeBox = new VBox(removeButton, botBox);
-    }else{
+    } else {
       Button removeButton = new Button("Remove");
       removeButton.setStyle("-fx-background-radius: 20; -fx-border-radius: 20; -fx-font-size: 16; "
           + "-fx-background-color: lightgrey; -fx-border-color: black;");
@@ -339,13 +342,23 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
       showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
       return;
     }
-    LobbyConfiguration.sendStartTutorial(gameLobby);
-    try {
-      Thread.sleep(300);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+    if (tutorial) {
+      LobbyConfiguration.sendStartTutorial(gameLobby);
+      try {
+        Thread.sleep(300);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      SceneConfiguration.startGame();
+    } else {
+      LobbyConfiguration.sendStartGame(gameLobby);
+      try {
+        Thread.sleep(300);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
     }
-    SceneConfiguration.startGame();
+
   }
 
   @Override

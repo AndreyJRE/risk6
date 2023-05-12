@@ -9,8 +9,10 @@ import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
@@ -39,10 +41,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
@@ -53,6 +55,8 @@ import javafx.util.Duration;
 
 public class TitleSceneController implements Initializable {
 
+  @FXML
+  public Slider volumeSlider;
   @FXML
   private AnchorPane root;
 
@@ -100,17 +104,15 @@ public class TitleSceneController implements Initializable {
     applyButtonStyle(tutorialButton);
     applyButtonStyle(optionsButton);
     applyButtonStyle(quitButton);
-    URL mediaUrl = getClass().getResource("/com/unima/risk6/pictures/backgroundVideo.png");
-    String mediaStringUrl = mediaUrl.toExternalForm();
-    Media media = new Media(mediaStringUrl);
-    MediaPlayer mediaPlayer = new MediaPlayer(media);
+    volumeSlider.setValue(SoundConfiguration.getVolume() * 100);
+    volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+      SoundConfiguration.setVolume(newValue.doubleValue() / 100.0);
+    });
+    MediaPlayer mediaPlayer = new MediaPlayer(ImageConfiguration.getTitleBackgroundVideo());
     backgroundVideoView.setMediaPlayer(mediaPlayer);
-    mediaPlayer.setOnEndOfMedia(new Runnable() {
-      @Override
-      public void run() {
-        // Das Video von vorne beginnen
-        mediaPlayer.seek(Duration.ZERO);
-      }
+    mediaPlayer.setOnEndOfMedia(() -> {
+      // Das Video von vorne beginnen
+      mediaPlayer.seek(Duration.ZERO);
     });
     mediaPlayer.play();
     backgroundVideoView.fitWidthProperty().bind(root.widthProperty());

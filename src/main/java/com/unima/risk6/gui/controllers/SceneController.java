@@ -68,13 +68,13 @@ public class SceneController {
   }
 
   private void fadeIn(Scene scene) {
-    FadeTransition fadeTransition = new FadeTransition(Duration.millis(650), scene.getRoot());
+    FadeTransition fadeTransition = new FadeTransition(Duration.millis(400), scene.getRoot());
     fadeTransition.setFromValue(0.0);
     fadeTransition.setToValue(1.0);
 
-    ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(650), scene.getRoot());
-    scaleTransition.setFromX(0.95);
-    scaleTransition.setFromY(0.95);
+    ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(400), scene.getRoot());
+    scaleTransition.setFromX(0.98);
+    scaleTransition.setFromY(0.98);
     scaleTransition.setToX(1.0);
     scaleTransition.setToY(1.0);
 

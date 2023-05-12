@@ -110,9 +110,7 @@ public class GameSceneController implements GameStateObserver {
   public void init() {
     Tutorial tutorial = GameConfiguration.getTutorial();
     if (tutorial != null) {
-      System.out.println("Tutorial is not null");
       this.gameState = tutorial.getTutorialState();
-      System.out.println(gameState);
     } else {
       this.gameState = GameConfiguration.getGameState();
     }

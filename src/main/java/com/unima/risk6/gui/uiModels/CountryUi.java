@@ -60,6 +60,8 @@ public class CountryUi extends Group {
 
   private static boolean isCountrySelected = false;
 
+  private Color color;
+
 
   public CountryUi(Country country, String SVGPath) {
     super();
@@ -67,7 +69,8 @@ public class CountryUi extends Group {
     this.countryPath = new SVGPath();
     this.troopsCounterUi = null;
     this.countryPath.setContent(SVGPath);
-    this.countryPath.setFill(Color.WHITE);
+    this.color = Color.WHITE;
+    this.countryPath.setFill(color);
     this.countryPath.setStroke(Color.BLACK);
     this.getChildren().add(new Group(this.countryPath));
     glowEffect = new DropShadow();
@@ -112,6 +115,9 @@ public class CountryUi extends Group {
                 .filter(country1 -> !country1.hasPlayer()).toList().size();
             if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
                 || !country.hasPlayer()) {
+              if (this.color == Color.WHITE) {
+                this.countryPath.setFill(Color.LIGHTGRAY);
+              }
               this.setCursor(Cursor.CROSSHAIR);
             }
           }
@@ -129,6 +135,7 @@ public class CountryUi extends Group {
           }
         }
       } else {
+        this.countryPath.setFill(color);
         this.setCursor(Cursor.DEFAULT);
       }
     });
@@ -252,8 +259,8 @@ public class CountryUi extends Group {
     closeIcon.setFitWidth(20);
     closeIcon.setFitHeight(20);
     closeAmountOfTroopsButton.setGraphic(closeIcon);
-    closeAmountOfTroopsButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);"
-        + "-fx-background-radius: 10px;");
+    closeAmountOfTroopsButton.setStyle(
+        "-fx-background-color: rgba(255, 255, 255, 0.3);" + "-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
 
     moveTroopsPane.setTop(closeAmountOfTroopsButton);
@@ -508,11 +515,11 @@ public class CountryUi extends Group {
       return;
     }
     FillTransition highlightTransition = new FillTransition(Duration.seconds(0.65),
-        this.countryPath,
-        countryPathColor, playerColor);
+        this.countryPath, countryPathColor, playerColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     glowEffect.setColor(playerColor);
     highlightTransition.play();
+    this.color = playerColor;
   }
 
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
@@ -524,6 +531,7 @@ public class CountryUi extends Group {
           attacker.getCountryPath(), (Color) attacker.getCountryPath().getFill(), playerColor);
       highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
       highlightTransition.play();
+      this.color = playerColor;
       if (GameSceneController.getMyPlayerUi().getPlayer()
           .equals(activePlayerUi.getPlayerUi().getPlayer())) {
         GameSceneController.getPlayerController()

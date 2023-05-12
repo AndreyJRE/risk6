@@ -47,6 +47,15 @@ public class HandController {
     }
   }
 
+  /**
+   * Determines if the selected cards are exchangeable.
+   *
+   * @return true if the selected cards are exchangeable, false otherwise.
+   */
+  public boolean isExchangeable() {
+    return isExchangeable(selectedCards);
+  }
+
 
   /**
    * Selects a card from the hand by the card object.
@@ -142,15 +151,13 @@ public class HandController {
     if (cards.size() < 3) {
       return false;
     }
-    return (numberOfWildcards == 2 || numberOfCannonCards >= 3
-        || numberOfInfantryCards >= 3 || numberOfCavalryCards >= 3)
-        || (numberOfWildcards == 1 && (numberOfCannonCards == 2
-        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2))
-        || (numberOfCannonCards >= 1 && numberOfCavalryCards >= 1 && numberOfInfantryCards >= 1)
-        || (numberOfWildcards == 1 && ((numberOfCannonCards == 0 && numberOfCavalryCards == 1
-        && numberOfInfantryCards == 1) || numberOfCannonCards == 1 && numberOfCavalryCards == 0
-        && numberOfInfantryCards == 1) || numberOfCannonCards == 1 && numberOfCavalryCards == 1
-        && numberOfInfantryCards == 0);
+    return (numberOfWildcards == 2 || numberOfCannonCards >= 3 || numberOfInfantryCards >= 3
+        || numberOfCavalryCards >= 3) || (numberOfWildcards == 1 && (numberOfCannonCards == 2
+        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2)) || (numberOfCannonCards >= 1
+        && numberOfCavalryCards >= 1 && numberOfInfantryCards >= 1) || (numberOfWildcards == 1 && (
+        (numberOfCannonCards == 0 && numberOfCavalryCards == 1 && numberOfInfantryCards == 1)
+            || numberOfCannonCards == 1 && numberOfCavalryCards == 0 && numberOfInfantryCards == 1)
+        || numberOfCannonCards == 1 && numberOfCavalryCards == 1 && numberOfInfantryCards == 0);
   }
 
 
@@ -165,12 +172,10 @@ public class HandController {
       return false;
     }
     calculateNumberOfEachCardType(cardList);
-    return (numberOfWildcards == 2 || numberOfCannonCards == 3
-        || numberOfInfantryCards == 3 || numberOfCavalryCards == 3)
-        || (numberOfWildcards == 1 && (numberOfCannonCards == 2
-        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2))
-        || (numberOfCannonCards <= 1 && numberOfInfantryCards <= 1
-        && numberOfCavalryCards <= 1 && numberOfWildcards <= 1);
+    return (numberOfWildcards == 2 || numberOfCannonCards == 3 || numberOfInfantryCards == 3
+        || numberOfCavalryCards == 3) || (numberOfWildcards == 1 && (numberOfCannonCards == 2
+        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2)) || (numberOfCannonCards <= 1
+        && numberOfInfantryCards <= 1 && numberOfCavalryCards <= 1 && numberOfWildcards <= 1);
 
   }
 
@@ -183,9 +188,8 @@ public class HandController {
   public void calculateNumberOfEachCardType(List<Card> listToCount) {
     HashMap<CardSymbol, Integer> exchange = new HashMap<>();
 
-    listToCount
-        .forEach(
-            c -> exchange.compute(c.getCardSymbol(), (key, val) -> (val == null) ? 1 : val + 1));
+    listToCount.forEach(
+        c -> exchange.compute(c.getCardSymbol(), (key, val) -> (val == null) ? 1 : val + 1));
 
     numberOfWildcards =
         (exchange.get(CardSymbol.WILDCARD) == null) ? 0 : exchange.get(CardSymbol.WILDCARD);
@@ -207,13 +211,12 @@ public class HandController {
   public Set<CountryName> getBonusCountries(Set<Country> countries) {
     HashSet<CountryName> bonusCountries = new HashSet<>();
     countries.forEach(country -> selectedCards.forEach(card -> {
-              if (card.hasCountry()) {
-                if (card.getCountry().equals(country.getCountryName())) {
-                  bonusCountries.add(country.getCountryName());
-                }
-              }
+          if (card.hasCountry()) {
+            if (card.getCountry().equals(country.getCountryName())) {
+              bonusCountries.add(country.getCountryName());
             }
-        )
+          }
+        })
 
     );
     return bonusCountries;
