@@ -24,8 +24,8 @@ public class GameLobbyChannels {
 
   public ChannelGroup getChannelGroupByChannel(Channel channel) {
     return gameChannels.values().stream()
-        .filter(x -> x.contains(channel)).findFirst()
-        .orElse(channels);
+            .filter(x -> x.contains(channel)).findFirst()
+            .orElse(channels);
   }
 
   public void putUsers(UserDto userDto, Channel channel) {
@@ -33,36 +33,36 @@ public class GameLobbyChannels {
   }
 
 
-
-  public void removeUserFromGameLobby(Channel channel,
-      GameServerFrameHandler gameServerFrameHandler) {
+  public void removeUserFromGameLobby(Channel channel, //TODO Problem ist, dass inactive channels automatisch aus channelgroups gelösct werden
+                                      GameServerFrameHandler gameServerFrameHandler, boolean isDead) {
     System.out.println(channel.id() + " left");
+    UserDto deadUser = getUserByChannel(channel);
     //leave gameChannel
-    ChannelGroup currentGame = gameChannels.values().stream()
-        .filter(x -> x.contains(channel)).findFirst().get();
-    currentGame.remove(channel);
+    GameLobby gameLobby = gameChannels.keySet().stream()
+            .filter(x -> x.getUsers().contains(deadUser)).findFirst().get();
+
     //remove from game lobby
-    gameChannels.inverse().get(currentGame).getUsers()
-        .remove(users.inverse().get(channel));
-    //join serverLobby channel
-    channels.add(channel);
+    gameLobby.getUsers().remove(users.inverse().get(channel));
+    if (!isDead) {
+      //join serverLobby channel
+      channels.add(channel);
+    }
     //delete gamelobby if empty or change owner
-    if (gameChannels.inverse().get(currentGame).getUsers().size()
-        == 0) {
+    if (gameLobby.getUsers().size()
+            == 0) {
 
       NetworkConfiguration.getServerLobby().getGameLobbies()
-          .remove(NetworkConfiguration.getServerLobby()
-              .getGameLobbies().stream().filter(
-                  x -> x.getLobbyName().equals(
-                      gameChannels.inverse().get(currentGame)
-                          .getLobbyName())).findFirst().get());
-      gameChannels.inverse().remove(currentGame);
+              .remove(NetworkConfiguration.getServerLobby()
+                      .getGameLobbies().stream().filter(
+                              x -> x.getLobbyName().equals(
+                                      gameLobby.getLobbyName())).findFirst().get());
+      gameChannels.remove(gameLobby);
     } else {
       //Change owner
-      gameChannels.inverse().get(currentGame).setLobbyOwner(
-          gameChannels.inverse().get(currentGame).getUsers()
-              .get(0));
-      gameServerFrameHandler.sendGameLobby(gameChannels.inverse().get(currentGame));
+      gameLobby.setLobbyOwner(
+              gameLobby.getUsers()
+                      .get(0));
+      gameServerFrameHandler.sendGameLobby(gameLobby);
     }
 
   }
@@ -70,6 +70,8 @@ public class GameLobbyChannels {
   public void removeUserFromServerLobby(Channel channel) {
     NetworkConfiguration.getServerLobby().getUsers()
             .remove(users.inverse().get(channel));
+    NetworkConfiguration.getServerLobby().getUsers().forEach(x -> System.out.println(x.getUsername() + "Is in ServerLobby"));
+    channels.remove(channel);
   }
 
   public void createGameLobby(GameLobby gameLobby, Channel channel) {
@@ -121,7 +123,9 @@ public class GameLobbyChannels {
 
   public void handleExit(Channel channel, GameServerFrameHandler gsh) {
     System.out.println(gameChannels.size());
-    if (users.values().contains(channel)) {
+    System.out.println(users.inverse().get(channel).getUsername() + " left");
+
+    if (gameChannels.keySet().stream().anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
       if (moveProcessors.values().contains(getChannelGroupByChannel(channel))) {
         //In Running Game
         System.out.println("In Running game");
@@ -135,13 +139,12 @@ public class GameLobbyChannels {
       } else {
         //In Gamelobby
         System.out.println("In Gamelobby");
-        removeUserFromGameLobby(channel, gsh);
+        removeUserFromGameLobby(channel, gsh, true);
         gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
       }
     } else {
       System.out.println("else");
-      channels.remove(channel);
       removeUserFromServerLobby(channel);
       gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
     }

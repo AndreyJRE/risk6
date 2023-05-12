@@ -12,20 +12,12 @@ import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.Attack;
-import com.unima.risk6.game.logic.EndPhase;
-import com.unima.risk6.game.logic.Fortify;
-import com.unima.risk6.game.logic.HandIn;
-import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.*;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.GameLobby;
-import com.unima.risk6.game.models.GameState;
-import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.ServerLobby;
-import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.game.models.*;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.ChatMessage;
@@ -277,8 +269,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case LEAVE_GAME_LOBBY -> {
                   LOGGER.debug("At LEAVE_GAME_LOBBY");
                   //LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby " + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList " + users.size());
-                  gameLobbyChannels.removeUserFromGameLobby(ctx.channel(), this);
-                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+                  gameLobbyChannels.removeUserFromGameLobby(ctx.channel(), this, false);
+                    sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
 
                 }
