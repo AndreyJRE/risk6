@@ -35,6 +35,8 @@ import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -218,9 +220,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       otherDiceGroup.getChildren().add(diceUis.get(0));
       orderPane.setTop(otherDiceGroup);
       BorderPane.setAlignment(otherDiceGroup, Pos.CENTER);
-
-      gameState.getActivePlayers();
-
     }
 
     VBox myDiceBox = new VBox();
@@ -250,6 +249,20 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       delayTransitionHidePopup.play();
 
       //TODO: CREATE LIST HERE AND CHANGE GAMESTATE AND INITIALISE PLAYERPANE:
+      Queue<Player> currentOrder = gameState.getActivePlayers();
+
+      List<Player> tempList = new ArrayList<>();
+
+      while (!currentOrder.isEmpty()) {
+        Player currentPlayer = currentOrder.poll();
+        String username = currentPlayer.getUser();
+        if (hashMapOfPlayerDice.containsKey(username)) {
+          tempList.add(currentPlayer);
+        }
+      }
+      tempList.sort(Comparator.comparingInt(player -> hashMapOfPlayerDice.get(player.getUser())));
+      gameState.getActivePlayers().clear();
+      gameState.getActivePlayers().addAll(tempList);
 
     });
 
