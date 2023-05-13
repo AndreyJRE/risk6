@@ -41,13 +41,7 @@ public class Tutorial {
   private final Queue<String> messages;
   private final GameState tutorialState;
   private Reinforce currentClaim;
-  private Reinforce currentReinforce;
-  private Attack currentAttack;
-  private Fortify currentFortify;
   private final Queue<Reinforce> humanClaims;
-  private final Queue<Reinforce> humanReinforcements;
-  private final Queue<Attack> humanAttacks;
-  private final Queue<Fortify> humanFortifies;
   private final Set<CountryName> humanCountries;
   private final Set<CountryName> botCountries;
   private final Map<CountryName, Country> countryMap;
@@ -69,17 +63,14 @@ public class Tutorial {
     this.tutorialState = this.createTutorial();
     this.countryMap = this.initializeMap();
     this.humanClaims = this.createClaims();
-    this.humanReinforcements = this.createReinforcements();
-    this.humanAttacks = this.createAttacks();
-    this.humanFortifies = this.createFortifies();
     this.messages = this.createMessages();
     this.handInEnabled = false;
   }
 
   private GameState createTutorial() {
     GameState tutorial = GameConfiguration.configureGame(this.human, this.bot);
-    // extract methods separated by empty newlines
-    PlayerController botController = new PlayerController();
+
+    PlayerController botController = new PlayerController(); // get playercontrollers
     PlayerController humanController = new PlayerController();
     for (Player p : tutorial.getActivePlayers()) {
       if (p.equals(this.bot.get(0))) {
@@ -119,6 +110,7 @@ public class Tutorial {
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA, -2));
     humanCards.add(new Card(CardSymbol.CAVALRY, CountryName.CONGO, -3));
     tutorial.getActivePlayers().forEach(p -> p.setInitialTroops(9));
+    tutorial.setChatEnabled(true);
     return tutorial;
   }
 
@@ -150,25 +142,12 @@ public class Tutorial {
    * @return A queue of tutorial messages.
    */
   public Queue<String> createMessages() {
-    InputStream data =
-        Tutorial.class.getResourceAsStream(MESSAGES_FILE);
+    InputStream data = Tutorial.class.getResourceAsStream(MESSAGES_FILE);
     assert data != null;
     InputStreamReader fileReader = new InputStreamReader(data);
     LinkedList<ArrayList<String>> msgArray = JsonParser.parseJsonFile(fileReader, LinkedList.class);
     return msgArray.stream().map(arr -> String.join(" ", arr))
         .collect(Collectors.toCollection(LinkedList::new));
-  }
-
-
-  /**
-   * Creates a queue of reinforcement moves for the human player to perform during the tutorial.
-   *
-   * @return A queue of tutorial reinforcement moves.
-   */
-  private Queue<Reinforce> createReinforcements() {
-    Queue<Reinforce> reinforcements = new LinkedList<>();
-    reinforcements.add(new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 3));
-    return reinforcements;
   }
 
   /**
@@ -189,30 +168,6 @@ public class Tutorial {
   }
 
   /**
-   * Creates a queue of attack moves for the human player to perform during the tutorial.
-   *
-   * @return A queue of tutorial attack moves.
-   */
-  private Queue<Attack> createAttacks() {
-    Queue<Attack> attacks = new LinkedList<>();
-    attacks.add(new Attack(this.countryMap.get(CountryName.NEW_GUINEA),
-        this.countryMap.get(CountryName.INDONESIA), 3));
-    return attacks;
-  }
-
-  /**
-   * Creates a queue of fortify moves for the human player to perform during the tutorial.
-   *
-   * @return A queue of tutorial fortify moves.
-   */
-  private Queue<Fortify> createFortifies() {
-    Queue<Fortify> fortifies = new LinkedList<>();
-    fortifies.add(new Fortify(this.countryMap.get(CountryName.VENEZUELA),
-        this.countryMap.get(CountryName.CENTRAL_AMERICA), 20));
-    return fortifies;
-  }
-
-  /**
    * Initializes the map of countries.
    *
    * @return A map of CountryName to Country objects.
@@ -220,22 +175,6 @@ public class Tutorial {
   private Map<CountryName, Country> initializeMap() {
     return tutorialState.getCountries().stream()
         .collect(Collectors.toMap(Country::getCountryName, Function.identity()));
-  }
-
-  public void updatePlayerClaim() {
-    this.currentClaim = this.humanClaims.poll();
-  }
-
-  public void updatePlayerReinforce() {
-    this.currentReinforce = this.humanReinforcements.poll();
-  }
-
-  public void updatePlayerAttack() {
-    this.currentAttack = this.humanAttacks.poll();
-  }
-
-  public void updatePlayerFortify() {
-    this.currentFortify = this.humanFortifies.poll();
   }
 
   public GameState getTutorialState() {
@@ -250,21 +189,27 @@ public class Tutorial {
     return this.messages.poll();
   }
 
+  public void updatePlayerClaim() {
+    this.currentClaim = this.humanClaims.poll();
+  }
+
   public Reinforce getCurrentClaim() {
     return currentClaim;
   }
 
   public Reinforce getCurrentReinforce() {
-    return currentReinforce;
+    return new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 3);
   }
 
   public Attack getCurrentAttack() {
-    return currentAttack;
+    return new Attack(this.countryMap.get(CountryName.NEW_GUINEA),
+        this.countryMap.get(CountryName.INDONESIA), 3);
   }
 
   public Fortify getCurrentFortify() {
     this.setHandInEnabled(true);
-    return currentFortify;
+    return new Fortify(this.countryMap.get(CountryName.VENEZUELA),
+        this.countryMap.get(CountryName.CENTRAL_AMERICA), 6);
   }
 
   public boolean isHandInEnabled() {

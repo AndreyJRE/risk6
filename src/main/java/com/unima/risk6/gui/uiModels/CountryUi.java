@@ -153,7 +153,6 @@ public class CountryUi extends Group {
           case REINFORCEMENT_PHASE -> {
             if (checkIfCountryIsMine(country)
                 && playerController.getPlayer().getDeployableTroops() > 0) {
-              System.out.println(tutorial);
               if ((tutorial = GameConfiguration.getTutorial()) != null) {
                 Reinforce currentReinforce = tutorial.getCurrentReinforce();
                 Country reinforceCountry = currentReinforce.getCountry();

@@ -20,32 +20,6 @@ public class TutorialBotTypeAdapter implements JsonSerializer<TutorialBot> {
         x -> deterministicClaims.add(context.serialize(x))
     );
     jsonObject.add("deterministicClaims", deterministicClaims);
-    JsonArray deterministicReinforce = new JsonArray();
-    tutorialBot.getDeterministicReinforces()
-        .forEach(x -> deterministicReinforce.add(context.serialize(x)));
-    jsonObject.add("deterministicReinforces", deterministicReinforce);
-
-    JsonArray deterministicAttacks = new JsonArray();
-    tutorialBot.getDeterministicAttacks()
-        .forEach(x -> {
-          JsonArray jsonArray = new JsonArray();
-          jsonArray.add(x.getOutgoing().getCountryName().toString());
-          jsonArray.add(x.getIncoming().getCountryName().toString());
-          JsonObject countryPair = new JsonObject();
-          countryPair.add("CountryPair", jsonArray);
-          deterministicAttacks.add(countryPair);
-        });
-    jsonObject.add("deterministicAttacks", deterministicAttacks);
-
-    JsonArray deterministicAfterAttacks = new JsonArray();
-    tutorialBot.getDeterministicAfterAttacks()
-        .forEach(x -> deterministicAfterAttacks.add(context.serialize(x)));
-    jsonObject.add("deterministicAfterAttacks", deterministicAfterAttacks);
-
-    JsonArray deterministicFortifies = new JsonArray();
-    tutorialBot.getDeterministicFortifies()
-        .forEach(x -> deterministicFortifies.add(context.serialize(x)));
-    jsonObject.add("deterministicFortifies", deterministicFortifies);
     return jsonObject;
   }
 

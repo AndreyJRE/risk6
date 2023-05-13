@@ -19,13 +19,13 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
-import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.game.models.enums.PlayerColor;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
@@ -36,7 +36,6 @@ import com.unima.risk6.gui.uiModels.HandUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +44,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
-
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -460,8 +458,17 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     nextPhaseButton.setFocusTraversable(false);
     nextPhaseButton.setVisible(false);
     nextPhaseButton.setOnAction(event -> {
-      GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
-      PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+      Player currentPlayer = myPlayerUi.getPlayer();
+      GamePhase currentPhase = currentPlayer.getCurrentPhase();
+      if (currentPlayer.getDeployableTroops() > 0 && !PLAYER_CONTROLLER.getHandController()
+          .mustExchange() && currentPlayer.getCurrentPhase()
+          .equals(GamePhase.REINFORCEMENT_PHASE)) {
+        StyleConfiguration.showErrorDialog("Can't end phase yet!",
+            "You either still have troops to deploy or must exchange cards in your hand. "
+                + "Deploy them all before ending the phase.");
+      } else {
+        PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+      }
       for (CountryUi countryUi : countriesUis) {
         countryUi.removeArrowsAndAdjacentCountries();
       }
@@ -808,7 +815,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case REINFORCEMENT_PHASE -> {
-          tutorial.updatePlayerReinforce();
           Reinforce reinforce = tutorial.getCurrentReinforce();
           if (tutorial.isHandInEnabled()) {
             cardsButton.setVisible(true);
@@ -826,7 +832,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case ATTACK_PHASE -> {
-          tutorial.updatePlayerAttack();
           Attack attack = tutorial.getCurrentAttack();
           if (attack != null) {
             CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
@@ -834,7 +839,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case FORTIFY_PHASE -> {
-          tutorial.updatePlayerFortify();
           Fortify fortify = tutorial.getCurrentFortify();
           if (fortify != null) {
             CountryUi countryUi = getCountryUiByCountry(fortify.getOutgoing());
