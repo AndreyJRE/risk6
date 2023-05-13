@@ -119,13 +119,6 @@ public class JoinOnlineSceneController {
     ipAdressTextField.setPromptText("Enter IP Adress");
     ipAdressTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 
-    TextField portTextField = new TextField();
-    portTextField.setPrefSize(800, 40);
-    portTextField.setFont(Font.font(18));
-    portTextField.setText("42069");
-    portTextField.setPromptText("Enter Port");
-    portTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
-
     Label serverNotFoundLabel = new Label();
     serverNotFoundLabel.setFont(Font.font(14));
     serverNotFoundLabel.setTextFill(Color.RED);
@@ -148,9 +141,7 @@ public class JoinOnlineSceneController {
 
     GridPane centerGrid = new GridPane();
     centerGrid.add(ipLabel, 0, 0);
-    centerGrid.add(portLabel, 0, 1);
-    centerGrid.add(ipAdressTextField, 1, 0);
-    centerGrid.add(portTextField, 1, 1);
+    centerGrid.add(ipAdressTextField, 0, 1);
     centerGrid.setHgap(20);
     centerGrid.setVgap(15);
 
@@ -160,22 +151,19 @@ public class JoinOnlineSceneController {
     anchorPane.getChildren().add(vBox);
 
     ipAdressTextField.setOnAction(
-        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
-    portTextField.setOnAction(
-        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
+        e -> handleJoin(ipAdressTextField.getText()));
 
     joinButton.setOnAction(
-        e -> handleJoin(ipAdressTextField.getText(), Integer.parseInt(portTextField.getText())));
+        e -> handleJoin(ipAdressTextField.getText()));
 
     return anchorPane;
   }
 
-  private void handleJoin(String host, int port) {
+  private void handleJoin(String host) {
 
-    LobbyConfiguration.configureGameClient(host, port);
+    LobbyConfiguration.configureGameClient(host);
     LobbyConfiguration.startGameClient();
     int i = 0;
-    boolean usernameExists = false;
     while (LobbyConfiguration.getGameClient().getCh() == null && i < 10) {
       try {
         Thread.sleep(100);

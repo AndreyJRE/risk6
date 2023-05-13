@@ -32,8 +32,7 @@ public final class GameServer implements Runnable {
     EventLoopGroup workerGroup = new NioEventLoopGroup();
     try {
       ServerBootstrap b = new ServerBootstrap();
-      b.group(bossGroup, workerGroup)
-          .channel(NioServerSocketChannel.class)
+      b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
           .handler(new LoggingHandler(LogLevel.INFO))
           .childHandler(new GameServerInitializer(channels))
           .localAddress(new InetSocketAddress(hostIp, port));
@@ -49,4 +48,7 @@ public final class GameServer implements Runnable {
     }
   }
 
+  public String getHostIp() {
+    return hostIp;
+  }
 }

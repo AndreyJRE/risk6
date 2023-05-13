@@ -4,7 +4,7 @@ import com.unima.risk6.game.models.enums.ContinentName;
 import java.util.Set;
 
 /**
- * Represents a continent in the game with its name, countries, and bonus troops.
+ * Represents a continent in the risk game with its name, countries, and bonus troops.
  *
  * @author wphung
  */

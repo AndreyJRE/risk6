@@ -17,11 +17,11 @@ module com.unima.risk6 {
   opens com.unima.risk6.network.message to com.google.gson;
   opens com.unima.risk6.game.logic to com.google.gson, javafx.fxml;
   exports com.unima.risk6.database.models;
-  exports com.unima.risk6.gui.uiModels;
+  exports com.unima.risk6.gui.uimodels;
   exports com.unima.risk6.gui.scenes;
   exports com.unima.risk6.game.models.enums;
   exports com.unima.risk6.game.ai.bots;
-  opens com.unima.risk6.json.jsonObjects to com.google.gson;
+  opens com.unima.risk6.json.jsonobjects to com.google.gson;
   opens com.unima.risk6 to javafx.fxml;
   exports com.unima.risk6;
   exports com.unima.risk6.gui.controllers;

@@ -1,5 +1,11 @@
 package com.unima.risk6.gui.controllers.enums;
 
+/**
+ * Represents the different scene names in the application.
+ *
+ * @author fisommer
+ */
+
 public enum SceneName {
   LOGIN,
   GAME,

@@ -7,6 +7,13 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
+/**
+ * This class holds the configuration for various sounds used in the application. It includes paths
+ * to different sound files and provides methods to load, play, and control the sounds.
+ *
+ * @author astoyano
+ */
+
 public class SoundConfiguration {
 
   private static final String TITLE_SOUND_PATH = "/com/unima/risk6/sounds/main_menu.mp3";
@@ -33,10 +40,11 @@ public class SoundConfiguration {
 
   private static final SimpleDoubleProperty VOLUME = new SimpleDoubleProperty(0.1);
 
-
-  public static void playTitleSound() {
-    titleSound.play();
-  }
+  /**
+   * Loads the sounds by initializing the media players and audio clips with the corresponding
+   * paths. Each sound is loaded using the appropriate class (MediaPlayer or AudioClip) and
+   * configured with the volume property.
+   */
 
   public static void loadSounds() {
     Media media = new Media(
@@ -76,10 +84,11 @@ public class SoundConfiguration {
             .toExternalForm());
     troopsMoveSound.setVolume(VOLUME.get());
     troopsMoveSound.volumeProperty().bind(VOLUME);
-
-
   }
 
+  public static void playTitleSound() {
+    titleSound.play();
+  }
 
   public static void playTroopsMoveSound() {
     troopsMoveSound.play();
@@ -100,7 +109,6 @@ public class SoundConfiguration {
   public static void playStartGameSound() {
     startGameSound.play();
   }
-
 
   public static void pauseTitleSound() {
     titleSound.pause();

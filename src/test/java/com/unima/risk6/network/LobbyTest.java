@@ -47,9 +47,7 @@ public class LobbyTest {
       ConnectionMessage connectionMessage = new ConnectionMessage(
           ConnectionActions.JOIN_SERVER_LOBBY, new ServerLobby("lolo"));
       gameClient.sendMessage(connectionMessage);
-      Thread.sleep(1000);
-
-      Thread.sleep(10000);
+      Thread.sleep(100);
       //assertEquals("{\"statusCode\":200,\"content\":\"tetest\"}", Serializer.serialize(new StandardMessage("tetest", 200)));
     } catch (Exception e) {
       System.out.println(e.toString());

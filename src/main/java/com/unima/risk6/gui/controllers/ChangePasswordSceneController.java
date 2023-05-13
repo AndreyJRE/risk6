@@ -37,7 +37,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
+/**
+ * Controller for the scene where the password is being changed.
+ *
+ * @author astoyano
+ */
 public class ChangePasswordSceneController {
 
   private final ChangePasswordScene changePasswordScene;
@@ -47,13 +51,19 @@ public class ChangePasswordSceneController {
   private BorderPane root;
 
   private final UserService userService;
-
+  /**
+   * Constructor for the ChangePasswordSceneController.
+   *
+   * @param changePasswordScene the scene that this controller is responsible for.
+   */
   public ChangePasswordSceneController(ChangePasswordScene changePasswordScene) {
     this.changePasswordScene = changePasswordScene;
     this.userService = DatabaseConfiguration.getUserService();
     this.sceneController = SceneConfiguration.getSceneController();
   }
-
+  /**
+   * Initializes the controller and sets up the scene.
+   */
   public void init() {
     root = (BorderPane) changePasswordScene.getRoot();
     root.setPrefWidth(SceneConfiguration.getWidth());
@@ -89,7 +99,11 @@ public class ChangePasswordSceneController {
 
 
   }
-
+  /**
+   * Creates the confirmation button.
+   *
+   * @return the created button.
+   */
   private Button createConfirmButton() {
     Button confirmButton = new Button("Confirm");
     confirmButton.setPrefWidth(800);
@@ -99,7 +113,11 @@ public class ChangePasswordSceneController {
     confirmButton.setFont(new Font(18));
     return confirmButton;
   }
-
+  /**
+   * Creates the fields for entering the new password.
+   *
+   * @return an AnchorPane containing the fields for entering the new password.
+   */
   private AnchorPane createNewPasswordFields() {
     AnchorPane anchorPane = new AnchorPane();
     anchorPane.setPrefSize(600, 495);
@@ -154,9 +172,9 @@ public class ChangePasswordSceneController {
         userService.updateUser(user);
         sceneController.activate(SceneName.USER_OPTION);
       } catch (IllegalArgumentException illegalArgumentException) {
-        showErrorDialog("Error", "Password should be non-empty!");
+        StyleConfiguration.showErrorDialog("Error", "Password should be non-empty!");
       } catch (NotValidPasswordException validationException) {
-        showErrorDialog("Error", validationException.getMessage());
+        StyleConfiguration.showErrorDialog("Error", validationException.getMessage());
       }
     });
     newPasswordField.textProperty().addListener(passwordFieldChangeListener);
@@ -186,13 +204,4 @@ public class ChangePasswordSceneController {
     anchorPane.getChildren().add(vBox);
     return anchorPane;
   }
-
-  private void showErrorDialog(String title, String message) {
-    Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
-  }
-
 }

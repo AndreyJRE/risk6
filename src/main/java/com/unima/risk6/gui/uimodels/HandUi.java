@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
 
 import com.unima.risk6.game.logic.controllers.HandController;
@@ -27,6 +27,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 
+/**
+ * Represents a graphical user interface (UI) component for displaying a player's hand of cards.
+ *
+ * @author astoyano
+ */
+
 public class HandUi extends BorderPane {
 
   private Popup popup;
@@ -41,6 +47,13 @@ public class HandUi extends BorderPane {
   private final List<CardUi> selectedCardsUi;
 
   private final Set<CountryUi> countryUis;
+
+  /**
+   * Constructs a HandUi object for the actual game scene and set of country UIs.
+   *
+   * @param gameScene  The game scene associated with the hand UI.
+   * @param countryUis The set of country UIs.
+   */
 
   public HandUi(GameScene gameScene, Set<CountryUi> countryUis) {
     super();
@@ -192,8 +205,6 @@ public class HandUi extends BorderPane {
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(removeCardLabel);
     }
-
-
   }
 
   public void setHand(Hand hand) {

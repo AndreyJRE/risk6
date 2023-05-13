@@ -3,22 +3,32 @@ package com.unima.risk6.gui.scenes;
 
 import com.unima.risk6.gui.controllers.GameSceneController;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Popup;
+
+/**
+ * Represents the actual game scene in the application. Here it gets initialised and then controlled
+ * by the gameSceneController, where most logic for controlling the game UI lies.
+ *
+ * @author mmeider
+ */
 
 public class GameScene extends Scene implements InitializableScene {
 
   private GameSceneController gameSceneController;
 
+  /**
+   * Constructs a GameScene object with a default BorderPane as the root.
+   */
+
   public GameScene() {
     super(new BorderPane());
   }
+
+  /**
+   * Sets the GameSceneController for the game scene.
+   *
+   * @param gameSceneController The GameSceneController object.
+   */
 
   public void setGameSceneController(GameSceneController gameSceneController) {
     this.gameSceneController = gameSceneController;
@@ -30,6 +40,10 @@ public class GameScene extends Scene implements InitializableScene {
       this.setRoot(new BorderPane());
       gameSceneController.init();
     }
+  }
+
+  public GameSceneController getGameSceneController() {
+    return gameSceneController;
   }
 }
 

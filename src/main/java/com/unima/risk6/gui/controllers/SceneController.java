@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.controllers;
 
+import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -7,23 +8,32 @@ import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.InitializableScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
+import java.io.IOException;
 import java.util.HashMap;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+/**
+ * Controller class for managing scenes in the application. Provides methods to add and activate
+ * scenes as well as initialize the title screen. Also includes methods for closing the application
+ * and retrieving the current stage and scene.
+ *
+ * @author astoyano
+ * @author fisommer
+ */
+
 public class SceneController {
 
   private final HashMap<SceneName, Scene> scenes;
   private final Stage stage;
-  private boolean previousWindowFullscreen;
-
-
   private SceneName currentSceneName;
 
   public SceneController(Stage stage) {
@@ -35,36 +45,35 @@ public class SceneController {
     scenes.put(name, scene);
   }
 
-  public void removeScene(SceneName name) {
-    scenes.remove(name);
-  }
 
   public void activate(SceneName name) {
-    boolean fullscreen = (stage != null && stage.isFullScreen()) || previousWindowFullscreen;
-
+    if (name == SceneName.TITLE) {
+      initTitleScreen();
+      currentSceneName = name;
+      SoundConfiguration.playTitleSound();
+      return;
+    }
     Scene scene = scenes.get(name);
     if (scene instanceof InitializableScene scene1) {
       scene1.init();
     }
-
-    stage.setScene(scene);
     currentSceneName = name;
+    stage.setScene(scene);
     stage.setWidth(SceneConfiguration.getWidth() + 0.1);
     stage.setHeight(SceneConfiguration.getHeight() + 0.1);
     stage.setOnCloseRequest((WindowEvent event) -> close());
     switch (name) {
-      case TITLE -> SoundConfiguration.playTitleSound();
       case GAME -> SoundConfiguration.playInGameMusic();
-    }
-    if (fullscreen) {
-      stage.setFullScreen(true);
+      default -> {
+      }
     }
     fadeIn(scene);
   }
 
   public void close() {
     DatabaseConfiguration.closeDatabaseConnectionAndServices();
-    if (NetworkConfiguration.getGameServerThread() != null) {
+    if (NetworkConfiguration.getGameServerThread() != null
+        && NetworkConfiguration.getGameServerThread().isAlive()) {
       NetworkConfiguration.stopGameServer();
     }
     if (LobbyConfiguration.getGameClient() != null) {
@@ -89,8 +98,22 @@ public class SceneController {
     parallelTransition.play();
   }
 
-  public Stage getStage() {
-    return stage;
+  public void initTitleScreen() {
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        RisikoMain.class.getResource("fxml/TitleScene" + ".fxml"));
+    Parent root;
+    try {
+      root = fxmlLoader.load();
+      Scene titleScene = new Scene(root);
+      titleScene.setRoot(root);
+      stage.setScene(titleScene);
+      stage.setWidth(SceneConfiguration.getWidth() + 0.1);
+      stage.setHeight(SceneConfiguration.getHeight() + 0.1);
+      stage.setOnCloseRequest((WindowEvent event) -> close());
+      fadeIn(titleScene);
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   public Scene getSceneBySceneName(SceneName sceneName) {
@@ -100,8 +123,9 @@ public class SceneController {
   public SceneName getCurrentSceneName() {
     return currentSceneName;
   }
-  public void setPreviousWindowFullscreen(boolean fullscreen) {
-    previousWindowFullscreen = fullscreen;
+
+  public Stage getStage() {
+    return stage;
   }
 }
 

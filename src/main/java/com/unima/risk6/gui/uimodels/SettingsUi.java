@@ -1,11 +1,15 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
+import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.scenes.GameScene;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -79,6 +83,22 @@ public class SettingsUi extends BorderPane {
   }
 
   public void handleLeaveButton() {
-    settingPopup.hide();
+    Alert alert = new Alert(AlertType.WARNING);
+    alert.setTitle("Warning: Exiting Game");
+    alert.setHeaderText("Are you sure you want to to leave the game?");
+    alert.setContentText(
+        "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
+    ButtonType buttonYes = new ButtonType("Yes, exit game");
+    ButtonType buttonNo = new ButtonType("No, continue playing");
+    alert.getButtonTypes().setAll(buttonYes, buttonNo);
+    alert.showAndWait().ifPresent(buttonType -> {
+      if (buttonType == buttonYes) {
+        SceneConfiguration.getSceneController().close();
+      } else {
+        alert.close();
+        settingPopup.hide();
+      }
+    });
   }
 }
+

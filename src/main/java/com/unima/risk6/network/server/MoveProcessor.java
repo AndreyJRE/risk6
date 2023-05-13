@@ -24,7 +24,12 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+/**
+ * This class handles incoming Moves objects and uses  GameController, PlayerController and
+ * DeckController objects to manipulate the GameState according to the incoming move.
+ *
+ * @author wphung
+ */
 public class MoveProcessor {
 
   private GameController gameController;
@@ -70,7 +75,8 @@ public class MoveProcessor {
             playerController.addCountry(countryToReinforce);
           } else {
             if (countryToReinforce.getPlayer().equals(currentPlayer)) {
-              throw new InvalidMoveException("Cannot reinforce own country yet");
+              throw new InvalidMoveException(
+                  "There are still neutral countries that need to be claimed");
             } else {
               throw new InvalidMoveException("Cannot claim or reinforce country that is not yours");
             }
@@ -99,7 +105,7 @@ public class MoveProcessor {
 
       if (!currentPlayer.getCurrentPhase().equals(REINFORCEMENT_PHASE)) {
         throw new InvalidMoveException(
-            "The Reinforce is not valid because of not in reinforcephase ");
+            "The Reinforce is not valid because currentPlayer is not in ReinforcePhase ");
       }
       if (!countryToReinforce.getPlayer().equals(currentPlayer)) {
         throw new InvalidMoveException("The Reinforce is not valid because of not your country ");
@@ -333,11 +339,21 @@ public class MoveProcessor {
     return country[0];
   }
 
+  /**
+   * Gets the player object reference of the game state that has the same username as the player
+   * object specified as parameter.
+   *
+   * @param player the player whose corresponding player object in the GameState should be gotten
+   * @return Returns the player from the GameState.
+   */
   public Player getPlayerFromCurrentState(Player player) {
     return gameController.getGameState().getActivePlayers().stream().filter(p -> p.equals(player))
         .findFirst().orElse(null);
   }
 
+  /**
+   * Updated the in game statistics of each player. these include owned countries and troops.
+   */
   public void updateInGameStatistics() {
     HashMap<Player, Integer> troopCounter = gameController.countTroops();
     HashMap<Player, Integer> countryCounter = gameController.countCountries();

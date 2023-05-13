@@ -10,7 +10,6 @@ import com.unima.risk6.network.client.GameClient;
 import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.enums.ConnectionActions;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class LobbyConfiguration {
 
   private static GameLobby gameLobby;
 
-  private static final ArrayList<String> messages = new ArrayList<>();
+  private static final List<String> messages = new ArrayList<>();
 
   private static final List<ServerLobbyObserver> SERVER_LOBBY_OBSERVERS = new ArrayList<>();
 
@@ -56,12 +55,10 @@ public class LobbyConfiguration {
   }
 
   public static void addChatObserver(ChatObserver observer) {
-    System.out.println("Add a Chat Observer");
     CHAT_OBSERVERS.add(observer);
   }
 
   private static void notifyChatLobbyObservers() {
-    System.out.println("Notify a Chat Observer");
     CHAT_OBSERVERS.forEach(observer -> observer.updateChat(messages));
   }
 
@@ -72,7 +69,7 @@ public class LobbyConfiguration {
 
   public static void sendJoinServer(UserDto userDto) {
     gameClient.sendMessage(
-            new ConnectionMessage<>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));
+        new ConnectionMessage<>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));
 
   }
 
@@ -83,18 +80,19 @@ public class LobbyConfiguration {
   }
 
   public static void sendQuitServerLobby(UserDto myGameUser) {
-    gameClient.sendMessage(new ConnectionMessage<>(ConnectionActions.LEAVE_SERVER_LOBBY, myGameUser));
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.LEAVE_SERVER_LOBBY, myGameUser));
 
   }
 
   public static void sendCreateLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
-            new ConnectionMessage<>(ConnectionActions.CREATE_GAME_LOBBY, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.CREATE_GAME_LOBBY, gameLobby));
   }
 
   public static void sendJoinLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
-            new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, gameLobby));
   }
 
   public static void sendStartGame(GameLobby gameLobby) {
@@ -109,6 +107,7 @@ public class LobbyConfiguration {
 
   public static void setLastChatMessage(String string) {
     messages.add(string);
+    System.out.println(messages);
     notifyChatLobbyObservers();
   }
 
@@ -116,10 +115,9 @@ public class LobbyConfiguration {
    * This method is used to configure the network client.
    *
    * @param hostIp Server Host IP
-   * @param port   Server Port
    */
-  public static void configureGameClient(String hostIp, int port) {
-    String url = "ws://" + hostIp + ":" + port + "/game";
+  public static void configureGameClient(String hostIp) {
+    String url = "ws://" + hostIp + ":" + "8080" + "/game";
     gameClient = new GameClient(url);
   }
 
@@ -170,5 +168,9 @@ public class LobbyConfiguration {
   public static void sendTutorialCreateLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.CREATE_TUTORIAL_LOBBY, gameLobby));
+  }
+
+  public static void sendLeaveGameMessage() {
+    gameClient.leaveGame();
   }
 }

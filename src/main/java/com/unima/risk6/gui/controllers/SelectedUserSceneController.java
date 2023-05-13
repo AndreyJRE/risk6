@@ -3,7 +3,6 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 
-import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.PasswordEncryption;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
@@ -13,12 +12,8 @@ import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SelectedUserScene;
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,7 +33,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
+/**
+ * Controller for managing the selected user scene.
+ * This includes user interaction such as logging in with a password.
+ *
+ * @author fisommer
+ */
 public class SelectedUserSceneController {
 
   private final SelectedUserScene selectedUserScene;
@@ -51,13 +51,20 @@ public class SelectedUserSceneController {
   private VBox passwordEntryBox;
   private PasswordField passwordField;
 
-
+  /**
+   * Constructs a new SelectedUserSceneController.
+   *
+   * @param selectedUserScene the scene this controller will manage
+   */
   public SelectedUserSceneController(SelectedUserScene selectedUserScene) {
     this.selectedUserScene = selectedUserScene;
     this.sceneController = SceneConfiguration.getSceneController();
   }
 
-
+  /**
+   * Initializes the scene. This includes setting up user interface components
+   * and loading the user's image.
+   */
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) selectedUserScene.getRoot();
@@ -107,7 +114,9 @@ public class SelectedUserSceneController {
     // Add passwordEntryBox to the center of the BorderPane
     root.setCenter(vBox);
   }
-
+  /**
+   * Initializes the StackPane that holds the user image.
+   */
   private void initUserStackPane() {
     Circle circle = new Circle();
     circle.setRadius(125);
@@ -126,26 +135,16 @@ public class SelectedUserSceneController {
     userStackPane = new StackPane();
     userStackPane.getChildren().addAll(circle, userImage);
   }
-
+  /**
+   * Validates the password entered by the user.
+   *
+   * @param user the user whose password is being validated
+   * @param passwordField the field containing the entered password
+   */
   private void passwordValidation(User user, PasswordField passwordField) {
     String enteredPassword = passwordField.getText();
     if (PasswordEncryption.validatePassword(enteredPassword, user.getPassword())) {
-      // Proceed to the next scene (game) that is created with FXML
-      try {
-        FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene"
-            + ".fxml"));
-        Parent root = fxmlLoader.load();
-        Scene titleScene = sceneController.getSceneBySceneName(SceneName.TITLE);
-        if (titleScene == null) {
-          titleScene = new Scene(root);
-          sceneController.addScene(SceneName.TITLE, titleScene);
-        } else {
-          titleScene.setRoot(root);
-        }
-        sceneController.activate(SceneName.TITLE);
-      } catch (IOException ex) {
-        throw new RuntimeException(ex);
-      }
+      sceneController.activate(SceneName.TITLE);
     } else {
       StyleConfiguration.showErrorDialog("Incorrect Password",
           "The password you entered is incorrect. Please try again.");
@@ -153,7 +152,9 @@ public class SelectedUserSceneController {
     }
   }
 
-
+  /**
+   * Initializes various elements of the scene, such as text labels and buttons.
+   */
   private void initElements() {
     Label selectedUserName = new Label(user.getUsername());
     selectedUserName.setStyle("-fx-font-size: 40; -fx-text-fill: white");

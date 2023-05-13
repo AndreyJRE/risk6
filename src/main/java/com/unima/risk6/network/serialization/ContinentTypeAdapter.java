@@ -27,7 +27,6 @@ public class ContinentTypeAdapter implements JsonSerializer<Continent> {
     JsonArray countriesArray = new JsonArray();
     Set<Country> countries = continent.getCountries();
     if (countries != null) {
-      System.out.println("Countries vorhanden");
       for (Country country : countries) {
         countriesArray.add(context.serialize(country, Country.class));
       }

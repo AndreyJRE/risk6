@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
 import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
@@ -73,13 +73,15 @@ public class CountryUi extends Group {
   private Tutorial tutorial = GameConfiguration.getTutorial();
   private FillTransition fillTransition;
 
+  private FillTransition attackingTransition;
 
-  public CountryUi(Country country, String SVGPath) {
+
+  public CountryUi(Country country, String svgPath) {
     super();
     this.country = country;
     this.countryPath = new SVGPath();
     this.troopsCounterUi = null;
-    this.countryPath.setContent(SVGPath);
+    this.countryPath.setContent(svgPath);
     this.color = Colors.COUNTRY_BACKGROUND.getColor();
     this.countryPath.setFill(color);
     this.countryPath.setStroke(Colors.COUNTRY_STROKE.getColor());
@@ -167,7 +169,8 @@ public class CountryUi extends Group {
                 this.setCursor(Cursor.CROSSHAIR);
               }
             }
-
+          }
+          default -> {
           }
         }
       } else {
@@ -186,7 +189,7 @@ public class CountryUi extends Group {
           int numberOfNeutralCountries = GameConfiguration.getGameState().getCountries().stream()
               .filter(country -> !country.hasPlayer()).toList().size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
-              || !country.hasPlayer()) {
+              || !country.hasPlayer() && event.getClickCount() == 1) {
             if (tutorial != null) {
               Reinforce currentClaim = tutorial.getCurrentClaim();
               Country claimTutorialCountry = currentClaim.getCountry();
@@ -231,7 +234,8 @@ public class CountryUi extends Group {
         }
         case REINFORCEMENT_PHASE -> {
           if (checkIfCountryIsMine(country)
-              && playerController.getPlayer().getDeployableTroops() > 0) {
+              && playerController.getPlayer().getDeployableTroops() > 0
+              && event.getClickCount() == 1) {
             if (tutorial != null) {
               Reinforce currentReinforce = tutorial.getCurrentReinforce();
               Country reinforceCountry = currentReinforce.getCountry();
@@ -240,13 +244,12 @@ public class CountryUi extends Group {
                 fillTransition.stop();
               }
             } else {
-
               animateReinforcementPhase();
             }
           }
-
         }
-
+        default -> {
+        }
         // add more cases for other enum values
       }
       this.setCursor(Cursor.DEFAULT);
@@ -337,7 +340,6 @@ public class CountryUi extends Group {
     closeAmountOfTroopsButton.setStyle(
         "-fx-background-color: rgba(255, 255, 255, 0.7);" + "-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
-
     moveTroopsPane.setTop(closeAmountOfTroopsButton);
     BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
@@ -502,16 +504,12 @@ public class CountryUi extends Group {
     BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     BorderPane dicePane = new BorderPane();
 
-    HBox diceHBox = new HBox();
-    diceHBox.setAlignment(Pos.CENTER);
-    diceHBox.setSpacing(20);
-    Popup dicePopup = new Popup();
+    HBox diceHbox = new HBox();
+    diceHbox.setAlignment(Pos.CENTER);
+    diceHbox.setSpacing(20);
 
     List<DiceUi> diceUis = new ArrayList<>();
     VBox attackerBox = new VBox();
-    Label attackerUser = new Label(attacker.country.getPlayer().getUser() + ": ");
-    attackerUser.setStyle("-fx-font-size: 18px;");
-    attackerBox.getChildren().add(attackerUser);
 
     Label attackingCountry = new Label(
         attacker.country.getCountryName().name().replaceAll("_", " "));
@@ -527,10 +525,6 @@ public class CountryUi extends Group {
     attackerBox.setAlignment(Pos.CENTER);
 
     VBox defenderBox = new VBox();
-    Label defenderUser = new Label(defender.country.getPlayer().getUser() + ": ");
-    defenderUser.setStyle("-fx-font-size: 18px;");
-    defenderBox.getChildren().add(defenderUser);
-
     Label defenderCountry = new Label(
         defender.country.getCountryName().name().replaceAll("_", " "));
     defenderCountry.setStyle("-fx-font-size: 18px;");
@@ -543,11 +537,14 @@ public class CountryUi extends Group {
       diceUis.add(dice);
     }
     defenderBox.setAlignment(Pos.CENTER);
-    diceHBox.getChildren().addAll(attackerBox, defenderBox);
+    diceHbox.getChildren().addAll(attackerBox, defenderBox);
+    Popup dicePopup = new Popup();
 
-    PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
+    PauseTransition delayTransition = new PauseTransition(Duration.millis(2000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
       dicePopup.hide();
+      attacker.getAttackingTransition().stop();
+      defender.getAttackingTransition().stop();
       if (attacker.getCountry().getTroops() > 1 && lastAttack.getHasConquered()
           && activePlayerUi.getPlayerUi().getPlayer()
           .equals(GameSceneController.getPlayerController().getPlayer())) {
@@ -556,10 +553,10 @@ public class CountryUi extends Group {
             defender, FORTIFY_PHASE);
       }
     });
+    dicePane.setCenter(diceHbox);
+    dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
+    dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
 
-    dicePane.setCenter(diceHBox);
-    dicePane.setPrefSize(gamePane.getWidth() * 0.30, gamePane.getHeight() * 0.45);
-    dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.7); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
@@ -577,8 +574,12 @@ public class CountryUi extends Group {
     for (DiceUi dice : diceUis) {
       dice.rollDice();
     }
-    attacker.animateActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
-    defender.animateActiveCountry((Color) defender.getCountryPath().getFill());
+    attacker.animateInAttackActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
+    if (lastAttack.getHasConquered()) {
+      defender.animateInAttackActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
+    } else {
+      defender.animateInAttackActiveCountry((Color) defender.getCountryPath().getFill());
+    }
     delayTransition.play();
 
   }
@@ -611,7 +612,6 @@ public class CountryUi extends Group {
         adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
         adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
     Point2D clickPosInGroup = this.sceneToLocal(clickPosInScene);
-    Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
     arrow.setStartX(clickPosInGroup.getX());
     arrow.setStartY(clickPosInGroup.getY());
     arrow.setEndX(clickPosInGroup.getX());
@@ -619,10 +619,10 @@ public class CountryUi extends Group {
     setCursor(Cursor.MOVE);
 
     Timeline timeline = new Timeline();
-
-    KeyValue endXValue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
-    KeyValue endYValue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
-    KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXValue, endYValue);
+    Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
+    KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
+    KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
+    KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXvalue, endYvalue);
 
     timeline.getKeyFrames().add(keyFrame);
     timeline.setCycleCount(1);
@@ -646,18 +646,27 @@ public class CountryUi extends Group {
     this.color = playerColor;
   }
 
-  private void animateActiveCountry(Color playerColor) {
-    Color brightHighlightColor = playerColor.deriveColor(0, 0, 0, 0.8);
-    Color countryPathFill = (Color) this.countryPath.getFill();
+  private void animateActiveCountry(Color currentColor) {
+    Color brightHighlightColor = currentColor.deriveColor(0, 0, 0, 0.8);
     FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
-        countryPathFill, brightHighlightColor);
+        currentColor, brightHighlightColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     FillTransition revertTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
-        brightHighlightColor, countryPathFill);
+        brightHighlightColor, currentColor);
     revertTransition.setInterpolator(Interpolator.EASE_BOTH);
     SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
         revertTransition);
     sequentialTransition.play();
+  }
+
+  private void animateInAttackActiveCountry(Color currentCountryColor) {
+    Color brightHighlightColor = currentCountryColor.deriveColor(0, 0, 0, 0.7);
+    attackingTransition = new FillTransition(Duration.seconds(0.25), this.countryPath,
+        currentCountryColor, brightHighlightColor);
+    attackingTransition.setInterpolator(Interpolator.EASE_BOTH);
+    attackingTransition.setAutoReverse(true);
+    attackingTransition.setCycleCount(Animation.INDEFINITE);
+    attackingTransition.play();
   }
 
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
@@ -736,6 +745,10 @@ public class CountryUi extends Group {
     fillTransition.setCycleCount(Animation.INDEFINITE);
     fillTransition.setAutoReverse(true);
     fillTransition.play();
+  }
+
+  public FillTransition getAttackingTransition() {
+    return attackingTransition;
   }
 }
 

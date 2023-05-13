@@ -1,9 +1,9 @@
-package com.unima.risk6.json.jsonObjects;
+package com.unima.risk6.json.jsonobjects;
 
 import com.unima.risk6.game.models.enums.CountryName;
 
 /**
- * Wrapper class for parsing json file with all SVG paths of countries
+ * Wrapper class for parsing json file with all SVG paths of countries.
  *
  * @author mmeider
  */

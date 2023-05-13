@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
@@ -25,6 +25,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
+
+/**
+ * Represents the graphical user interface (UI) representation of the active player in the bottom
+ * area of the game.
+ *
+ * @author mmeider
+ */
 
 public class ActivePlayerUi extends Group {
 
@@ -54,9 +61,17 @@ public class ActivePlayerUi extends Group {
 
   private Label deployableTroops;
 
-  private static final double NORMAL_ACTIVE_PLAYER_WIDTH = 300;
-
   private static final double WIDE_ACTIVE_PLAYER_WIDTH = 390;
+
+  /**
+   * Creates a UI representation of the active player.
+   *
+   * @param radiusX         The X radius of the ellipse.
+   * @param radiusY         The Y radius of the ellipse.
+   * @param rectangleWidth  The width of the rectangle.
+   * @param rectangleHeight The height of the rectangle.
+   * @param playerUi        The UI representation of the player.
+   */
 
   public ActivePlayerUi(double radiusX, double radiusY, double rectangleWidth,
       double rectangleHeight, PlayerUi playerUi) {
@@ -109,17 +124,14 @@ public class ActivePlayerUi extends Group {
     phaseLabel.setText("Order");
     Image reinforcementImage = ImageConfiguration.getImageByName(ImageName.REINFORCE_ICON);
     ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
-
-    Image attackImage = ImageConfiguration.getImageByName(ImageName.SWORD_ICON);
-    ImagePattern attackImagePattern = new ImagePattern(attackImage);
-
-    Image fortifyImage = ImageConfiguration.getImageByName(ImageName.FORTIFY_ICON);
-    ImagePattern fortifyImagePattern = new ImagePattern(fortifyImage);
-
     reinforcementRectangle = new Rectangle(radiusX, radiusY);
     reinforcementRectangle.setFill(reinforcementImagePattern);
+    Image attackImage = ImageConfiguration.getImageByName(ImageName.SWORD_ICON);
+    ImagePattern attackImagePattern = new ImagePattern(attackImage);
     attackRectangle = new Rectangle(radiusX, radiusY);
     attackRectangle.setFill(attackImagePattern);
+    Image fortifyImage = ImageConfiguration.getImageByName(ImageName.FORTIFY_ICON);
+    ImagePattern fortifyImagePattern = new ImagePattern(fortifyImage);
     fortifyRectangle = new Rectangle(radiusX, radiusY);
     fortifyRectangle.setFill(fortifyImagePattern);
     iconsPane.getChildren().add(phaseLabel);
@@ -149,9 +161,11 @@ public class ActivePlayerUi extends Group {
 
   }
 
-  public PlayerUi getPlayerUi() {
-    return playerUi;
-  }
+  /**
+   * Changes the UI representation of the active player.
+   *
+   * @param playerUi The new UI representation of the player.
+   */
 
   public void changeActivePlayerUi(PlayerUi playerUi) {
     if (!this.playerUi.getPlayer().getUser().equals(playerUi.getPlayer().getUser())
@@ -210,7 +224,7 @@ public class ActivePlayerUi extends Group {
         initPhase();
       }
       case CLAIM_PHASE -> {
-        phaseLabel.setText("Claim a territory");
+        phaseLabel.setText("Place your initial troops");
         iconsPane.getChildren().remove(0);
         iconsPane.getChildren().add(phaseLabel);
         StackPane.setAlignment(phaseLabel, Pos.CENTER);
@@ -222,25 +236,34 @@ public class ActivePlayerUi extends Group {
         reinforcementRectangle.setOpacity(0.5);
         fortifyRectangle.setOpacity(0.5);
       }
+      default -> {
+      }
     }
   }
+
+  /**
+   * Initializes the frame of the active player and its different phases.
+   */
 
   public void initPhase() {
 
     VBox iconsAndNameBox = new VBox();
     iconsAndNameBox.setAlignment(Pos.CENTER);
-    /*phaseLabel.setStyle(
-        "-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: " + "bold;"); */
-    HBox iconsHBox = new HBox();
-    iconsHBox.getChildren().addAll(reinforcementRectangle, attackRectangle, fortifyRectangle);
-    iconsHBox.setSpacing(25);
-    iconsHBox.setAlignment(Pos.CENTER);
-    iconsAndNameBox.getChildren().addAll(iconsHBox, phaseLabel);
+    HBox iconsHbox = new HBox();
+    iconsHbox.getChildren().addAll(reinforcementRectangle, attackRectangle, fortifyRectangle);
+    iconsHbox.setSpacing(25);
+    iconsHbox.setAlignment(Pos.CENTER);
+    iconsAndNameBox.getChildren().addAll(iconsHbox, phaseLabel);
     if (iconsPane.getChildren().size() > 0) {
       iconsPane.getChildren().remove(0);
     }
     iconsPane.getChildren().add(iconsAndNameBox);
   }
+
+  /**
+   * Controls the display of the deployable troops by either expanding or contracting the rectangle
+   * which creates the foundation of the ActivePlayerUi.
+   */
 
   public void controlDeployableTroops() {
     if (displayDeployable) {
@@ -256,15 +279,15 @@ public class ActivePlayerUi extends Group {
       deployableTroops.setStyle("-fx-font-size: 16px;-fx-font-weight: bold;");
 
       if (troopsPane.getChildren().size() == 0) {
-        VBox centeredVBox = new VBox();
-        centeredVBox.setAlignment(Pos.CENTER);
+        VBox centeredVbox = new VBox();
+        centeredVbox.setAlignment(Pos.CENTER);
 
         HBox deployableBox = new HBox();
         deployableBox.getChildren().addAll(deployableTroops, soldierIcon);
         deployableBox.setSpacing(8);
         deployableBox.setAlignment(Pos.CENTER);
-        centeredVBox.getChildren().add(deployableBox);
-        troopsPane.getChildren().add(centeredVBox);
+        centeredVbox.getChildren().add(deployableBox);
+        troopsPane.getChildren().add(centeredVbox);
         troopsPane.setLayoutX(-190);
         this.getChildren().add(troopsPane);
       }
@@ -277,6 +300,10 @@ public class ActivePlayerUi extends Group {
     }
   }
 
+  /**
+   * Updates the number of deployable troops for the active player.
+   */
+
   public void updateActivePlayerTroops() {
     Player player = playerUi.getPlayer();
     if (player.getCurrentPhase() == GamePhase.CLAIM_PHASE) {
@@ -288,5 +315,9 @@ public class ActivePlayerUi extends Group {
 
   public void setDisplayDeployable(boolean displayDeployable) {
     this.displayDeployable = displayDeployable;
+  }
+
+  public PlayerUi getPlayerUi() {
+    return playerUi;
   }
 }

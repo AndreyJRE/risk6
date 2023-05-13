@@ -7,17 +7,29 @@ import java.util.Objects;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 
+/**
+ * This class holds the configuration for various images used in the application. It includes paths
+ * to different image files and provides methods to load and retrieve images.
+ *
+ * @author fisommer
+ * @author astoyano
+ */
+
 public class ImageConfiguration {
 
   private static final String LOG_IN_IMAGE = "/com/unima/risk6/pictures/logInBackground.png";
   private static final String WON_IMAGE = "/com/unima/risk6/pictures/wonBackground.png";
-  private static final String SINGLEPLAYER_IMAGE = "/com/unima/risk6/pictures/singlePlayerBackground.png";
-  private static final String MULTIPLAYER_IMAGE = "/com/unima/risk6/pictures/multiplayerBackground.png";
-  private static final String CREATE_ACCOUNT_IMAGE = "/com/unima/risk6/pictures/createAccountBackground.png";
+  private static final String SINGLEPLAYER_IMAGE = "/com/unima/risk6/pictures"
+      + "/singlePlayerBackground.png";
+  private static final String MULTIPLAYER_IMAGE = "/com/unima/risk6/pictures"
+      + "/multiplayerBackground.png";
+  private static final String CREATE_ACCOUNT_IMAGE = "/com/unima/risk6/pictures"
+      + "/createAccountBackground.png";
   private static final String OPTIONS_IMAGE = "/com/unima/risk6/pictures/optionsBackground.png";
   private static final String STATISTICS_IMAGE = "/com/unima/risk6/pictures/statisticsBackground.png";
   private static final String SELECTED_USER_IMAGE = "/com/unima/risk6/pictures/selectedUser.png";
-  private static final String SELECT_LOBBY_BACKGROUND = "/com/unima/risk6/pictures/selectLobbyBackground.png";
+  private static final String SELECT_LOBBY_BACKGROUND = "/com/unima/risk6/pictures"
+      + "/selectLobbyBackground.png";
   private static final String CREATE_LOBBY_BACKGROUND = "/com/unima/risk6/pictures/createLobby.png";
   private static final String PLAYER_ICON = "/com/unima/risk6/pictures/playerIcon.png";
   private static final String EASYBOT_ICON = "/com/unima/risk6/pictures/easyBot.png";
@@ -39,7 +51,18 @@ public class ImageConfiguration {
   private static final String WILD_CARD = "/com/unima/risk6/pictures/wildCard.png";
 
   private static final String PLUS_ICON = "/com/unima/risk6/pictures/plusIcon.png";
+  private static final String INFANTRY_RUNNING_GIF = "/com/unima/risk6/pictures/InfantryRunning.gif";
 
+  private static final String ATTACK_DICE_PREVIEW = "/com/unima/risk6/pictures/attackDicePreview.png";
+
+  private static final String DICE_PREVIEW = "/com/unima/risk6/pictures/dicePreview.png";
+
+  private static final String ATTACK_DICE_ROLLING_GIF = "/com/unima/risk6/pictures"
+      + "/attackDiceRollAnimation.gif";
+
+  private static final String DICE_ROLLING_GIF = "/com/unima/risk6/pictures/diceRollAnimation.gif";
+
+  private static final String WATER_GIF = "/com/unima/risk6/pictures/flowingWater.gif";
 
   private static HashMap<ImageName, Image> images;
   private static Media titleBackgroundVideo;
@@ -93,7 +116,19 @@ public class ImageConfiguration {
     images.put(ImageName.FORTIFY_ICON, fortifyIcon);
     Image reinforcementIcon = initImage(REINFORCE_ICON);
     images.put(ImageName.REINFORCE_ICON, reinforcementIcon);
-    
+    Image infantryRunningGif = initImage(INFANTRY_RUNNING_GIF);
+    images.put(ImageName.INFANTRY_RUNNING_GIF, infantryRunningGif);
+    Image attackDicePreview = initImage(ATTACK_DICE_PREVIEW);
+    images.put(ImageName.ATTACK_DICE_PREVIEW, attackDicePreview);
+    Image dicePreview = initImage(DICE_PREVIEW);
+    images.put(ImageName.DICE_PREVIEW, dicePreview);
+    Image attackDiceRollingGif = initImage(ATTACK_DICE_ROLLING_GIF);
+    images.put(ImageName.ATTACK_DICE_ROLLING, attackDiceRollingGif);
+    Image diceRollingGif = initImage(DICE_ROLLING_GIF);
+    images.put(ImageName.DICE_ROLLING, diceRollingGif);
+    Image waterGif = initImage(WATER_GIF);
+    images.put(ImageName.WATER_GIF, waterGif);
+
     URL mediaUrl = ImageConfiguration.class.getResource(
         "/com/unima/risk6/pictures/backgroundVideo.png");
     String mediaStringUrl = mediaUrl.toExternalForm();
