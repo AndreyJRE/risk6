@@ -275,8 +275,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case CREATE_GAME_LOBBY -> {
                   LOGGER.debug("At CREATE_GAME_LOBBY" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
-                  gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
-                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby(), gameLobby);
+                  if (NetworkConfiguration.getServerLobby().getGameLobbies().stream()
+                      .anyMatch(x -> x.getLobbyName().equals(gameLobby.getLobbyName()))) {
+                    //If theres already a lobby with the same name
+                    LOGGER.error("There is another lobby with the same name.");
+                    sendDropMessage(ctx.channel(), ConnectionActions.DROP_CREATE_GAME_LOBBY,
+                        "There is another lobby with the same name.");
+                  } else {
+                    gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
+                    sendCreatedGameLobby(NetworkConfiguration.getServerLobby(), gameLobby);
+                  }
 
                 }
                 case START_TUTORIAL -> {
