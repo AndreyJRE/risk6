@@ -184,7 +184,7 @@ public class CountryUi extends Group {
           int numberOfNeutralCountries = GameConfiguration.getGameState().getCountries().stream()
               .filter(country -> !country.hasPlayer()).toList().size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
-              || !country.hasPlayer()) {
+              || !country.hasPlayer() && event.getClickCount() == 1) {
             if (tutorial != null) {
               Reinforce currentClaim = tutorial.getCurrentClaim();
               Country claimTutorialCountry = currentClaim.getCountry();
@@ -229,7 +229,8 @@ public class CountryUi extends Group {
         }
         case REINFORCEMENT_PHASE -> {
           if (checkIfCountryIsMine(country)
-              && playerController.getPlayer().getDeployableTroops() > 0) {
+              && playerController.getPlayer().getDeployableTroops() > 0
+              && event.getClickCount() == 1) {
             if (tutorial != null) {
               Reinforce currentReinforce = tutorial.getCurrentReinforce();
               Country reinforceCountry = currentReinforce.getCountry();
