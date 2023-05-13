@@ -45,11 +45,12 @@ class TutorialTest {
     assertTrue(tutorialBotPlayer.getCountries().size() < 42);
     assertEquals(2, tutorialState.getActivePlayers().size());
     assertEquals(humanPlayer, tutorialState.getCurrentPlayer());
-    assertEquals(8, humanPlayer.getInitialTroops());
-    assertEquals(8, tutorialBotPlayer.getInitialTroops());
+    assertEquals(9, humanPlayer.getInitialTroops());
+    assertEquals(9, tutorialBotPlayer.getInitialTroops());
     assertEquals(GamePhase.NOT_ACTIVE, tutorialBotPlayer.getCurrentPhase());
     assertEquals(GamePhase.CLAIM_PHASE, humanPlayer.getCurrentPhase());
-    System.out.println(tutorial.getNextMessage());
+    assertTrue(tutorial.getTutorialState().isChatEnabled());
+    assertNotNull(tutorial.getNextMessage());
   }
 
   @Test

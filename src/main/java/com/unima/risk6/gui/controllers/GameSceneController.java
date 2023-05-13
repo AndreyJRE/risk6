@@ -15,6 +15,7 @@ import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
+import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
@@ -25,6 +26,7 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
@@ -97,6 +99,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private Popup statisticPopup;
   boolean isStatisticsShowing = false;
 
+  boolean isCountryNameShowing = false;
+
   private ChatUi chatUi;
 
   private HandUi handUi;
@@ -105,6 +109,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private StackPane chatCounter;
   private Label chatCounterLabel;
   private int lastChatUpdate;
+  Group countryNameGroup;
 
 
   public GameSceneController(GameScene gameScene) {
@@ -184,7 +189,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     Group otherDiceGroup = new Group();
 
     HashMap<String, Integer> hashMapOfPlayerDice = GameConfiguration.getDiceRolls();
-    System.out.println(gameState.getActivePlayers());
     int myValue = hashMapOfPlayerDice.get(myPlayerUi.getPlayer().getUser());
 
     List<DiceUi> diceUis = new ArrayList<>();
@@ -265,6 +269,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       dice.rollDice();
     }
     delayTransitionShowOrder.play();
+
     myDiceBox.getChildren().addAll(myDice);
     myDiceBox.setSpacing(10);
 
@@ -295,6 +300,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     double heightRatio = gameScene.getHeight() / originalScreenHeight;
     double initialScale = Math.min(widthRatio, heightRatio);
 
+    countryNameGroup = new Group();
+
     countriesGroup.getChildren().addAll(countriesUis);
     StackPane countriesPane = new StackPane();
 
@@ -310,11 +317,83 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       ellipseY = correctedCoordinates.getY();
 
       TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
+
+      Label countryName = new Label(
+          countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
+
+      double finalEllipseY;
+      double finalEllipseX;
+
+      switch (countryUi.getCountry().getCountryName().name()) {
+        case "SOUTHERN_EUROPE" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "WESTERN_UNITED_STATES" -> {
+          finalEllipseY = ellipseY - 3;
+          finalEllipseX = ellipseX;
+        }
+        case "MADAGASCAR" -> {
+          finalEllipseY = ellipseY + 12;
+          finalEllipseX = ellipseX;
+        }
+        case "WESTERN_EUROPE" -> {
+          finalEllipseY = ellipseY + 10;
+          finalEllipseX = ellipseX;
+        }
+        case "SOUTH_AFRICA" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "EAST_AFRICA" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "EASTERN_UNITED_STATES" -> {
+          finalEllipseY = ellipseY + 5;
+          finalEllipseX = ellipseX;
+        }
+        case "ALASKA" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "QUEBEC" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "WESTERN_AUSTRALIA" -> {
+          finalEllipseY = ellipseY - 40;
+          finalEllipseX = ellipseX - 20;
+        }
+        case "EASTERN_AUSTRALIA" -> {
+          finalEllipseY = ellipseY + 10;
+          finalEllipseX = ellipseX - 50;
+        }
+        default -> {
+          finalEllipseY = ellipseY;
+          finalEllipseX = ellipseX;
+        }
+      }
+
+      Platform.runLater(() -> {
+        countryName.setStyle(
+            "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
+                + "bold;-fx-font-size: 13px");
+        countryName.setTextFill(Color.WHITE);
+        System.out.println(countryName.getLayoutBounds().getWidth());
+        countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
+        countryName.setLayoutY(finalEllipseY + 10);
+      });
+
+      countryNameGroup.getChildren().add(countryName);
+
       troopsCounterUi.setText(countryUi.getCountry().getTroops().toString());
       countryUi.setTroopsCounterUi(troopsCounterUi);
       countriesGroup.getChildren().add(troopsCounterUi);
 
     }
+    countryNameGroup.setVisible(false);
+    countriesGroup.getChildren().add(countryNameGroup);
     countriesGroup.setScaleX(initialScale);
     countriesGroup.setScaleY(initialScale);
 
@@ -385,8 +464,17 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     nextPhaseButton.setFocusTraversable(false);
     nextPhaseButton.setVisible(false);
     nextPhaseButton.setOnAction(event -> {
-      GamePhase currentPhase = myPlayerUi.getPlayer().getCurrentPhase();
-      PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+      Player currentPlayer = myPlayerUi.getPlayer();
+      GamePhase currentPhase = currentPlayer.getCurrentPhase();
+      if (currentPlayer.getDeployableTroops() > 0 && !PLAYER_CONTROLLER.getHandController()
+          .mustExchange() && currentPlayer.getCurrentPhase()
+          .equals(GamePhase.REINFORCEMENT_PHASE)) {
+        StyleConfiguration.showErrorDialog("Can't end phase yet!",
+            "You either still have troops to deploy or must exchange cards in your hand. "
+                + "Deploy them all before ending the phase.");
+      } else {
+        PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+      }
       for (CountryUi countryUi : countriesUis) {
         countryUi.removeArrowsAndAdjacentCountries();
       }
@@ -467,6 +555,21 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         event.consume();
       }
     });
+
+    gameScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode() == KeyCode.M && !isCountryNameShowing) {
+        countryNameGroup.setVisible(true);
+        isCountryNameShowing = true;
+        event.consume();
+      }
+    });
+    gameScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+      if (event.getCode() == KeyCode.M) {
+        countryNameGroup.setVisible(false);
+        isCountryNameShowing = false;
+        event.consume();
+      }
+    });
   }
 
   private void showStatisticsPopup() {
@@ -516,17 +619,18 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       userBox.getChildren().addAll(userLabel, userCircle);
       statisticsGrid.add(userBox, i, 0);
 
-      String[] attributeStrings = {"Troops: ", "Countries: "};
+      String[] attributeStrings = {"Troops: ", "Countries: ", "Continents: ", "Bonus Troops: "};
       for (int j = 0; j < attributeStrings.length; j++) {
         HBox statisticBox = new HBox();
         statisticBox.setPadding(new Insets(5));
         statisticBox.setAlignment(Pos.CENTER);
-        int value;
-        if (j == 0) {
-          value = player.getStatistic().getNumberOfTroops();
-        } else {
-          value = player.getStatistic().getNumberOfOwnedCountries();
-        }
+        int value = switch (j) {
+          case 0 -> player.getStatistic().getNumberOfTroops();
+          case 1 -> player.getStatistic().getNumberOfOwnedCountries();
+          case 2 -> player.getContinents().size();
+          case 3 -> player.getContinents().stream().mapToInt(Continent::getBonusTroops).sum();
+          default -> throw new IllegalStateException("Unexpected value: " + j);
+        };
         Label statisticName = new Label(attributeStrings[j]);
         statisticName.setStyle("-fx-font-size: 15px;");
         Label userStat = new Label(Integer.toString(value));
@@ -599,19 +703,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void updateReferencesFromGameState() {
-    this.gameState.getActivePlayers().forEach(player -> {
-      if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
-        myPlayerUi.setPlayer(player);
-        PLAYER_CONTROLLER.setPlayer(player);
-        PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
-      } else {
-        playerUis.forEach(playerUi -> {
-          if (playerUi.getPlayer().getUser().equals(player.getUser())) {
-            playerUi.setPlayer(player);
-          }
-        });
-      }
-    });
+    this.gameState.getActivePlayers().forEach(this::updatePlayerUiReferenceByPlayer);
+    this.gameState.getLostPlayers().forEach(this::updatePlayerUiReferenceByPlayer);
+
     this.gameState.getCountries().forEach(country -> countriesUis.forEach(countryUi -> {
       if (countryUi.getCountry().getCountryName().equals(country.getCountryName())) {
         countryUi.setCountry(country);
@@ -624,6 +718,20 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             .getCountry())));
     handUi.setHand(myPlayerUi.getPlayer().getHand());
     //TODO Update reference for the deckUi,handUi, etc
+  }
+
+  private void updatePlayerUiReferenceByPlayer(Player player) {
+    if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
+      myPlayerUi.setPlayer(player);
+      PLAYER_CONTROLLER.setPlayer(player);
+      PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
+    } else {
+      playerUis.forEach(playerUi -> {
+        if (playerUi.getPlayer().getUser().equals(player.getUser())) {
+          playerUi.setPlayer(player);
+        }
+      });
+    }
   }
 
   public CountryUi getCountryUiByCountry(Country country) {
@@ -716,16 +824,23 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case REINFORCEMENT_PHASE -> {
-          tutorial.updatePlayerReinforce();
           Reinforce reinforce = tutorial.getCurrentReinforce();
-          cardsButton.setVisible(tutorial.isHandInEnabled());
+          if (tutorial.isHandInEnabled()) {
+            cardsButton.setVisible(true);
+            GameConfiguration.setTutorial(null);
+            tutorial = null;
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+          }
           if (reinforce != null) {
             CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
             countryUi.animateTutorialCountry();
           }
         }
         case ATTACK_PHASE -> {
-          tutorial.updatePlayerAttack();
           Attack attack = tutorial.getCurrentAttack();
           if (attack != null) {
             CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
@@ -733,7 +848,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case FORTIFY_PHASE -> {
-          tutorial.updatePlayerFortify();
           Fortify fortify = tutorial.getCurrentFortify();
           if (fortify != null) {
             CountryUi countryUi = getCountryUiByCountry(fortify.getOutgoing());
