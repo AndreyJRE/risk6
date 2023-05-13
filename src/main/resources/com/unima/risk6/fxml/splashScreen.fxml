@@ -2,51 +2,41 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="com.unima.risk6.gui.controllers.SplashScreenController">
-  <children>
-    <Pane prefHeight="402.5188849614524" prefWidth="700.0" style="-fx-background-color: #003c00;"
-      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-      AnchorPane.topAnchor="0.0">
-      <padding>
-        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-      </padding>
-      <children>
-        <Label alignment="CENTER" layoutX="189.0" layoutY="32.0" prefHeight="118.0"
-          prefWidth="375.0" text="RISK" textFill="#d43333">
-          <font>
-            <Font name="Times New Roman Bold" size="90.0"/>
-          </font>
-        </Label>
-        <Line endX="94.14147186279297" endY="398.0000305175781" layoutX="-38.0" layoutY="2.0"
-          startX="94.14152526855469" startY="7.71359191276133E-6" stroke="#d43333"
-          strokeWidth="5.0"/>
-        <Line endX="-2.9952640034025535E-5" endY="351.1792297363281" startX="699.9999389648438"
-          startY="351.1792297363281" stroke="#d43333" strokeWidth="5.0"/>
-        <Label layoutX="267.0" layoutY="129.0" prefHeight="42.0" prefWidth="110.0"
-          text="Version 0.0.1" textFill="WHITE">
-          <font>
-            <Font name="Arial Bold Italic" size="15.0"/>
-          </font>
-        </Label>
-        <Label fx:id="progress" layoutX="538.0" layoutY="313.0" prefHeight="29.0" prefWidth="142.0"
-          text="Loading" textFill="WHITE">
-          <font>
-            <Font name="Arial" size="15.0"/>
-          </font>
-        </Label>
-        <Label alignment="TOP_LEFT" layoutX="497.0" layoutY="368.0" prefHeight="18.0"
-          prefWidth="177.0" text="© 2023 Universität Mannheim" textFill="WHITE">
-          <font>
-            <Font name="Times New Roman" size="14.0"/>
-          </font>
-        </Label>
-      </children>
-    </Pane>
-  </children>
+<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.unima.risk6.gui.controllers.SplashScreenController">
+    <children>
+        <Pane prefHeight="402.5188849614524" prefWidth="700.0"
+              style="-fx-background-color: #003c00;" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+            <children>
+                <ImageView fitHeight="405.0" fitWidth="711.0" layoutY="-2.0">
+                    <image>
+                        <Image url="@../pictures/preLoader.png"/>
+                    </image>
+                </ImageView>
+                <Label alignment="CENTER" layoutX="390.0" layoutY="-11.0" prefHeight="118.0"
+                       prefWidth="375.0" text="RISK" textFill="#d43333">
+                    <font>
+                        <Font name="Times New Roman Bold" size="90.0"/>
+                    </font>
+                </Label>
+                <Label fx:id="progress" layoutX="467.0" layoutY="86.0" prefHeight="29.0"
+                       prefWidth="248.0" text="Version 1.0           Loading" textFill="WHITE">
+                    <font>
+                        <Font name="Arial Bold Italic" size="15.0"/>
+                    </font>
+                </Label>
+            </children>
+        </Pane>
+    </children>
 </AnchorPane>
