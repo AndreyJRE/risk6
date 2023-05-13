@@ -147,7 +147,6 @@ public class ChatUi extends BorderPane implements ChatObserver {
     chatPopup = new Popup();
     closeButton.setOnAction(event -> chatPopup.hide());
     chatPopup.getContent().add(this);
-    chatPopup.setAutoFix(true);
     chatPopup.setAutoHide(true);
     DropShadow dropShadow = new DropShadow();
     dropShadow.setColor(Color.BLACK);

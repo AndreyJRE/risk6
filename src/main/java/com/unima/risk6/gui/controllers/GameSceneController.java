@@ -102,11 +102,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   boolean isCountryNameShowing = false;
 
   private ChatUi chatUi;
-
   private HandUi handUi;
   private Button cardsButton;
   private Tutorial tutorial;
-  private StackPane chatCounter;
   private Label chatCounterLabel;
   private int lastChatUpdate;
   Group countryNameGroup;
@@ -377,8 +375,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
       Platform.runLater(() -> {
         countryName.setStyle(
-            "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
-                + "bold;-fx-font-size: 13px");
+            "-fx-background-radius: 15px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
+                + "bold;-fx-font-size: 12px; -fx-padding: 2px;");
         countryName.setTextFill(Color.WHITE);
         countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
         countryName.setLayoutY(finalEllipseY + 10);
