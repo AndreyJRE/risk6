@@ -26,12 +26,12 @@ public final class GameClient implements Runnable {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
 
-  private final String URL;
+  private final String url;
 
   private volatile Channel ch;
 
   public GameClient(String url) {
-    URL = System.getProperty("url", url);
+    this.url = System.getProperty("url", url);
   }
 
   public void sendMessage(Message message) {
@@ -43,7 +43,7 @@ public final class GameClient implements Runnable {
 
   public void run() {
     try {
-      URI uri = new URI(URL);
+      URI uri = new URI(url);
       final int port = 42069;
 
       EventLoopGroup group = new NioEventLoopGroup();
