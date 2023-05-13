@@ -67,6 +67,11 @@ public class Tutorial {
     this.handInEnabled = false;
   }
 
+  /**
+   * Prepares the tutorial Game State by setting all relevant values.
+   *
+   * @return The tutorial Game State.
+   */
   private GameState createTutorial() {
     GameState tutorial = GameConfiguration.configureGame(this.human, this.bot);
 
@@ -114,6 +119,12 @@ public class Tutorial {
     return tutorial;
   }
 
+  /**
+   * Prepares a set to be used later to make sure the player owns the right countries for the
+   * tutorial.
+   *
+   * @return A set of CountryName signifying which countries should belong to the player.
+   */
   private Set<CountryName> initializeHumanCountries() {
     Set<CountryName> humanCountries = new HashSet<>(); // manually take New Guinea
     humanCountries.add(CountryName.WESTERN_AUSTRALIA);
@@ -127,6 +138,12 @@ public class Tutorial {
     return humanCountries;
   }
 
+  /**
+   * Prepares a set to be used later to make sure the bot owns the right countries for the
+   * tutorial.
+   *
+   * @return A set of CountryName signifying which countries should belong to the bot.
+   */
   private Set<CountryName> initializeBotCountries() {
     Set<CountryName> botCountries = new HashSet<>(); // manually take indonesia
     botCountries.add(CountryName.PERU);
@@ -197,15 +214,31 @@ public class Tutorial {
     return currentClaim;
   }
 
+  /**
+   * Creates the reinforce move which is meant to be performed by the player.
+   *
+   * @return A reinforcement of New Guinea.
+   */
   public Reinforce getCurrentReinforce() {
     return new Reinforce(this.countryMap.get(CountryName.NEW_GUINEA), 3);
   }
 
+  /**
+   * Creates the attack move which is meant to be performed by the player.
+   *
+   * @return The attack from New Guinea to Indonesia.
+   */
   public Attack getCurrentAttack() {
     return new Attack(this.countryMap.get(CountryName.NEW_GUINEA),
         this.countryMap.get(CountryName.INDONESIA), 3);
   }
 
+  /**
+   * Sets hand-in enabled to true for a later point in the tutorial and provides the fortify move
+   * meant to be made by the player.
+   *
+   * @return The fortify move from Venezuela to Central America.
+   */
   public Fortify getCurrentFortify() {
     this.setHandInEnabled(true);
     return new Fortify(this.countryMap.get(CountryName.VENEZUELA),

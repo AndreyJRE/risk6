@@ -93,7 +93,7 @@ public class TutorialBot extends Player implements AiBot {
   /**
    * Creates a queue of deterministic country claims for the bot during the tutorial.
    *
-   * @return a queue of Reinforce objects representing the bot's deterministic country claims.
+   * @return a queue of Reinforce objects representing the bots deterministic country claims.
    */
   private Queue<Reinforce> createDeterministicClaims() {
     Queue<Reinforce> claims = new LinkedList<>();
