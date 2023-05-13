@@ -19,7 +19,7 @@ public class LobbyConfiguration {
 
   private static GameLobby gameLobby;
 
-  private static final ArrayList<String> messages = new ArrayList<>();
+  private static final List<String> messages = new ArrayList<>();
 
   private static final List<ServerLobbyObserver> SERVER_LOBBY_OBSERVERS = new ArrayList<>();
 
@@ -107,6 +107,7 @@ public class LobbyConfiguration {
 
   public static void setLastChatMessage(String string) {
     messages.add(string);
+    System.out.println(messages);
     notifyChatLobbyObservers();
   }
 

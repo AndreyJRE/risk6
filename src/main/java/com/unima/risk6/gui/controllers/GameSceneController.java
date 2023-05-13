@@ -506,7 +506,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   @Override
-  public void updateChat(ArrayList<String> messages) {
+  public void updateChat(List<String> messages) {
     if (chatUi.getChatPopup().isShowing()) {
       Platform.runLater(() -> chatCounterLabel.setVisible(false));
       lastChatUpdate = messages.size();
@@ -828,6 +828,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             cardsButton.setVisible(true);
             GameConfiguration.setTutorial(null);
             tutorial = null;
+            GameConfiguration.setTutorialOver(true);
             try {
               Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -867,15 +868,15 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void sendTutorialMessage() {
-    if (tutorialMessageCounter == 20 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
+    if (tutorialMessageCounter == 0 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
         || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
         || tutorialMessageCounter == 11) {
       LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+//      try {
+//        Thread.sleep(100);
+//      } catch (InterruptedException e) {
+//        throw new RuntimeException(e);
+//      }
     }
     tutorialMessageCounter++;
   }
@@ -915,7 +916,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
       countryUi.animateTutorialCountry();
     }
-    tutorial.getNextMessage(); //temp
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    sendTutorialMessage();
   }
 
   public Color getColorByPlayer(Player player) {

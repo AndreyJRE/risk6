@@ -32,6 +32,7 @@ public class GameConfiguration {
 
 
   private static Tutorial tutorial;
+  private static boolean tutorialOver = false;
 
   /**
    * Configures the game by initializing the countries, continents, players and creating a GameState
@@ -149,5 +150,11 @@ public class GameConfiguration {
     return diceRolls;
   }
 
+  public static boolean isTutorialOver() {
+    return tutorialOver;
+  }
 
+  public static void setTutorialOver(boolean tutorialOver) {
+    GameConfiguration.tutorialOver = tutorialOver;
+  }
 }

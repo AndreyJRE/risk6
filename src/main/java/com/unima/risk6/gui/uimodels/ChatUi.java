@@ -3,6 +3,7 @@ package com.unima.risk6.gui.uimodels;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.ChatObserver;
 import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -59,6 +60,7 @@ public class ChatUi extends BorderPane implements ChatObserver {
   private Bounds rootBounds;
 
   private Scene gameScene;
+  private List<String> chatHistory = new ArrayList<>();
 
   /**
    * Constructs a ChatUi object with the provided gameScene.
@@ -216,6 +218,31 @@ public class ChatUi extends BorderPane implements ChatObserver {
     sendMessage.setPadding(new Insets(3));
     sendMessage.setPrefSize(this.getPrefWidth() * 0.8, 35);
     chatPopup.show(gameScene.getWindow());
+    chatBox.getChildren().clear();
+    for (String msg : chatHistory) {
+      showMessageInChat(msg);
+    }
+  }
+
+  private void showMessageInChat(String msg) {
+    double maxWidthOfChat = this.getPrefWidth() - 40;
+    text = new Text(msg);
+    text.setWrappingWidth(maxWidthOfChat - 10);
+    double chatHeight = text.getLayoutBounds().getHeight() + 10;
+    chatRectangle = new Rectangle(text.getLayoutBounds().getWidth() + 15, chatHeight);
+    chatRectangle.setArcHeight(10);
+    chatRectangle.setArcWidth(10);
+    chatRectangle.setFill(Color.LIGHTGREY);
+    StackPane.setAlignment(text, Pos.TOP_LEFT);
+    StackPane.setAlignment(chatRectangle, Pos.TOP_LEFT);
+    StackPane.setMargin(text, new Insets(4, 0, 0, 8));
+    StackPane textStack = new StackPane(chatRectangle, text);
+    VBox messageBox = new VBox();
+    messageBox.getChildren().addAll(textStack);
+    messageBox.setPadding(new Insets(5, 0, 0, 15));
+    messageBox.setSpacing(15);
+    messageBox.setAlignment(Pos.TOP_LEFT);
+    chatBox.getChildren().add(messageBox);
   }
 
   /**
@@ -226,26 +253,13 @@ public class ChatUi extends BorderPane implements ChatObserver {
    */
 
   @Override
-  public void updateChat(ArrayList<String> messages) {
+  public void updateChat(List<String> messages) {
+    String lastMessage = messages.get(messages.size() - 1);
+    this.chatHistory.add(lastMessage);
     Platform.runLater(() -> {
-      double maxWidthOfChat = this.getPrefWidth() - 40;
-      text = new Text(messages.get(messages.size() - 1));
-      text.setWrappingWidth(maxWidthOfChat - 10);
-      double chatHeight = text.getLayoutBounds().getHeight() + 10;
-      chatRectangle = new Rectangle(text.getLayoutBounds().getWidth() + 15, chatHeight);
-      chatRectangle.setArcHeight(10);
-      chatRectangle.setArcWidth(10);
-      chatRectangle.setFill(Color.LIGHTGREY);
-      StackPane.setAlignment(text, Pos.TOP_LEFT);
-      StackPane.setAlignment(chatRectangle, Pos.TOP_LEFT);
-      StackPane.setMargin(text, new Insets(4, 0, 0, 8));
-      StackPane textStack = new StackPane(chatRectangle, text);
-      VBox messageBox = new VBox();
-      messageBox.getChildren().addAll(textStack);
-      messageBox.setPadding(new Insets(5, 0, 0, 15));
-      messageBox.setSpacing(15);
-      messageBox.setAlignment(Pos.TOP_LEFT);
-      chatBox.getChildren().add(messageBox);
+      if (this.chatPopup.isShowing()) {
+        showMessageInChat(lastMessage);
+      }
     });
   }
 
