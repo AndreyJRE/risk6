@@ -60,8 +60,12 @@ import java.util.Queue;
 public class MonteCarloTreeSearch {
 
   private static int counter = 0;
-  private static final int SIMULATION_COUNT = 200; // best choice is more, but shorter simulations
-  private static final int SIMULATION_TIME_LIMIT = 150;
+  private static int simulationCount = 150; // best choice is more, but shorter simulations
+  private static final int SIMULATION_TIME_LIMIT = 100;
+  private static final double STRENGTH_WEIGHT = 0.5;
+  private static final double COUNTRY_WEIGHT = 0.2;
+  private static final double CONTINENT_WEIGHT = 0.3;
+
   private static final Gson gson = new GsonBuilder().registerTypeAdapter(GameState.class,
           new GameStateTypeAdapter()).registerTypeAdapter(Country.class, new CountryTypeAdapter())
       .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
@@ -95,18 +99,21 @@ public class MonteCarloTreeSearch {
    */
   public MoveTriplet getBestMove(GameState game) {
     MonteCarloNode root = new MonteCarloNode(game, null);
-    for (int i = 0; i < SIMULATION_COUNT; i++) {
+    if (game.getActivePlayers().size() + game.getLostPlayers().size() > 3) {
+      simulationCount = simulationCount / 2;
+    }
+    for (int i = 0; i < simulationCount; i++) {
       System.out.print("i = " + i + " ");
       counter = 0;
       MonteCarloNode node = select(root);
-      boolean advantageous = false;
-      double oldStrength = Probabilities.getPlayerStrength(node.getGameState(), player);
+      double oldStrength = this.calculateGameStateScore(node.getGameState());
+      double newStrength = 0;
       if (!node.getGameState().isGameOver() && node.getGameState().getActivePlayers()
           .contains(this.player)) {
         node = expand(node);
-        advantageous = simulate(node.getGameState(), oldStrength);
+        newStrength = simulate(node.getGameState());
       }
-      backpropagate(node, advantageous);
+      backpropagate(node, newStrength > oldStrength);
       System.out.printf("Rounds per simulation: %s%n", counter);
     }
     System.out.println();
@@ -168,9 +175,9 @@ public class MonteCarloTreeSearch {
    * until a certain stop condition is met.
    *
    * @param game The GameState from which the simulation will begin.
-   * @return The strongest player once the game has stopped being simulated.
+   * @return The strength of the current player once the simulation has ended.
    */
-  private boolean simulate(GameState game, double oldStrength) {
+  private double simulate(GameState game) {
     GameState simulation = this.copyGameState(game);
     GameController simulationController = new GameController(simulation);
     PlayerController playerController = new PlayerController();
@@ -182,7 +189,7 @@ public class MonteCarloTreeSearch {
     while (System.currentTimeMillis() < endTime && !simulation.isGameOver()) {
       this.playTurn(simulationController, playerController, moveProcessor);
     }
-    return Probabilities.getPlayerStrength(simulation, player) > oldStrength;
+    return this.calculateGameStateScore(simulation);
   }
 
   /**
@@ -359,5 +366,21 @@ public class MonteCarloTreeSearch {
     }
     moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
     return fortify;
+  }
+
+  /**
+   * Calculates a strength score for the current player based off of a weighted sum of the
+   * normalized values of their total strength and their amount of countries and continents.
+   *
+   * @param simulation The GameState in which the calculation is being done.
+   * @return The result of the weighted sum.
+   */
+  public double calculateGameStateScore(GameState simulation) {
+    Player currentPlayer = simulation.getCurrentPlayer();
+    double strength = Probabilities.getPlayerStrength(simulation, currentPlayer);
+    double countryPercentage = currentPlayer.getCountries().size() / 42.;
+    double continentPercentage = currentPlayer.getContinents().size() / 6.;
+    return STRENGTH_WEIGHT * strength + COUNTRY_WEIGHT * countryPercentage
+        + CONTINENT_WEIGHT * continentPercentage;
   }
 }

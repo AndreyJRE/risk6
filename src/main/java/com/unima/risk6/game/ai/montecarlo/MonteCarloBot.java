@@ -29,7 +29,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
 
   private static final Random RNG = new Random();
   private double attackProbability = 1.;
-  private final double attackModifier = 0.95;
 
 
   /**
@@ -67,7 +66,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
         }
       }
     }
-    diffMap.replaceAll((country, diff) -> diff + RNG.nextInt(0, 3));
+    System.out.println(diffMap);
     return diffMap;
   }
 
@@ -81,8 +80,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     for (Continent continent : this.getAllContinents()) {
       attackPairs.addAll(this.playerController.getAllValidCountryPairs(continent));
     }
-    // TODO: shuffle moves or let it play by best chances?
-    return attackPairs.stream().filter(pair -> pair.getWinningProbability() > 70).toList();
+    return attackPairs.stream().filter(pair -> pair.getWinningProbability() > 65).toList();
   }
 
   /**
@@ -103,7 +101,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
         int surrounding = diff < 0 ? -diff / 2 : new Random().nextInt(0, 2);
         fortifyList.add(new Fortify(bestAdj, country,
             Math.min((bestAdj.getTroops() - country.getTroops()) / 2, surrounding)));
-        break;
       }
     }
     return fortifyList.subList(0, Math.min(5, fortifyList.size()));
@@ -145,9 +142,8 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
     while (reinforceTroopsCopy > 0 && !allPossibilitiesCopy.isEmpty()) {
       // create reinforcements here with troopnumber check
       Country choice = this.pickRandomCountryFromSet(allPossibilitiesCopy.keySet());
-      int troopsTopLimit = Math.min(reinforceTroopsCopy, allPossibilitiesCopy.get(choice));
-      int troopsAdjusted = Math.max(0, troopsTopLimit);
-      Reinforce chosen = new Reinforce(choice, troopsAdjusted);
+      int troops = Math.min(reinforceTroopsCopy, Math.abs(allPossibilitiesCopy.get(choice)));
+      Reinforce chosen = new Reinforce(choice, troops);
       answer.add(chosen);
       allPossibilitiesCopy.remove(choice);
       reinforceTroopsCopy -= chosen.getToAdd();
@@ -184,7 +180,7 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
 
   @Override
   public boolean attackAgain() {
-    this.attackProbability *= this.attackModifier;
+    this.attackProbability *= 0.95;
     return !this.getAttackMoves().isEmpty() && RNG.nextDouble() < this.attackProbability;
   }
 
