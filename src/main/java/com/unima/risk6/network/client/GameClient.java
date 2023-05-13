@@ -26,7 +26,7 @@ public final class GameClient implements Runnable {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
 
-  private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
+  private final String URL;
 
   private volatile Channel ch;
 
@@ -66,27 +66,6 @@ public final class GameClient implements Runnable {
         ch = b.connect(uri.getHost(), port).sync().channel();
         handler.handshakeFuture().sync();
 
-        //BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-        /*while (true) {
-          //String msg = console.readLine();
-          if (msg == null && !sended) {
-            break;
-          } else if ("bye".equalsIgnoreCase(msg) && !sended) {
-            ch.writeAndFlush(new CloseWebSocketFrame());
-            ch.closeFuture().sync();
-            break;
-          } else if ("ping".equalsIgnoreCase(msg) && !sended) {
-            WebSocketFrame frame = new PingWebSocketFrame(
-                Unpooled.wrappedBuffer(new byte[]{8, 1, 8, 1}));
-            ch.writeAndFlush(frame);
-          } else if (!sended){
-            sended = true;
-            System.out.println("Sending Message: " + msg);
-            WebSocketFrame frame = new TextWebSocketFrame(msg);
-            ch.writeAndFlush(frame);
-          }
-        }*/
-        //Nötig, damit Thread nicht terminiert.
         while (true) {
           Thread.sleep(10000);
         }
