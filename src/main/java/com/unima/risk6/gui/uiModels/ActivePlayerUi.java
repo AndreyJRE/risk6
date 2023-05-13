@@ -7,17 +7,21 @@ import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
+import com.unima.risk6.gui.controllers.enums.Colors;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
@@ -81,9 +85,9 @@ public class ActivePlayerUi extends Group {
     ellipse.setStroke(this.playerUi.getPlayerColor());
     ellipse.setStrokeWidth(3);
     rectangle = new Rectangle(rectangleWidth, rectangleHeight);
-    rectangle.setFill(Color.WHITE);
+    rectangle.setFill(Colors.COUNTRY_BACKGROUND.getColor());
     rectangle.setStroke(this.playerUi.getPlayerColor());
-    rectangle.setStrokeWidth(2);
+    rectangle.setStrokeWidth(5);
     rectangle.setArcWidth(rectangleHeight);
     rectangle.setArcHeight(rectangleHeight);
     rectangle.setLayoutX(0);
@@ -99,7 +103,9 @@ public class ActivePlayerUi extends Group {
     iconsPane.setLayoutX(35);
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
     phaseLabel = new Label();
-    phaseLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold;");
+    phaseLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+    phaseLabel.setBackground(new Background(
+        new BackgroundFill(Colors.COUNTRY_BACKGROUND.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
     phaseLabel.setText("Order");
     Image reinforcementImage = ImageConfiguration.getImageByName(ImageName.REINFORCE_ICON);
     ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
@@ -126,7 +132,7 @@ public class ActivePlayerUi extends Group {
     } else {
       userRectangle = new Rectangle(ellipse.getRadiusX() * 2 + 15, userLabel.getHeight() + 20);
     }
-    userRectangle.setFill(Color.WHITE);
+    userRectangle.setFill(Colors.COUNTRY_BACKGROUND.getColor());
     userRectangle.setStroke(this.playerUi.getPlayerColor());
     userRectangle.setStrokeWidth(2);
     userRectangle.setArcWidth(ellipse.getRadiusX() - 10);
@@ -172,7 +178,9 @@ public class ActivePlayerUi extends Group {
           new Image(getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
     }
     StackPane stackPane = new StackPane(userImage);
-    stackPane.setStyle("-fx-background-color: #F5F5F5;");
+    //stackPane.setStyle("-fx-background-color: #F5F5F5;");
+    stackPane.setBackground(new Background(
+        new BackgroundFill(Colors.COUNTRY_BACKGROUND.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
     ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(playerUi.getPlayerColor());
     rectangle.setStroke(playerUi.getPlayerColor());
@@ -209,7 +217,7 @@ public class ActivePlayerUi extends Group {
 
       }
       case ORDER_PHASE -> {
-        phaseLabel = new Label("Order");
+        phaseLabel.setText("Order");
         attackRectangle.setOpacity(0.5);
         reinforcementRectangle.setOpacity(0.5);
         fortifyRectangle.setOpacity(0.5);
