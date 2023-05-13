@@ -14,7 +14,7 @@ import java.net.InetSocketAddress;
 
 public final class GameServer implements Runnable {
 
-  final int PORT = 8080;
+  final int PORT = 42069;
   final String HOST_IP;
   static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 

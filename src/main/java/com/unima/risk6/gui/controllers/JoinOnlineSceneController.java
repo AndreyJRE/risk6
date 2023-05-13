@@ -122,7 +122,7 @@ public class JoinOnlineSceneController {
     TextField portTextField = new TextField();
     portTextField.setPrefSize(800, 40);
     portTextField.setFont(Font.font(18));
-    portTextField.setText("8080");
+    portTextField.setText("42069");
     portTextField.setPromptText("Enter Port");
     portTextField.setStyle("-fx-background-radius: 20; -fx-border-radius: 20;");
 

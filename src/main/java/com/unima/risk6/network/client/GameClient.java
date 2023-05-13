@@ -44,7 +44,7 @@ public final class GameClient implements Runnable {
   public void run() {
     try {
       URI uri = new URI(URL);
-      final int port = 8080;
+      final int port = 42069;
 
       EventLoopGroup group = new NioEventLoopGroup();
       try {
