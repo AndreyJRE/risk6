@@ -47,7 +47,7 @@ public class ConnectionMessageAdapter implements JsonDeserializer<ConnectionMess
         //GameState gameState = context.deserialize(jsonObject.get("content");
         message = new ConnectionMessage<>(connectionAction, statusCode, "");
       }
-      case DROP_USER_GAME_LOBBY, DROP_USER_SERVER_LOBBY -> {
+      case DROP_USER_GAME_LOBBY, DROP_USER_SERVER_LOBBY, DROP_CREATE_GAME_LOBBY -> {
         String string = jsonObject.get("content").getAsString();
         message = new ConnectionMessage<String>(connectionAction, statusCode, string);
       }

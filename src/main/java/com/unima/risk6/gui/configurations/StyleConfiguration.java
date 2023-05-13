@@ -122,4 +122,10 @@ public class StyleConfiguration {
     }
   }
 
+  public static void handleLobbyExists(String problem) {
+    Alert alert = new Alert(Alert.AlertType.WARNING, problem,
+        ButtonType.OK);
+    alert.showAndWait();
+  }
+
 }

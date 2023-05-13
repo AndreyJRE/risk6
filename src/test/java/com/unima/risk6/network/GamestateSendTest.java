@@ -37,7 +37,7 @@ public class GamestateSendTest {
             gamecontroller = new GameController(gamestate);
              */
       gameState = GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>());
-      gameClient = GameClientFactory.createGameClient("ws://localhost:8080/game");
+      gameClient = GameClientFactory.createGameClient("ws://localhost:42069/game");
       gameServer = new GameServer();
     } catch (Exception e) {
       System.out.println(e.toString());
