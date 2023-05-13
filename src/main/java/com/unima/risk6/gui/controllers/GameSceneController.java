@@ -380,7 +380,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
                 + "bold;-fx-font-size: 13px");
         countryName.setTextFill(Color.WHITE);
-        System.out.println(countryName.getLayoutBounds().getWidth());
         countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
         countryName.setLayoutY(finalEllipseY + 10);
       });
@@ -417,7 +416,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         myPlayerUi = playerUi;
         PLAYER_CONTROLLER.setPlayer(player);
         PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
-        System.out.println("My player: " + playerUi.getPlayer().getUser());
       }
       colorIndex++;
     }

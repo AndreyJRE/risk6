@@ -290,7 +290,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
         iterator.remove();
       }
       lobbies.addAll(serverLobby.getGameLobbies());
-      System.out.println("udpateServerLObby");
     });
 
   }
@@ -298,7 +297,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   @Override
   public void updateChat(ArrayList<String> messages) {
     Platform.runLater(() -> {
-      System.out.println("udpateServerLObby");
       chatArea.appendText(messages.get(messages.size() - 1) + "\n");
     });
 

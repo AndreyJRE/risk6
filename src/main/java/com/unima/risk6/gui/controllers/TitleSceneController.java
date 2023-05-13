@@ -144,6 +144,14 @@ public class TitleSceneController implements Initializable {
     fillAnimation.setShape(background);
     background.setOnMouseClicked(event -> toggleButtonClicked());
     trigger.setOnMouseClicked(e -> toggleButtonClicked());
+    switchedOn.setValue(NetworkConfiguration.getGameServerThread() != null
+        && NetworkConfiguration.getGameServerThread().isAlive());
+    setIpLabel();
+    boolean isServerLive = switchedOn.get();
+    translateAnimation.setToX(isServerLive ? 45 : 0);
+    fillAnimation.setFromValue(isServerLive ? Color.WHITE : Color.LIGHTGREEN);
+    fillAnimation.setToValue(isServerLive ? Color.LIGHTGREEN : Color.WHITE);
+    animation.play();
     switchedOn.addListener((obs, oldState, newState) -> {
       boolean isOn = newState;
       if (isOn) {
@@ -151,7 +159,7 @@ public class TitleSceneController implements Initializable {
       } else {
         NetworkConfiguration.stopGameServer();
       }
-      translateAnimation.setToX(isOn ? 100 - 55 : 0);
+      translateAnimation.setToX(isOn ? 45 : 0);
       fillAnimation.setFromValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
       fillAnimation.setToValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
       animation.play();
@@ -160,33 +168,25 @@ public class TitleSceneController implements Initializable {
 
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
-    int multipleIpAd = 0;
-    if (!isOn) {
-      StringBuilder ipS = new StringBuilder();
-      try {
-        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets)) {
-          Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-            String ip = inetAddress.getHostAddress();
-            if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
-                && inetAddress.getAddress().length == 4) {
-              ipS.append(ip);
-              ipS.append(",");
-              multipleIpAd++;
-            }
-          }
-        }
-      } catch (SocketException e) {
-        throw new RuntimeException(e);
-      }
-      System.out.println(ipS.toString());
+    switchedOn.set(!isOn);
+    setIpLabel();
+    translateAnimation.setToX(isOn ? 0 : 100 - 55);
+    fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
+    fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
+    animation.play();
+  }
+
+  private void setIpLabel() {
+    if (switchedOn.get()) {
+      StringBuilder ipS = getIpS();
       ipLabel.setStyle(
           "-fx-background-color: transparent; -fx-font-size: 20px; -fx-text-fill: #ffffff");
-      if (multipleIpAd > 1) {
-        ipLabel.setText("Your IP Addresses: " + Arrays.toString(ipS.toString().split(",")));
+      String[] splitIp = ipS.toString().split(",");
+      String string = Arrays.toString(splitIp);
+      if (splitIp.length > 1) {
+        ipLabel.setText("Your IP Addresses: " + string);
       } else {
-        ipLabel.setText("Your IP Address: " + Arrays.toString(ipS.toString().split(",")));
+        ipLabel.setText("Your IP Address: " + string);
       }
       ipLabel.setEditable(false);
       ipLabel.setPrefWidth(500.0);
@@ -196,14 +196,28 @@ public class TitleSceneController implements Initializable {
       ipLabel.setText("");
       ipLabel.setEditable(false);
     }
-    switchedOn.set(!isOn);
-    translateAnimation.setToX(isOn ? 0 : 100 - 55);
-    fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
-    fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
-    animation.play();
   }
 
-  // Define the event handler for the single player button
+  private static StringBuilder getIpS() {
+    StringBuilder ipS = new StringBuilder();
+    try {
+      Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+      for (NetworkInterface netint : Collections.list(nets)) {
+        Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+          String ip = inetAddress.getHostAddress();
+          if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
+              && inetAddress.getAddress().length == 4) {
+            ipS.append(ip);
+            ipS.append(",");
+          }
+        }
+      }
+    } catch (SocketException e) {
+      throw new RuntimeException(e);
+    }
+    return ipS;
+  }
 
   @FXML
   private void handleSinglePlayer() throws InterruptedException {
@@ -216,12 +230,11 @@ public class TitleSceneController implements Initializable {
     Thread.sleep(150);
     LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
     LobbyConfiguration.startGameClient();
-
-    Thread.sleep(100);
+    Thread.sleep(150);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
-    Thread.sleep(20);
+    Thread.sleep(50);
     gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
         false, 0, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());

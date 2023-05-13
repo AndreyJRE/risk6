@@ -1,5 +1,6 @@
 package com.unima.risk6.gui.controllers;
 
+import com.unima.risk6.RisikoMain;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
@@ -7,11 +8,14 @@ import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.InitializableScene;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
+import java.io.IOException;
 import java.util.HashMap;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -40,24 +44,23 @@ public class SceneController {
   }
 
   public void activate(SceneName name) {
-    boolean fullscreen = (stage != null && stage.isFullScreen()) || previousWindowFullscreen;
-
+    if (name == SceneName.TITLE) {
+      initTitleScreen();
+      currentSceneName = name;
+      return;
+    }
     Scene scene = scenes.get(name);
     if (scene instanceof InitializableScene scene1) {
       scene1.init();
     }
-
     stage.setScene(scene);
-    currentSceneName = name;
+
     stage.setWidth(SceneConfiguration.getWidth() + 0.1);
     stage.setHeight(SceneConfiguration.getHeight() + 0.1);
     stage.setOnCloseRequest((WindowEvent event) -> close());
     switch (name) {
       case TITLE -> SoundConfiguration.playTitleSound();
       case GAME -> SoundConfiguration.playInGameMusic();
-    }
-    if (fullscreen) {
-      stage.setFullScreen(true);
     }
     fadeIn(scene);
   }
@@ -100,8 +103,20 @@ public class SceneController {
   public SceneName getCurrentSceneName() {
     return currentSceneName;
   }
-  public void setPreviousWindowFullscreen(boolean fullscreen) {
-    previousWindowFullscreen = fullscreen;
+
+  public void initTitleScreen() {
+    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene"
+        + ".fxml"));
+    Parent root;
+    try {
+      root = fxmlLoader.load();
+      Scene titleScene = new Scene(root);
+      titleScene.setRoot(root);
+      stage.setScene(titleScene);
+      fadeIn(titleScene);
+    } catch (IOException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 }
 
