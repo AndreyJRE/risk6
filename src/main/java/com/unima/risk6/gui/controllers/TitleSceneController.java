@@ -3,8 +3,6 @@ package com.unima.risk6.gui.controllers;
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
 
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.services.UserService;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
@@ -54,11 +52,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+
 /**
- * The class TitleSceneController controls the title scene of the game.
- * It includes methods for button actions like single player, multiplayer,
- * tutorial, options and quit. It also includes methods for animations,
- * handling sound volume and IP address display.
+ * The class TitleSceneController controls the title scene of the game. It includes methods for
+ * button actions like single player, multiplayer, tutorial, options and quit. It also includes
+ * methods for animations, handling sound volume and IP address display.
  *
  * @author fisommer
  * @author astoyano
@@ -107,15 +105,14 @@ public class TitleSceneController implements Initializable {
 
 
   private SceneController sceneController;
-
-  private UserService userService;
   private double volume;
+
   /**
-   * Initialize the controller. It sets the initial configurations and properties
-   * of the elements in the title scene such as the volume, video, animations, and
-   * IP address display.
+   * Initialize the controller. It sets the initial configurations and properties of the elements in
+   * the title scene such as the volume, video, animations, and IP address display.
    *
-   * @param url Represents a Uniform Resource Locator, a pointer to a "resource" on the World Wide Web.
+   * @param url            Represents a Uniform Resource Locator, a pointer to a "resource" on the
+   *                       World Wide Web.
    * @param resourceBundle Contains locale-specific objects.
    */
   @Override
@@ -142,7 +139,6 @@ public class TitleSceneController implements Initializable {
     translateAnimation = new TranslateTransition(Duration.seconds(0.25));
     fillAnimation = new FillTransition(Duration.seconds(0.25));
     animation = new ParallelTransition(translateAnimation, fillAnimation);
-    userService = DatabaseConfiguration.getUserService();
     // Set the font of the title label
     titleLabel.setFont(Font.font("72 Bold Italic", 96.0));
     DropShadow dropShadow = new DropShadow();
@@ -187,16 +183,18 @@ public class TitleSceneController implements Initializable {
     });
     toggleLocalButtons(switchedOn.get());
   }
+
   /**
-   * Handles the volume clicked event. It either mutes or unmutes the volume
-   * based on the current volume level.
+   * Handles the volume clicked event. It either mutes or unmutes the volume based on the current
+   * volume level.
    */
   @FXML
-  private void volumeClicked(){
-    if(volumeSlider.getValue()==0.0){
+  private void volumeClicked() {
+    if (volumeSlider.getValue() == 0.0) {
       volumeSlider.setValue(volume);
-      volumeImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures/soundIcon.png").toString()));
-    }else{
+      volumeImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/soundIcon.png").toString()));
+    } else {
       volumeSlider.setValue(0.0);
       volumeImage = new ImageView(
           new Image(getClass().getResource("/com/unima/risk6/pictures/muteIcon.png").toString()));
@@ -256,6 +254,7 @@ public class TitleSceneController implements Initializable {
       ipLabel.setEditable(false);
     }
   }
+
   /**
    * Gets the IP addresses of the machine.
    *
@@ -281,9 +280,10 @@ public class TitleSceneController implements Initializable {
     }
     return ipS;
   }
+
   /**
-   * Handles the single player button click event. It sets up the game lobby for the
-   * single player mode and sends a request to the server to join the lobby.
+   * Handles the single player button click event. It sets up the game lobby for the single player
+   * mode and sends a request to the server to join the lobby.
    *
    * @throws InterruptedException if any thread has interrupted the current thread.
    */
@@ -310,6 +310,7 @@ public class TitleSceneController implements Initializable {
   }
 
   // Define the event handler for the multi player button
+
   /**
    * Handles the multi player button click event. It switches the scene to the JoinOnlineScene.
    */
@@ -327,9 +328,10 @@ public class TitleSceneController implements Initializable {
     sceneController.activate(SceneName.JOIN_ONLINE);
 
   }
+
   /**
-   * Handles the tutorial button click event. It sets up the game lobby for the tutorial
-   * mode and sends a request to the server to join the tutorial lobby.
+   * Handles the tutorial button click event. It sets up the game lobby for the tutorial mode and
+   * sends a request to the server to join the tutorial lobby.
    *
    * @throws InterruptedException if any thread has interrupted the current thread.
    */
@@ -372,6 +374,7 @@ public class TitleSceneController implements Initializable {
     pauseTitleSound();
     sceneController.activate(SceneName.USER_OPTION);
   }
+
   /**
    * Handles the quit game button click event. It closes the application.
    */
@@ -380,9 +383,10 @@ public class TitleSceneController implements Initializable {
     SceneController sceneController = SceneConfiguration.getSceneController();
     sceneController.close();
   }
+
   /**
-   * Animates the title label. It creates and plays an animation that includes rotation,
-   * scaling and color change.
+   * Animates the title label. It creates and plays an animation that includes rotation, scaling and
+   * color change.
    */
   private void animateTitleLabel() {
     // Rotate animation

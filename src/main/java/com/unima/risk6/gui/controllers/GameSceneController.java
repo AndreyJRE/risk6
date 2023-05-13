@@ -587,10 +587,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       alert.getButtonTypes().setAll(buttonYes, buttonNo);
       alert.showAndWait().ifPresent(buttonType -> {
         if (buttonType == buttonYes) {
-          Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
-          GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
-              statistic.getCountriesWon(), statistic.getTroopsGained(),
-              statistic.getCountriesLost());
+          if (GameConfiguration.getTutorial() == null) {
+            Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
+            GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
+                statistic.getCountriesWon(), statistic.getTroopsGained(),
+                statistic.getCountriesLost());
+          }
           sceneController.close();
         }
         if (buttonType == buttonNo) {

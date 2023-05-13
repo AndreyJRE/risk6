@@ -80,9 +80,6 @@ public class SceneConfiguration {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     gameSceneController = gameScene.getGameSceneController();
-    GameStatistic gameStatistic = new GameStatistic(SessionManager.getUser());
-    DatabaseConfiguration.getGameStatisticService().saveGameStatistic(gameStatistic);
-    GameConfiguration.setCurrentGameStatistic(gameStatistic);
     sceneController.activate(SceneName.GAME);
     sceneController.getStage().setMaximized(true);
 
@@ -94,6 +91,9 @@ public class SceneConfiguration {
     }
     assert gameSceneController != null;
     if (GameConfiguration.getTutorial() == null) {
+      GameStatistic gameStatistic = new GameStatistic(SessionManager.getUser());
+      DatabaseConfiguration.getGameStatisticService().saveGameStatistic(gameStatistic);
+      GameConfiguration.setCurrentGameStatistic(gameStatistic);
       gameSceneController.showOrderPopup();
     } else {
       gameSceneController.updateActivePlayerUi();
