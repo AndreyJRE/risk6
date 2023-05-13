@@ -80,12 +80,20 @@ import javafx.scene.shape.Path;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
+/**
+ * This class represents the controller of the actual game scene in the application. It gets created
+ * by the game scene and then starts initialising as well as updating and adapting the game scene to
+ * represent the different phases of the board game Risk.
+ *
+ * @author astoyano
+ * @author mmeider
+ */
+
 public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
   private static PlayerUi myPlayerUi;
   private final GameScene gameScene;
-  private final SceneController sceneController;
   private GameState gameState;
   private BorderPane root;
   private Set<CountryUi> countriesUis;
@@ -106,7 +114,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private HandUi handUi;
   private Button cardsButton;
   private Tutorial tutorial;
-  private StackPane chatCounter;
   private Label chatCounterLabel;
   private int lastChatUpdate;
   Group countryNameGroup;
@@ -115,15 +122,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
-    this.sceneController = SceneConfiguration.getSceneController();
-  }
-
-  public static PlayerUi getMyPlayerUi() {
-    return myPlayerUi;
-  }
-
-  public static PlayerController getPlayerController() {
-    return PLAYER_CONTROLLER;
   }
 
   public void init() {
@@ -228,8 +226,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       BorderPane.setAlignment(otherDiceGroup, Pos.CENTER);
     }
 
-    VBox myDiceBox = new VBox();
-
     DiceUi myDice = new DiceUi(false, myValue);
 
     diceUis.add(myDice);
@@ -271,14 +267,15 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     }
     delayTransitionShowOrder.play();
 
+    VBox myDiceBox = new VBox();
     myDiceBox.getChildren().addAll(myDice);
     myDiceBox.setSpacing(10);
 
-    HBox hBox = new HBox(myDiceBox);
-    hBox.setAlignment(Pos.CENTER);
+    HBox diceHbox = new HBox(myDiceBox);
+    diceHbox.setAlignment(Pos.CENTER);
 
-    orderPane.setBottom(hBox);
-    BorderPane.setMargin(hBox, new Insets(10));
+    orderPane.setBottom(diceHbox);
+    BorderPane.setMargin(diceHbox, new Insets(10));
 
     orderPane.setStyle("-fx-background-radius: 10;-fx-background-color: rgba(255, 255, 255, 0.3);");
 
@@ -304,7 +301,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     countryNameGroup = new Group();
 
     countriesGroup.getChildren().addAll(countriesUis);
-    StackPane countriesPane = new StackPane();
 
     for (CountryUi countryUi : countriesUis) {
       Bounds bounds = countryUi.getCountryPath().getBoundsInParent();
@@ -397,6 +393,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     countriesGroup.setScaleX(initialScale);
     countriesGroup.setScaleY(initialScale);
 
+    StackPane countriesPane = new StackPane();
     countriesPane.getChildren().add(countriesGroup);
     return countriesPane;
   }
@@ -431,7 +428,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private StackPane initializeBottomPane() {
-    StackPane bottomPane = new StackPane();
     Button chatButton = new Button();
     ImageView chatIcon = new ImageView(
         new Image(getClass().getResource("/com/unima/risk6/pictures/chatIcon.png").toString()));
@@ -492,6 +488,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     }
     cardsButton.setOnAction(event -> showCardsPopup());
 
+    StackPane bottomPane = new StackPane();
     bottomPane.getChildren()
         .addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton, chatCounterLabel);
     bottomPane.setAlignment(Pos.CENTER);
@@ -571,7 +568,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void showStatisticsPopup() {
-    BorderPane statisticPane = new BorderPane();
     GridPane statisticsGrid = new GridPane();
     statisticsGrid.setAlignment(Pos.CENTER);
     statisticsGrid.setHgap(10);
@@ -637,6 +633,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         statisticsGrid.add(statisticBox, i, j + 1);
       }
     }
+    BorderPane statisticPane = new BorderPane();
     statisticPane.setCenter(statisticsGrid);
     statisticPane.setPrefSize(gameScene.getWidth() * 0.7, gameScene.getHeight() * 0.7);
     statisticPane.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
@@ -856,6 +853,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             countryUi.animateTutorialCountry();
           }
         }
+        default -> {
+        }
 
       }
     }
@@ -922,6 +921,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         .getPlayerColor();
   }
 
+  public static PlayerUi getMyPlayerUi() {
+    return myPlayerUi;
+  }
 
+  public static PlayerController getPlayerController() {
+    return PLAYER_CONTROLLER;
+  }
 }
 

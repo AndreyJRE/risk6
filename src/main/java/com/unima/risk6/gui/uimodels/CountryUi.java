@@ -72,12 +72,12 @@ public class CountryUi extends Group {
   private FillTransition attackingTransition;
 
 
-  public CountryUi(Country country, String SVGPath) {
+  public CountryUi(Country country, String svgPath) {
     super();
     this.country = country;
     this.countryPath = new SVGPath();
     this.troopsCounterUi = null;
-    this.countryPath.setContent(SVGPath);
+    this.countryPath.setContent(svgPath);
     this.color = Color.WHITE;
     this.countryPath.setFill(color);
     this.countryPath.setStroke(Color.BLACK);
@@ -165,7 +165,8 @@ public class CountryUi extends Group {
                 this.setCursor(Cursor.CROSSHAIR);
               }
             }
-
+          }
+          default -> {
           }
         }
       } else {
@@ -239,13 +240,12 @@ public class CountryUi extends Group {
                 fillTransition.stop();
               }
             } else {
-
               animateReinforcementPhase();
             }
           }
-
         }
-
+        default -> {
+        }
         // add more cases for other enum values
       }
       this.setCursor(Cursor.DEFAULT);
@@ -321,8 +321,6 @@ public class CountryUi extends Group {
   public void showAmountOfTroopsPopUp(int troopBound, CountryUi adjacentCountryUi,
       GamePhase gamePhase) {
     AtomicInteger amountOfTroops = new AtomicInteger(1);
-    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-    BorderPane moveTroopsPane = new BorderPane();
     Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
     chatLabel.setStyle("-fx-font-size: 18px;");
 
@@ -336,7 +334,7 @@ public class CountryUi extends Group {
     closeAmountOfTroopsButton.setStyle(
         "-fx-background-color: rgba(255, 255, 255, 0.3);" + "-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
-
+    BorderPane moveTroopsPane = new BorderPane();
     moveTroopsPane.setTop(closeAmountOfTroopsButton);
     BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
@@ -411,6 +409,7 @@ public class CountryUi extends Group {
     chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
     HBox.setHgrow(confirmCircle, Priority.ALWAYS);
 
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     moveTroopsPane.setCenter(chatBox);
     moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
     moveTroopsPane.setStyle(
@@ -440,13 +439,10 @@ public class CountryUi extends Group {
 
   private void showAttackDicePopUp(Attack lastAttack, CountryUi attacker, CountryUi defender,
       ActivePlayerUi activePlayerUi) {
-    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-    BorderPane dicePane = new BorderPane();
 
-    HBox diceHBox = new HBox();
-    diceHBox.setAlignment(Pos.CENTER);
-    diceHBox.setSpacing(20);
-    Popup dicePopup = new Popup();
+    HBox diceHbox = new HBox();
+    diceHbox.setAlignment(Pos.CENTER);
+    diceHbox.setSpacing(20);
 
     List<DiceUi> diceUis = new ArrayList<>();
     VBox attackerBox = new VBox();
@@ -477,7 +473,8 @@ public class CountryUi extends Group {
       diceUis.add(dice);
     }
     defenderBox.setAlignment(Pos.CENTER);
-    diceHBox.getChildren().addAll(attackerBox, defenderBox);
+    diceHbox.getChildren().addAll(attackerBox, defenderBox);
+    Popup dicePopup = new Popup();
 
     PauseTransition delayTransition = new PauseTransition(Duration.millis(2000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
@@ -492,8 +489,9 @@ public class CountryUi extends Group {
             defender, FORTIFY_PHASE);
       }
     });
-
-    dicePane.setCenter(diceHBox);
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+    BorderPane dicePane = new BorderPane();
+    dicePane.setCenter(diceHbox);
     dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
     dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
 
@@ -551,7 +549,6 @@ public class CountryUi extends Group {
         adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
         adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
     Point2D clickPosInGroup = this.sceneToLocal(clickPosInScene);
-    Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
     arrow.setStartX(clickPosInGroup.getX());
     arrow.setStartY(clickPosInGroup.getY());
     arrow.setEndX(clickPosInGroup.getX());
@@ -559,10 +556,10 @@ public class CountryUi extends Group {
     setCursor(Cursor.MOVE);
 
     Timeline timeline = new Timeline();
-
-    KeyValue endXValue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
-    KeyValue endYValue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
-    KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXValue, endYValue);
+    Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
+    KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
+    KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
+    KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXvalue, endYvalue);
 
     timeline.getKeyFrames().add(keyFrame);
     timeline.setCycleCount(1);
