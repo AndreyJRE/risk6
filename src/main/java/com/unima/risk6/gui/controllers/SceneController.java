@@ -21,13 +21,19 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+/**
+ * Controller class for managing scenes in the application. Provides methods to add and activate
+ * scenes as well as initialize the title screen. Also includes methods for closing the application
+ * and retrieving the current stage and scene.
+ *
+ * @author astoyano
+ * @author fisommer
+ */
+
 public class SceneController {
 
   private final HashMap<SceneName, Scene> scenes;
   private final Stage stage;
-  private boolean previousWindowFullscreen;
-
-
   private SceneName currentSceneName;
 
   public SceneController(Stage stage) {
@@ -39,9 +45,6 @@ public class SceneController {
     scenes.put(name, scene);
   }
 
-  public void removeScene(SceneName name) {
-    scenes.remove(name);
-  }
 
   public void activate(SceneName name) {
     if (name == SceneName.TITLE) {
@@ -61,6 +64,8 @@ public class SceneController {
     switch (name) {
       case TITLE -> SoundConfiguration.playTitleSound();
       case GAME -> SoundConfiguration.playInGameMusic();
+      default -> {
+      }
     }
     fadeIn(scene);
   }
@@ -92,18 +97,6 @@ public class SceneController {
     parallelTransition.play();
   }
 
-  public Stage getStage() {
-    return stage;
-  }
-
-  public Scene getSceneBySceneName(SceneName sceneName) {
-    return scenes.get(sceneName);
-  }
-
-  public SceneName getCurrentSceneName() {
-    return currentSceneName;
-  }
-
   public void initTitleScreen() {
     FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene"
         + ".fxml"));
@@ -117,6 +110,18 @@ public class SceneController {
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
+  }
+
+  public Scene getSceneBySceneName(SceneName sceneName) {
+    return scenes.get(sceneName);
+  }
+
+  public SceneName getCurrentSceneName() {
+    return currentSceneName;
+  }
+
+  public Stage getStage() {
+    return stage;
   }
 }
 

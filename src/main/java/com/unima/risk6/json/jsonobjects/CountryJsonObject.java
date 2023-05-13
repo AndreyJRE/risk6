@@ -4,7 +4,7 @@ import com.unima.risk6.game.models.enums.ContinentName;
 import com.unima.risk6.game.models.enums.CountryName;
 
 /**
- * Wrapper class for parsing json file with all countries
+ * Wrapper class for parsing json file with all countries.
  *
  * @author astoyano
  */
@@ -19,7 +19,7 @@ public class CountryJsonObject {
 
 
   /**
-   * Constructor with all attributes
+   * Constructor with all attributes.
    *
    * @param countryName       - name of the country
    * @param adjacentCountries - array of adjacent countries
