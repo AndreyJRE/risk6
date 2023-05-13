@@ -80,6 +80,7 @@ public class SceneConfiguration {
       gameScene.setGameSceneController(gameSceneController);
       sceneController.addScene(SceneName.GAME, gameScene);
     }
+    gameSceneController = gameScene.getGameSceneController();
     sceneController.activate(SceneName.GAME);
     sceneController.getStage().setMaximized(true);
 

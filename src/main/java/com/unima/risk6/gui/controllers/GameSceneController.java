@@ -110,7 +110,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   boolean isCountryNameShowing = false;
 
   private ChatUi chatUi;
-
   private HandUi handUi;
   private Button cardsButton;
   private Tutorial tutorial;
@@ -158,6 +157,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
     root.setBackground(new Background(backgroundImage));
+    //root.setBackground(new Background(
+    //    new BackgroundFill(Colors.WATER.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
     StackPane playerPane = initializePlayersPane();
     root.setLeft(playerPane);
     StackPane countriesPane = initializeCountriesPane();
@@ -374,8 +375,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
       Platform.runLater(() -> {
         countryName.setStyle(
-            "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
-                + "bold;-fx-font-size: 13px");
+            "-fx-background-radius: 15px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
+                + "bold;-fx-font-size: 12px; -fx-padding: 2px;");
         countryName.setTextFill(Color.WHITE);
         countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
         countryName.setLayoutY(finalEllipseY + 10);
@@ -446,6 +447,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     chatCounterLabel.setStyle("-fx-background-radius: 10px;"
         + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 18px;");
     chatCounterLabel.setTextFill(Color.WHITE);
+    chatButton.setVisible(gameState.isChatEnabled());
     chatCounterLabel.setVisible(gameState.isChatEnabled());
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     activePlayerUi.controlDeployableTroops();

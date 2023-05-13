@@ -237,9 +237,9 @@ public class TitleSceneController implements Initializable {
       switchedOn.setValue(false);
     }
     Thread.sleep(100);
-    NetworkConfiguration.startGameServer();
+    NetworkConfiguration.startSinglePlayerServer();
     Thread.sleep(150);
-    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
     Thread.sleep(150);
     GameConfiguration.setMyGameUser(
@@ -278,7 +278,7 @@ public class TitleSceneController implements Initializable {
     }
     NetworkConfiguration.startGameServer();
     Thread.sleep(200);
-    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
     Thread.sleep(200);
     GameConfiguration.setMyGameUser(

@@ -90,6 +90,11 @@
       <groupId>com.google.guava</groupId>
       <version>30.1-jre</version>
     </dependency>
+    <dependency>
+      <artifactId>maven-checkstyle-plugin</artifactId>
+      <groupId>org.apache.maven.plugins</groupId>
+      <version>3.2.2</version>
+    </dependency>
 
   </dependencies>
 
@@ -151,4 +156,23 @@
       </plugin>
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <reportSets>
+          <reportSet>
+            <configuration>
+              <configLocation>src/main/resources/google_checks.xml</configLocation>
+            </configuration>
+            <reports>
+              <report>checkstyle</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <version>3.2.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>

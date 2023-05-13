@@ -8,7 +8,7 @@ public class ManualServerClientTest {
 
   public static void main(String[] args) {
     try {
-      GameClient gameClient = new GameClient("ws://localhost:8080/game");
+      GameClient gameClient = new GameClient("ws://localhost:42069/game");
       GameServer gameServer = new GameServer();
 
       Thread server = new Thread(gameServer);

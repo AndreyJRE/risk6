@@ -13,6 +13,7 @@ import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
+import com.unima.risk6.gui.controllers.enums.Colors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +27,8 @@ import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -38,6 +41,7 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -78,9 +82,9 @@ public class CountryUi extends Group {
     this.countryPath = new SVGPath();
     this.troopsCounterUi = null;
     this.countryPath.setContent(svgPath);
-    this.color = Color.WHITE;
+    this.color = Colors.COUNTRY_BACKGROUND.getColor();
     this.countryPath.setFill(color);
-    this.countryPath.setStroke(Color.BLACK);
+    this.countryPath.setStroke(Colors.COUNTRY_STROKE.getColor());
     this.getChildren().add(new Group(this.countryPath));
     glowEffect = new DropShadow();
 
@@ -132,8 +136,8 @@ public class CountryUi extends Group {
                   this.setCursor(Cursor.CROSSHAIR);
                 }
               } else {
-                if (this.color == Color.WHITE) {
-                  this.countryPath.setFill(Color.LIGHTGRAY);
+                if (this.color == Colors.COUNTRY_BACKGROUND.getColor()) {
+                  this.countryPath.setFill(Colors.COUNTRY_BACKGROUND_DARKEN.getColor());
                 }
                 this.setCursor(Cursor.CROSSHAIR);
               }
@@ -321,6 +325,8 @@ public class CountryUi extends Group {
   public void showAmountOfTroopsPopUp(int troopBound, CountryUi adjacentCountryUi,
       GamePhase gamePhase) {
     AtomicInteger amountOfTroops = new AtomicInteger(1);
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+    BorderPane moveTroopsPane = new BorderPane();
     Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
     chatLabel.setStyle("-fx-font-size: 18px;");
 
@@ -332,9 +338,8 @@ public class CountryUi extends Group {
     closeIcon.setFitHeight(20);
     closeAmountOfTroopsButton.setGraphic(closeIcon);
     closeAmountOfTroopsButton.setStyle(
-        "-fx-background-color: rgba(255, 255, 255, 0.3);" + "-fx-background-radius: 10px;");
+        "-fx-background-color: rgba(255, 255, 255, 0.7);" + "-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
-    BorderPane moveTroopsPane = new BorderPane();
     moveTroopsPane.setTop(closeAmountOfTroopsButton);
     BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
@@ -367,6 +372,61 @@ public class CountryUi extends Group {
       if (amountOfTroops.get() < troopBound) {
         amountOfTroops.getAndIncrement();
         chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+      }
+    });
+
+    moveTroopsPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        switch (event.getCode()) {
+          case LEFT:
+            // Handle left arrow key press
+            System.out.println("Left Arrow Key Pressed");
+            if (amountOfTroops.get() > 1) {
+              amountOfTroops.getAndDecrement();
+              chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+            }
+            break;
+          case RIGHT:
+            // Handle right arrow key press
+            System.out.println("Right Arrow Key Pressed");
+            if (amountOfTroops.get() < troopBound) {
+              amountOfTroops.getAndIncrement();
+              chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+            }
+            break;
+          case ENTER:
+            // Handle enter key press
+            System.out.println("Enter Key Pressed");
+            popUp.hide();
+            PlayerController playerController = GameSceneController.getPlayerController();
+            if (gamePhase == FORTIFY_PHASE) {
+              playerController.sendFortify(country, adjacentCountryUi.getCountry(),
+                  amountOfTroops.get());
+
+              if (playerController.getPlayer().getCurrentPhase() == FORTIFY_PHASE) {
+                playerController.sendEndPhase(gamePhase);
+                removeArrowsAndAdjacentCountries();
+              }
+
+            } else if (gamePhase == ATTACK_PHASE) {
+              playerController.sendAttack(country, adjacentCountryUi.getCountry(),
+                  amountOfTroops.get());
+              removeArrowsAndAdjacentCountries();
+            } else if (gamePhase == REINFORCEMENT_PHASE) {
+              playerController.sendReinforce(country, amountOfTroops.get());
+              try {
+                Thread.sleep(100);
+              } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+              }
+              if (playerController.getPlayer().getDeployableTroops() == 0
+                  && !playerController.getHandController().holdsExchangeable()) {
+                playerController.sendEndPhase(gamePhase);
+              }
+            }
+            break;
+        }
       }
     });
 
@@ -409,11 +469,10 @@ public class CountryUi extends Group {
     chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
     HBox.setHgrow(confirmCircle, Priority.ALWAYS);
 
-    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     moveTroopsPane.setCenter(chatBox);
-    moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
+    moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.30, gamePane.getHeight() * 0.15);
     moveTroopsPane.setStyle(
-        "-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
+        "-fx-background-color: rgba(255, 255, 255, 0.7); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
@@ -425,9 +484,12 @@ public class CountryUi extends Group {
 
     popUp.getContent().add(moveTroopsPane);
 
+    moveTroopsPane.setFocusTraversable(true);
+
     popUp.setX(centerX - popupWidth / 2);
     popUp.setY(centerY - popupHeight / 2);
     popUp.show(gamePane.getScene().getWindow());
+    Platform.runLater(() -> moveTroopsPane.requestFocus());
   }
 
   public void removeArrowsAndAdjacentCountries() {
@@ -439,6 +501,8 @@ public class CountryUi extends Group {
 
   private void showAttackDicePopUp(Attack lastAttack, CountryUi attacker, CountryUi defender,
       ActivePlayerUi activePlayerUi) {
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+    BorderPane dicePane = new BorderPane();
 
     HBox diceHbox = new HBox();
     diceHbox.setAlignment(Pos.CENTER);
@@ -489,11 +553,10 @@ public class CountryUi extends Group {
             defender, FORTIFY_PHASE);
       }
     });
-    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-    BorderPane dicePane = new BorderPane();
     dicePane.setCenter(diceHbox);
     dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
     dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
+
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 

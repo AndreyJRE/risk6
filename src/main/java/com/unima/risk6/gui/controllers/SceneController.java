@@ -50,19 +50,19 @@ public class SceneController {
     if (name == SceneName.TITLE) {
       initTitleScreen();
       currentSceneName = name;
+      SoundConfiguration.playTitleSound();
       return;
     }
     Scene scene = scenes.get(name);
     if (scene instanceof InitializableScene scene1) {
       scene1.init();
     }
+    currentSceneName = name;
     stage.setScene(scene);
-
     stage.setWidth(SceneConfiguration.getWidth() + 0.1);
     stage.setHeight(SceneConfiguration.getHeight() + 0.1);
     stage.setOnCloseRequest((WindowEvent event) -> close());
     switch (name) {
-      case TITLE -> SoundConfiguration.playTitleSound();
       case GAME -> SoundConfiguration.playInGameMusic();
       default -> {
       }
@@ -98,14 +98,17 @@ public class SceneController {
   }
 
   public void initTitleScreen() {
-    FXMLLoader fxmlLoader = new FXMLLoader(RisikoMain.class.getResource("fxml/TitleScene"
-        + ".fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        RisikoMain.class.getResource("fxml/TitleScene" + ".fxml"));
     Parent root;
     try {
       root = fxmlLoader.load();
       Scene titleScene = new Scene(root);
       titleScene.setRoot(root);
       stage.setScene(titleScene);
+      stage.setWidth(SceneConfiguration.getWidth() + 0.1);
+      stage.setHeight(SceneConfiguration.getHeight() + 0.1);
+      stage.setOnCloseRequest((WindowEvent event) -> close());
       fadeIn(titleScene);
     } catch (IOException ex) {
       throw new RuntimeException(ex);
