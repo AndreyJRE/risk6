@@ -168,6 +168,17 @@ public class TitleSceneController implements Initializable {
 
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
+    if (isOn) {
+      singlePlayerButton.setOpacity(1);
+      singlePlayerButton.setDisable(false);
+      tutorialButton.setOpacity(1);
+      tutorialButton.setDisable(false);
+    } else { // host enabled
+      singlePlayerButton.setOpacity(0.6);
+      singlePlayerButton.setDisable(true);
+      tutorialButton.setOpacity(0.6);
+      tutorialButton.setDisable(true);
+    }
     switchedOn.set(!isOn);
     setIpLabel();
     translateAnimation.setToX(isOn ? 0 : 100 - 55);

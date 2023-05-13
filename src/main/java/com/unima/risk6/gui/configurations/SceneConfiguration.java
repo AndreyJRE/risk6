@@ -2,6 +2,7 @@ package com.unima.risk6.gui.configurations;
 
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 
+import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.gui.controllers.GameOverSceneController;
 import com.unima.risk6.gui.controllers.GameSceneController;
@@ -108,7 +109,11 @@ public class SceneConfiguration {
       throw new RuntimeException(e);
     }
     assert gameSceneController != null;
-    gameSceneController.showOrderPopup();
+    if (GameConfiguration.getTutorial() == null) {
+      gameSceneController.showOrderPopup();
+    } else {
+      gameSceneController.updateActivePlayerUi();
+    }
   }
 
   /**
