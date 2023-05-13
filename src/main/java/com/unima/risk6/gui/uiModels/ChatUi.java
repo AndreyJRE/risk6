@@ -202,10 +202,7 @@ public class ChatUi extends BorderPane implements ChatObserver {
   @Override
   public void updateChat(ArrayList<String> messages) {
     Platform.runLater(() -> {
-      System.out.println("update ChatUi " + messages.get(messages.size() - 1));
-
       double maxWidthOfChat = this.getPrefWidth() - 40;
-
       text = new Text(messages.get(messages.size() - 1));
       text.setWrappingWidth(maxWidthOfChat - 10);
       double chatHeight = text.getLayoutBounds().getHeight() + 10;

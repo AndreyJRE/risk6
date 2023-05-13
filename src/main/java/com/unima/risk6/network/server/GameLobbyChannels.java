@@ -252,13 +252,11 @@ public class GameLobbyChannels {
 
       } else {
         //In Gamelobby
-        System.out.println("In Gamelobby");
         removeUserFromGameLobby(channel, gsh, true);
         gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
       }
     } else {
-      System.out.println("else");
       removeUserFromServerLobby(channel);
       gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
     }

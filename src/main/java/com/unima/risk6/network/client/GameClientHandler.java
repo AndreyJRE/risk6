@@ -135,10 +135,11 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
               }
               case "ACCEPT_CREATE_LOBBY" -> {
-                LOGGER.debug("Got a Lobby, overwrite serverlobby");
+                LOGGER.debug("Got a Lobby, overwrite game lobby");
                 LobbyConfiguration.setGameLobby(
                     (GameLobby) Deserializer.deserializeConnectionMessage(textFrame.text())
                         .getContent());
+
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.TITLE) {
                   Platform.runLater(SceneConfiguration::startSinglePlayer);
@@ -157,7 +158,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 GameConfiguration.setGameState(g);
                 Probabilities.init();
                 CountriesUiConfiguration.configureCountries(g.getCountries());
-                System.out.println("Test");
                 Platform.runLater(SceneConfiguration::startGame);
               }
               case "ACCEPT_JOIN_GAME_LOBBY" -> {
@@ -168,6 +168,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LobbyConfiguration.setGameLobby(gameLobby);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.SELECT_LOBBY) {
+                  System.out.println("----------------- ");
                   Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
                 }
               }

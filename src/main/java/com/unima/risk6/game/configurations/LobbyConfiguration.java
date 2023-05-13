@@ -10,7 +10,6 @@ import com.unima.risk6.network.client.GameClient;
 import com.unima.risk6.network.message.ChatMessage;
 import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.enums.ConnectionActions;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +55,10 @@ public class LobbyConfiguration {
   }
 
   public static void addChatObserver(ChatObserver observer) {
-    System.out.println("Add a Chat Observer");
     CHAT_OBSERVERS.add(observer);
   }
 
   private static void notifyChatLobbyObservers() {
-    System.out.println("Notify a Chat Observer");
     CHAT_OBSERVERS.forEach(observer -> observer.updateChat(messages));
   }
 
@@ -72,7 +69,7 @@ public class LobbyConfiguration {
 
   public static void sendJoinServer(UserDto userDto) {
     gameClient.sendMessage(
-            new ConnectionMessage<>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));
+        new ConnectionMessage<>(ConnectionActions.JOIN_SERVER_LOBBY, userDto));
 
   }
 
@@ -83,18 +80,19 @@ public class LobbyConfiguration {
   }
 
   public static void sendQuitServerLobby(UserDto myGameUser) {
-    gameClient.sendMessage(new ConnectionMessage<>(ConnectionActions.LEAVE_SERVER_LOBBY, myGameUser));
+    gameClient.sendMessage(
+        new ConnectionMessage<>(ConnectionActions.LEAVE_SERVER_LOBBY, myGameUser));
 
   }
 
   public static void sendCreateLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
-            new ConnectionMessage<>(ConnectionActions.CREATE_GAME_LOBBY, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.CREATE_GAME_LOBBY, gameLobby));
   }
 
   public static void sendJoinLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
-            new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, gameLobby));
+        new ConnectionMessage<>(ConnectionActions.JOIN_GAME_LOBBY, gameLobby));
   }
 
   public static void sendStartGame(GameLobby gameLobby) {

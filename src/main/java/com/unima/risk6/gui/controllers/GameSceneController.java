@@ -5,6 +5,7 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.ChatObserver;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
 import com.unima.risk6.game.logic.Attack;
@@ -104,9 +105,10 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private HandUi handUi;
   private Button cardsButton;
-
-  private Circle notifyCircle;
   private Tutorial tutorial;
+  private StackPane chatCounter;
+  private Label chatCounterLabel;
+  private int lastChatUpdate;
   Group countryNameGroup;
 
 
@@ -142,6 +144,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         .filter(player -> player.equals(myPlayerUi.getPlayer())).findFirst().get().getHand();
     this.handUi.setHand(hand);
     GameConfiguration.addObserver(this);
+    LobbyConfiguration.addChatObserver(this);
     this.addListeners();
 
     if (tutorial != null) {
@@ -377,7 +380,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
                 + "bold;-fx-font-size: 13px");
         countryName.setTextFill(Color.WHITE);
-        System.out.println(countryName.getLayoutBounds().getWidth());
         countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
         countryName.setLayoutY(finalEllipseY + 10);
       });
@@ -414,7 +416,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         myPlayerUi = playerUi;
         PLAYER_CONTROLLER.setPlayer(player);
         PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
-        System.out.println("My player: " + playerUi.getPlayer().getUser());
       }
       colorIndex++;
     }
@@ -439,13 +440,16 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     chatButton.setStyle("-fx-background-radius: 15px;");
     chatButton.setFocusTraversable(false);
     chatButton.setOnAction(event -> {
+      lastChatUpdate = 0;
+      chatCounterLabel.setVisible(false);
       chatUi.show();
     });
-
-    notifyCircle = new Circle(10);
-    notifyCircle.setFill(Color.RED);
-    notifyCircle.setVisible(false);
-
+    lastChatUpdate = 0;
+    chatCounterLabel = new Label("");
+    chatCounterLabel.setStyle("-fx-background-radius: 10px;"
+        + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 18px;");
+    chatCounterLabel.setTextFill(Color.WHITE);
+    chatCounterLabel.setVisible(gameState.isChatEnabled());
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     activePlayerUi.controlDeployableTroops();
     nextPhaseButton = new Button();
@@ -488,25 +492,30 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     cardsButton.setOnAction(event -> showCardsPopup());
 
     bottomPane.getChildren()
-        .addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton, notifyCircle);
+        .addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton, chatCounterLabel);
     bottomPane.setAlignment(Pos.CENTER);
     StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 5, 525));
     StackPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
     StackPane.setMargin(cardsButton, new Insets(0, 0, 0, 15));
     StackPane.setAlignment(chatButton, Pos.CENTER_RIGHT);
     StackPane.setMargin(chatButton, new Insets(0, 15, 0, 0));
-    StackPane.setAlignment(notifyCircle, Pos.CENTER_RIGHT);
-    StackPane.setMargin(notifyCircle, new Insets(0, 10, 40, 0));
+    StackPane.setAlignment(chatCounterLabel, Pos.CENTER_RIGHT);
+    StackPane.setMargin(chatCounterLabel, new Insets(0, 10, 40, 0));
     bottomPane.setPadding(new Insets(0, 0, 15, 0));
     return bottomPane;
   }
 
   @Override
-  public void updateChat(ArrayList<String> string) {
+  public void updateChat(ArrayList<String> messages) {
     if (chatUi.getChatPopup().isShowing()) {
-      Platform.runLater(() -> notifyCircle.setVisible(false));
+      Platform.runLater(() -> chatCounterLabel.setVisible(false));
+      lastChatUpdate = messages.size();
     } else {
-      Platform.runLater(() -> notifyCircle.setVisible(true));
+      Platform.runLater(() -> {
+        chatCounterLabel.setText(
+            String.valueOf(messages.size() - lastChatUpdate));
+        chatCounterLabel.setVisible(true);
+      });
     }
   }
 
@@ -585,7 +594,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       }
     });
 
-    System.out.println("--------------------" + playerUis.size());
     for (int i = 0; i < playerUis.size(); i++) {
       Player player = playerUis.get(i).getPlayer();
       VBox userBox = new VBox();
@@ -730,10 +738,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   public void animateTroopsMovement(Fortify fortify) {
-    double maxOffsetX = 2.5;
-    double maxOffsetY = 2.5;
-    Image image = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/InfantryRunning.gif").toString());
+    double maxOffsetX = 3;
+    double maxOffsetY = 3;
+    Image image = ImageConfiguration.getImageByName(ImageName.INFANTRY_RUNNING_GIF);
 
     for (int i = 0; i < fortify.getTroopsToMove(); i++) {
       ImageView imageView = new ImageView(image);

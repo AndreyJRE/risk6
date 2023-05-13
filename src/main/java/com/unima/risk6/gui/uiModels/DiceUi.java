@@ -1,6 +1,8 @@
 package com.unima.risk6.gui.uiModels;
 
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import java.util.Random;
 import javafx.animation.PauseTransition;
 import javafx.scene.image.Image;
@@ -22,14 +24,9 @@ public class DiceUi extends Pane {
     random = new Random();
     this.isAttackingDice = isAttackingDice;
     if (isAttackingDice) {
-      diceView = new ImageView(
-          new Image(
-              getClass().getResource("/com/unima/risk6/pictures/attackDicePreview.png")
-                  .toString()));
+      diceView = new ImageView(ImageConfiguration.getImageByName(ImageName.ATTACK_DICE_PREVIEW));
     } else {
-      diceView = new ImageView(
-          new Image(
-              getClass().getResource("/com/unima/risk6/pictures/dicePreview.png").toString()));
+      diceView = new ImageView(ImageConfiguration.getImageByName(ImageName.DICE_PREVIEW));
     }
     this.result = result;
     diceView.setPreserveRatio(true);
@@ -39,7 +36,7 @@ public class DiceUi extends Pane {
   }
 
   public void rollDice() {
-    int rollDuration = 1000 + random.nextInt(1000);
+    int rollDuration = 1000 + random.nextInt(750);
     showRollingGif();
     SoundConfiguration.playRollDiceSound();
     PauseTransition pauseTransition = new PauseTransition(Duration.millis(rollDuration));
@@ -49,12 +46,9 @@ public class DiceUi extends Pane {
 
   public void showRollingGif() {
     if (this.isAttackingDice) {
-      diceView.setImage(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/attackDiceRollAnimation.gif")
-              .toString()));
+      diceView.setImage(ImageConfiguration.getImageByName(ImageName.ATTACK_DICE_ROLLING));
     } else {
-      diceView.setImage(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/diceRollAnimation.gif").toString()));
+      diceView.setImage(ImageConfiguration.getImageByName(ImageName.DICE_ROLLING));
     }
 
   }
@@ -68,9 +62,5 @@ public class DiceUi extends Pane {
       diceView.setImage(new Image(
           getClass().getResource("/com/unima/risk6/pictures/dice" + result + ".png").toString()));
     }
-  }
-
-  public int getResult() {
-    return result;
   }
 }

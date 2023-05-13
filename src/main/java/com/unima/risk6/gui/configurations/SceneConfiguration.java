@@ -27,7 +27,6 @@ public class SceneConfiguration {
   private static SceneController sceneController;
   private static double width;
   private static double height;
-  private boolean isFullscreen;
 
   public static void startSceneControllerConfiguration(Stage stage) {
     configureListeners(stage);
@@ -86,6 +85,7 @@ public class SceneConfiguration {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+    assert gameSceneController != null;
     gameSceneController.showOrderPopup();
 
   }
