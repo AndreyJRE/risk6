@@ -182,7 +182,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     Group otherDiceGroup = new Group();
 
     HashMap<String, Integer> hashMapOfPlayerDice = GameConfiguration.getDiceRolls();
-    System.out.println(gameState.getActivePlayers());
     int myValue = hashMapOfPlayerDice.get(myPlayerUi.getPlayer().getUser());
 
     List<DiceUi> diceUis = new ArrayList<>();
@@ -263,7 +262,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       dice.rollDice();
     }
     delayTransitionShowOrder.play();
-    System.out.println(gameState.getActivePlayers());
 
     myDiceBox.getChildren().addAll(myDice);
     myDiceBox.setSpacing(10);
@@ -485,6 +483,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       }
     });
 
+    System.out.println("--------------------" + playerUis.size());
     for (int i = 0; i < playerUis.size(); i++) {
       Player player = playerUis.get(i).getPlayer();
       VBox userBox = new VBox();
@@ -592,19 +591,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void updateReferencesFromGameState() {
-    this.gameState.getActivePlayers().forEach(player -> {
-      if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
-        myPlayerUi.setPlayer(player);
-        PLAYER_CONTROLLER.setPlayer(player);
-        PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
-      } else {
-        playerUis.forEach(playerUi -> {
-          if (playerUi.getPlayer().getUser().equals(player.getUser())) {
-            playerUi.setPlayer(player);
-          }
-        });
-      }
-    });
+    this.gameState.getActivePlayers().forEach(this::updatePlayerUiReferenceByPlayer);
+    this.gameState.getLostPlayers().forEach(this::updatePlayerUiReferenceByPlayer);
+
     this.gameState.getCountries().forEach(country -> countriesUis.forEach(countryUi -> {
       if (countryUi.getCountry().getCountryName().equals(country.getCountryName())) {
         countryUi.setCountry(country);
@@ -617,6 +606,20 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             .getCountry())));
     handUi.setHand(myPlayerUi.getPlayer().getHand());
     //TODO Update reference for the deckUi,handUi, etc
+  }
+
+  private void updatePlayerUiReferenceByPlayer(Player player) {
+    if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
+      myPlayerUi.setPlayer(player);
+      PLAYER_CONTROLLER.setPlayer(player);
+      PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
+    } else {
+      playerUis.forEach(playerUi -> {
+        if (playerUi.getPlayer().getUser().equals(player.getUser())) {
+          playerUi.setPlayer(player);
+        }
+      });
+    }
   }
 
   public CountryUi getCountryUiByCountry(Country country) {
