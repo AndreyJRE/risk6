@@ -10,6 +10,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
+/**
+ * Represents a graphical user interface (UI) representation of a dice.
+ *
+ * @author mmeider
+ */
+
 public class DiceUi extends Pane {
 
   private ImageView diceView;
@@ -18,7 +24,14 @@ public class DiceUi extends Pane {
 
   private final int result;
 
-  private boolean isAttackingDice;
+  private final boolean isAttackingDice;
+
+  /**
+   * Creates the UI representation of a dice.
+   *
+   * @param isAttackingDice Indicates whether it is an attacking dice or not.
+   * @param result          The result of the dice roll.
+   */
 
   public DiceUi(boolean isAttackingDice, int result) {
     random = new Random();
@@ -35,6 +48,10 @@ public class DiceUi extends Pane {
     getChildren().add(diceView);
   }
 
+  /**
+   * Rolls the dice by calling the rolling animation and the sound of rolling dice.
+   */
+
   public void rollDice() {
     int rollDuration = 1000 + random.nextInt(750);
     showRollingGif();
@@ -44,6 +61,10 @@ public class DiceUi extends Pane {
     pauseTransition.play();
   }
 
+  /**
+   * Displays the rolling animation for the dice.
+   */
+
   public void showRollingGif() {
     if (this.isAttackingDice) {
       diceView.setImage(ImageConfiguration.getImageByName(ImageName.ATTACK_DICE_ROLLING));
@@ -52,6 +73,12 @@ public class DiceUi extends Pane {
     }
 
   }
+
+  /**
+   * Displays the result of the dice roll.
+   *
+   * @param result The result of the dice roll.
+   */
 
   private void showDiceResult(int result) {
     if (this.isAttackingDice) {

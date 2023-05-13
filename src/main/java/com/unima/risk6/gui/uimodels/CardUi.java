@@ -13,6 +13,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 
+/**
+ * Represents a graphical user interface (UI) representation of a card.
+ *
+ * @author mmeider
+ */
+
 public class CardUi extends StackPane {
 
   private Card card;
@@ -23,6 +29,12 @@ public class CardUi extends StackPane {
 
   private boolean clicked = false;
 
+  /**
+   * Creates the UI representation of a card associated with a specific country.
+   *
+   * @param card      The card object.
+   * @param countryUi The UI representation of the associated country.
+   */
 
   public CardUi(Card card, CountryUi countryUi) {
     super();
@@ -37,33 +49,18 @@ public class CardUi extends StackPane {
         countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
     chatLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold");
     SVGPath countryPath = countryUi.svgPathClone(countryUi.getCountryPath());
-    VBox cardVBox = new VBox();
-    cardVBox.setSpacing(10);
-    cardVBox.getChildren().addAll(chatLabel, countryPath, cardSymbolImage);
-    cardVBox.setAlignment(Pos.CENTER);
-    this.getChildren().addAll(cardFrame, cardVBox);
+    VBox cardVbox = new VBox();
+    cardVbox.setSpacing(10);
+    cardVbox.getChildren().addAll(chatLabel, countryPath, cardSymbolImage);
+    cardVbox.setAlignment(Pos.CENTER);
+    this.getChildren().addAll(cardFrame, cardVbox);
   }
 
-  private void setImageByCardSymbol(Card card) {
-    switch (card.getCardSymbol()) {
-      case CANNON -> {
-        cardSymbolImage = new ImageView(
-            ImageConfiguration.getImageByName(ImageName.CANNON_ICON));
-      }
-      case INFANTRY -> {
-        cardSymbolImage = new ImageView(
-            ImageConfiguration.getImageByName(ImageName.INFANTRY_ICON));
-      }
-      case CAVALRY -> {
-        cardSymbolImage = new ImageView(
-            ImageConfiguration.getImageByName(ImageName.CAVALRY_ICON));
-      }
-      case WILDCARD -> {
-        cardSymbolImage = new ImageView(
-            ImageConfiguration.getImageByName(ImageName.WILDCARD_ICON));
-      }
-    }
-  }
+  /**
+   * Creates a UI representation of a card without an associated country.
+   *
+   * @param card The card object.
+   */
 
   public CardUi(Card card) {
     super();
@@ -75,16 +72,25 @@ public class CardUi extends StackPane {
     this.getChildren().addAll(cardFrame, cardSymbolImage);
   }
 
-  public Card getCard() {
-    return card;
-  }
+  /**
+   * Sets the image of the card based on the card symbol.
+   *
+   * @param card The card object.
+   */
 
-  public void setCard(Card card) {
-    this.card = card;
-  }
-
-  public boolean isClicked() {
-    return clicked;
+  private void setImageByCardSymbol(Card card) {
+    switch (card.getCardSymbol()) {
+      case CANNON -> cardSymbolImage = new ImageView(
+          ImageConfiguration.getImageByName(ImageName.CANNON_ICON));
+      case INFANTRY -> cardSymbolImage = new ImageView(
+          ImageConfiguration.getImageByName(ImageName.INFANTRY_ICON));
+      case CAVALRY -> cardSymbolImage = new ImageView(
+          ImageConfiguration.getImageByName(ImageName.CAVALRY_ICON));
+      case WILDCARD -> cardSymbolImage = new ImageView(
+          ImageConfiguration.getImageByName(ImageName.WILDCARD_ICON));
+      default -> {
+      }
+    }
   }
 
   @Override
@@ -97,6 +103,18 @@ public class CardUi extends StackPane {
     }
     CardUi cardUi = (CardUi) o;
     return Objects.equals(card, cardUi.card);
+  }
+
+  public Card getCard() {
+    return card;
+  }
+
+  public void setCard(Card card) {
+    this.card = card;
+  }
+
+  public boolean isClicked() {
+    return clicked;
   }
 
   @Override

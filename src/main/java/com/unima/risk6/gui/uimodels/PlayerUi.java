@@ -20,6 +20,12 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Represents a graphical user interface (UI) representation of a player.
+ *
+ * @author mmeider
+ */
+
 public class PlayerUi extends Group {
 
   private Player player;
@@ -31,6 +37,17 @@ public class PlayerUi extends Group {
   private Label amountOfTroops;
 
   private Rectangle rectangle;
+
+  /**
+   * Creates the UI representation of a player with the specified parameters.
+   *
+   * @param player          The player object.
+   * @param playerColor     The color of the player.
+   * @param radiusX         The X radius of the ellipse.
+   * @param radiusY         The Y radius of the ellipse.
+   * @param rectangleWidth  The width of the rectangle.
+   * @param rectangleHeight The height of the rectangle.
+   */
 
   public PlayerUi(Player player, Color playerColor,
       double radiusX, double radiusY,
@@ -48,14 +65,11 @@ public class PlayerUi extends Group {
     } else {
       userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
     }
-
     StackPane stackPane = new StackPane(userImage);
     stackPane.setStyle("-fx-background-color: #F5F5F5;");
-
     ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(playerColor);
     ellipse.setStrokeWidth(3);
-
     rectangle = new Rectangle(rectangleWidth, rectangleHeight);
     rectangle.setFill(Color.WHITE);
     rectangle.setStroke(playerColor);
@@ -64,30 +78,22 @@ public class PlayerUi extends Group {
     rectangle.setArcHeight(rectangleHeight);
     rectangle.setLayoutX(0);
     rectangle.setLayoutY(0 - rectangleHeight / 2);
-
     StackPane iconsPane = new StackPane();
     iconsPane.setPrefSize(rectangleWidth, rectangleHeight - 10);
     iconsPane.setAlignment(Pos.CENTER);
     iconsPane.setLayoutX(30);
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
-
     Image soldierImage = new Image(
         getClass().getResource("/com/unima/risk6/pictures/soldier.png").toString());
     ImagePattern soldierImagePattern = new ImagePattern(soldierImage);
-
     Rectangle icon1 = new Rectangle(radiusX, radiusY);
     icon1.setFill(soldierImagePattern);
-
     amountOfTroops = new Label();
     amountOfTroops.setStyle("-fx-font-size: 16px; -fx-font-weight: bold");
-
     StackPane.setMargin(amountOfTroops, new Insets(0, 58, 0, 0));
-
     updateAmountOfTroops();
-
     iconsPane.getChildren().addAll(amountOfTroops, icon1);
     StackPane.setAlignment(icon1, Pos.CENTER);
-
     StackPane playerNameStack = new StackPane();
     Label userLabel = new Label(player.getUser());
     Rectangle userRectangle;
@@ -107,16 +113,12 @@ public class PlayerUi extends Group {
     playerNameStack.setLayoutY(ellipse.getRadiusY() - 10);
     playerNameStack.getChildren().addAll(userRectangle, userLabel);
     StackPane.setAlignment(userLabel, Pos.CENTER);
-
     getChildren().addAll(rectangle, ellipse, iconsPane, playerNameStack);
-
     DropShadow dropShadow = new DropShadow();
     dropShadow.setColor(Color.BLACK);
     dropShadow.setSpread(0.5);
     dropShadow.setBlurType(BlurType.ONE_PASS_BOX);
-
     this.setEffect(dropShadow);
-
   }
 
   public void updateAmountOfTroops() {
