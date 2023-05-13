@@ -75,6 +75,10 @@ public class GameLobbyChannels {
                   x -> x.getLobbyName().equals(
                       gameLobby.getLobbyName())).findFirst().get());
       gameChannels.remove(gameLobby);
+      //delete moveprocessor if the game is running
+      if (moveProcessors.values().stream().anyMatch(x -> x.contains(channel))) {
+        moveProcessors.inverse().remove(getChannelGroupByChannel(channel));
+      }
     } else {
       //Change owner
       gameLobby.setLobbyOwner(
