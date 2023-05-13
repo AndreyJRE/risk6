@@ -16,6 +16,11 @@ import com.unima.risk6.network.message.StandardMessage;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents the player controll. It manages and performs operations * regarding the
+ * GameState object it has. It contains methods that are needed for the general game * flow of the
+ * game.
+ */
 public class PlayerController {
 
   private Player player;
@@ -99,6 +104,7 @@ public class PlayerController {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
 
+  //TODO Können wir das auf ehre bitte zu AI moven?
   public List<CountryPair> getValidFortifiesFromCountry(Country country) {
     List<CountryPair> fortifiable = new ArrayList<>();
     if (country.getTroops() > 1) {

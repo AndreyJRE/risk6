@@ -224,7 +224,7 @@ public class ActivePlayerUi extends Group {
         initPhase();
       }
       case CLAIM_PHASE -> {
-        phaseLabel.setText("Claim a territory");
+        phaseLabel.setText("Place your initial troops");
         iconsPane.getChildren().remove(0);
         iconsPane.getChildren().add(phaseLabel);
         StackPane.setAlignment(phaseLabel, Pos.CENTER);

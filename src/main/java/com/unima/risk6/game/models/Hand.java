@@ -2,6 +2,11 @@ package com.unima.risk6.game.models;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a hand of cards of a player in the game with its cards and selectedCards.
+ *
+ * @author wphung
+ */
 public class Hand {
 
   private final ArrayList<Card> cards;
