@@ -424,6 +424,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
     gameController
         .setNewPlayerOrder(gameController.getNewPlayerOrder(diceRolls));
+    playerController.setPlayer(gameController.getCurrentPlayer());
     sendGamestate(gameLobbyChannels.getChannelsByGameLobby(gameLobby));
     moveProcessor.clearLastMoves();
     try {
