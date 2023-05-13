@@ -151,8 +151,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void initializeGameScene() {
-    Image waterImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/flowingWater.gif").toString());
+    Image waterImage = ImageConfiguration.getImageByName(ImageName.WATER_GIF);
     BackgroundImage backgroundImage = new BackgroundImage(waterImage, BackgroundRepeat.REPEAT,
         BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
@@ -507,15 +506,15 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   @Override
   public void updateChat(List<String> messages) {
-    if (chatUi.getChatPopup().isShowing()) {
-      Platform.runLater(() -> chatCounterLabel.setVisible(false));
-      lastChatUpdate = messages.size();
-    } else {
-      Platform.runLater(() -> {
-        chatCounterLabel.setText(String.valueOf(messages.size() - lastChatUpdate));
+    Platform.runLater(() -> {
+      if (chatUi.getChatPopup().isShowing()) {
+        chatCounterLabel.setVisible(false);
+      } else {
+        chatCounterLabel.setText(String.valueOf(messages.size() - chatUi.getLastChatUpdate()));
         chatCounterLabel.setVisible(true);
-      });
-    }
+      }
+    });
+
   }
 
   private void showCardsPopup() {

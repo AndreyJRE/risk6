@@ -72,7 +72,8 @@ public class SceneController {
 
   public void close() {
     DatabaseConfiguration.closeDatabaseConnectionAndServices();
-    if (NetworkConfiguration.getGameServerThread() != null) {
+    if (NetworkConfiguration.getGameServerThread() != null
+        && NetworkConfiguration.getGameServerThread().isAlive()) {
       NetworkConfiguration.stopGameServer();
     }
     if (LobbyConfiguration.getGameClient() != null) {

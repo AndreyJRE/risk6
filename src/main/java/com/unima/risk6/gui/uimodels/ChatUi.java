@@ -62,6 +62,8 @@ public class ChatUi extends BorderPane implements ChatObserver {
   private Scene gameScene;
   private List<String> chatHistory = new ArrayList<>();
 
+  private int lastChatUpdate = 0;
+
   /**
    * Constructs a ChatUi object with the provided gameScene.
    *
@@ -115,7 +117,6 @@ public class ChatUi extends BorderPane implements ChatObserver {
     messageBox.getChildren().addAll(textStack);
 
     chatBox.getChildren().add(messageBox);
-
     wholeChat.setContent(chatBox);
 
     this.setCenter(wholeChat);
@@ -162,7 +163,12 @@ public class ChatUi extends BorderPane implements ChatObserver {
 
     this.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
     chatPopup = new Popup();
-    closeButton.setOnAction(event -> chatPopup.hide());
+    closeButton.setOnAction(event -> {
+      chatPopup.hide();
+      lastChatUpdate = chatHistory.size();
+    });
+    chatPopup.setOnAutoHide(event -> lastChatUpdate = chatHistory.size());
+
     chatPopup.getContent().add(this);
     chatPopup.setAutoHide(true);
     DropShadow dropShadow = new DropShadow();
@@ -265,5 +271,13 @@ public class ChatUi extends BorderPane implements ChatObserver {
 
   public Popup getChatPopup() {
     return chatPopup;
+  }
+
+  public int getLastChatUpdate() {
+    return lastChatUpdate;
+  }
+
+  public void setLastChatUpdate(int lastChatUpdate) {
+    this.lastChatUpdate = lastChatUpdate;
   }
 }

@@ -1,12 +1,9 @@
 package com.unima.risk6.gui.uimodels;
 
-import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
-import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
-import com.unima.risk6.network.configurations.NetworkConfiguration;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -96,23 +93,12 @@ public class SettingsUi extends BorderPane {
     alert.getButtonTypes().setAll(buttonYes, buttonNo);
     alert.showAndWait().ifPresent(buttonType -> {
       if (buttonType == buttonYes) {
-        LobbyConfiguration.sendLeaveGameMessage();
-        try {
-          Thread.sleep(100);
-          if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
-            NetworkConfiguration.stopGameServer();
-          }
-          Thread.sleep(100);
-
-          SceneConfiguration.getSceneController().activate(SceneName.TITLE);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-      }
-      if (buttonType == buttonNo) {
+        SceneConfiguration.getSceneController().close();
+      } else {
         alert.close();
         settingPopup.hide();
       }
     });
   }
 }
+

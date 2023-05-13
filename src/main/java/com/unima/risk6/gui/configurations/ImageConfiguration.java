@@ -62,6 +62,7 @@ public class ImageConfiguration {
 
   private static final String DICE_ROLLING_GIF = "/com/unima/risk6/pictures/diceRollAnimation.gif";
 
+  private static final String WATER_GIF = "/com/unima/risk6/pictures/flowingWater.gif";
 
   private static HashMap<ImageName, Image> images;
   private static Media titleBackgroundVideo;
@@ -125,6 +126,8 @@ public class ImageConfiguration {
     images.put(ImageName.ATTACK_DICE_ROLLING, attackDiceRollingGif);
     Image diceRollingGif = initImage(DICE_ROLLING_GIF);
     images.put(ImageName.DICE_ROLLING, diceRollingGif);
+    Image waterGif = initImage(WATER_GIF);
+    images.put(ImageName.WATER_GIF, waterGif);
 
     URL mediaUrl = ImageConfiguration.class.getResource(
         "/com/unima/risk6/pictures/backgroundVideo.png");
