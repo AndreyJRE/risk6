@@ -13,6 +13,7 @@ import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
+import com.unima.risk6.gui.controllers.enums.Colors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -76,9 +77,9 @@ public class CountryUi extends Group {
     this.countryPath = new SVGPath();
     this.troopsCounterUi = null;
     this.countryPath.setContent(SVGPath);
-    this.color = Color.WHITE;
+    this.color = Colors.COUNTRY_BACKGROUND.getColor();
     this.countryPath.setFill(color);
-    this.countryPath.setStroke(Color.BLACK);
+    this.countryPath.setStroke(Colors.COUNTRY_STROKE.getColor());
     this.getChildren().add(new Group(this.countryPath));
     glowEffect = new DropShadow();
 
@@ -130,8 +131,8 @@ public class CountryUi extends Group {
                   this.setCursor(Cursor.CROSSHAIR);
                 }
               } else {
-                if (this.color == Color.WHITE) {
-                  this.countryPath.setFill(Color.LIGHTGRAY);
+                if (this.color == Colors.COUNTRY_BACKGROUND.getColor()) {
+                  this.countryPath.setFill(Colors.COUNTRY_BACKGROUND_DARKEN.getColor());
                 }
                 this.setCursor(Cursor.CROSSHAIR);
               }
