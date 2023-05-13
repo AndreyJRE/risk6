@@ -1,5 +1,7 @@
 package com.unima.risk6.game.configurations;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.observers.GameStateObserver;
@@ -30,7 +32,7 @@ public class GameConfiguration {
 
   private static HashMap<String, Integer> diceRolls;
 
-
+  private static GameStatistic currentGameStatistic;
   private static Tutorial tutorial;
   private static boolean tutorialOver = false;
 
@@ -156,5 +158,24 @@ public class GameConfiguration {
 
   public static void setTutorialOver(boolean tutorialOver) {
     GameConfiguration.tutorialOver = tutorialOver;
+
+
+  }
+
+  public static void updateGameStatistic(boolean gameWon, int troopsLost, int countriesWon,
+      int troopsGained, int countriesLost) {
+    currentGameStatistic.setGameWon(gameWon);
+    currentGameStatistic.setTroopsLost(troopsLost);
+    currentGameStatistic.setCountriesWon(countriesWon);
+    currentGameStatistic.setTroopsGained(troopsGained);
+    currentGameStatistic.setCountriesLost(countriesLost);
+    DatabaseConfiguration.getGameStatisticService()
+        .updateGameStatisticAfterGame(currentGameStatistic);
+
+  }
+
+  public static void setCurrentGameStatistic(
+      GameStatistic currentGameStatistic) {
+    GameConfiguration.currentGameStatistic = currentGameStatistic;
   }
 }

@@ -20,6 +20,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.game.models.enums.PlayerColor;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
@@ -53,7 +54,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -78,6 +82,7 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.stage.Popup;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 /**
@@ -148,6 +153,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     if (tutorial != null) {
       initTutorial();
     }
+
+
   }
 
   private void initializeGameScene() {
@@ -566,6 +573,31 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         event.consume();
       }
     });
+
+    SceneController sceneController = SceneConfiguration.getSceneController();
+    sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
+      event.consume();
+      Alert alert = new Alert(AlertType.WARNING);
+      alert.setTitle("Warning: Exiting Game");
+      alert.setHeaderText("Are you sure you want to to leave the game?");
+      alert.setContentText(
+          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
+      ButtonType buttonYes = new ButtonType("Yes, exit game");
+      ButtonType buttonNo = new ButtonType("No, continue playing");
+      alert.getButtonTypes().setAll(buttonYes, buttonNo);
+      alert.showAndWait().ifPresent(buttonType -> {
+        if (buttonType == buttonYes) {
+          Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
+          GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
+              statistic.getCountriesWon(), statistic.getTroopsGained(),
+              statistic.getCountriesLost());
+          sceneController.close();
+        }
+        if (buttonType == buttonNo) {
+          alert.close();
+        }
+      });
+    });
   }
 
   private void showStatisticsPopup() {
@@ -688,6 +720,14 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         cardsButton.setStyle("-fx-background-radius: 15px;");
       }
     });
+    if (gameState.isGameOver()) {
+      Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
+      GameConfiguration.updateGameStatistic(
+          gameState.getActivePlayers().contains(PLAYER_CONTROLLER.getPlayer()),
+          statistic.getTroopsLost(),
+          statistic.getCountriesWon(), statistic.getTroopsGained(),
+          statistic.getCountriesLost());
+    }
 
   }
 
@@ -871,11 +911,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
         || tutorialMessageCounter == 11) {
       LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
-//      try {
-//        Thread.sleep(100);
-//      } catch (InterruptedException e) {
-//        throw new RuntimeException(e);
-//      }
     }
     tutorialMessageCounter++;
   }

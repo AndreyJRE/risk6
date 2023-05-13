@@ -2,6 +2,8 @@ package com.unima.risk6.gui.configurations;
 
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 
+import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.models.GameStatistic;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.gui.controllers.GameOverSceneController;
@@ -17,11 +19,7 @@ import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
 import javafx.beans.value.ChangeListener;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /**
  * This class manages the configuration and control of scenes in the application. It provides
@@ -37,6 +35,7 @@ public class SceneConfiguration {
   private static SceneController sceneController;
   private static double width;
   private static double height;
+
 
   /**
    * Configures the scene controller and listeners for the stage.
@@ -81,28 +80,12 @@ public class SceneConfiguration {
       sceneController.addScene(SceneName.GAME, gameScene);
     }
     gameSceneController = gameScene.getGameSceneController();
+    GameStatistic gameStatistic = new GameStatistic(SessionManager.getUser());
+    DatabaseConfiguration.getGameStatisticService().saveGameStatistic(gameStatistic);
+    GameConfiguration.setCurrentGameStatistic(gameStatistic);
     sceneController.activate(SceneName.GAME);
     sceneController.getStage().setMaximized(true);
 
-    sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
-      event.consume();
-      Alert alert = new Alert(AlertType.WARNING);
-      alert.setTitle("Warning: Exiting Game");
-      alert.setHeaderText("Are you sure you want to to leave the game?");
-      alert.setContentText(
-          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
-      ButtonType buttonYes = new ButtonType("Yes, exit game");
-      ButtonType buttonNo = new ButtonType("No, continue playing");
-      alert.getButtonTypes().setAll(buttonYes, buttonNo);
-      alert.showAndWait().ifPresent(buttonType -> {
-        if (buttonType == buttonYes) {
-          sceneController.close();
-        }
-        if (buttonType == buttonNo) {
-          alert.close();
-        }
-      });
-    });
     SoundConfiguration.playStartGameSound();
     try {
       Thread.sleep(100);

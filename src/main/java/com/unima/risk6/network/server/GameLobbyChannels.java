@@ -74,6 +74,10 @@ public class GameLobbyChannels {
                   x -> x.getLobbyName().equals(
                       gameLobby.getLobbyName())).findFirst().get());
       gameChannels.remove(gameLobby);
+      //delete moveprocessor if the game is running
+      if (moveProcessors.values().stream().anyMatch(x -> x.contains(channel))) {
+        moveProcessors.inverse().remove(getChannelGroupByChannel(channel));
+      }
     } else {
       //Change owner
       gameLobby.setLobbyOwner(
@@ -149,43 +153,45 @@ public class GameLobbyChannels {
         + " GameLobbies in ServerLobby: "
         + NetworkConfiguration.getServerLobby().getGameLobbies().size() + " Users in Serverlobby: "
         + NetworkConfiguration.getServerLobby().getUsers().size());
-    try {
-      System.out.println(gameChannels.size());
-      System.out.println(getUserByChannel(channel).getUsername() + " left");
 
-      if (gameChannels.keySet().stream()
-          .anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
+    System.out.println(gameChannels.size());
+    System.out.println(getUserByChannel(channel).getUsername() + " left");
 
-        if (moveProcessors.containsValue(gameChannels.get(gameChannels.keySet().stream()
-            .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get()))) {
-          //In Running Game
-          LOGGER.debug("In Running game");
-          ChannelGroup channelGroup = gameChannels.get(gameChannels.keySet().stream()
-              .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get());
-          GameController gameController = moveProcessors.inverse().get(channelGroup)
-              .getGameController();
-          GameState gameState = gameController.getGameState();
-          MediumBot mediumBot;
-          if (gameState.getCurrentPlayer().getUser()
-              .equals(getUserByChannel(channel).getUsername())) {
-            //player is current player
-            LOGGER.debug("Current player left");
+    if (gameChannels.keySet().stream()
+        .anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
+      GameLobby gameLobby = gameChannels.keySet().stream()
+          .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get();
+      MediumBot mediumBot;
 
-            Player player = gameState.getCurrentPlayer();
-            GamePhase gamePhase = player.getCurrentPhase();
-            mediumBot = new MediumBot(player);
-            for (Country country : mediumBot.getCountries()) {
-              country.setPlayer((Player) mediumBot);
-            }
-            MoveProcessor moveProcessor = moveProcessors.inverse().get(channelGroup);
+      if (moveProcessors.containsValue(gameChannels.get(gameChannels.keySet().stream()
+          .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get()))) {
+        //In Running Game
+        LOGGER.debug("In Running game");
+        ChannelGroup channelGroup = gameChannels.get(gameChannels.keySet().stream()
+            .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get());
+        GameController gameController = moveProcessors.inverse().get(channelGroup)
+            .getGameController();
+        GameState gameState = gameController.getGameState();
+        if (gameState.getCurrentPlayer().getUser()
+            .equals(getUserByChannel(channel).getUsername())) {
+          //player is current player
+          LOGGER.debug("Current player left");
 
-            gameState.getActivePlayers().poll();
-            gameState.getActivePlayers().add(mediumBot);
-            int size = gameState.getActivePlayers().size();
-            for (int i = 0; i < size - 1; i++) {
-              gameState.getActivePlayers().add(gameState.getActivePlayers().poll());
-            }
-            gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
+          Player player = gameState.getCurrentPlayer();
+          GamePhase gamePhase = player.getCurrentPhase();
+          mediumBot = new MediumBot(player);
+          for (Country country : mediumBot.getCountries()) {
+            country.setPlayer((Player) mediumBot);
+          }
+          MoveProcessor moveProcessor = moveProcessors.inverse().get(channelGroup);
+
+          gameState.getActivePlayers().poll();
+          gameState.getActivePlayers().add(mediumBot);
+          int size = gameState.getActivePlayers().size();
+          for (int i = 0; i < size - 1; i++) {
+            gameState.getActivePlayers().add(gameState.getActivePlayers().poll());
+          }
+          gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
 
           if (gameState.getActivePlayers().stream().allMatch(n -> n instanceof AiBot)) {
             gameState.setGameOver(true);
@@ -197,40 +203,44 @@ public class GameLobbyChannels {
           gsh.sendGamestate(channelGroup, gameState);
 
 
-          } else {
-            LOGGER.debug("A player left");
-            for (int i = 0; i < gameState.getActivePlayers().size(); i++) {
-              Player player = gameState.getActivePlayers().poll();
-              if (player.getUser().equals(getUserByChannel(channel).getUsername())) {
-                //Player found
-                mediumBot = new MediumBot(player);
-                for (Country country : mediumBot.getCountries()) {
-                  country.setPlayer((Player) mediumBot);
-                }
-                gameState.getActivePlayers().add(mediumBot);
-              } else {
-                gameState.getActivePlayers().add(player);
+        } else {
+          LOGGER.debug("A player left");
+          mediumBot = new MediumBot("I should not exist");
+          for (int i = 0; i < gameState.getActivePlayers().size(); i++) {
+            Player player = gameState.getActivePlayers().poll();
+            if (player.getUser().equals(getUserByChannel(channel).getUsername())) {
+              //Player found
+              mediumBot = new MediumBot(player);
+              for (Country country : mediumBot.getCountries()) {
+                country.setPlayer((Player) mediumBot);
               }
+              gameState.getActivePlayers().add(mediumBot);
+            } else {
+              gameState.getActivePlayers().add(player);
             }
-
           }
 
-        } else {
-          //In Gamelobby
-          System.out.println("In Gamelobby");
-
-
         }
-        removeUserFromGameLobby(channel, gsh, true);
-        removeUserFromServerLobby(channel);
-        gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+        gameLobby.getBots().add(mediumBot.getUser());
       } else {
-        System.out.println("else");
-        removeUserFromServerLobby(channel);
-        gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+        //In Gamelobby
+        System.out.println("In Gamelobby");
+
+
       }
-    } catch (NullPointerException e) {
-      LOGGER.debug("It seems, that the user is already disconnected:\n" + e);
+      removeUserFromGameLobby(channel, gsh, true);
+      removeUserFromServerLobby(channel);
+      gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+    } else {
+      System.out.println("else");
+      removeUserFromServerLobby(channel);
+      gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+    }
+
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
     LOGGER.debug("After handle Exit : moveProcessors Size: " + moveProcessors.size()
         + " gameChannels Size: " + gameChannels.size() + "Users size: " + users.size()

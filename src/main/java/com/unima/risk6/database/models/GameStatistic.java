@@ -30,12 +30,6 @@ public class GameStatistic {
   private boolean gameWon;
 
   /**
-   * Default constructor.
-   */
-  public GameStatistic() {
-  }
-
-  /**
    * Constructor for a game statistic. This constructor is used when a game is started. The finish
    * date and game won are not known yet.
    *
