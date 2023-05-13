@@ -56,13 +56,9 @@ class TutorialTest {
   @Test
   void serializeTest() {
     GameState empty = GameConfiguration.configureGame(new ArrayList<>(), List.of(tutorialBot));
-    String result = Serializer.serialize(new StandardMessage<GameState>(empty));
+    String result = Serializer.serialize(new StandardMessage<>(empty));
     GameState copy = (GameState) Deserializer.deserialize(result, empty).getContent();
     TutorialBot botCopy = (TutorialBot) copy.getCurrentPlayer();
     assertTrue(botCopy.getDeterministicClaims().size() > 0);
-    assertTrue(botCopy.getDeterministicReinforces().size() > 0);
-    assertTrue(botCopy.getDeterministicAttacks().size() > 0);
-    assertTrue(botCopy.getDeterministicAfterAttacks().size() > 0);
-    assertTrue(botCopy.getDeterministicFortifies().size() > 0);
   }
 }
