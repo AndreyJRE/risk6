@@ -14,6 +14,7 @@ import com.unima.risk6.game.logic.HandIn;
 import com.unima.risk6.game.logic.Move;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
+import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
@@ -507,17 +508,18 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       userBox.getChildren().addAll(userLabel, userCircle);
       statisticsGrid.add(userBox, i, 0);
 
-      String[] attributeStrings = {"Troops: ", "Countries: "};
+      String[] attributeStrings = {"Troops: ", "Countries: ", "Continents: ", "Bonus Troops: "};
       for (int j = 0; j < attributeStrings.length; j++) {
         HBox statisticBox = new HBox();
         statisticBox.setPadding(new Insets(5));
         statisticBox.setAlignment(Pos.CENTER);
-        int value;
-        if (j == 0) {
-          value = player.getStatistic().getNumberOfTroops();
-        } else {
-          value = player.getStatistic().getNumberOfOwnedCountries();
-        }
+        int value = switch (j) {
+          case 0 -> player.getStatistic().getNumberOfTroops();
+          case 1 -> player.getStatistic().getNumberOfOwnedCountries();
+          case 2 -> player.getContinents().size();
+          case 3 -> player.getContinents().stream().mapToInt(Continent::getBonusTroops).sum();
+          default -> throw new IllegalStateException("Unexpected value: " + j);
+        };
         Label statisticName = new Label(attributeStrings[j]);
         statisticName.setStyle("-fx-font-size: 15px;");
         Label userStat = new Label(Integer.toString(value));
@@ -710,7 +712,16 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         case REINFORCEMENT_PHASE -> {
           tutorial.updatePlayerReinforce();
           Reinforce reinforce = tutorial.getCurrentReinforce();
-          cardsButton.setVisible(tutorial.isHandInEnabled());
+          if (tutorial.isHandInEnabled()) {
+            cardsButton.setVisible(true);
+            GameConfiguration.setTutorial(null);
+            tutorial = null;
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+          }
           if (reinforce != null) {
             CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
             countryUi.animateTutorialCountry();

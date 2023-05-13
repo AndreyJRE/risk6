@@ -118,7 +118,7 @@ public class ChatUi extends BorderPane implements ChatObserver {
         StackPane textStack = new StackPane(chatRectangle, text);
 
          */
-    text = new Text("Your ingame messages");
+    text = new Text("Your in-game messages");
     double chatWidth = text.getLayoutBounds().getWidth() + 20;
     double chatHeight = text.getLayoutBounds().getHeight() + 20;
 
@@ -142,11 +142,13 @@ public class ChatUi extends BorderPane implements ChatObserver {
     sendMessage.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ENTER) {
 
-        String message = sendMessage.getText();
+        String message = sendMessage.getText().trim();
         sendMessage.clear();
-        LobbyConfiguration.sendChatMessage(message);
+        if (message.length() > 0) {
+          LobbyConfiguration.sendChatMessage(message);
+          event.consume();
+        }
         //chatArea.appendText(user.getUsername() + ": " + message + "\n");
-        event.consume();
       }
     });
 
