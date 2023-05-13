@@ -12,12 +12,20 @@ import com.unima.risk6.game.ai.models.CountryPair;
 import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
-import com.unima.risk6.game.logic.*;
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.DeckController;
 import com.unima.risk6.game.logic.controllers.GameController;
 import com.unima.risk6.game.logic.controllers.HandController;
 import com.unima.risk6.game.logic.controllers.PlayerController;
-import com.unima.risk6.game.models.*;
+import com.unima.risk6.game.models.GameLobby;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.ServerLobby;
+import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.message.ChatMessage;
@@ -32,11 +40,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
@@ -230,7 +237,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendUpdatedServerLobby(serverLobby);
                 }
                 case START_GAME -> {
-                  //TODO MOVE_CONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent()
                       .getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
@@ -332,11 +338,18 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     //TODO
   }
 
-  private void sendGamestate(ChannelGroup channelGroup) {
-    System.out.println("Serilize" + " Test");
-    System.out.println(moveProcessor.getDeckController().getDeck().getDeckCards());
+  void sendGamestate(ChannelGroup channelGroup) {
     String message = Serializer.serialize(
-        new StandardMessage(moveProcessor.getGameController().getGameState()));
+        new StandardMessage<GameState>(moveProcessor.getGameController().getGameState()));
+    LOGGER.debug(message);
+    for (Channel ch : channelGroup) {
+      LOGGER.debug("Send new gamestate to: " + ch.id());
+      ch.writeAndFlush(new TextWebSocketFrame(message));
+    }
+  }
+
+  protected void sendGamestate(ChannelGroup channelGroup, GameState gameState) {
+    String message = Serializer.serialize(new StandardMessage<GameState>(gameState));
     LOGGER.debug(message);
     for (Channel ch : channelGroup) {
       LOGGER.debug("Send new gamestate to: " + ch.id());
@@ -476,7 +489,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  private void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
+  void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
     aiBot.setGameState(moveProcessor.getGameController().getGameState());
     Player player = (Player) aiBot;
     moveProcessor.getPlayerController().setPlayer(player);
@@ -526,7 +539,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
-  private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+  void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     player.setDeployableTroops( // to ensure numbers are right
         moveProcessor.getPlayerController().getPlayer().getDeployableTroops());
@@ -546,7 +559,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
-  private void processBotHandIn(ChannelGroup channelGroup) {
+  void processBotHandIn(ChannelGroup channelGroup) {
     HandController handController = moveProcessor.getPlayerController().getHandController();
     if (handController.holdsExchangeable()) {
       handController.selectExchangeableCards();
@@ -557,7 +570,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  private void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+  void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     Fortify fortify = aiBot.createFortify();
     if (fortify != null && fortify.getTroopsToMove() > 0) {
@@ -571,7 +584,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
-  private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+  void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     boolean quitEarly = false;
     do {
