@@ -130,7 +130,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LobbyConfiguration.setServerLobby(content);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.JOIN_ONLINE) {
-                  System.out.println("Test -----------");
                   Platform.runLater(SceneConfiguration::joinServerLobbyScene);
                 }
 

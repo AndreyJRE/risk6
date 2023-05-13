@@ -66,8 +66,7 @@ public class GameLobbyChannels {
       channels.add(channel);
     }
     //delete gamelobby if empty or change owner
-    if (gameLobby.getUsers().size()
-        == 0) {
+    if (gameLobby.getUsers().size() == 0) {
 
       NetworkConfiguration.getServerLobby().getGameLobbies()
           .remove(NetworkConfiguration.getServerLobby()

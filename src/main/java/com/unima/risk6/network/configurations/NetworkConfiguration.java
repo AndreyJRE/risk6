@@ -25,7 +25,7 @@ public class NetworkConfiguration {
   }
 
   public static void startSinglePlayerServer() {
-    GameServer gameServer = new GameServer("127.0.0.1");
+    gameServer = new GameServer("127.0.0.1");
     serverLobby = new ServerLobby("Single player server");
     gameServerThread = new Thread(gameServer);
     gameServerThread.start();

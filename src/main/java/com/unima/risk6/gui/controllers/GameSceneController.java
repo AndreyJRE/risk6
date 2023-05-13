@@ -26,8 +26,8 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
-import com.unima.risk6.gui.controllers.enums.Colors;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.Colors;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uiModels.ActivePlayerUi;
@@ -453,6 +453,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     chatCounterLabel.setStyle("-fx-background-radius: 10px;"
         + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 18px;");
     chatCounterLabel.setTextFill(Color.WHITE);
+    chatButton.setVisible(gameState.isChatEnabled());
     chatCounterLabel.setVisible(gameState.isChatEnabled());
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     activePlayerUi.controlDeployableTroops();

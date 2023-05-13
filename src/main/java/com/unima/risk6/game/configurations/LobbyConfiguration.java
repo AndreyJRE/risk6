@@ -114,7 +114,6 @@ public class LobbyConfiguration {
    * This method is used to configure the network client.
    *
    * @param hostIp Server Host IP
-   * @param port   Server Port
    */
   public static void configureGameClient(String hostIp) {
     String url = "ws://" + hostIp + ":" + "8080" + "/game";

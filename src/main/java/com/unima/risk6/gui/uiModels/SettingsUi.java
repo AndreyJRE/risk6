@@ -97,9 +97,16 @@ public class SettingsUi extends BorderPane {
     alert.showAndWait().ifPresent(buttonType -> {
       if (buttonType == buttonYes) {
         LobbyConfiguration.sendLeaveGameMessage();
-        SceneConfiguration.getSceneController().activate(SceneName.TITLE);
-        if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
-          NetworkConfiguration.stopGameServer();
+        try {
+          Thread.sleep(100);
+          if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
+            NetworkConfiguration.stopGameServer();
+          }
+          Thread.sleep(100);
+
+          SceneConfiguration.getSceneController().activate(SceneName.TITLE);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
         }
       }
       if (buttonType == buttonNo) {
