@@ -66,7 +66,7 @@ public class CountryUi extends Group {
 
   private Color color;
 
-  private final Tutorial tutorial = GameConfiguration.getTutorial();
+  private Tutorial tutorial = GameConfiguration.getTutorial();
   private FillTransition fillTransition;
 
 
@@ -153,7 +153,8 @@ public class CountryUi extends Group {
           case REINFORCEMENT_PHASE -> {
             if (checkIfCountryIsMine(country)
                 && playerController.getPlayer().getDeployableTroops() > 0) {
-              if (tutorial != null) {
+              System.out.println(tutorial);
+              if ((tutorial = GameConfiguration.getTutorial()) != null) {
                 Reinforce currentReinforce = tutorial.getCurrentReinforce();
                 Country reinforceCountry = currentReinforce.getCountry();
                 if (this.country.equals(reinforceCountry)) {

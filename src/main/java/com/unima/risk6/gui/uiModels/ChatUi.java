@@ -2,9 +2,7 @@ package com.unima.risk6.gui.uiModels;
 
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.configurations.observers.ChatObserver;
-
 import java.util.ArrayList;
-
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -53,7 +51,6 @@ public class ChatUi extends BorderPane implements ChatObserver {
 
     private Scene gameScene;
 
-    //TODO LEFT Align Messages
     public ChatUi(Scene gameScene) {
 
         this.gameScene = gameScene;
@@ -89,7 +86,7 @@ public class ChatUi extends BorderPane implements ChatObserver {
         messageBox.setSpacing(15);
         messageBox.setAlignment(Pos.TOP_LEFT);
 
-        text = new Text("Your ingame messages");
+        text = new Text("Your in-game messages");
         double chatWidth = text.getLayoutBounds().getWidth() + 20;
         double chatHeight = text.getLayoutBounds().getHeight() + 20;
 
@@ -113,13 +110,14 @@ public class ChatUi extends BorderPane implements ChatObserver {
         sendMessage.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
 
-                String message = sendMessage.getText();
-                sendMessage.clear();
-                LobbyConfiguration.sendChatMessage(message);
-                //chatArea.appendText(user.getUsername() + ": " + message + "\n");
-                event.consume();
-            }
-        });
+        String message = sendMessage.getText().trim();
+        sendMessage.clear();
+        if (message.length() > 0) {
+          LobbyConfiguration.sendChatMessage(message);
+          event.consume();
+        }
+      }
+    });
 
         sendButton = new Button();
         sendButton.setPrefSize(20, 20);
@@ -134,7 +132,6 @@ public class ChatUi extends BorderPane implements ChatObserver {
             String message = sendMessage.getText();
             sendMessage.clear();
             LobbyConfiguration.sendChatMessage(message);
-            //chatArea.appendText(user.getUsername() + ": " + message + "\n");
             event.consume();
         });
 
