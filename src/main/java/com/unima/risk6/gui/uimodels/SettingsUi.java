@@ -1,8 +1,11 @@
 package com.unima.risk6.gui.uimodels;
 
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.scenes.GameScene;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -93,6 +96,10 @@ public class SettingsUi extends BorderPane {
     alert.getButtonTypes().setAll(buttonYes, buttonNo);
     alert.showAndWait().ifPresent(buttonType -> {
       if (buttonType == buttonYes) {
+        Statistic statistic = GameSceneController.getPlayerController().getPlayer().getStatistic();
+        GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
+            statistic.getCountriesWon(), statistic.getTroopsGained(),
+            statistic.getCountriesLost());
         SceneConfiguration.getSceneController().close();
       } else {
         alert.close();
