@@ -19,6 +19,7 @@ import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.game.models.enums.PlayerColor;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
@@ -35,6 +36,7 @@ import com.unima.risk6.gui.uiModels.HandUi;
 import com.unima.risk6.gui.uiModels.PlayerUi;
 import com.unima.risk6.gui.uiModels.SettingsUi;
 import com.unima.risk6.gui.uiModels.TroopsCounterUi;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
+
 import javafx.animation.PathTransition;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -97,6 +100,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private Popup statisticPopup;
   boolean isStatisticsShowing = false;
 
+  boolean isCountryNameShowing = false;
+
   private ChatUi chatUi;
 
   private HandUi handUi;
@@ -104,6 +109,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private Circle notifyCircle;
   private Tutorial tutorial;
+  Group countryNameGroup;
 
 
   public GameSceneController(GameScene gameScene) {
@@ -293,6 +299,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     double heightRatio = gameScene.getHeight() / originalScreenHeight;
     double initialScale = Math.min(widthRatio, heightRatio);
 
+    countryNameGroup = new Group();
+
     countriesGroup.getChildren().addAll(countriesUis);
     StackPane countriesPane = new StackPane();
 
@@ -308,11 +316,83 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       ellipseY = correctedCoordinates.getY();
 
       TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
+
+      Label countryName = new Label(
+          countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
+
+      double finalEllipseY;
+      double finalEllipseX;
+
+      switch (countryUi.getCountry().getCountryName().name()) {
+        case "SOUTHERN_EUROPE" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "WESTERN_UNITED_STATES" -> {
+          finalEllipseY = ellipseY - 3;
+          finalEllipseX = ellipseX;
+        }
+        case "MADAGASCAR" -> {
+          finalEllipseY = ellipseY + 12;
+          finalEllipseX = ellipseX;
+        }
+        case "WESTERN_EUROPE" -> {
+          finalEllipseY = ellipseY + 10;
+          finalEllipseX = ellipseX;
+        }
+        case "SOUTH_AFRICA" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "EAST_AFRICA" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "EASTERN_UNITED_STATES" -> {
+          finalEllipseY = ellipseY + 5;
+          finalEllipseX = ellipseX;
+        }
+        case "ALASKA" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "QUEBEC" -> {
+          finalEllipseY = ellipseY - 5;
+          finalEllipseX = ellipseX;
+        }
+        case "WESTERN_AUSTRALIA" -> {
+          finalEllipseY = ellipseY - 40;
+          finalEllipseX = ellipseX - 20;
+        }
+        case "EASTERN_AUSTRALIA" -> {
+          finalEllipseY = ellipseY + 10;
+          finalEllipseX = ellipseX - 50;
+        }
+        default -> {
+          finalEllipseY = ellipseY;
+          finalEllipseX = ellipseX;
+        }
+      }
+
+      Platform.runLater(() -> {
+        countryName.setStyle(
+            "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
+                + "bold;-fx-font-size: 13px");
+        countryName.setTextFill(Color.WHITE);
+        System.out.println(countryName.getLayoutBounds().getWidth());
+        countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
+        countryName.setLayoutY(finalEllipseY + 10);
+      });
+
+      countryNameGroup.getChildren().add(countryName);
+
       troopsCounterUi.setText(countryUi.getCountry().getTroops().toString());
       countryUi.setTroopsCounterUi(troopsCounterUi);
       countriesGroup.getChildren().add(troopsCounterUi);
 
     }
+    countryNameGroup.setVisible(false);
+    countriesGroup.getChildren().add(countryNameGroup);
     countriesGroup.setScaleX(initialScale);
     countriesGroup.setScaleY(initialScale);
 
@@ -454,6 +534,21 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       if (event.getCode() == KeyCode.TAB) {
         statisticPopup.hide();
         isStatisticsShowing = false;
+        event.consume();
+      }
+    });
+
+    gameScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+      if (event.getCode() == KeyCode.M && !isCountryNameShowing) {
+        countryNameGroup.setVisible(true);
+        isCountryNameShowing = true;
+        event.consume();
+      }
+    });
+    gameScene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+      if (event.getCode() == KeyCode.M) {
+        countryNameGroup.setVisible(false);
+        isCountryNameShowing = false;
         event.consume();
       }
     });
