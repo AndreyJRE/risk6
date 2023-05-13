@@ -15,6 +15,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.GamePhase;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -233,13 +234,13 @@ class PlayerControllerTest {
     List<CountryPair> expected = new ArrayList<>();
     for (Country adj : alaska.getAdjacentCountries()) {
       enemyController.addCountry(adj);
+      adj.setTroops(1);
       expected.add(new CountryPair(alaska, adj));
     }
     Continent usa = alaska.getContinent();
-
+    player.setCurrentPhase(GamePhase.ATTACK_PHASE);
     List<CountryPair> results = playerController.getAllValidCountryPairs(usa);
     assertEquals(expected, results);
-
   }
 
   @Test
