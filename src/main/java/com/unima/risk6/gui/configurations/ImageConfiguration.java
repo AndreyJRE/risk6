@@ -25,6 +25,12 @@ public class ImageConfiguration {
   private static final String HARDBOT_ICON = "/com/unima/risk6/pictures/hardBot.png";
   private static final String TUTORIAL_ICON = "/com/unima/risk6/pictures/tutorialIcon.png";
 
+  private static final String SWORD_ICON = "/com/unima/risk6/pictures/sword.png";
+
+  private static final String FORTIFY_ICON = "/com/unima/risk6/pictures/fortify.png";
+
+  private static final String REINFORCE_ICON = "/com/unima/risk6/pictures/reinforcement.png";
+
   private static final String CANNON_ICON = "/com/unima/risk6/pictures/cannonCard.png";
   private static final String INFANTRY_ICON = "/com/unima/risk6/pictures/infantryCard.png";
 
@@ -81,6 +87,13 @@ public class ImageConfiguration {
     images.put(ImageName.WILDCARD_ICON, wildCardIcon);
     Image plusIcon = initImage(PLUS_ICON);
     images.put(ImageName.PLUS_ICON, plusIcon);
+    Image swordIcon = initImage(SWORD_ICON);
+    images.put(ImageName.SWORD_ICON, swordIcon);
+    Image fortifyIcon = initImage(FORTIFY_ICON);
+    images.put(ImageName.FORTIFY_ICON, fortifyIcon);
+    Image reinforcementIcon = initImage(REINFORCE_ICON);
+    images.put(ImageName.REINFORCE_ICON, reinforcementIcon);
+    
     URL mediaUrl = ImageConfiguration.class.getResource(
         "/com/unima/risk6/pictures/backgroundVideo.png");
     String mediaStringUrl = mediaUrl.toExternalForm();

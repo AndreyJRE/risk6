@@ -5,8 +5,9 @@ import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
-import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -62,17 +63,17 @@ public class ActivePlayerUi extends Group {
     ImageView userImage;
     Player player = playerUi.getPlayer();
     if (player instanceof EasyBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
     } else if (player instanceof MediumBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
     } else if (player instanceof HardBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
     } else {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
     }
     StackPane stackPane = new StackPane(userImage);
     stackPane.setStyle("-fx-background-color: #F5F5F5;");
@@ -97,18 +98,16 @@ public class ActivePlayerUi extends Group {
     iconsPane.setAlignment(Pos.CENTER);
     iconsPane.setLayoutX(35);
     iconsPane.setLayoutY(5 - rectangleHeight / 2);
-    phaseLabel = new Label("Test vor Phasen");
+    phaseLabel = new Label();
     phaseLabel.setStyle("-fx-font-size: 18px; -fx-background-color: white; -fx-font-weight: bold;");
-    Image reinforcementImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/reinforcement.png").toString());
+    phaseLabel.setText("Order");
+    Image reinforcementImage = ImageConfiguration.getImageByName(ImageName.REINFORCE_ICON);
     ImagePattern reinforcementImagePattern = new ImagePattern(reinforcementImage);
 
-    Image attackImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/sword.png").toString());
+    Image attackImage = ImageConfiguration.getImageByName(ImageName.SWORD_ICON);
     ImagePattern attackImagePattern = new ImagePattern(attackImage);
 
-    Image fortifyImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/fortify.png").toString());
+    Image fortifyImage = ImageConfiguration.getImageByName(ImageName.FORTIFY_ICON);
     ImagePattern fortifyImagePattern = new ImagePattern(fortifyImage);
 
     reinforcementRectangle = new Rectangle(radiusX, radiusY);
@@ -117,7 +116,6 @@ public class ActivePlayerUi extends Group {
     attackRectangle.setFill(attackImagePattern);
     fortifyRectangle = new Rectangle(radiusX, radiusY);
     fortifyRectangle.setFill(fortifyImagePattern);
-    phaseLabel.setText("Claim a territory");
     iconsPane.getChildren().add(phaseLabel);
     StackPane.setAlignment(phaseLabel, Pos.CENTER);
 
@@ -154,23 +152,24 @@ public class ActivePlayerUi extends Group {
         && this.playerUi.getPlayer().getUser()
         .equals(GameSceneController.getPlayerController().getPlayer().getUser())
         && playerUi.getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE) {
-      SoundConfiguration.playYourTurnSound();
+      //todo change to work
+      // SoundConfiguration.playYourTurnSound();
     }
     this.playerUi = playerUi;
     Player player = playerUi.getPlayer();
     ImageView userImage;
     if (player instanceof EasyBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
     } else if (player instanceof MediumBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
     } else if (player instanceof HardBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
     } else {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+      userImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
     }
     StackPane stackPane = new StackPane(userImage);
     stackPane.setStyle("-fx-background-color: #F5F5F5;");
@@ -207,7 +206,6 @@ public class ActivePlayerUi extends Group {
         iconsPane.getChildren().remove(0);
         iconsPane.getChildren().add(phaseLabel);
         StackPane.setAlignment(phaseLabel, Pos.CENTER);
-
 
       }
       case ORDER_PHASE -> {

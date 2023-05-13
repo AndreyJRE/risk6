@@ -13,6 +13,7 @@ import com.unima.risk6.game.ai.models.Probabilities;
 import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Dice;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.HandIn;
@@ -85,8 +86,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       }
       if (json != null) {
         LOGGER.debug(
-            "Server Received Message with ContentType: " + json.get("contentType")
-                .getAsString());
+            "Server Received Message with ContentType: " + json.get("contentType").getAsString());
         ChannelGroup channelGroup = gameLobbyChannels.getChannelGroupByChannel(ctx.channel());
         switch (json.get("contentType").getAsString()) {
           case "GAME_STATE" -> {
@@ -126,11 +126,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           case "END_PHASE" -> {
             LOGGER.debug("The server received a end phase object");
             Player currentPlayer = moveProcessor.getGameController().getCurrentPlayer();
-            EndPhase endPhase = (EndPhase) Deserializer.deserialize(request)
-                .getContent();
+            EndPhase endPhase = (EndPhase) Deserializer.deserialize(request).getContent();
             moveProcessor.processEndPhase(endPhase);
-            Player currentPlayerAfter = moveProcessor.getGameController()
-                .getCurrentPlayer();
+            Player currentPlayerAfter = moveProcessor.getGameController().getCurrentPlayer();
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
             if (!currentPlayer.equals(currentPlayerAfter)
@@ -159,25 +157,22 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case JOIN_SERVER_LOBBY -> {
                   System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
-                  NetworkConfiguration.getServerLobby().getUsers().forEach(x -> LOGGER.debug(x.getUsername() + " is in ServerLobby"));
+                  NetworkConfiguration.getServerLobby().getUsers()
+                      .forEach(x -> LOGGER.debug(x.getUsername() + " is in ServerLobby"));
                   LOGGER.debug("On JOIN_SERVER_LOBBY: " + userDto.getUsername() + " wants to join");
-
 
                   if (gameLobbyChannels.containsUser(userDto)) {
                     LOGGER.error("User already in the Lobby");
                     sendDropMessage(ctx.channel(), ConnectionActions.DROP_USER_SERVER_LOBBY,
-                            "User already in the Lobby");
+                        "User already in the Lobby");
                   } else {
                     gameLobbyChannels.putUsers(userDto, ctx.channel());
-                    NetworkConfiguration.getServerLobby().getUsers()
-                            .add(userDto);
+                    NetworkConfiguration.getServerLobby().getUsers().add(userDto);
                     sendServerLobby(NetworkConfiguration.getServerLobby());
                   }
                 }
                 case JOIN_GAME_LOBBY -> {
-                  LOGGER.debug(
-                      "At JOIN_GAME_LOBBY " + connectionMessage.getContent()
-                          .getClass());
+                  LOGGER.debug("At JOIN_GAME_LOBBY " + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
@@ -198,23 +193,20 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 }
                 case CREATE_TUTORIAL_LOBBY -> {
                   LOGGER.debug(
-                      "At CREATE_TUTORIAL_GAME_LOBBY" + connectionMessage.getContent()
-                          .getClass());
+                      "At CREATE_TUTORIAL_GAME_LOBBY" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
                   sendCreatedTutorialGameLobby(gameLobby);
                 }
                 case JOIN_BOT_GAME_LOBBY -> {
                   LOGGER.debug(
-                      "At JOIN_BOT_GAME_LOBBY " + connectionMessage.getContent()
-                          .getClass());
+                      "At JOIN_BOT_GAME_LOBBY " + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
                   System.out.println(gameLobby);
                   String bot = gameLobby.getBots().stream()
-                      .filter(x -> !gameLobbyFromServer.getBots().contains(x))
-                      .findFirst().get();
+                      .filter(x -> !gameLobbyFromServer.getBots().contains(x)).findFirst().get();
                   gameLobbyFromServer.getBots().add(bot);
                   ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
                   sendGameLobby(gameLobbyFromServer);
@@ -223,22 +215,20 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 }
                 case REMOVE_BOT_FROM_LOBBY -> {
                   LOGGER.debug(
-                      "At REMOVE_BOT_FROM_LOBBY " + connectionMessage.getContent()
-                          .getClass());
+                      "At REMOVE_BOT_FROM_LOBBY " + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
                   String bot = gameLobbyFromServer.getBots().stream()
-                      .filter(x -> !gameLobby.getBots().contains(x))
-                      .findFirst().get();
+                      .filter(x -> !gameLobby.getBots().contains(x)).findFirst().get();
                   gameLobbyFromServer.getBots().remove(bot);
                   ServerLobby serverLobby = NetworkConfiguration.getServerLobby();
                   sendGameLobby(gameLobbyFromServer);
                   sendUpdatedServerLobby(serverLobby);
                 }
                 case START_GAME -> {
-                  LOGGER.debug("At START_GAME" + connectionMessage.getContent()
-                      .getClass());
+                  //TODO MOVE_CONTROLLER
+                  LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
@@ -252,21 +242,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
                 }
                 case LEAVE_SERVER_LOBBY -> {
-                  LOGGER.debug(
-                      "At LEAVE_SERVER_LOBBY");
+                  LOGGER.debug("At LEAVE_SERVER_LOBBY");
 
-                  LOGGER.debug(
-                      "Sizes of ChannelGroup " + channels.size() + " ServerLobby "
-                          + NetworkConfiguration.getServerLobby().getUsers()
-                          .size() + " UsersList "
-                          + gameLobbyChannels.getUsers().size());
+                  LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby "
+                      + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList "
+                      + gameLobbyChannels.getUsers().size());
                   //remove from LobbyObject
                   gameLobbyChannels.removeUserFromServerLobby(ctx.channel());
-                  LOGGER.debug(
-                      "Sizes of ChannelGroup " + channels.size() + " ServerLobby "
-                          + NetworkConfiguration.getServerLobby().getUsers()
-                          .size() + " UsersList "
-                          + gameLobbyChannels.getUsers().size());
+                  LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby "
+                      + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList "
+                      + gameLobbyChannels.getUsers().size());
                   sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
 
@@ -275,29 +260,23 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   LOGGER.debug("At LEAVE_GAME_LOBBY");
                   //LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby " + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList " + users.size());
                   gameLobbyChannels.removeUserFromGameLobby(ctx.channel(), this, false);
-                    sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+                  sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
 
                 }
                 case LEAVE_GAME -> {
-                  LOGGER.debug("At LEAVE_GAME" + connectionMessage.getContent()
-                      .getClass());
+                  LOGGER.debug("At LEAVE_GAME" + connectionMessage.getContent().getClass());
 
                 }
                 case CREATE_GAME_LOBBY -> {
-                  LOGGER.debug(
-                      "At CREATE_GAME_LOBBY" + connectionMessage.getContent()
-                          .getClass());
+                  LOGGER.debug("At CREATE_GAME_LOBBY" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
-                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby(),
-                      gameLobby);
+                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby(), gameLobby);
 
                 }
                 case START_TUTORIAL -> {
-                  LOGGER.debug(
-                      "At START_TUTORIAL" + connectionMessage.getContent()
-                          .getClass());
+                  LOGGER.debug("At START_TUTORIAL" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
@@ -311,8 +290,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             }
           }
           default -> {
-            LOGGER.debug(
-                "The Message received wasnt a valid Message\nMessage: " + json);
+            LOGGER.debug("The Message received wasnt a valid Message\nMessage: " + json);
 
           }
         }
@@ -415,29 +393,52 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     PlayerController playerController = new PlayerController();
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
-    for (int i = gameState.getActivePlayers().size(); i > 0; i--) {
-      diceRolls.put(
-          moveProcessor.getGameController().getGameState().getActivePlayers().poll(), i);
+    int queueSize = gameState.getActivePlayers().size();
+    GameController gameController = moveProcessor.getGameController();
+    for (int i = queueSize; i > 0; i--) {
+      Player player = gameController.getGameState().getActivePlayers().poll();
+      diceRolls.put(player,
+          Dice.rollDice());
+      gameState.getActivePlayers().add(player);
     }
     HashMap<String, Integer> diceRollsString = new HashMap<>();
     diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
-    moveProcessor.getGameController()
-        .setNewPlayerOrder(moveProcessor.getGameController().getNewPlayerOrder(diceRolls));
-    Player activePlayer = moveProcessor.getGameController().getGameState().getActivePlayers()
+    Player activePlayer = gameController.getGameState().getActivePlayers()
         .peek();
-    moveProcessor.getGameController().getGameState().setCurrentPlayer(activePlayer);
+    gameController.getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
     sendFirstGamestate(gameLobby);
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
 
-    String message = Serializer.serialize(new StandardMessage<HashMap<String, Integer>>(diceRollsString));
+    String message = Serializer.serialize(
+        new StandardMessage<HashMap<String, Integer>>(diceRollsString));
     for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
       LOGGER.debug("Send new diceRolls to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(message));
     }
-
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    gameController
+        .setNewPlayerOrder(gameController.getNewPlayerOrder(diceRolls));
+    sendGamestate(gameLobbyChannels.getChannelsByGameLobby(gameLobby));
     moveProcessor.clearLastMoves();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    if (gameController.getCurrentPlayer() instanceof AiBot aiBot) {
+      processBotMove(aiBot, gameLobbyChannels.getChannelsByGameLobby(gameLobby));
+    }
   }
 
   private void processStartTutorial(GameLobby myServerGameLobby) {
@@ -448,8 +449,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     playerController.setPlayer(tutorial.getTutorialState().getCurrentPlayer());
     moveProcessor.setPlayerController(playerController);
     Probabilities.init();
-    CountriesUiConfiguration.configureCountries(tutorial.getTutorialState().getCountries());
     GameConfiguration.setTutorial(tutorial);
+    CountriesUiConfiguration.configureCountries(tutorial.getTutorialState().getCountries());
+    GameConfiguration.setGameState(tutorial.getTutorialState());
 
 
   }
@@ -469,13 +471,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
     chatMessage.setContent(gameLobbyChannels.getUserByChannel(channel).getUsername() + ": "
         + chatMessage.getContent());
-    gameLobbyChannels.getChannelGroupByChannel(channel)
-        .forEach(ch ->
-        {
-          String message = Serializer.serialize(chatMessage);
-          LOGGER.debug("Send chatmessage: " + message + " to channel: " + channel.id());
-          ch.writeAndFlush(new TextWebSocketFrame(message));
-        });
+    gameLobbyChannels.getChannelGroupByChannel(channel).forEach(ch -> {
+      String message = Serializer.serialize(chatMessage);
+      LOGGER.debug("Send chatmessage: " + message + " to channel: " + channel.id());
+      ch.writeAndFlush(new TextWebSocketFrame(message));
+    });
 
 
   }
@@ -489,7 +489,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
+  private void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
     aiBot.setGameState(moveProcessor.getGameController().getGameState());
     Player player = (Player) aiBot;
     moveProcessor.getPlayerController().setPlayer(player);
@@ -602,8 +602,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           sendGamestate(channelGroup);
           moveProcessor.clearLastMoves();
           Thread.sleep(3500);
-        } while (!attack1.getHasConquered()
-            && attack1.getAttackingCountry().getTroops() >= 2);
+        } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
         aiBot.setGameState(moveProcessor.getGameController().getGameState());
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
           sendGameOver(channelGroup);

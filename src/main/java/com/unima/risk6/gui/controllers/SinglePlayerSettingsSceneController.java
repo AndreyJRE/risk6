@@ -20,6 +20,7 @@ import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.SinglePlayerSettingsScene;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,27 +59,26 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private StackPane plus;
   private UserDto myUser;
   private GameLobby gameLobby;
-  private final boolean tutorial;
+  private boolean tutorial;
 
-  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene,
-      boolean tutorial) {
+  public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addGameLobbyObserver(this);
-    this.tutorial = tutorial;
   }
 
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) singlePlayerSettingsScene.getRoot();
+    this.tutorial = singlePlayerSettingsScene.isTutorial();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/Segoe UI Bold.ttf"), 26);
     // Initialize elements
     initHBox();
-    initElements();
+    initElements(tutorial ? "Tutorial" : "Singleplayer");
   }
 
-  private void initElements() {
+  private void initElements(String lobbyName) {
     Path arrow = generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
@@ -86,7 +86,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     backButton.setOnMouseClicked(e -> handleQuitGameLobby());
 
     // Initialize the username TextField
-    Label title = new Label("Singleplayer Lobby");
+    Label title = new Label(lobbyName);
     title.setAlignment(Pos.CENTER);
     title.setStyle(
         "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
@@ -136,7 +136,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private void handleQuitGameLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
-      LobbyConfiguration.sendQuitGameLobby(GameConfiguration.getMyGameUser());
+      LobbyConfiguration.stopGameClient();
+      NetworkConfiguration.stopGameServer();
       sceneController.activate(SceneName.TITLE);
     }
   }
@@ -173,8 +174,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   private VBox createPlayerVBox(UserDto userDto) {
-    StackPane userImage = createPlayerStackPane("/com/unima/risk6/pictures/playerIcon.png"
-        , false);
+    StackPane userImage = createPlayerStackPane(ImageName.PLAYER_ICON, false);
     Label userName = new Label(userDto.getUsername());
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;"
@@ -194,9 +194,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     return removeBox;
   }
 
-  private StackPane createPlayerStackPane(String imagePath, boolean isBot) {
+  private StackPane createPlayerStackPane(ImageName imageName, boolean isBot) {
     Circle circle = new Circle();
-    ImageView userImage = new ImageView(new Image(getClass().getResource(imagePath).toString()));
+    ImageView userImage = new ImageView(ImageConfiguration.getImageByName(imageName));
     if (isBot) {
       userImage.setFitHeight(130);
       userImage.setFitWidth(130);
@@ -226,8 +226,7 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   private StackPane createPlusStackpane() {
-    ImageView plusImage = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png").toString()));
+    ImageView plusImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLUS_ICON));
     plusImage.setFitHeight(20);
     plusImage.setFitWidth(20);
     Circle circle = new Circle();
@@ -294,11 +293,10 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private VBox createBotVBox(int difficultyNumber, String botName) {
     StackPane botImage = new StackPane();
     switch (difficultyNumber) {
-      case 0 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/easyBot.png", true);
-      case 1 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/mediumBot.png", true);
-      case 2 -> botImage = createPlayerStackPane("/com/unima/risk6/pictures/hardBot.png", true);
-      case 3 ->
-          botImage = createPlayerStackPane("/com/unima/risk6/pictures/tutorialIcon.png", true);
+      case 0 -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
+      case 1 -> botImage = createPlayerStackPane(ImageName.MEDIUMBOT_ICON, true);
+      case 2 -> botImage = createPlayerStackPane(ImageName.HARDBOT_ICON, true);
+      case 3 -> botImage = createPlayerStackPane(ImageName.TUTORIAL_ICON, true);
     }
     Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
@@ -334,8 +332,6 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   private void handlePlayButton() {
-    //TODO: GameState aus Tutorial Klasse
-
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();
     if (together < 2 || together > gameLobby.getMaxPlayers()) {
@@ -359,6 +355,10 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
       }
     }
 
+  }
+
+  public void setTutorial(boolean tutorial) {
+    this.tutorial = tutorial;
   }
 
   @Override

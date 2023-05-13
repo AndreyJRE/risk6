@@ -2,12 +2,16 @@ package com.unima.risk6.gui.configurations;
 
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 
+import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.gui.controllers.GameOverSceneController;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.controllers.MultiplayerLobbySceneController;
 import com.unima.risk6.gui.controllers.SceneController;
 import com.unima.risk6.gui.controllers.SelectMultiplayerLobbySceneController;
 import com.unima.risk6.gui.controllers.SinglePlayerSettingsSceneController;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.gui.scenes.GameOverScene;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.scenes.MultiplayerLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
@@ -57,14 +61,14 @@ public class SceneConfiguration {
     }
     sceneController.activate(SceneName.GAME);
     sceneController.getStage().setMaximized(true);
-    gameSceneController.showOrderPopup();
+
     sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
       event.consume();
       Alert alert = new Alert(AlertType.WARNING);
       alert.setTitle("Warning: Exiting Game");
       alert.setHeaderText("Are you sure you want to to leave the game?");
-      alert.setContentText("If you leave, you cannot rejoin the game! Your place will be replaced "
-          + "by a bot.");
+      alert.setContentText(
+          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
       ButtonType buttonYes = new ButtonType("Yes, exit game");
       ButtonType buttonNo = new ButtonType("No, continue playing");
       alert.getButtonTypes().setAll(buttonYes, buttonNo);
@@ -78,6 +82,14 @@ public class SceneConfiguration {
       });
     });
     SoundConfiguration.playStartGameSound();
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    System.out.println(GameConfiguration.getGameState().getActivePlayers());
+    gameSceneController.showOrderPopup();
+
   }
 
   public static void joinServerLobbyScene() {
@@ -115,11 +127,12 @@ public class SceneConfiguration {
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
       SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene, false);
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
     pauseTitleSound();
+    scene.setTutorial(false);
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
@@ -141,11 +154,26 @@ public class SceneConfiguration {
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
       SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene, true);
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
     pauseTitleSound();
+    scene.setTutorial(true);
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
+  }
+
+  public static void gameOverScene(GameState gameState) {
+    GameOverScene scene = (GameOverScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.GAME_OVER);
+    if (scene == null) {
+      scene = new GameOverScene();
+      GameOverSceneController gameOverSceneController = new GameOverSceneController(scene,
+          gameState);
+      scene.setController(gameOverSceneController);
+      sceneController.addScene(SceneName.GAME_OVER, scene);
+    }
+    pauseTitleSound();
+    sceneController.activate(SceneName.GAME_OVER);
   }
 }

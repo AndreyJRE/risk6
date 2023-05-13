@@ -29,7 +29,7 @@ public class TutorialBot extends Player implements AiBot {
   private Queue<CountryPair> deterministicAttacks;
   private Queue<Fortify> deterministicAfterAttacks;
   private Queue<Fortify> deterministicFortifies;
-  private final Map<CountryName, Country> countryMap;
+  private Map<CountryName, Country> countryMap;
 
   /**
    * Constructs a TutorialBot instance with a specified username.
@@ -114,9 +114,8 @@ public class TutorialBot extends Player implements AiBot {
 
   @Override
   public List<Reinforce> createAllReinforcements() {
-    List<Reinforce> nextReinforce = new LinkedList<>();
-    nextReinforce.add(this.deterministicReinforces.poll());
-    return nextReinforce;
+    return List.of(
+        new Reinforce(this.countryMap.get(CountryName.BRAZIL), this.getDeployableTroops()));
   }
 
   @Override
@@ -131,7 +130,9 @@ public class TutorialBot extends Player implements AiBot {
 
   @Override
   public Fortify createFortify() {
-    return this.deterministicFortifies.poll();
+    Country outgoing = this.countryMap.get(CountryName.BRAZIL);
+    Country incoming = this.countryMap.get(CountryName.VENEZUELA);
+    return new Fortify(outgoing, incoming, (outgoing.getTroops() - incoming.getTroops()) / 2);
   }
 
   /**
@@ -168,15 +169,15 @@ public class TutorialBot extends Player implements AiBot {
 
   @Override
   public void setGameState(GameState gameState) {
-
+    this.countryMap = gameState.getCountries().stream()
+        .collect(Collectors.toMap(Country::getCountryName, Function.identity()));
   }
 
   public Queue<Reinforce> getDeterministicClaims() {
     return deterministicClaims;
   }
 
-  public void setDeterministicClaims(
-      Queue<Reinforce> deterministicClaims) {
+  public void setDeterministicClaims(Queue<Reinforce> deterministicClaims) {
     this.deterministicClaims = deterministicClaims;
   }
 
@@ -184,8 +185,7 @@ public class TutorialBot extends Player implements AiBot {
     return deterministicReinforces;
   }
 
-  public void setDeterministicReinforces(
-      Queue<Reinforce> deterministicReinforces) {
+  public void setDeterministicReinforces(Queue<Reinforce> deterministicReinforces) {
     this.deterministicReinforces = deterministicReinforces;
   }
 
@@ -193,8 +193,7 @@ public class TutorialBot extends Player implements AiBot {
     return deterministicAttacks;
   }
 
-  public void setDeterministicAttacks(
-      Queue<CountryPair> deterministicAttacks) {
+  public void setDeterministicAttacks(Queue<CountryPair> deterministicAttacks) {
     this.deterministicAttacks = deterministicAttacks;
   }
 
@@ -202,8 +201,7 @@ public class TutorialBot extends Player implements AiBot {
     return deterministicAfterAttacks;
   }
 
-  public void setDeterministicAfterAttacks(
-      Queue<Fortify> deterministicAfterAttacks) {
+  public void setDeterministicAfterAttacks(Queue<Fortify> deterministicAfterAttacks) {
     this.deterministicAfterAttacks = deterministicAfterAttacks;
   }
 
@@ -211,8 +209,7 @@ public class TutorialBot extends Player implements AiBot {
     return deterministicFortifies;
   }
 
-  public void setDeterministicFortifies(
-      Queue<Fortify> deterministicFortifies) {
+  public void setDeterministicFortifies(Queue<Fortify> deterministicFortifies) {
     this.deterministicFortifies = deterministicFortifies;
   }
 }

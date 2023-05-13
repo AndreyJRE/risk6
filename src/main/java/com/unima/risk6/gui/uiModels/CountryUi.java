@@ -4,8 +4,11 @@ import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
+import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.GamePhase;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import javafx.animation.Animation;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -61,6 +65,9 @@ public class CountryUi extends Group {
   private static boolean isCountrySelected = false;
 
   private Color color;
+
+  private final Tutorial tutorial = GameConfiguration.getTutorial();
+  private FillTransition fillTransition;
 
 
   public CountryUi(Country country, String SVGPath) {
@@ -111,25 +118,50 @@ public class CountryUi extends Group {
       if (newValue) {
         switch (currentPhase) {
           case CLAIM_PHASE -> {
+
             int numberOfNeutralCountries = GameConfiguration.getGameState().getCountries().stream()
                 .filter(country1 -> !country1.hasPlayer()).toList().size();
             if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
                 || !country.hasPlayer()) {
-              if (this.color == Color.WHITE) {
-                this.countryPath.setFill(Color.LIGHTGRAY);
+              if (tutorial != null) {
+                Country claimTutorialCountry = tutorial.getCurrentClaim().getCountry();
+                if (this.country.equals(claimTutorialCountry)) {
+                  this.countryPath.setFill(Color.LIGHTGRAY);
+                  this.setCursor(Cursor.CROSSHAIR);
+                }
+              } else {
+                if (this.color == Color.WHITE) {
+                  this.countryPath.setFill(Color.LIGHTGRAY);
+                }
+                this.setCursor(Cursor.CROSSHAIR);
               }
-              this.setCursor(Cursor.CROSSHAIR);
             }
           }
           case ATTACK_PHASE, FORTIFY_PHASE -> {
             if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-              this.setCursor(Cursor.CROSSHAIR);
+              if (tutorial != null) {
+                Attack currentAttack = tutorial.getCurrentAttack();
+                Country attackCountry = currentAttack.getAttackingCountry();
+                if (this.country.equals(attackCountry)) {
+                  this.setCursor(Cursor.CROSSHAIR);
+                }
+              } else {
+                this.setCursor(Cursor.CROSSHAIR);
+              }
             }
           }
           case REINFORCEMENT_PHASE -> {
             if (checkIfCountryIsMine(country)
                 && playerController.getPlayer().getDeployableTroops() > 0) {
-              this.setCursor(Cursor.CROSSHAIR);
+              if (tutorial != null) {
+                Reinforce currentReinforce = tutorial.getCurrentReinforce();
+                Country reinforceCountry = currentReinforce.getCountry();
+                if (this.country.equals(reinforceCountry)) {
+                  this.setCursor(Cursor.CROSSHAIR);
+                }
+              } else {
+                this.setCursor(Cursor.CROSSHAIR);
+              }
             }
 
           }
@@ -151,25 +183,64 @@ public class CountryUi extends Group {
               .filter(country -> !country.hasPlayer()).toList().size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
               || !country.hasPlayer()) {
-            playerController.sendReinforce(this.country, 1);
-            playerController.sendEndPhase(currentPhase);
+            if (tutorial != null) {
+              Reinforce currentClaim = tutorial.getCurrentClaim();
+              Country claimTutorialCountry = currentClaim.getCountry();
+              if (this.country.equals(claimTutorialCountry)) {
+                playerController.sendReinforce(this.getCountry(), 1);
+                playerController.sendEndPhase(currentPhase);
+                fillTransition.stop();
+              }
+            } else {
+              playerController.sendReinforce(this.country, 1);
+              playerController.sendEndPhase(currentPhase);
+            }
           }
         }
         case ATTACK_PHASE -> {
           if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-            animateAttackPhase(countriesGroup);
+            if (tutorial != null) {
+              Attack currentAttack = tutorial.getCurrentAttack();
+              Country attackCountry = currentAttack.getAttackingCountry();
+              if (this.country.equals(attackCountry)) {
+                animateAttackPhase(countriesGroup);
+                fillTransition.stop();
+              }
+            } else {
+              animateAttackPhase(countriesGroup);
+            }
           }
         }
         case FORTIFY_PHASE -> {
           if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-            animateFortifyPhase(countriesGroup);
+            if (tutorial != null) {
+              Fortify currentFortify = tutorial.getCurrentFortify();
+              Country fortifyCountry = currentFortify.getOutgoing();
+              if (this.country.equals(fortifyCountry)) {
+                animateFortifyPhase(countriesGroup);
+                fillTransition.stop();
+              }
+            } else {
+              animateFortifyPhase(countriesGroup);
+            }
           }
         }
         case REINFORCEMENT_PHASE -> {
           if (checkIfCountryIsMine(country)
               && playerController.getPlayer().getDeployableTroops() > 0) {
-            animateReinforcementPhase();
+            if (tutorial != null) {
+              Reinforce currentReinforce = tutorial.getCurrentReinforce();
+              Country reinforceCountry = currentReinforce.getCountry();
+              if (this.country.equals(reinforceCountry)) {
+                animateReinforcementPhase();
+                fillTransition.stop();
+              }
+            } else {
+
+              animateReinforcementPhase();
+            }
           }
+
         }
 
         // add more cases for other enum values
@@ -415,7 +486,6 @@ public class CountryUi extends Group {
     PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
       dicePopup.hide();
-      //TODO last attack attacker check if he has more than 1 troop
       if (attacker.getCountry().getTroops() > 1 && lastAttack.getHasConquered()
           && activePlayerUi.getPlayerUi().getPlayer()
           .equals(GameSceneController.getPlayerController().getPlayer())) {
@@ -445,6 +515,8 @@ public class CountryUi extends Group {
     for (DiceUi dice : diceUis) {
       dice.rollDice();
     }
+    attacker.animateActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
+    defender.animateActiveCountry((Color) defender.getCountryPath().getFill());
     delayTransition.play();
 
   }
@@ -500,26 +572,30 @@ public class CountryUi extends Group {
     troopsCounterUi.update(country.getTroops());
     Color playerColor = activePlayerUi.getPlayerUi().getPlayerColor();
     Color countryPathColor = (Color) this.countryPath.getFill();
-
     if (playerColor.equals(countryPathColor)) {
-      Color brightHighlightColor = playerColor.deriveColor(0, 0, 0, 0.8);
-      FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2),
-          this.countryPath, countryPathColor, brightHighlightColor);
-      highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
-      FillTransition revertTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
-          brightHighlightColor, countryPathColor);
-      revertTransition.setInterpolator(Interpolator.EASE_BOTH);
-      SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
-          revertTransition);
-      sequentialTransition.play();
+      animateActiveCountry(playerColor);
       return;
     }
-    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2),
-        this.countryPath, countryPathColor, playerColor);
+    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
+        countryPathColor, playerColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     glowEffect.setColor(playerColor);
     highlightTransition.play();
     this.color = playerColor;
+  }
+
+  private void animateActiveCountry(Color playerColor) {
+    Color brightHighlightColor = playerColor.deriveColor(0, 0, 0, 0.8);
+    Color countryPathFill = (Color) this.countryPath.getFill();
+    FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
+        countryPathFill, brightHighlightColor);
+    highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
+    FillTransition revertTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
+        brightHighlightColor, countryPathFill);
+    revertTransition.setInterpolator(Interpolator.EASE_BOTH);
+    SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
+        revertTransition);
+    sequentialTransition.play();
   }
 
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
@@ -586,5 +662,18 @@ public class CountryUi extends Group {
     return adjacentCountryUis;
   }
 
+  public void setColor(Color color) {
+    this.color = color;
+  }
+
+  public void animateTutorialCountry() {
+    fillTransition = new FillTransition(Duration.seconds(0.5));
+    fillTransition.setShape(this.getCountryPath());
+    fillTransition.setFromValue((Color) this.getCountryPath().getFill());
+    fillTransition.setToValue(Color.rgb(128, 50, 189));
+    fillTransition.setCycleCount(Animation.INDEFINITE);
+    fillTransition.setAutoReverse(true);
+    fillTransition.play();
+  }
 }
 

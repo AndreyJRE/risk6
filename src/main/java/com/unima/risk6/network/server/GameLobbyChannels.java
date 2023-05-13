@@ -1,5 +1,7 @@
 package com.unima.risk6.network.server;
 
+import static com.unima.risk6.network.server.GameServer.channels;
+
 import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.CLAIM_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
@@ -111,7 +113,6 @@ public class GameLobbyChannels {
       gameLobby.getUsers()
           .add(users.inverse().get(channel));
     }
-
     gameChannels.get(gameLobby).add(channel);
   }
 

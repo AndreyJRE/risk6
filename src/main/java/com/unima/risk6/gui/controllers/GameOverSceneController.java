@@ -1,15 +1,17 @@
 package com.unima.risk6.gui.controllers;
 
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
+import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.GameStatisticService;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
-import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameOverScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -48,11 +50,11 @@ public class GameOverSceneController {
   private GameState gameState;
 
 
-  public GameOverSceneController(GameOverScene gameOverScene, Statistic statistic, GameState gameState) {
+  public GameOverSceneController(GameOverScene gameOverScene, GameState gameState) {
     this.gameOverScene = gameOverScene;
     this.sceneController = SceneConfiguration.getSceneController();
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
-    this.statistic = statistic;
+    this.statistic = gameState.getCurrentPlayer().getStatistic();
     this.gameState = gameState;
   }
 
@@ -91,7 +93,13 @@ public class GameOverSceneController {
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    backButton.setOnMouseClicked(e -> sceneController.activate(SceneName.TITLE));
+    //TODO database after a game
+    backButton.setOnMouseClicked(e -> {
+      User user = SessionManager.getUser();
+      LobbyConfiguration.sendJoinServer(UserDto.mapUserAndHisGameStatistics(user,
+          gameStatisticService
+              .getAllStatisticsByUserId(user.getId())));
+    });
 
     // Initialize the user name TextField
     Label userName = new Label(gameState.getCurrentPlayer().getUser());
@@ -112,7 +120,8 @@ public class GameOverSceneController {
     centerVBox.setAlignment(Pos.CENTER);
 
     Label winner = new Label("Winner Winner Chicken Dinner!");
-    winner.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 90px; -fx-text-fill: white");
+    winner.setStyle(
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 90px; -fx-text-fill: white");
 
     HBox winnerBox = new HBox(winner);
     winnerBox.setAlignment(Pos.CENTER);
