@@ -110,6 +110,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private Label chatCounterLabel;
   private int lastChatUpdate;
   Group countryNameGroup;
+  private int tutorialMessageCounter = 0;
 
 
   public GameSceneController(GameScene gameScene) {
@@ -464,8 +465,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     nextPhaseButton.setOnAction(event -> {
       Player currentPlayer = myPlayerUi.getPlayer();
       GamePhase currentPhase = currentPlayer.getCurrentPhase();
-      if (currentPlayer.getDeployableTroops() > 0 && !PLAYER_CONTROLLER.getHandController()
-          .mustExchange() && currentPlayer.getCurrentPhase()
+      if ((currentPlayer.getDeployableTroops() > 0 || PLAYER_CONTROLLER.getHandController()
+          .mustExchange()) && currentPlayer.getCurrentPhase()
           .equals(GamePhase.REINFORCEMENT_PHASE)) {
         StyleConfiguration.showErrorDialog("Can't end phase yet!",
             "You either still have troops to deploy or must exchange cards in your hand. "
@@ -512,8 +513,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       lastChatUpdate = messages.size();
     } else {
       Platform.runLater(() -> {
-        chatCounterLabel.setText(
-            String.valueOf(messages.size() - lastChatUpdate));
+        chatCounterLabel.setText(String.valueOf(messages.size() - lastChatUpdate));
         chatCounterLabel.setVisible(true);
       });
     }
@@ -814,6 +814,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     if (tutorial != null && checkIfCurrentPlayerIsMe()) {
       switch (activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase()) {
         case CLAIM_PHASE -> {
+          sendTutorialMessage();
           tutorial.updatePlayerClaim();
           Reinforce reinforce = tutorial.getCurrentClaim();
           if (reinforce != null) {
@@ -822,6 +823,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case REINFORCEMENT_PHASE -> {
+          sendTutorialMessage();
           Reinforce reinforce = tutorial.getCurrentReinforce();
           if (tutorial.isHandInEnabled()) {
             cardsButton.setVisible(true);
@@ -833,12 +835,13 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
               throw new RuntimeException(e);
             }
           }
-          if (reinforce != null) {
+          if (reinforce != null && GameConfiguration.getTutorial() != null) {
             CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
             countryUi.animateTutorialCountry();
           }
         }
         case ATTACK_PHASE -> {
+          sendTutorialMessage();
           Attack attack = tutorial.getCurrentAttack();
           if (attack != null) {
             CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
@@ -846,6 +849,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           }
         }
         case FORTIFY_PHASE -> {
+          sendTutorialMessage();
           Fortify fortify = tutorial.getCurrentFortify();
           if (fortify != null) {
             CountryUi countryUi = getCountryUiByCountry(fortify.getOutgoing());
@@ -859,6 +863,20 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
             != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
             != GamePhase.CLAIM_PHASE));
+  }
+
+  private void sendTutorialMessage() {
+    if (tutorialMessageCounter == 20 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
+        || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
+        || tutorialMessageCounter == 11) {
+      LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    tutorialMessageCounter++;
   }
 
   private void animateHandIn(HandIn handIn) {
@@ -896,7 +914,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
       countryUi.animateTutorialCountry();
     }
-
+    tutorial.getNextMessage(); //temp
   }
 
   public Color getColorByPlayer(Player player) {
