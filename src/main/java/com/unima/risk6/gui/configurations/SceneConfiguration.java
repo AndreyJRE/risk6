@@ -22,12 +22,26 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+ * This class manages the configuration and control of scenes in the application. It provides
+ * methods to start different scenes. It also handles the configuration of the stage and manages the
+ * scene controller.
+ *
+ * @author astoyano
+ * @author fisommer
+ */
+
 public class SceneConfiguration {
 
   private static SceneController sceneController;
   private static double width;
   private static double height;
 
+  /**
+   * Configures the scene controller and listeners for the stage.
+   *
+   * @param stage The stage for the application.
+   */
   public static void startSceneControllerConfiguration(Stage stage) {
     configureListeners(stage);
     width = stage.getWidth();
@@ -35,6 +49,12 @@ public class SceneConfiguration {
     sceneController = new SceneController(stage);
   }
 
+
+  /**
+   * Configures listeners for the stage to update the width and height properties.
+   *
+   * @param stage The stage for the application.
+   */
   private static void configureListeners(Stage stage) {
     ChangeListener<Number> stageSizeListener = (observable, oldValue, newValue) -> {
       width = stage.getWidth();
@@ -46,8 +66,10 @@ public class SceneConfiguration {
     stage.setFullScreenExitHint("");
   }
 
+  /**
+   * Starts the game scene and activates it in the scene controller.
+   */
   public static void startGame() {
-
     GameSceneController gameSceneController = null;
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
@@ -87,16 +109,19 @@ public class SceneConfiguration {
     }
     assert gameSceneController != null;
     gameSceneController.showOrderPopup();
-
   }
 
+  /**
+   * Joins the server lobby scene and activates it in the scene controller.
+   */
   public static void joinServerLobbyScene() {
-    SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SELECT_LOBBY);
+    SelectMultiplayerLobbyScene scene =
+        (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
+            .getSceneBySceneName(SceneName.SELECT_LOBBY);
     if (scene == null) {
       scene = new SelectMultiplayerLobbyScene();
-      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController = new SelectMultiplayerLobbySceneController(
-          scene);
+      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController =
+          new SelectMultiplayerLobbySceneController(scene);
       scene.setController(selectMultiplayerLobbySceneController);
       sceneController.addScene(SceneName.SELECT_LOBBY, scene);
     }
@@ -104,14 +129,18 @@ public class SceneConfiguration {
     sceneController.activate(SceneName.SELECT_LOBBY);
   }
 
+  /**
+   * Joins the multiplayer lobby scene and activates it in the scene controller.
+   */
+
   public static void joinMultiplayerLobbyScene() {
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {
       scene = new MultiplayerLobbyScene();
       //TODO Overwrite game lobby owner
-      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-          scene);
+      MultiplayerLobbySceneController multiplayerLobbySceneController =
+          new MultiplayerLobbySceneController(scene);
       scene.setController(multiplayerLobbySceneController);
       sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
     }
@@ -119,13 +148,18 @@ public class SceneConfiguration {
     sceneController.activate(SceneName.MULTIPLAYER_LOBBY);
   }
 
+  /**
+   * Starts the single player game settings scene and activates it in the scene controller.
+   */
+
   public static void startSinglePlayer() {
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    SinglePlayerSettingsScene scene =
+        (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+            .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController =
+          new SinglePlayerSettingsSceneController(scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
@@ -134,25 +168,18 @@ public class SceneConfiguration {
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
 
-  public static SceneController getSceneController() {
-    return sceneController;
-  }
-
-  public static double getWidth() {
-    return width;
-  }
-
-  public static double getHeight() {
-    return height;
-  }
+  /**
+   * Joins the tutorial lobby scene and activates it in the scene controller.
+   */
 
   public static void joinTutorialLobbyScene() {
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    SinglePlayerSettingsScene scene =
+        (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+            .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController =
+          new SinglePlayerSettingsSceneController(scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
@@ -160,6 +187,12 @@ public class SceneConfiguration {
     scene.setTutorial(true);
     sceneController.activate(SceneName.SINGLE_PLAYER_SETTINGS);
   }
+
+  /**
+   * Shows the game over scene with the specified game state.
+   *
+   * @param gameState The game state to display in the game over scene.
+   */
 
   public static void gameOverScene(GameState gameState) {
     GameOverScene scene = (GameOverScene) SceneConfiguration.getSceneController()
@@ -173,5 +206,17 @@ public class SceneConfiguration {
     }
     pauseTitleSound();
     sceneController.activate(SceneName.GAME_OVER);
+  }
+
+  public static SceneController getSceneController() {
+    return sceneController;
+  }
+
+  public static double getWidth() {
+    return width;
+  }
+
+  public static double getHeight() {
+    return height;
   }
 }

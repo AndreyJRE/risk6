@@ -13,11 +13,26 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Configuration class for managing the UI representation of countries. Provides methods to load
+ * country UI data from a JSON file, configure countries based on the data, and retrieve the set of
+ * country UI objects.
+ *
+ * @author mmeider
+ */
+
 public class CountriesUiConfiguration {
 
   private static final String COUNTRIES_JSON_PATH = "/com/unima/risk6/json/countriesUI.json";
 
   private static Set<CountryUi> countriesUis;
+
+
+  /**
+   * Retrieves the JSON objects representing the UI configuration for countries.
+   *
+   * @return an array of CountryUiJsonObject containing the UI configuration for countries.
+   */
 
   private static CountryUiJsonObject[] getCountryUiJsonObjects() {
     CountryUiJsonObject[] countryUiJsonObjects;
@@ -33,6 +48,12 @@ public class CountriesUiConfiguration {
     return countryUiJsonObjects;
   }
 
+  /**
+   * Configures the UI for countries based on the provided set of Country objects.
+   *
+   * @param countries the set of Country objects for which to configure the UI.
+   */
+
   public static void configureCountries(Set<Country> countries) {
     CountryUiJsonObject[] countryUiJsonObjects = getCountryUiJsonObjects();
     for (CountryUiJsonObject countryUiJson : countryUiJsonObjects) {
@@ -45,6 +66,10 @@ public class CountriesUiConfiguration {
     }
     setNeighboursCountryUisForEachCountry();
   }
+
+  /**
+   * Sets the adjacent CountryUi objects for each configured CountryUi object.
+   */
 
   private static void setNeighboursCountryUisForEachCountry() {
     countriesUis.forEach(countryUi -> {

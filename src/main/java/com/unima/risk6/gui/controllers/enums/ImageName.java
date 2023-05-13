@@ -1,5 +1,12 @@
 package com.unima.risk6.gui.controllers.enums;
 
+
+/**
+ * Represents the image names used in the application. Each enum value represents a specific image.
+ *
+ * @author fisommer
+ */
+
 public enum ImageName {
   LOGIN_BACKGROUND,
   WON_BACKGROUND,

@@ -26,6 +26,15 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 
+/**
+ * Represents graphical user interface (UI) of a chat component used in-game for communication
+ * between players. The chat UI displays chat messages and handles user input.
+ *
+ * @author astoyano
+ * @author mmeider
+ * @author jferch
+ */
+
 public class ChatUi extends BorderPane implements ChatObserver {
 
   private Popup chatPopup;
@@ -50,6 +59,12 @@ public class ChatUi extends BorderPane implements ChatObserver {
   private Bounds rootBounds;
 
   private Scene gameScene;
+
+  /**
+   * Constructs a ChatUi object with the provided gameScene.
+   *
+   * @param gameScene the Scene object representing the game scene.
+   */
 
   public ChatUi(Scene gameScene) {
 
@@ -184,6 +199,11 @@ public class ChatUi extends BorderPane implements ChatObserver {
     LobbyConfiguration.addChatObserver(this);
   }
 
+  /**
+   * Shows the chat UI by setting its size, position, and other properties. The chat UI is displayed
+   * as a popup window on top of the gameScene.
+   */
+
   public void show() {
     this.setPrefSize(gameRoot.getWidth() * 0.25, gameRoot.getHeight() * 0.80);
     rootBounds = gameRoot.localToScreen(gameRoot.getBoundsInLocal());
@@ -199,6 +219,13 @@ public class ChatUi extends BorderPane implements ChatObserver {
     chatPopup.show(gameScene.getWindow());
   }
 
+  /**
+   * Updates the chat UI with the given list of messages. It dynamically adds new chat messages to
+   * the chatBox in the UI.
+   *
+   * @param messages the list of messages to update the chat UI with.
+   */
+
   @Override
   public void updateChat(ArrayList<String> messages) {
     Platform.runLater(() -> {
@@ -212,15 +239,13 @@ public class ChatUi extends BorderPane implements ChatObserver {
       chatRectangle.setFill(Color.LIGHTGREY);
       StackPane.setAlignment(text, Pos.TOP_LEFT);
       StackPane.setAlignment(chatRectangle, Pos.TOP_LEFT);
-      StackPane textStack = new StackPane(chatRectangle, text);
       StackPane.setMargin(text, new Insets(4, 0, 0, 8));
-
+      StackPane textStack = new StackPane(chatRectangle, text);
       VBox messageBox = new VBox();
+      messageBox.getChildren().addAll(textStack);
       messageBox.setPadding(new Insets(5, 0, 0, 15));
       messageBox.setSpacing(15);
       messageBox.setAlignment(Pos.TOP_LEFT);
-      messageBox.getChildren().addAll(textStack);
-
       chatBox.getChildren().add(messageBox);
     });
   }
