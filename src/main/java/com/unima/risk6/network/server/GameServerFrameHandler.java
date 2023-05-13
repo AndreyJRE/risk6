@@ -316,11 +316,18 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     //TODO
   }
 
-  private void sendGamestate(ChannelGroup channelGroup) {
-    System.out.println("Serilize" + " Test");
-    System.out.println(moveProcessor.getDeckController().getDeck().getDeckCards());
+  void sendGamestate(ChannelGroup channelGroup) {
     String message = Serializer.serialize(
-        new StandardMessage(moveProcessor.getGameController().getGameState()));
+        new StandardMessage<GameState>(moveProcessor.getGameController().getGameState()));
+    LOGGER.debug(message);
+    for (Channel ch : channelGroup) {
+      LOGGER.debug("Send new gamestate to: " + ch.id());
+      ch.writeAndFlush(new TextWebSocketFrame(message));
+    }
+  }
+
+  protected void sendGamestate(ChannelGroup channelGroup, GameState gameState) {
+    String message = Serializer.serialize(new StandardMessage<GameState>(gameState));
     LOGGER.debug(message);
     for (Channel ch : channelGroup) {
       LOGGER.debug("Send new gamestate to: " + ch.id());
@@ -359,9 +366,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         new ConnectionMessage<>(ConnectionActions.ACCEPT_START_GAME,
             moveProcessor.getGameController().getGameState()));
     LOGGER.debug(message);
-    System.out.println(gameLobbyChannels.getChannelsByGameLobby(gameLobby).size());
     for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
-      System.out.println("Test");
       LOGGER.debug("Send new gamestate to: " + ch.id());
       ch.writeAndFlush(new TextWebSocketFrame(message));
     }
@@ -535,7 +540,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
-  private void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+  void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     player.setDeployableTroops( // to ensure numbers are right
         moveProcessor.getPlayerController().getPlayer().getDeployableTroops());
@@ -555,7 +560,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
-  private void processBotHandIn(ChannelGroup channelGroup) {
+  void processBotHandIn(ChannelGroup channelGroup) {
     HandController handController = moveProcessor.getPlayerController().getHandController();
     if (handController.holdsExchangeable()) {
       handController.selectExchangeableCards();
@@ -566,7 +571,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  private void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+  void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     Fortify fortify = aiBot.createFortify();
     if (fortify != null && fortify.getTroopsToMove() > 0) {
@@ -580,7 +585,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
-  private void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
+  void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     boolean quitEarly = false;
     do {

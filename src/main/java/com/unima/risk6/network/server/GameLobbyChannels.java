@@ -2,11 +2,25 @@ package com.unima.risk6.network.server;
 
 import static com.unima.risk6.network.server.GameServer.channels;
 
+import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.CLAIM_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
+import static com.unima.risk6.network.server.GameServer.channels;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.bots.MediumBot;
+import com.unima.risk6.game.logic.EndPhase;
+import com.unima.risk6.game.logic.Reinforce;
+import com.unima.risk6.game.logic.controllers.GameController;
+import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.UserDto;
+import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
@@ -134,19 +148,102 @@ public class GameLobbyChannels {
 
   public void handleExit(Channel channel, GameServerFrameHandler gsh) {
     System.out.println(gameChannels.size());
-    System.out.println(users.inverse().get(channel).getUsername() + " left");
+    System.out.println(getUserByChannel(channel).getUsername() + " left");
 
     if (gameChannels.keySet().stream()
         .anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
-      if (moveProcessors.values().contains(getChannelGroupByChannel(channel))) {
+
+      if (moveProcessors.containsValue(gameChannels.get(gameChannels.keySet().stream()
+          .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get()))) {
         //In Running Game
-        System.out.println("In Running game");
-        GameState gameState = moveProcessors.inverse().get(getChannelGroupByChannel(channel))
-            .getGameController().getGameState();
-        //TODO passt der Vergleich
-        if (gameState.getCurrentPlayer().equals(users.inverse().get(channel))) {
+        LOGGER.debug("In Running game");
+        ChannelGroup channelGroup = gameChannels.get(gameChannels.keySet().stream()
+            .filter(x -> x.getUsers().contains(getUserByChannel(channel))).findFirst().get());
+        GameController gameController = moveProcessors.inverse().get(channelGroup)
+            .getGameController();
+        GameState gameState = gameController.getGameState();
+        MediumBot mediumBot;
+        if (gameState.getCurrentPlayer().getUser()
+            .equals(getUserByChannel(channel).getUsername())) {
           //player is current player
-          //TODO blocken, wenn nutzer entfernt wird
+          LOGGER.debug("Current player left");
+
+          Player player = gameState.getCurrentPlayer();
+          GamePhase gamePhase = player.getCurrentPhase();
+          mediumBot = new MediumBot(player);
+          for (Country country : mediumBot.getCountries()) {
+            country.setPlayer((Player) mediumBot);
+          }
+          MoveProcessor moveProcessor = moveProcessors.inverse().get(channelGroup);
+
+          /*switch (gamePhase) {
+            case REINFORCEMENT_PHASE -> {
+              moveProcessor.processReinforce(
+                  new Reinforce(mediumBot.getCountries().stream().findFirst().get(),
+                      mediumBot.getDeployableTroops()));
+              moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
+              moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+              moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+            }
+            case ATTACK_PHASE -> {
+              moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
+              moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+            }
+            case FORTIFY_PHASE -> {
+              moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
+            }
+            case CLAIM_PHASE -> {
+              int numberOfNeutralCountries = gameController.getGameState().getCountries().stream()
+                  .filter(n -> !n.hasPlayer()).collect(Collectors.toSet()).size();
+              if(numberOfNeutralCountries > 0){
+                Country country = gameState.getCountries().stream().filter(x -> !x.hasPlayer()).findFirst().get();
+                moveProcessor.processReinforce(new Reinforce(country,1));
+                moveProcessor.processEndPhase(new EndPhase(GamePhase.CLAIM_PHASE));
+              }else {
+                moveProcessor.processReinforce(
+                    new Reinforce(mediumBot.getCountries().stream().findFirst().get(), 1));
+                moveProcessor.processEndPhase(new EndPhase(GamePhase.CLAIM_PHASE));
+              }
+            }
+          }
+
+           */
+          gameState.getActivePlayers().poll();
+          gameState.getActivePlayers().add(mediumBot);
+          int size = gameState.getActivePlayers().size();
+          for (int i = 0; i < size - 1; i++) {
+            gameState.getActivePlayers().add(gameState.getActivePlayers().poll());
+          }
+          gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
+
+          processBotMove(mediumBot, channelGroup, gsh, moveProcessor);
+          //gameController.nextPhase();
+          //if(gamePhase.equals(GamePhase.CLAIM_PHASE)){
+          //  if(gameState.getActivePlayers().peek().getInitialTroops() > 0)
+          //  gameState.getCurrentPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
+          //}
+
+          //TODO handle bots
+          //gameState.getLastMoves().add(new EndPhase(GamePhase.NOT_ACTIVE));
+          gsh.sendGamestate(channelGroup, gameState);
+
+
+        } else {
+          LOGGER.debug("A player left");
+          for (int i = 0; i < gameState.getActivePlayers().size(); i++) {
+            Player player = gameState.getActivePlayers().poll();
+            if (player.getUser().equals(getUserByChannel(channel).getUsername())) {
+              //Player found
+              mediumBot = new MediumBot(player);
+              for (Country country : mediumBot.getCountries()) {
+                country.setPlayer((Player) mediumBot);
+              }
+              gameState.getActivePlayers().add(mediumBot);
+            } else {
+              gameState.getActivePlayers().add(player);
+            }
+          }
+
         }
 
       } else {
@@ -160,6 +257,58 @@ public class GameLobbyChannels {
       System.out.println("else");
       removeUserFromServerLobby(channel);
       gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+    }
+
+  }
+
+  void processBotMove(AiBot aiBot, ChannelGroup channelGroup, GameServerFrameHandler gsh,
+      MoveProcessor moveProcessor) {
+    aiBot.setGameState(moveProcessor.getGameController().getGameState());
+    Player player = (Player) aiBot;
+    moveProcessor.getPlayerController().setPlayer(player);
+    try {
+
+      if (player.getCurrentPhase().equals(CLAIM_PHASE)) {
+        Thread.sleep(500);
+        Reinforce reinforce = aiBot.claimCountry();
+        moveProcessor.processReinforce(reinforce);
+        gsh.sendGamestate(channelGroup);
+        moveProcessor.clearLastMoves();
+        Thread.sleep(500);
+        moveProcessor.processEndPhase(new EndPhase(player.getCurrentPhase()));
+        gsh.sendGamestate(channelGroup);
+        moveProcessor.clearLastMoves();
+        Thread.sleep(500);
+        Player currentPlayer = moveProcessor.getGameController().getGameState()
+            .getCurrentPlayer();
+        if (!player.getUser().equals(currentPlayer.getUser())
+            && currentPlayer instanceof AiBot aiBot1) {
+          processBotMove(aiBot1, channelGroup, gsh, moveProcessor);
+        }
+      }
+      if (player.getCurrentPhase().equals(REINFORCEMENT_PHASE)) {
+        gsh.processBotHandIn(channelGroup);
+        Thread.sleep(1500);
+        gsh.processBotReinforcementPhase(aiBot, channelGroup, player);
+        Thread.sleep(3000);
+      }
+      if (player.getCurrentPhase().equals(ATTACK_PHASE)) {
+        gsh.processBotAttackPhase(aiBot, channelGroup, player);
+        Thread.sleep(3000);
+      }
+      if (player.getCurrentPhase().equals(FORTIFY_PHASE)) {
+        gsh.processBotFortifyPhase(aiBot, channelGroup, player);
+        Thread.sleep(500);
+        Player currentPlayer = moveProcessor.getGameController().getGameState()
+            .getCurrentPlayer();
+        if (!player.getUser().equals(currentPlayer.getUser())
+            && currentPlayer instanceof AiBot aiBot1) {
+          processBotMove(aiBot1, channelGroup, gsh, moveProcessor);
+        }
+
+      }
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
 
   }
