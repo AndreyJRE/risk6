@@ -99,6 +99,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             moveProcessor.processAttack(attack);
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
+            if (moveProcessor.getGameController().getGameState().isGameOver()) {
+              LOGGER.info("Game Over!");
+              gameLobbyChannels.handleGameOver(ctx.channel(), this);
+            }
           }
           case "REINFORCE" -> {
             LOGGER.debug("The server received a reinforce object");

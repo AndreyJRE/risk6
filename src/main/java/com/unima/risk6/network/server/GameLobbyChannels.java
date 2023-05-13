@@ -1,7 +1,5 @@
 package com.unima.risk6.network.server;
 
-import static com.unima.risk6.network.server.GameServer.channels;
-
 import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.CLAIM_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
@@ -23,6 +21,7 @@ import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOutboundInvoker;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -176,38 +175,6 @@ public class GameLobbyChannels {
           }
           MoveProcessor moveProcessor = moveProcessors.inverse().get(channelGroup);
 
-          /*switch (gamePhase) {
-            case REINFORCEMENT_PHASE -> {
-              moveProcessor.processReinforce(
-                  new Reinforce(mediumBot.getCountries().stream().findFirst().get(),
-                      mediumBot.getDeployableTroops()));
-              moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
-              moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
-              moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-            }
-            case ATTACK_PHASE -> {
-              moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
-              moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-            }
-            case FORTIFY_PHASE -> {
-              moveProcessor.processEndPhase(new EndPhase(GamePhase.FORTIFY_PHASE));
-            }
-            case CLAIM_PHASE -> {
-              int numberOfNeutralCountries = gameController.getGameState().getCountries().stream()
-                  .filter(n -> !n.hasPlayer()).collect(Collectors.toSet()).size();
-              if(numberOfNeutralCountries > 0){
-                Country country = gameState.getCountries().stream().filter(x -> !x.hasPlayer()).findFirst().get();
-                moveProcessor.processReinforce(new Reinforce(country,1));
-                moveProcessor.processEndPhase(new EndPhase(GamePhase.CLAIM_PHASE));
-              }else {
-                moveProcessor.processReinforce(
-                    new Reinforce(mediumBot.getCountries().stream().findFirst().get(), 1));
-                moveProcessor.processEndPhase(new EndPhase(GamePhase.CLAIM_PHASE));
-              }
-            }
-          }
-
-           */
           gameState.getActivePlayers().poll();
           gameState.getActivePlayers().add(mediumBot);
           int size = gameState.getActivePlayers().size();
@@ -217,14 +184,6 @@ public class GameLobbyChannels {
           gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
 
           processBotMove(mediumBot, channelGroup, gsh, moveProcessor);
-          //gameController.nextPhase();
-          //if(gamePhase.equals(GamePhase.CLAIM_PHASE)){
-          //  if(gameState.getActivePlayers().peek().getInitialTroops() > 0)
-          //  gameState.getCurrentPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
-          //}
-
-          //TODO handle bots
-          //gameState.getLastMoves().add(new EndPhase(GamePhase.NOT_ACTIVE));
           gsh.sendGamestate(channelGroup, gameState);
 
 
@@ -311,6 +270,32 @@ public class GameLobbyChannels {
       throw new RuntimeException(e);
     }
 
+  }
+
+  void handleGameOver(Channel channel, GameServerFrameHandler gsh) {
+    LOGGER.debug("Before handle GameOver : moveProcessors Size: " + moveProcessors.size()
+        + " gameChannels Size: " + gameChannels.size() + " GameLobbys in ServerLobby: "
+        + NetworkConfiguration.getServerLobby().getGameLobbies().size() + " Channels Size: "
+        + channels.size());
+    ChannelGroup channelGroup = getChannelGroupByChannel(channel);
+    GameLobby gameLobby = gameChannels.inverse().get(channelGroup);
+
+    NetworkConfiguration.getServerLobby().getGameLobbies()
+        .remove(NetworkConfiguration.getServerLobby()
+            .getGameLobbies().stream().filter(
+                x -> x.getLobbyName().equals(
+                    gameLobby.getLobbyName())).findFirst().get());
+
+    moveProcessors.inverse().remove(channelGroup);
+    gameChannels.inverse().remove(channelGroup);
+
+    channelGroup.forEach(this::removeUserFromServerLobby);
+    channelGroup.forEach(ChannelOutboundInvoker::close);
+    LOGGER.debug("After handle GameOver : moveProcessors Size: " + moveProcessors.size()
+        + " gameChannels Size: " + gameChannels.size() + " GameLobbys in ServerLobby: "
+        + NetworkConfiguration.getServerLobby().getGameLobbies().size() + " Channels Size: "
+        + channels.size());
+    gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
   }
 
 
