@@ -49,4 +49,7 @@ public final class GameServer implements Runnable {
     }
   }
 
+  public String getHostIp() {
+    return HOST_IP;
+  }
 }

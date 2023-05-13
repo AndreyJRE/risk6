@@ -54,8 +54,8 @@ public class SceneController {
     if (scene instanceof InitializableScene scene1) {
       scene1.init();
     }
+    currentSceneName = name;
     stage.setScene(scene);
-
     stage.setWidth(SceneConfiguration.getWidth() + 0.1);
     stage.setHeight(SceneConfiguration.getHeight() + 0.1);
     stage.setOnCloseRequest((WindowEvent event) -> close());
@@ -113,6 +113,9 @@ public class SceneController {
       Scene titleScene = new Scene(root);
       titleScene.setRoot(root);
       stage.setScene(titleScene);
+      stage.setWidth(SceneConfiguration.getWidth() + 0.1);
+      stage.setHeight(SceneConfiguration.getHeight() + 0.1);
+      stage.setOnCloseRequest((WindowEvent event) -> close());
       fadeIn(titleScene);
     } catch (IOException ex) {
       throw new RuntimeException(ex);

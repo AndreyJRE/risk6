@@ -1,5 +1,6 @@
 package com.unima.risk6.network.client;
 
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.serialization.Serializer;
 import io.netty.bootstrap.Bootstrap;
@@ -13,6 +14,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
@@ -39,6 +41,12 @@ public final class GameClient implements Runnable {
     WebSocketFrame frame = new TextWebSocketFrame(json);
     ch.writeAndFlush(frame);
     LOGGER.debug("Sent Message: " + json);
+  }
+
+  public void leaveGame() {
+    ch.writeAndFlush(new CloseWebSocketFrame());
+    ch.close();
+    LobbyConfiguration.stopGameClient();
   }
 
   public void run() {
