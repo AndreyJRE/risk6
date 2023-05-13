@@ -82,9 +82,6 @@ public class GameLobbyChannels {
               .get(0));
       gameServerFrameHandler.sendGameLobby(gameLobby);
     }
-    if (isDead) {
-      users.inverse().remove(channel);
-    }
 
   }
 
@@ -147,6 +144,12 @@ public class GameLobbyChannels {
   }
 
   public void handleExit(Channel channel, GameServerFrameHandler gsh) {
+
+    LOGGER.debug("Before handle Exit : moveProcessors Size: " + moveProcessors.size()
+        + " gameChannels Size: " + gameChannels.size() + "Users size: " + users.size()
+        + " GameLobbies in ServerLobby: "
+        + NetworkConfiguration.getServerLobby().getGameLobbies().size() + " Users in Serverlobby: "
+        + NetworkConfiguration.getServerLobby().getUsers().size());
     try {
       System.out.println(gameChannels.size());
       System.out.println(getUserByChannel(channel).getUsername() + " left");
@@ -191,14 +194,7 @@ public class GameLobbyChannels {
           } else {
             processBotMove(mediumBot, channelGroup, gsh, moveProcessor);
           }
-          //gameController.nextPhase();
-          //if(gamePhase.equals(GamePhase.CLAIM_PHASE)){
-          //  if(gameState.getActivePlayers().peek().getInitialTroops() > 0)
-          //  gameState.getCurrentPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
-          //}
 
-          //TODO handle bots
-          //gameState.getLastMoves().add(new EndPhase(GamePhase.NOT_ACTIVE));
           gsh.sendGamestate(channelGroup, gameState);
 
 
@@ -223,10 +219,12 @@ public class GameLobbyChannels {
         } else {
           //In Gamelobby
           System.out.println("In Gamelobby");
-          removeUserFromGameLobby(channel, gsh, true);
-          gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
+
 
         }
+        removeUserFromGameLobby(channel, gsh, true);
+        removeUserFromServerLobby(channel);
+        gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
       } else {
         System.out.println("else");
         removeUserFromServerLobby(channel);
@@ -235,6 +233,11 @@ public class GameLobbyChannels {
     } catch (NullPointerException e) {
       LOGGER.debug("It seems, that the user is already disconnected:\n" + e);
     }
+    LOGGER.debug("After handle Exit : moveProcessors Size: " + moveProcessors.size()
+        + " gameChannels Size: " + gameChannels.size() + "Users size: " + users.size()
+        + " GameLobbies in ServerLobby: "
+        + NetworkConfiguration.getServerLobby().getGameLobbies().size() + " Users in Serverlobby: "
+        + NetworkConfiguration.getServerLobby().getUsers().size());
 
   }
 

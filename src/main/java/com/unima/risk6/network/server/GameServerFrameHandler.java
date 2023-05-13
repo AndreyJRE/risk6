@@ -231,7 +231,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendUpdatedServerLobby(serverLobby);
                 }
                 case START_GAME -> {
-                  //TODO MOVE_CONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
