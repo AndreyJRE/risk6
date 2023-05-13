@@ -2,9 +2,9 @@ package com.unima.risk6.gui.configurations;
 
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.enums.CountryName;
-import com.unima.risk6.gui.uiModels.CountryUi;
+import com.unima.risk6.gui.uimodels.CountryUi;
 import com.unima.risk6.json.JsonParser;
-import com.unima.risk6.json.jsonObjects.CountryUiJsonObject;
+import com.unima.risk6.json.jsonobjects.CountryUiJsonObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

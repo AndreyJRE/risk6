@@ -3,7 +3,7 @@ package com.unima.risk6.game.configurations;
 import com.unima.risk6.game.models.Continent;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.json.JsonParser;
-import com.unima.risk6.json.jsonObjects.CountryJsonObject;
+import com.unima.risk6.json.jsonobjects.CountryJsonObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

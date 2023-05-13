@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
 import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;

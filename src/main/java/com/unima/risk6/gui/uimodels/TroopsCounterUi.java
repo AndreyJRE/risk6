@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;

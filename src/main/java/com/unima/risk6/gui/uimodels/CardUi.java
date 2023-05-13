@@ -1,4 +1,4 @@
-package com.unima.risk6.gui.uiModels;
+package com.unima.risk6.gui.uimodels;
 
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
