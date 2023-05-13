@@ -261,7 +261,7 @@ public class TitleSceneController implements Initializable {
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
     Thread.sleep(20);
-    gameLobby = new GameLobby("Tutorial Lobby", 2, SessionManager.getUser().getUsername(), false, 0,
+    gameLobby = new GameLobby("Tutorial Lobby", 2, SessionManager.getUser().getUsername(), true, 0,
         GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     gameLobby.getBots().add("Johnny Test");

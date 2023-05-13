@@ -243,7 +243,6 @@ public class ChatUi extends BorderPane implements ChatObserver {
   @Override
   public void updateChat(ArrayList<String> messages) {
     Platform.runLater(() -> {
-      System.out.println("update ChatUi " + messages.get(messages.size() - 1));
       text = new Text(messages.get(messages.size() - 1));
       double chatWidth = text.getLayoutBounds().getWidth() + 20;
       double chatHeight = text.getLayoutBounds().getHeight() + 20;
@@ -268,5 +267,9 @@ public class ChatUi extends BorderPane implements ChatObserver {
 
   public Popup getChatPopup() {
     return chatPopup;
+  }
+
+  public VBox getChatBox() {
+    return chatBox;
   }
 }

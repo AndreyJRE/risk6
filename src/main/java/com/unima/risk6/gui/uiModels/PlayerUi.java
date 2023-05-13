@@ -4,6 +4,8 @@ import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.models.Player;
+import com.unima.risk6.gui.configurations.ImageConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -38,17 +40,13 @@ public class PlayerUi extends Group {
     ellipse = new Ellipse(0, 0, radiusX, radiusY);
     ImageView userImage;
     if (player instanceof EasyBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.EASYBOT_ICON));
     } else if (player instanceof MediumBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.MEDIUMBOT_ICON));
     } else if (player instanceof HardBot) {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.HARDBOT_ICON));
     } else {
-      userImage = new ImageView(new Image(
-          getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
     }
 
     StackPane stackPane = new StackPane(userImage);

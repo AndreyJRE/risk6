@@ -69,6 +69,8 @@ public class CountryUi extends Group {
   private final Tutorial tutorial = GameConfiguration.getTutorial();
   private FillTransition fillTransition;
 
+  private FillTransition attackingTransition;
+
 
   public CountryUi(Country country, String SVGPath) {
     super();
@@ -447,9 +449,6 @@ public class CountryUi extends Group {
 
     List<DiceUi> diceUis = new ArrayList<>();
     VBox attackerBox = new VBox();
-    Label attackerUser = new Label(attacker.country.getPlayer().getUser() + ": ");
-    attackerUser.setStyle("-fx-font-size: 18px;");
-    attackerBox.getChildren().add(attackerUser);
 
     Label attackingCountry = new Label(
         attacker.country.getCountryName().name().replaceAll("_", " "));
@@ -465,10 +464,6 @@ public class CountryUi extends Group {
     attackerBox.setAlignment(Pos.CENTER);
 
     VBox defenderBox = new VBox();
-    Label defenderUser = new Label(defender.country.getPlayer().getUser() + ": ");
-    defenderUser.setStyle("-fx-font-size: 18px;");
-    defenderBox.getChildren().add(defenderUser);
-
     Label defenderCountry = new Label(
         defender.country.getCountryName().name().replaceAll("_", " "));
     defenderCountry.setStyle("-fx-font-size: 18px;");
@@ -483,9 +478,11 @@ public class CountryUi extends Group {
     defenderBox.setAlignment(Pos.CENTER);
     diceHBox.getChildren().addAll(attackerBox, defenderBox);
 
-    PauseTransition delayTransition = new PauseTransition(Duration.millis(3000));
+    PauseTransition delayTransition = new PauseTransition(Duration.millis(2000));
     delayTransition.setOnFinished(delayTransitionEvent -> {
       dicePopup.hide();
+      attacker.getAttackingTransition().stop();
+      defender.getAttackingTransition().stop();
       if (attacker.getCountry().getTroops() > 1 && lastAttack.getHasConquered()
           && activePlayerUi.getPlayerUi().getPlayer()
           .equals(GameSceneController.getPlayerController().getPlayer())) {
@@ -515,8 +512,12 @@ public class CountryUi extends Group {
     for (DiceUi dice : diceUis) {
       dice.rollDice();
     }
-    attacker.animateActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
-    defender.animateActiveCountry((Color) defender.getCountryPath().getFill());
+    attacker.animateInAttackActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
+    if (lastAttack.getHasConquered()) {
+      defender.animateInAttackActiveCountry(activePlayerUi.getPlayerUi().getPlayerColor());
+    } else {
+      defender.animateInAttackActiveCountry((Color) defender.getCountryPath().getFill());
+    }
     delayTransition.play();
 
   }
@@ -584,18 +585,27 @@ public class CountryUi extends Group {
     this.color = playerColor;
   }
 
-  private void animateActiveCountry(Color playerColor) {
-    Color brightHighlightColor = playerColor.deriveColor(0, 0, 0, 0.8);
-    Color countryPathFill = (Color) this.countryPath.getFill();
+  private void animateActiveCountry(Color currentColor) {
+    Color brightHighlightColor = currentColor.deriveColor(0, 0, 0, 0.8);
     FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
-        countryPathFill, brightHighlightColor);
+        currentColor, brightHighlightColor);
     highlightTransition.setInterpolator(Interpolator.EASE_BOTH);
     FillTransition revertTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
-        brightHighlightColor, countryPathFill);
+        brightHighlightColor, currentColor);
     revertTransition.setInterpolator(Interpolator.EASE_BOTH);
     SequentialTransition sequentialTransition = new SequentialTransition(highlightTransition,
         revertTransition);
     sequentialTransition.play();
+  }
+
+  private void animateInAttackActiveCountry(Color currentCountryColor) {
+    Color brightHighlightColor = currentCountryColor.deriveColor(0, 0, 0, 0.7);
+    attackingTransition = new FillTransition(Duration.seconds(0.25), this.countryPath,
+        currentCountryColor, brightHighlightColor);
+    attackingTransition.setInterpolator(Interpolator.EASE_BOTH);
+    attackingTransition.setAutoReverse(true);
+    attackingTransition.setCycleCount(Animation.INDEFINITE);
+    attackingTransition.play();
   }
 
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
@@ -674,6 +684,10 @@ public class CountryUi extends Group {
     fillTransition.setCycleCount(Animation.INDEFINITE);
     fillTransition.setAutoReverse(true);
     fillTransition.play();
+  }
+
+  public FillTransition getAttackingTransition() {
+    return attackingTransition;
   }
 }
 
