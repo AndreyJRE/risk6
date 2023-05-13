@@ -45,6 +45,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -53,7 +54,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-import javafx.scene.image.ImageView;
 /**
  * The class TitleSceneController controls the title scene of the game.
  * It includes methods for button actions like single player, multiplayer,
@@ -185,6 +185,7 @@ public class TitleSceneController implements Initializable {
       fillAnimation.setToValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
       animation.play();
     });
+    toggleLocalButtons(switchedOn.get());
   }
   /**
    * Handles the volume clicked event. It either mutes or unmutes the volume
@@ -197,16 +198,28 @@ public class TitleSceneController implements Initializable {
       volumeImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures/soundIcon.png").toString()));
     }else{
       volumeSlider.setValue(0.0);
-      volumeImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures/muteIcon.png").toString()));
+      volumeImage = new ImageView(
+          new Image(getClass().getResource("/com/unima/risk6/pictures/muteIcon.png").toString()));
     }
     volume = volumeSlider.getValue();
   }
+
   /**
    * Handles the button click event to toggle the multiplayer and tutorial buttons.
    */
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
-    if (isOn) {
+    switchedOn.set(!isOn);
+    toggleLocalButtons(switchedOn.get());
+    setIpLabel();
+    translateAnimation.setToX(isOn ? 0 : 100 - 55);
+    fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
+    fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
+    animation.play();
+  }
+
+  private void toggleLocalButtons(boolean isOn) {
+    if (!isOn) {
       singlePlayerButton.setOpacity(1);
       singlePlayerButton.setDisable(false);
       tutorialButton.setOpacity(1);
@@ -217,13 +230,8 @@ public class TitleSceneController implements Initializable {
       tutorialButton.setOpacity(0.6);
       tutorialButton.setDisable(true);
     }
-    switchedOn.set(!isOn);
-    setIpLabel();
-    translateAnimation.setToX(isOn ? 0 : 100 - 55);
-    fillAnimation.setFromValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
-    fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
-    animation.play();
   }
+
   /**
    * Sets the IP address label in the scene.
    */
