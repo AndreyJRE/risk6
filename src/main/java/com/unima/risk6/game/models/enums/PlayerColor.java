@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
  */
 public enum PlayerColor {
   RED(Color.rgb(255, 102, 102)), BLUE(Color.rgb(102, 102, 255)), PURPLE(
-      Color.rgb(178, 102, 255)), YELLOW(Color.rgb(255, 255, 102)),
+      Color.rgb(178, 102, 255)), YELLOW(Color.rgb(255, 255, 102)), //YELLOW(Color.rgb(255, 255, 27))
   GREEN(Color.rgb(132, 255, 132)), ORANGE(Color.rgb(255, 178, 102));
   private final Color color;
 

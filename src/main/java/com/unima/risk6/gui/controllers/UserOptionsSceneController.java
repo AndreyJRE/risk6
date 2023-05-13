@@ -51,7 +51,12 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
-
+/**
+ * This class is the controller for the User Options Scene.
+ * It manages the interactions between the user and the GUI.
+ *
+ * @author fisommer
+ */
 public class UserOptionsSceneController {
 
   private final UserOptionsScene userOptions;
@@ -62,13 +67,20 @@ public class UserOptionsSceneController {
   private ImageView userImage;
   private StackPane userStackPane;
 
-
+  /**
+   * The constructor for UserOptionsSceneController.
+   *
+   * @param userOptions The UserOptionsScene object associated with this controller.
+   */
   public UserOptionsSceneController(UserOptionsScene userOptions) {
     this.userOptions = userOptions;
     this.userService = DatabaseConfiguration.getUserService();
     this.sceneController = SceneConfiguration.getSceneController();
   }
-
+  /**
+   * Initializes the User Options Scene by setting the user,
+   * root, font, and user stack pane. Also sets the background image.
+   */
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) userOptions.getRoot();
@@ -97,7 +109,10 @@ public class UserOptionsSceneController {
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
-
+  /**
+   * Initializes the elements of the User Options Scene,
+   * including the back arrow, username field, and various buttons.
+   */
   private void initElements() {
     BooleanProperty enterPressed = new SimpleBooleanProperty(false);
     // Back arrow
@@ -215,7 +230,11 @@ public class UserOptionsSceneController {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
     root.setCenter(centerVBox);
   }
-
+  /**
+   * Creates and returns a "Change Password" button.
+   *
+   * @return A Button object for changing the password.
+   */
   private Button createChangePasswordButton() {
     Button changePasswordButton = new Button("Change Password");
     changePasswordButton.setPrefWidth(470);
@@ -238,7 +257,11 @@ public class UserOptionsSceneController {
     });
     return changePasswordButton;
   }
-
+  /**
+   * Creates and returns a "Delete User" button.
+   *
+   * @return A Button object for deleting the user.
+   */
   private Button createDeleteUserButton() {
     Button deleteUserButton = new Button("Delete User");
     deleteUserButton.setPrefWidth(470);
@@ -286,7 +309,12 @@ public class UserOptionsSceneController {
     });
     return deleteUserButton;
   }
-
+  /**
+   * Handles the confirmation for changing the username,
+   * and updates the username if confirmed.
+   *
+   * @param userNameField The TextField object representing the username.
+   */
   private void changeUsernameConfirmation(TextField userNameField) {
     if (!user.getUsername().equals(userNameField.getText())) {
       boolean confirm = showConfirmationDialog("Change username",
@@ -307,7 +335,9 @@ public class UserOptionsSceneController {
         + "70px; -fx-background-color: transparent; "
         + "-fx-border-color: transparent; -fx-text-fill: white");
   }
-
+  /**
+   * Initializes the user's profile image and places it on a stack pane.
+   */
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(200);

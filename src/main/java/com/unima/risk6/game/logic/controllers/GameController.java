@@ -17,6 +17,13 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * This class represents a management class for the GameState class of the risk game. It manages and
+ * performs operations regarding the GameState object it has. It contains methods that are needed
+ * for the general game flow of the game.
+ *
+ * @author wphung
+ */
 
 public class GameController {
 
@@ -25,7 +32,7 @@ public class GameController {
   private final Queue<Player> players;
 
   /**
-   * Constructs a new GameController with the given GameState
+   * Constructs a new GameController with the given GameState.
    *
    * @param gameState The GameState that is managed by the GameController
    */
@@ -124,8 +131,8 @@ public class GameController {
   }
 
   /**
-   * Moves on to the next GamePhase of the current player or changes the current player if the turn
-   * of the player has ended after the change of GamePhase
+   * Moves on to the next GamePhase of the current player. If the turn of the player has ended after
+   * the change of GamePhase the next player is set.
    */
   public void nextPhase() {
     Player player = gameState.getCurrentPlayer();
@@ -193,12 +200,18 @@ public class GameController {
 
   /**
    * Updates the Sets of continents of all players. calls updateContinentsOfPlayer for each
-   * activePlayer
+   * activePlayer.
    */
   public void updateContinentsForAll() {
     gameState.getActivePlayers().forEach(this::updateContinentsOfPlayer);
   }
 
+  /**
+   * Counts the troops of each player and saves it in a HashMap which is then returned.
+   *
+   * @return HashMap<Player, Integer> which maps each player to their respective number of troops
+   * they have control over in the game.
+   */
   public HashMap<Player, Integer> countTroops() {
     HashMap<Player, Integer> totalTroopsOfPlayers = new HashMap<>();
     for (Player player : players) {
@@ -211,6 +224,12 @@ public class GameController {
     return totalTroopsOfPlayers;
   }
 
+  /**
+   * Counts the countries of each player and saves it in a HashMap which is then returned.
+   *
+   * @return HashMap<Player, Integer> which maps each player to their respective number of countries
+   * they own in the game.
+   */
   public HashMap<Player, Integer> countCountries() {
     HashMap<Player, Integer> numberOfCountries = new HashMap<>();
     for (Player player : players) {

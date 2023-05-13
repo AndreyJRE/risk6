@@ -3,6 +3,12 @@ package com.unima.risk6.game.models;
 import com.unima.risk6.game.models.enums.CountryName;
 import java.util.Set;
 
+/**
+ * Represents a country in the risk game with its name, player who owns the country,its number of
+ * troops occupies that occupy the country, its adjecentCountries and the continent it belongs to.
+ *
+ * @author wphung
+ */
 public class Country {
 
   private final CountryName countryName;

@@ -93,13 +93,12 @@ public class SettingsUi extends BorderPane {
     alert.getButtonTypes().setAll(buttonYes, buttonNo);
     alert.showAndWait().ifPresent(buttonType -> {
       if (buttonType == buttonYes) {
-        //TODO Message and join server lobby
         SceneConfiguration.getSceneController().close();
-      }
-      if (buttonType == buttonNo) {
+      } else {
         alert.close();
         settingPopup.hide();
       }
     });
   }
 }
+

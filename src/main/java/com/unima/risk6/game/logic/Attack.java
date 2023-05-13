@@ -192,7 +192,7 @@ public class Attack extends Move {
   }
 
   /**
-   * Returns wether the attack conquers the defending country
+   * Returns wether the attack conquers the defending country.
    *
    * @return wether the attack conquers the defending country
    */
@@ -203,8 +203,8 @@ public class Attack extends Move {
 
   @Override
   public String toString() {
-    return "Attack{" +
-        "attackingCountry=" + attackingCountry
+    return "Attack{"
+        + "attackingCountry=" + attackingCountry
         + ", defendingCountry=" + defendingCountry
         + ", attackerLosses=" + attackerLosses
         + ", defenderLosses=" + defenderLosses

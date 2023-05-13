@@ -110,7 +110,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   boolean isCountryNameShowing = false;
 
   private ChatUi chatUi;
-
   private HandUi handUi;
   private Button cardsButton;
   private Tutorial tutorial;
@@ -152,12 +151,13 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void initializeGameScene() {
-    Image waterImage = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/flowingWater.gif").toString());
+    Image waterImage = ImageConfiguration.getImageByName(ImageName.WATER_GIF);
     BackgroundImage backgroundImage = new BackgroundImage(waterImage, BackgroundRepeat.REPEAT,
         BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
     root.setBackground(new Background(backgroundImage));
+    //root.setBackground(new Background(
+    //    new BackgroundFill(Colors.WATER.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
     StackPane playerPane = initializePlayersPane();
     root.setLeft(playerPane);
     StackPane countriesPane = initializeCountriesPane();
@@ -374,8 +374,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
       Platform.runLater(() -> {
         countryName.setStyle(
-            "-fx-background-radius: 20px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
-                + "bold;-fx-font-size: 13px");
+            "-fx-background-radius: 15px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
+                + "bold;-fx-font-size: 12px; -fx-padding: 2px;");
         countryName.setTextFill(Color.WHITE);
         countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
         countryName.setLayoutY(finalEllipseY + 10);
@@ -446,6 +446,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     chatCounterLabel.setStyle("-fx-background-radius: 10px;"
         + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 18px;");
     chatCounterLabel.setTextFill(Color.WHITE);
+    chatButton.setVisible(gameState.isChatEnabled());
     chatCounterLabel.setVisible(gameState.isChatEnabled());
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     activePlayerUi.controlDeployableTroops();
@@ -504,16 +505,16 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   @Override
-  public void updateChat(ArrayList<String> messages) {
-    if (chatUi.getChatPopup().isShowing()) {
-      Platform.runLater(() -> chatCounterLabel.setVisible(false));
-      lastChatUpdate = messages.size();
-    } else {
-      Platform.runLater(() -> {
-        chatCounterLabel.setText(String.valueOf(messages.size() - lastChatUpdate));
+  public void updateChat(List<String> messages) {
+    Platform.runLater(() -> {
+      if (chatUi.getChatPopup().isShowing()) {
+        chatCounterLabel.setVisible(false);
+      } else {
+        chatCounterLabel.setText(String.valueOf(messages.size() - chatUi.getLastChatUpdate()));
         chatCounterLabel.setVisible(true);
-      });
-    }
+      }
+    });
+
   }
 
   private void showCardsPopup() {
@@ -826,6 +827,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             cardsButton.setVisible(true);
             GameConfiguration.setTutorial(null);
             tutorial = null;
+            GameConfiguration.setTutorialOver(true);
             try {
               Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -865,15 +867,15 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   private void sendTutorialMessage() {
-    if (tutorialMessageCounter == 20 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
+    if (tutorialMessageCounter == 0 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
         || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
         || tutorialMessageCounter == 11) {
       LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+//      try {
+//        Thread.sleep(100);
+//      } catch (InterruptedException e) {
+//        throw new RuntimeException(e);
+//      }
     }
     tutorialMessageCounter++;
   }
@@ -913,7 +915,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
       countryUi.animateTutorialCountry();
     }
-    tutorial.getNextMessage(); //temp
+    try {
+      Thread.sleep(300);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    sendTutorialMessage();
   }
 
   public Color getColorByPlayer(Player player) {

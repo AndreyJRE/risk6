@@ -5,6 +5,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Represents a player in the game with its troops it can place, its username, its hand, its
+ * statistic, the currentPhase the player is in and whether it has conquered something in its attack
+ * phase. It also contains references to the countries and continents that are owned by the player.
+ *
+ * @author wphung
+ */
 public class Player {
 
   private Hand hand;

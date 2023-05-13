@@ -34,7 +34,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-
+/**
+ * Controller for the login scene, handling user interactions and updating the view accordingly.
+ *
+ * @author fisommer
+ */
 public class LoginSceneController {
 
   private final LogInScene loginScene;
@@ -48,13 +52,19 @@ public class LoginSceneController {
   private final SceneController sceneController;
 
   private DropShadow dropShadow;
-
+  /**
+   * Constructs a LoginSceneController with a given LogInScene.
+   *
+   * @param loginScene the login scene to be managed by this controller
+   */
   public LoginSceneController(LogInScene loginScene) {
     this.loginScene = loginScene;
     this.sceneController = SceneConfiguration.getSceneController();
     this.userService = DatabaseConfiguration.getUserService();
   }
-
+  /**
+   * Initializes the scene, sets up the user interface and loads all users from the UserService.
+   */
   public void init() {
     users = userService.getAllUsers();
     root = (VBox) loginScene.getRoot();
@@ -90,7 +100,12 @@ public class LoginSceneController {
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
-
+  /**
+   * Creates a GridPane page of users to be displayed.
+   *
+   * @param usersPage the list of users to be included on this page
+   * @return the created GridPane
+   */
   private GridPane createUsersGridPanePage(List<User> usersPage) {
     GridPane usersGridPane = new GridPane();
     usersGridPane.setHgap(30);
@@ -154,7 +169,11 @@ public class LoginSceneController {
     }
     return usersGridPane;
   }
-
+  /**
+   * Initializes the Pagination component for navigating through users.
+   *
+   * @return the initialized Pagination
+   */
   private Pagination initializeUsersPagination() {
     int usersPerPage = 5;
     int pageCount = (int) Math.ceil(users.size() / (double) usersPerPage);
@@ -171,7 +190,11 @@ public class LoginSceneController {
     return pagination;
   }
 
-
+  /**
+   * Creates a custom Button for creating a new account.
+   *
+   * @return the created Button
+   */
   private Button createCustomCreateButton() {
     Button createButton = new Button("New Account needed?");
     // set the button's properties
@@ -193,8 +216,9 @@ public class LoginSceneController {
   }
 
 
-  // define the event handler for the button
-  private void handleCreateButton() {
+  /**
+   * Defines the action to be taken when the 'Create Account' button is clicked.
+   */  private void handleCreateButton() {
     FXMLLoader fxmlLoader = new FXMLLoader(
         RisikoMain.class.getResource("fxml/CreateAccount" + ".fxml"));
     Parent root;
@@ -215,7 +239,11 @@ public class LoginSceneController {
 
   }
 
-
+  /**
+   * Shows the scene of the selected user.
+   *
+   * @param user the selected User
+   */
   public void showSelectedUser(User user) {
     SelectedUserScene scene = (SelectedUserScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SELECTED_USER);

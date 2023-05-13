@@ -8,7 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class represents the deck controller for the Risk game.
+ * This class represents the deck controller for the Risk game. It manages and performs operations
+ * on the Deck class.
  *
  * @author wphung
  */
@@ -100,14 +101,6 @@ public class DeckController {
     return deck.getDeckCards().isEmpty();
   }
 
-  /**
-   * Returns the deck managed by this controller.
-   *
-   * @return The deck.
-   */
-  public Deck getDeck() {
-    return deck;
-  }
 
   /**
    * Removes and returns the card on top of the deck.
@@ -118,17 +111,37 @@ public class DeckController {
     return deck.getDeckCards().remove(0);
   }
 
-  public Deck getHandedIn() {
-    return handedIn;
-  }
-
+  /**
+   * Adds a List of Cards into the handIn deck.
+   */
   public void addHandIn(List<Card> handInCards) {
     this.handedIn.getDeckCards().addAll(handInCards);
   }
 
+  /**
+   * Refills the deck with the cards in the handedIn deck.
+   */
   public void refillDeck() {
     deck.getDeckCards().addAll(handedIn.getDeckCards());
     handedIn.getDeckCards().clear();
     shuffleDeck();
+  }
+
+  /**
+   * Returns the deck which saves handedIn cards.
+   *
+   * @return The deck with the used cards.
+   */
+  public Deck getHandedIn() {
+    return handedIn;
+  }
+
+  /**
+   * Returns the deck managed by this controller.
+   *
+   * @return The deck.
+   */
+  public Deck getDeck() {
+    return deck;
   }
 }

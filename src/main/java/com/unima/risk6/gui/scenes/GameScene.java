@@ -41,5 +41,9 @@ public class GameScene extends Scene implements InitializableScene {
       gameSceneController.init();
     }
   }
+
+  public GameSceneController getGameSceneController() {
+    return gameSceneController;
+  }
 }
 

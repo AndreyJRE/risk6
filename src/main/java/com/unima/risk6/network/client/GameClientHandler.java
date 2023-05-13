@@ -102,8 +102,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameState g = (GameState) Deserializer.deserialize(textFrame.text(),
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
-            Thread.sleep(300);
             if (g.isGameOver()) {
+              Thread.sleep(3000);
               Platform.runLater(() -> SceneConfiguration.gameOverScene(g));
             }
           }
@@ -185,7 +185,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                     textFrame.text()).getContent();
                 LobbyConfiguration.setServerLobby(content);
               }
-              case "DROP_USER_GAME_LOBBY", "DROP_USER_SERVER_LOBBY" -> {
+              case "DROP_USER_GAME_LOBBY", "DROP_USER_SERVER_LOBBY", "DROP_CREATE_GAME_LOBBY" -> {
                 String content = (String) Deserializer.deserializeConnectionMessage(
                     textFrame.text()).getContent();
                 LOGGER.error("Error Connecting to game lobby: " + content);
@@ -194,7 +194,14 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                   Platform.runLater(() -> StyleConfiguration.handleUsernameExists(
                       "Error Connecting to game lobby: " + content, "Username", "New username"));
 
+                } else if (SceneConfiguration.getSceneController().getCurrentSceneName()
+                    == SceneName.CREATE_LOBBY) {
+                  Platform.runLater(() -> StyleConfiguration.handleLobbyExists(
+                      content));
+
                 }
+
+
               }
               default -> LOGGER.debug("Client received a faulty connection message");
 

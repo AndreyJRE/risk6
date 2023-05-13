@@ -3,15 +3,14 @@ package com.unima.risk6.gui.controllers;
 import com.unima.risk6.database.configurations.DatabaseConfiguration;
 import com.unima.risk6.database.models.User;
 import com.unima.risk6.database.services.GameStatisticService;
-import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Statistic;
-import com.unima.risk6.game.models.UserDto;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
+import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameOverScene;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -96,9 +95,12 @@ public class GameOverSceneController {
     //TODO database after a game
     backButton.setOnMouseClicked(e -> {
       User user = SessionManager.getUser();
-      LobbyConfiguration.sendJoinServer(UserDto.mapUserAndHisGameStatistics(user,
+      /*LobbyConfiguration.sendJoinServer(UserDto.mapUserAndHisGameStatistics(user,
           gameStatisticService
               .getAllStatisticsByUserId(user.getId())));
+
+       */
+      sceneController.activate(SceneName.TITLE);
     });
 
     // Initialize the user name TextField

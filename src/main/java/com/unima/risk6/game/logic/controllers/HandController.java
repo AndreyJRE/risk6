@@ -56,20 +56,38 @@ public class HandController {
     return isExchangeable(selectedCards);
   }
 
+  /**
+   * Determines if the given list of cards is exchangeable.
+   *
+   * @param cardList The list of cards to evaluate.
+   * @return true if the list of cards is exchangeable, false otherwise.
+   */
+  public boolean isExchangeable(List<Card> cardList) {
+    if (cardList.size() < 3) {
+      return false;
+    }
+    calculateNumberOfEachCardType(cardList);
+    return (numberOfWildcards == 2 || numberOfCannonCards == 3 || numberOfInfantryCards == 3
+        || numberOfCavalryCards == 3) || (numberOfWildcards == 1 && (numberOfCannonCards == 2
+        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2)) || (numberOfCannonCards <= 1
+        && numberOfInfantryCards <= 1 && numberOfCavalryCards <= 1 && numberOfWildcards <= 1);
+
+  }
+
 
   /**
    * Selects a card from the hand by the card object.
    *
-   * @param c The card object to be selected.
+   * @param card The card object to be selected.
    */
-  public void selectCardThroughCard(Card c) {
-    if (selectedCards.size() < 3 && !selectedCards.contains(c)) {
-      selectedCards.add(c);
+  public void selectCardThroughCard(Card card) {
+    if (selectedCards.size() < 3 && !selectedCards.contains(card)) {
+      selectedCards.add(card);
     }
   }
 
   /**
-   * Selects a list of cards through calling the selectCardThroughId method
+   * Selects a list of cards through calling the selectCardThroughId method.
    *
    * @param cardsToSelect The list of card objects to be selected.
    */
@@ -86,6 +104,11 @@ public class HandController {
     selectedCards.remove(cards.get(i));
   }
 
+  /**
+   * Deselects a card from the hand by a Card object.
+   *
+   * @param card The card object to be selected.
+   */
   public void deselectCardsThroughCard(Card card) {
     if (selectedCards.contains(card)) {
       selectedCards.remove(card);
@@ -109,7 +132,7 @@ public class HandController {
   }
 
   /**
-   * Deletes the cards that are exchanged in the selected cards List and the cards list
+   * Deletes the cards that are exchanged in the selected cards List and the cards list.
    */
   public void exchangeCards() {
     selectedCards.stream().filter(cards::contains).forEach(cards::remove);
@@ -160,28 +183,9 @@ public class HandController {
         || numberOfCannonCards == 1 && numberOfCavalryCards == 1 && numberOfInfantryCards == 0);
   }
 
-
-  /**
-   * Determines if the given list of cards is exchangeable.
-   *
-   * @param cardList The list of cards to evaluate.
-   * @return true if the list of cards is exchangeable, false otherwise.
-   */
-  public boolean isExchangeable(List<Card> cardList) {
-    if (cardList.size() < 3) {
-      return false;
-    }
-    calculateNumberOfEachCardType(cardList);
-    return (numberOfWildcards == 2 || numberOfCannonCards == 3 || numberOfInfantryCards == 3
-        || numberOfCavalryCards == 3) || (numberOfWildcards == 1 && (numberOfCannonCards == 2
-        || numberOfInfantryCards == 2 || numberOfCavalryCards == 2)) || (numberOfCannonCards <= 1
-        && numberOfInfantryCards <= 1 && numberOfCavalryCards <= 1 && numberOfWildcards <= 1);
-
-  }
-
   /**
    * Counts the number of cards of each card type of the given List and saves it in the global
-   * variables
+   * variables.
    *
    * @param listToCount list of cards to count the number of cards for each card type from.
    */
@@ -211,14 +215,12 @@ public class HandController {
   public Set<CountryName> getBonusCountries(Set<Country> countries) {
     HashSet<CountryName> bonusCountries = new HashSet<>();
     countries.forEach(country -> selectedCards.forEach(card -> {
-          if (card.hasCountry()) {
-            if (card.getCountry().equals(country.getCountryName())) {
-              bonusCountries.add(country.getCountryName());
-            }
-          }
-        })
-
-    );
+      if (card.hasCountry()) {
+        if (card.getCountry().equals(country.getCountryName())) {
+          bonusCountries.add(country.getCountryName());
+        }
+      }
+    }));
     return bonusCountries;
   }
 
@@ -242,7 +244,7 @@ public class HandController {
   }
 
   /**
-   * Changes the Hand object to be managed by the player controller
+   * Changes the Hand object to be managed by the HandController.
    *
    * @param hand the Hand that the HandController should now manage.
    */

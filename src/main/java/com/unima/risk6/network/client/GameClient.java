@@ -1,5 +1,6 @@
 package com.unima.risk6.network.client;
 
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.serialization.Serializer;
 import io.netty.bootstrap.Bootstrap;
@@ -26,12 +27,12 @@ public final class GameClient implements Runnable {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
 
-  private final String URL;// = System.getProperty("url", "ws://127.0.0.1:8080/game");
+  private final String url;
 
   private volatile Channel ch;
 
   public GameClient(String url) {
-    URL = System.getProperty("url", url);
+    this.url = System.getProperty("url", url);
   }
 
   public void sendMessage(Message message) {
@@ -41,10 +42,15 @@ public final class GameClient implements Runnable {
     LOGGER.debug("Sent Message: " + json);
   }
 
+  public void leaveGame() {
+    ch.close();
+    LobbyConfiguration.stopGameClient();
+  }
+
   public void run() {
     try {
-      URI uri = new URI(URL);
-      final int port = 8080;
+      URI uri = new URI(url);
+      final int port = 42069;
 
       EventLoopGroup group = new NioEventLoopGroup();
       try {
@@ -66,27 +72,6 @@ public final class GameClient implements Runnable {
         ch = b.connect(uri.getHost(), port).sync().channel();
         handler.handshakeFuture().sync();
 
-        //BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-        /*while (true) {
-          //String msg = console.readLine();
-          if (msg == null && !sended) {
-            break;
-          } else if ("bye".equalsIgnoreCase(msg) && !sended) {
-            ch.writeAndFlush(new CloseWebSocketFrame());
-            ch.closeFuture().sync();
-            break;
-          } else if ("ping".equalsIgnoreCase(msg) && !sended) {
-            WebSocketFrame frame = new PingWebSocketFrame(
-                Unpooled.wrappedBuffer(new byte[]{8, 1, 8, 1}));
-            ch.writeAndFlush(frame);
-          } else if (!sended){
-            sended = true;
-            System.out.println("Sending Message: " + msg);
-            WebSocketFrame frame = new TextWebSocketFrame(msg);
-            ch.writeAndFlush(frame);
-          }
-        }*/
-        //Nötig, damit Thread nicht terminiert.
         while (true) {
           Thread.sleep(10000);
         }

@@ -44,6 +44,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -52,7 +53,17 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-
+import javafx.scene.image.ImageView;
+/**
+ * The class TitleSceneController controls the title scene of the game.
+ * It includes methods for button actions like single player, multiplayer,
+ * tutorial, options and quit. It also includes methods for animations,
+ * handling sound volume and IP address display.
+ *
+ * @author fisommer
+ * @author astoyano
+ * @author eameri
+ */
 public class TitleSceneController implements Initializable {
 
   @FXML
@@ -85,6 +96,8 @@ public class TitleSceneController implements Initializable {
   private Circle trigger;
   @FXML
   private TextField ipLabel;
+  @FXML
+  ImageView volumeImage;
 
   private BooleanProperty switchedOn;
   private TranslateTransition translateAnimation;
@@ -96,7 +109,15 @@ public class TitleSceneController implements Initializable {
   private SceneController sceneController;
 
   private UserService userService;
-
+  private double volume;
+  /**
+   * Initialize the controller. It sets the initial configurations and properties
+   * of the elements in the title scene such as the volume, video, animations, and
+   * IP address display.
+   *
+   * @param url Represents a Uniform Resource Locator, a pointer to a "resource" on the World Wide Web.
+   * @param resourceBundle Contains locale-specific objects.
+   */
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     applyButtonStyle(singlePlayerButton);
@@ -165,9 +186,37 @@ public class TitleSceneController implements Initializable {
       animation.play();
     });
   }
-
+  /**
+   * Handles the volume clicked event. It either mutes or unmutes the volume
+   * based on the current volume level.
+   */
+  @FXML
+  private void volumeClicked(){
+    if(volumeSlider.getValue()==0.0){
+      volumeSlider.setValue(volume);
+      volumeImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures/soundIcon.png").toString()));
+    }else{
+      volumeSlider.setValue(0.0);
+      volumeImage = new ImageView(new Image(getClass().getResource("/com/unima/risk6/pictures/muteIcon.png").toString()));
+    }
+    volume = volumeSlider.getValue();
+  }
+  /**
+   * Handles the button click event to toggle the multiplayer and tutorial buttons.
+   */
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
+    if (isOn) {
+      singlePlayerButton.setOpacity(1);
+      singlePlayerButton.setDisable(false);
+      tutorialButton.setOpacity(1);
+      tutorialButton.setDisable(false);
+    } else { // host enabled
+      singlePlayerButton.setOpacity(0.6);
+      singlePlayerButton.setDisable(true);
+      tutorialButton.setOpacity(0.6);
+      tutorialButton.setDisable(true);
+    }
     switchedOn.set(!isOn);
     setIpLabel();
     translateAnimation.setToX(isOn ? 0 : 100 - 55);
@@ -175,7 +224,9 @@ public class TitleSceneController implements Initializable {
     fillAnimation.setToValue(isOn ? Color.WHITE : Color.LIGHTGREEN);
     animation.play();
   }
-
+  /**
+   * Sets the IP address label in the scene.
+   */
   private void setIpLabel() {
     if (switchedOn.get()) {
       StringBuilder ipS = getIpS();
@@ -197,7 +248,11 @@ public class TitleSceneController implements Initializable {
       ipLabel.setEditable(false);
     }
   }
-
+  /**
+   * Gets the IP addresses of the machine.
+   *
+   * @return A StringBuilder containing the IP addresses.
+   */
   private static StringBuilder getIpS() {
     StringBuilder ipS = new StringBuilder();
     try {
@@ -218,7 +273,12 @@ public class TitleSceneController implements Initializable {
     }
     return ipS;
   }
-
+  /**
+   * Handles the single player button click event. It sets up the game lobby for the
+   * single player mode and sends a request to the server to join the lobby.
+   *
+   * @throws InterruptedException if any thread has interrupted the current thread.
+   */
   @FXML
   private void handleSinglePlayer() throws InterruptedException {
     if (switchedOn.get()) {
@@ -226,9 +286,9 @@ public class TitleSceneController implements Initializable {
       switchedOn.setValue(false);
     }
     Thread.sleep(100);
-    NetworkConfiguration.startGameServer();
+    NetworkConfiguration.startSinglePlayerServer();
     Thread.sleep(150);
-    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
     Thread.sleep(150);
     GameConfiguration.setMyGameUser(
@@ -242,7 +302,9 @@ public class TitleSceneController implements Initializable {
   }
 
   // Define the event handler for the multi player button
-
+  /**
+   * Handles the multi player button click event. It switches the scene to the JoinOnlineScene.
+   */
   @FXML
   private void handleMultiPlayer() {
     JoinOnlineScene scene = (JoinOnlineScene) SceneConfiguration.getSceneController()
@@ -257,7 +319,12 @@ public class TitleSceneController implements Initializable {
     sceneController.activate(SceneName.JOIN_ONLINE);
 
   }
-
+  /**
+   * Handles the tutorial button click event. It sets up the game lobby for the tutorial
+   * mode and sends a request to the server to join the tutorial lobby.
+   *
+   * @throws InterruptedException if any thread has interrupted the current thread.
+   */
   @FXML
   private void handleTutorial() throws InterruptedException {
     //TODO: Play Tutorial
@@ -267,7 +334,7 @@ public class TitleSceneController implements Initializable {
     }
     NetworkConfiguration.startGameServer();
     Thread.sleep(200);
-    LobbyConfiguration.configureGameClient("127.0.0.1", 8080);
+    LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
     Thread.sleep(200);
     GameConfiguration.setMyGameUser(
@@ -281,7 +348,9 @@ public class TitleSceneController implements Initializable {
     LobbyConfiguration.sendTutorialCreateLobby(gameLobby);
   }
 
-
+  /**
+   * Handles the options button click event. It switches the scene to the UserOptionsScene.
+   */
   @FXML
   private void handleOptions() {
     UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
@@ -295,13 +364,18 @@ public class TitleSceneController implements Initializable {
     pauseTitleSound();
     sceneController.activate(SceneName.USER_OPTION);
   }
-
+  /**
+   * Handles the quit game button click event. It closes the application.
+   */
   @FXML
   private void handleQuitGame() {
     SceneController sceneController = SceneConfiguration.getSceneController();
     sceneController.close();
   }
-
+  /**
+   * Animates the title label. It creates and plays an animation that includes rotation,
+   * scaling and color change.
+   */
   private void animateTitleLabel() {
     // Rotate animation
     TranslateTransition movementTransition = new TranslateTransition(Duration.seconds(1),

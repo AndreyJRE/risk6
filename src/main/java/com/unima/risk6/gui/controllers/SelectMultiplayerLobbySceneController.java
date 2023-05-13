@@ -20,8 +20,8 @@ import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.CreateLobbyScene;
 import com.unima.risk6.gui.scenes.SelectMultiplayerLobbyScene;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -295,7 +295,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   }
 
   @Override
-  public void updateChat(ArrayList<String> messages) {
+  public void updateChat(List<String> messages) {
     Platform.runLater(() -> {
       chatArea.appendText(messages.get(messages.size() - 1) + "\n");
     });

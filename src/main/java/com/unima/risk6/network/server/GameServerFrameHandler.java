@@ -99,6 +99,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             moveProcessor.processAttack(attack);
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
+            if (moveProcessor.getGameController().getGameState().isGameOver()) {
+              LOGGER.info("Game Over!");
+              gameLobbyChannels.handleGameOver(ctx.channel(), this);
+            }
           }
           case "REINFORCE" -> {
             LOGGER.debug("The server received a reinforce object");
@@ -227,7 +231,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   sendUpdatedServerLobby(serverLobby);
                 }
                 case START_GAME -> {
-                  //TODO MOVE_CONTROLLER
                   LOGGER.debug("At START_GAME" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby myServerGameLobby = getServerGameLobby(gameLobby,
@@ -271,8 +274,16 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 case CREATE_GAME_LOBBY -> {
                   LOGGER.debug("At CREATE_GAME_LOBBY" + connectionMessage.getContent().getClass());
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
-                  gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
-                  sendCreatedGameLobby(NetworkConfiguration.getServerLobby(), gameLobby);
+                  if (NetworkConfiguration.getServerLobby().getGameLobbies().stream()
+                      .anyMatch(x -> x.getLobbyName().equals(gameLobby.getLobbyName()))) {
+                    //If theres already a lobby with the same name
+                    LOGGER.error("There is another lobby with the same name.");
+                    sendDropMessage(ctx.channel(), ConnectionActions.DROP_CREATE_GAME_LOBBY,
+                        "There is another lobby with the same name.");
+                  } else {
+                    gameLobbyChannels.createGameLobby(gameLobby, ctx.channel());
+                    sendCreatedGameLobby(NetworkConfiguration.getServerLobby(), gameLobby);
+                  }
 
                 }
                 case START_TUTORIAL -> {

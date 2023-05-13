@@ -19,7 +19,7 @@ public class LobbyConfiguration {
 
   private static GameLobby gameLobby;
 
-  private static final ArrayList<String> messages = new ArrayList<>();
+  private static final List<String> messages = new ArrayList<>();
 
   private static final List<ServerLobbyObserver> SERVER_LOBBY_OBSERVERS = new ArrayList<>();
 
@@ -107,6 +107,7 @@ public class LobbyConfiguration {
 
   public static void setLastChatMessage(String string) {
     messages.add(string);
+    System.out.println(messages);
     notifyChatLobbyObservers();
   }
 
@@ -114,10 +115,9 @@ public class LobbyConfiguration {
    * This method is used to configure the network client.
    *
    * @param hostIp Server Host IP
-   * @param port   Server Port
    */
-  public static void configureGameClient(String hostIp, int port) {
-    String url = "ws://" + hostIp + ":" + port + "/game";
+  public static void configureGameClient(String hostIp) {
+    String url = "ws://" + hostIp + ":" + "8080" + "/game";
     gameClient = new GameClient(url);
   }
 
@@ -168,5 +168,9 @@ public class LobbyConfiguration {
   public static void sendTutorialCreateLobby(GameLobby gameLobby) {
     gameClient.sendMessage(
         new ConnectionMessage<>(ConnectionActions.CREATE_TUTORIAL_LOBBY, gameLobby));
+  }
+
+  public static void sendLeaveGameMessage() {
+    gameClient.leaveGame();
   }
 }
