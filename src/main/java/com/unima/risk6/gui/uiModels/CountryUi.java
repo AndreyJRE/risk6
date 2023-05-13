@@ -27,6 +27,8 @@ import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -39,6 +41,7 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -370,6 +373,61 @@ public class CountryUi extends Group {
       }
     });
 
+    moveTroopsPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+      @Override
+      public void handle(KeyEvent event) {
+        switch (event.getCode()) {
+          case LEFT:
+            // Handle left arrow key press
+            System.out.println("Left Arrow Key Pressed");
+            if (amountOfTroops.get() > 1) {
+              amountOfTroops.getAndDecrement();
+              chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+            }
+            break;
+          case RIGHT:
+            // Handle right arrow key press
+            System.out.println("Right Arrow Key Pressed");
+            if (amountOfTroops.get() < troopBound) {
+              amountOfTroops.getAndIncrement();
+              chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+            }
+            break;
+          case ENTER:
+            // Handle enter key press
+            System.out.println("Enter Key Pressed");
+            popUp.hide();
+            PlayerController playerController = GameSceneController.getPlayerController();
+            if (gamePhase == FORTIFY_PHASE) {
+              playerController.sendFortify(country, adjacentCountryUi.getCountry(),
+                  amountOfTroops.get());
+
+              if (playerController.getPlayer().getCurrentPhase() == FORTIFY_PHASE) {
+                playerController.sendEndPhase(gamePhase);
+                removeArrowsAndAdjacentCountries();
+              }
+
+            } else if (gamePhase == ATTACK_PHASE) {
+              playerController.sendAttack(country, adjacentCountryUi.getCountry(),
+                  amountOfTroops.get());
+              removeArrowsAndAdjacentCountries();
+            } else if (gamePhase == REINFORCEMENT_PHASE) {
+              playerController.sendReinforce(country, amountOfTroops.get());
+              try {
+                Thread.sleep(100);
+              } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+              }
+              if (playerController.getPlayer().getDeployableTroops() == 0
+                  && !playerController.getHandController().holdsExchangeable()) {
+                playerController.sendEndPhase(gamePhase);
+              }
+            }
+            break;
+        }
+      }
+    });
+
     Circle confirmCircle = new Circle(25);
     Image confirmImage = new Image(
         Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png"))
@@ -410,9 +468,9 @@ public class CountryUi extends Group {
     HBox.setHgrow(confirmCircle, Priority.ALWAYS);
 
     moveTroopsPane.setCenter(chatBox);
-    moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.40, gamePane.getHeight() * 0.20);
+    moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.30, gamePane.getHeight() * 0.15);
     moveTroopsPane.setStyle(
-        "-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;");
+        "-fx-background-color: rgba(255, 255, 255, 0.5); -fx-background-radius: 10;");
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
@@ -424,9 +482,12 @@ public class CountryUi extends Group {
 
     popUp.getContent().add(moveTroopsPane);
 
+    moveTroopsPane.setFocusTraversable(true);
+
     popUp.setX(centerX - popupWidth / 2);
     popUp.setY(centerY - popupHeight / 2);
     popUp.show(gamePane.getScene().getWindow());
+    Platform.runLater(() -> moveTroopsPane.requestFocus());
   }
 
   public void removeArrowsAndAdjacentCountries() {
