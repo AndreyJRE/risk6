@@ -3,6 +3,7 @@ package com.unima.risk6.network.server;
 import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.CLAIM_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
+import static com.unima.risk6.game.models.enums.GamePhase.NOT_ACTIVE;
 import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 import static com.unima.risk6.network.server.GameServer.channels;
 
@@ -184,8 +185,21 @@ public class GameLobbyChannels {
             }
             gameState.setCurrentPlayer(gameState.getActivePlayers().peek());
 
+          if (gameState.getActivePlayers().stream().allMatch(n -> n instanceof AiBot)) {
+            gameState.setGameOver(true);
+            gameState.getActivePlayers().forEach(n -> n.setCurrentPhase(NOT_ACTIVE));
+          } else {
             processBotMove(mediumBot, channelGroup, gsh, moveProcessor);
-            gsh.sendGamestate(channelGroup, gameState);
+          }
+          //gameController.nextPhase();
+          //if(gamePhase.equals(GamePhase.CLAIM_PHASE)){
+          //  if(gameState.getActivePlayers().peek().getInitialTroops() > 0)
+          //  gameState.getCurrentPlayer().setCurrentPhase(GamePhase.CLAIM_PHASE);
+          //}
+
+          //TODO handle bots
+          //gameState.getLastMoves().add(new EndPhase(GamePhase.NOT_ACTIVE));
+          gsh.sendGamestate(channelGroup, gameState);
 
 
           } else {

@@ -25,10 +25,6 @@ import java.util.stream.Collectors;
 public class TutorialBot extends Player implements AiBot {
 
   private Queue<Reinforce> deterministicClaims;
-  private Queue<Reinforce> deterministicReinforces;
-  private Queue<CountryPair> deterministicAttacks;
-  private Queue<Fortify> deterministicAfterAttacks;
-  private Queue<Fortify> deterministicFortifies;
   private Map<CountryName, Country> countryMap;
 
   /**
@@ -40,10 +36,6 @@ public class TutorialBot extends Player implements AiBot {
     super(username);
     this.countryMap = this.initalizeMap();
     this.deterministicClaims = this.createDeterministicClaims();
-    this.deterministicReinforces = this.createDeterministicReinforces();
-    this.deterministicAttacks = this.createDeterministicAttacks();
-    this.deterministicAfterAttacks = this.createDeterministicAfterAttacks();
-    this.deterministicFortifies = this.createDeterministicFortifies();
   }
 
   /**
@@ -51,53 +43,6 @@ public class TutorialBot extends Player implements AiBot {
    */
   public TutorialBot() {
     this("Johnny Test");
-  }
-
-  /**
-   * Creates a queue of deterministic after-attack moves for the bot during the tutorial.
-   *
-   * @return a queue of Fortify objects representing the bot's deterministic after-attack moves.
-   */
-  private Queue<Fortify> createDeterministicAfterAttacks() {
-    Queue<Fortify> afterAttacks = new LinkedList<>();
-    afterAttacks.add(new Fortify(this.countryMap.get(CountryName.BRAZIL),
-        this.countryMap.get(CountryName.VENEZUELA), 1));
-    return afterAttacks;
-  }
-
-  /**
-   * Creates a queue of deterministic fortification moves for the bot during the tutorial.
-   *
-   * @return a queue of Fortify objects representing the bot's deterministic fortification moves.
-   */
-  private Queue<Fortify> createDeterministicFortifies() {
-    Queue<Fortify> fortifies = new LinkedList<>();
-    fortifies.add(new Fortify(this.countryMap.get(CountryName.BRAZIL),
-        this.countryMap.get(CountryName.VENEZUELA), 25));
-    return fortifies;
-  }
-
-  /**
-   * Creates a queue of deterministic attack moves for the bot during the tutorial.
-   *
-   * @return a queue of CountryPair objects representing the bot's deterministic attack moves.
-   */
-  private Queue<CountryPair> createDeterministicAttacks() {
-    Queue<CountryPair> attacks = new LinkedList<>();
-    attacks.add(new CountryPair(this.countryMap.get(CountryName.BRAZIL),
-        this.countryMap.get(CountryName.VENEZUELA)));
-    return attacks;
-  }
-
-  /**
-   * Creates a queue of deterministic reinforcement moves for the bot during the tutorial.
-   *
-   * @return a queue of Reinforce objects representing the bot's deterministic reinforcement moves.
-   */
-  private Queue<Reinforce> createDeterministicReinforces() {
-    Queue<Reinforce> reinforces = new LinkedList<>();
-    reinforces.add(new Reinforce(this.countryMap.get(CountryName.BRAZIL), 4));
-    return reinforces;
   }
 
   /**
@@ -120,12 +65,14 @@ public class TutorialBot extends Player implements AiBot {
 
   @Override
   public CountryPair createAttack() {
-    return this.deterministicAttacks.poll();
+    return new CountryPair(this.countryMap.get(CountryName.BRAZIL),
+        this.countryMap.get(CountryName.VENEZUELA));
   }
 
   @Override
   public Fortify moveAfterAttack(CountryPair winPair) {
-    return this.deterministicAfterAttacks.poll();
+    return new Fortify(this.countryMap.get(CountryName.BRAZIL),
+        this.countryMap.get(CountryName.VENEZUELA), 1);
   }
 
   @Override
@@ -179,37 +126,5 @@ public class TutorialBot extends Player implements AiBot {
 
   public void setDeterministicClaims(Queue<Reinforce> deterministicClaims) {
     this.deterministicClaims = deterministicClaims;
-  }
-
-  public Queue<Reinforce> getDeterministicReinforces() {
-    return deterministicReinforces;
-  }
-
-  public void setDeterministicReinforces(Queue<Reinforce> deterministicReinforces) {
-    this.deterministicReinforces = deterministicReinforces;
-  }
-
-  public Queue<CountryPair> getDeterministicAttacks() {
-    return deterministicAttacks;
-  }
-
-  public void setDeterministicAttacks(Queue<CountryPair> deterministicAttacks) {
-    this.deterministicAttacks = deterministicAttacks;
-  }
-
-  public Queue<Fortify> getDeterministicAfterAttacks() {
-    return deterministicAfterAttacks;
-  }
-
-  public void setDeterministicAfterAttacks(Queue<Fortify> deterministicAfterAttacks) {
-    this.deterministicAfterAttacks = deterministicAfterAttacks;
-  }
-
-  public Queue<Fortify> getDeterministicFortifies() {
-    return deterministicFortifies;
-  }
-
-  public void setDeterministicFortifies(Queue<Fortify> deterministicFortifies) {
-    this.deterministicFortifies = deterministicFortifies;
   }
 }

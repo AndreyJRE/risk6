@@ -46,7 +46,6 @@ public class HardBot extends GreedyBot implements AiBot {
       updateBestMoves();
       firstAttack = false;
     }
-    System.out.println(attacks.size());
     CountryPair updated = null;
     while (!attacks.isEmpty()) {
       CountryPair toUpdate = this.attacks.poll();
@@ -64,7 +63,6 @@ public class HardBot extends GreedyBot implements AiBot {
   @Override
   public Fortify createFortify() { // check if fortify conditions need to be validated
     updateBestMoves();
-    System.out.println(fortify);
     firstAttack = true;
     return this.fortify;
   }

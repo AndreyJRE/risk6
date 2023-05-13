@@ -45,23 +45,20 @@ class TutorialTest {
     assertTrue(tutorialBotPlayer.getCountries().size() < 42);
     assertEquals(2, tutorialState.getActivePlayers().size());
     assertEquals(humanPlayer, tutorialState.getCurrentPlayer());
-    assertEquals(8, humanPlayer.getInitialTroops());
-    assertEquals(8, tutorialBotPlayer.getInitialTroops());
+    assertEquals(9, humanPlayer.getInitialTroops());
+    assertEquals(9, tutorialBotPlayer.getInitialTroops());
     assertEquals(GamePhase.NOT_ACTIVE, tutorialBotPlayer.getCurrentPhase());
     assertEquals(GamePhase.CLAIM_PHASE, humanPlayer.getCurrentPhase());
-    System.out.println(tutorial.getNextMessage());
+    assertTrue(tutorial.getTutorialState().isChatEnabled());
+    assertNotNull(tutorial.getNextMessage());
   }
 
   @Test
   void serializeTest() {
     GameState empty = GameConfiguration.configureGame(new ArrayList<>(), List.of(tutorialBot));
-    String result = Serializer.serialize(new StandardMessage<GameState>(empty));
+    String result = Serializer.serialize(new StandardMessage<>(empty));
     GameState copy = (GameState) Deserializer.deserialize(result, empty).getContent();
     TutorialBot botCopy = (TutorialBot) copy.getCurrentPlayer();
     assertTrue(botCopy.getDeterministicClaims().size() > 0);
-    assertTrue(botCopy.getDeterministicReinforces().size() > 0);
-    assertTrue(botCopy.getDeterministicAttacks().size() > 0);
-    assertTrue(botCopy.getDeterministicAfterAttacks().size() > 0);
-    assertTrue(botCopy.getDeterministicFortifies().size() > 0);
   }
 }

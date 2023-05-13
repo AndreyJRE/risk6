@@ -167,6 +167,8 @@ public class MoveProcessor {
         //Increase statistic for countriesLost and countriesWon
 
         defenderStatistic.setCountriesLost(defenderStatistic.getCountriesLost() + 1);
+        defenderStatistic.setNumberOfTroops(0);
+        defenderStatistic.setNumberOfOwnedCountries(0);
 
         attackerStatistic.setCountriesWon(attackerStatistic.getCountriesWon() + 1);
 

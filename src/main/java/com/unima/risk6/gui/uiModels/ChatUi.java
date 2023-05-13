@@ -51,34 +51,26 @@ public class ChatUi extends BorderPane implements ChatObserver {
 
   private Scene gameScene;
 
-  //TODO LEFT Align Messages
   public ChatUi(Scene gameScene) {
 
     this.gameScene = gameScene;
 
     gameRoot = (BorderPane) gameScene.getRoot();
-        /*
-        this.setPrefSize(gameRoot.getWidth() * 0.70, gameRoot.getHeight() * 0.70);
-        rootBounds = gameRoot.localToScreen(gameRoot.getBoundsInLocal());
-        centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
-        centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
-        popupWidth = this.getPrefWidth();
-        popupHeight = this.getPrefHeight();
-         */
 
     titleBox = new HBox();
     chatLabel = new Label("Chat");
     chatLabel.setStyle("-fx-font-size: 25px; -fx-font-weight: bold");
     chatLabel.setPadding(new Insets(10, 0, 0, 20));
     closeButton = new Button();
-    closeButton.setPrefSize(20, 20);
-    ImageView closeIcon = new ImageView(new Image(
-        getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
+    closeButton.setPrefSize(15, 15);
+    ImageView closeIcon = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/closeIcon.png").toString()));
     closeIcon.setFitWidth(30);
     closeIcon.setFitHeight(30);
     closeButton.setGraphic(closeIcon);
     closeButton.setStyle("-fx-background-radius: 15px;");
     closeButton.setFocusTraversable(false);
+    closeButton.setStyle("-fx-background-color: transparent;");
     stackPane = new StackPane(chatLabel);
     HBox.setHgrow(stackPane, Priority.ALWAYS);
     titleBox.getChildren().addAll(stackPane, closeButton);
@@ -94,31 +86,7 @@ public class ChatUi extends BorderPane implements ChatObserver {
     messageBox.setSpacing(15);
     messageBox.setAlignment(Pos.TOP_LEFT);
 
-        /*
-        userBox = new VBox();
-        userBox.setAlignment(Pos.CENTER);
-        userBox.setSpacing(5);
-        Label userLabel = new Label("Username");
-        Circle userCircle = new Circle(30);
-        userCircle.setStroke(Color.BLACK);
-        //TODO: CHANGE USERICON AGAINST REAL USER IMAGE
-        ImageView userIcon = new ImageView(new Image(
-                getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
-        userCircle.setFill(new ImagePattern(userIcon.getImage()));
-        userBox.getChildren().addAll(userLabel, userCircle);
-
-        text = new Text("Your text here");
-        double chatWidth = text.getLayoutBounds().getWidth() + 20;
-        double chatHeight = text.getLayoutBounds().getHeight() + 20;
-
-        chatRectangle = new Rectangle(chatWidth, chatHeight);
-        chatRectangle.setArcHeight(10);
-        chatRectangle.setArcWidth(10);
-        chatRectangle.setFill(Color.LIGHTGREY);
-        StackPane textStack = new StackPane(chatRectangle, text);
-
-         */
-    text = new Text("Your ingame messages");
+    text = new Text("Your in-game messages");
     double chatWidth = text.getLayoutBounds().getWidth() + 20;
     double chatHeight = text.getLayoutBounds().getHeight() + 20;
 
@@ -142,42 +110,38 @@ public class ChatUi extends BorderPane implements ChatObserver {
     sendMessage.setOnKeyPressed(event -> {
       if (event.getCode() == KeyCode.ENTER) {
 
-        String message = sendMessage.getText();
+        String message = sendMessage.getText().trim();
         sendMessage.clear();
-        LobbyConfiguration.sendChatMessage(message);
-        //chatArea.appendText(user.getUsername() + ": " + message + "\n");
-        event.consume();
+        if (message.length() > 0) {
+          LobbyConfiguration.sendChatMessage(message);
+          event.consume();
+        }
       }
     });
 
     sendButton = new Button();
     sendButton.setPrefSize(20, 20);
-    sendIcon = new ImageView(new Image(
-        getClass().getResource("/com/unima/risk6/pictures/sendIcon.png").toString()));
+    sendButton.setStyle("-fx-background-color: transparent;");
+    sendIcon = new ImageView(
+        new Image(getClass().getResource("/com/unima/risk6/pictures/sendIcon.png").toString()));
     sendIcon.setFitWidth(30);
     sendIcon.setFitHeight(30);
     sendButton.setGraphic(sendIcon);
-    sendButton.setStyle("-fx-background-radius: 15px;");
     sendButton.setFocusTraversable(false);
     sendButton.setOnAction(event -> {
       String message = sendMessage.getText();
       sendMessage.clear();
       LobbyConfiguration.sendChatMessage(message);
-      //chatArea.appendText(user.getUsername() + ": " + message + "\n");
       event.consume();
     });
 
     sendMessageBox = new HBox();
     sendMessageBox.setAlignment(Pos.CENTER);
-    sendMessageBox.setSpacing(20);
+    sendMessageBox.setSpacing(15);
     sendMessageBox.getChildren().addAll(sendMessage, sendButton);
+    sendMessageBox.setPadding(new Insets(2));
 
     this.setBottom(sendMessageBox);
-
-//        VBox chatBox = new VBox();
-//        chatBox.getChildren().addAll(chatLabel);
-//
-//        chatBoxPane.setCenter(chatBox);
 
     this.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
     chatPopup = new Popup();
@@ -189,21 +153,16 @@ public class ChatUi extends BorderPane implements ChatObserver {
     dropShadow.setColor(Color.BLACK);
     dropShadow.setRadius(10);
     this.setEffect(dropShadow);
-        /*
-        chatPopup.setX(centerX - popupWidth / 2);
-        chatPopup.setY(centerY - popupHeight / 2);
-        chatPopup.show(gameScene.getWindow());*/
     titleBox.setOnMousePressed(event -> {
       rootBounds = gameRoot.localToScreen(gameRoot.getBoundsInLocal());
       event.consume();
     });
     titleBox.setOnMouseDragged(event -> {
-      chatPopup.setX(event.getScreenX()/* - (rootBounds.getWidth() - popupWidth) / 2*/);
+      chatPopup.setX(event.getScreenX());
       chatPopup.setY(event.getScreenY() - 20);
       event.consume();
     });
 
-    // Add mouse pressed and drag events to wholeChat for resizing the popup
     wholeChat.setOnMousePressed(event -> {
       rootBounds = gameRoot.localToScreen(gameRoot.getBoundsInLocal());
       popupWidth = chatPopup.getWidth();
@@ -213,7 +172,6 @@ public class ChatUi extends BorderPane implements ChatObserver {
     wholeChat.setOnMouseDragged(event -> {
       double width = event.getScreenX() - rootBounds.getMinX() - chatPopup.getX();
       double height = event.getScreenY() - rootBounds.getMinY() - chatPopup.getY() - 20;
-      System.out.println("Dragged");
       if (width > 0) {
         chatPopup.setWidth(width);
       }
@@ -236,7 +194,8 @@ public class ChatUi extends BorderPane implements ChatObserver {
     chatPopup.setX(rootBounds.getMinX() + rootBounds.getWidth());
     chatPopup.setY(centerY - popupHeight / 2);
     sendMessage.setPromptText("Write your text message here");
-    sendMessage.setPrefSize(this.getPrefWidth() * 0.8, 40);
+    sendMessage.setPadding(new Insets(3));
+    sendMessage.setPrefSize(this.getPrefWidth() * 0.8, 35);
     chatPopup.show(gameScene.getWindow());
   }
 
@@ -244,20 +203,23 @@ public class ChatUi extends BorderPane implements ChatObserver {
   public void updateChat(ArrayList<String> messages) {
     Platform.runLater(() -> {
       System.out.println("update ChatUi " + messages.get(messages.size() - 1));
-      text = new Text(messages.get(messages.size() - 1));
-      double chatWidth = text.getLayoutBounds().getWidth() + 20;
-      double chatHeight = text.getLayoutBounds().getHeight() + 20;
 
-      chatRectangle = new Rectangle(chatWidth, chatHeight);
+      double maxWidthOfChat = this.getPrefWidth() - 40;
+
+      text = new Text(messages.get(messages.size() - 1));
+      text.setWrappingWidth(maxWidthOfChat - 10);
+      double chatHeight = text.getLayoutBounds().getHeight() + 10;
+      chatRectangle = new Rectangle(text.getLayoutBounds().getWidth() + 15, chatHeight);
       chatRectangle.setArcHeight(10);
       chatRectangle.setArcWidth(10);
       chatRectangle.setFill(Color.LIGHTGREY);
+      StackPane.setAlignment(text, Pos.TOP_LEFT);
+      StackPane.setAlignment(chatRectangle, Pos.TOP_LEFT);
       StackPane textStack = new StackPane(chatRectangle, text);
-      //StackPane.setAlignment(text, Pos.TOP_LEFT);
-      //StackPane.setMargin(text, new Insets(0, 0, 0, 10));
+      StackPane.setMargin(text, new Insets(4, 0, 0, 8));
 
       VBox messageBox = new VBox();
-      messageBox.setPadding(new Insets(10, 0, 0, 20));
+      messageBox.setPadding(new Insets(5, 0, 0, 15));
       messageBox.setSpacing(15);
       messageBox.setAlignment(Pos.TOP_LEFT);
       messageBox.getChildren().addAll(textStack);

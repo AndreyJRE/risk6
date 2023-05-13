@@ -138,6 +138,19 @@ public class HandUi extends BorderPane {
 
   }
 
+  private void handleSelectExchangeableButton() {
+    PlayerController playerController = GameSceneController.getPlayerController();
+    playerController.getHandController().selectExchangeableCards();
+    playerController.getPlayer().getHand().getSelectedCards()
+        .forEach(n -> cardUis.stream().filter(l -> l.getCard().equals(n)).forEach(x -> {
+          x.setClicked(true);
+          DropShadow dropShadow = new DropShadow();
+          dropShadow.setColor(Color.DARKRED);
+          x.getCardFrame().setEffect(dropShadow);
+        }));
+    checkAmountOfSelectedCards();
+  }
+
   private void checkAmountOfSelectedCards() {
     HBox newBottomBox = new HBox();
     newBottomBox.setAlignment(Pos.CENTER);
@@ -152,6 +165,15 @@ public class HandUi extends BorderPane {
     }
     selectedCardsUi.forEach(x -> System.out.println(x.getCard()));
     this.setBottom(newBottomBox);
+    if (handController.holdsExchangeable() && !handController.isExchangeable(
+        handController.getHand().getSelectedCards())) {
+      Button selectExchangeableButton = new Button("Automatic card selection");
+      selectExchangeableButton.setStyle(
+          "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
+      selectExchangeableButton.setFocusTraversable(false);
+      selectExchangeableButton.setOnMouseClicked(event -> handleSelectExchangeableButton());
+      newBottomBox.getChildren().add(selectExchangeableButton);
+    }
     if (handController.isExchangeable(handController.getHand().getSelectedCards())) {
       Button handInButton = new Button("Hand in the cards!");
       handInButton.setStyle(
