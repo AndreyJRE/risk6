@@ -151,12 +151,12 @@
         <HBox alignment="CENTER" prefHeight="40.0" prefWidth="1080.0" spacing="10.0"
           BorderPane.alignment="CENTER">
           <children>
-            <ImageView fitHeight="34.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="volumeImage" onMouseClicked="#volumeClicked" fitHeight="34.0" fitWidth="62.0" pickOnBounds="true" preserveRatio="true">
               <image>
                 <Image url="@../pictures/soundIcon.png"/>
               </image>
             </ImageView>
-            <Slider fx:id="volumeSlider" prefHeight="25.0" prefWidth="351.0"/>
+            <Slider fx:id="volumeSlider" prefHeight="25.0" prefWidth="351.0" style="-fx-control-inner-background: #FFFFFF; -fx-faint-focus-color: #FFFFFF; -fx-focus-color: #FFFFFF; -fx-accent: #2E8B57;"/>
           </children>
         </HBox>
       </top>
