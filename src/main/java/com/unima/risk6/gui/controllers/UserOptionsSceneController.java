@@ -340,6 +340,9 @@ public class UserOptionsSceneController {
         } catch (UsernameNotUniqueException e) {
           StyleConfiguration.showErrorDialog("Error", e.getMessage());
           userNameField.setText(user.getUsername());
+        } catch (IllegalArgumentException e) {
+          StyleConfiguration.showErrorDialog("Error", "Your username cannot be empty!");
+          userNameField.setText(user.getUsername());
         }
       } else {
         userNameField.setText(user.getUsername());
