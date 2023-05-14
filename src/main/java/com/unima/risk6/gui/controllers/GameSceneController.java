@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import javafx.animation.PathTransition;
@@ -58,6 +59,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -901,11 +903,30 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private void sendTutorialMessage() {
     if (tutorialMessageCounter == 0 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
         || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
-        || tutorialMessageCounter == 11) {
+        || tutorialMessageCounter == 11 || tutorialMessageCounter == 12) {
       LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
+    }
+    if (tutorialMessageCounter == 12) {
+      showChooseTutorialDifficultyDialog();
     }
     tutorialMessageCounter++;
   }
+
+  private static void showChooseTutorialDifficultyDialog() {
+    List<String> choices = new ArrayList<>();
+    choices.add("Easy");
+    choices.add("Medium");
+    choices.add("Hard");
+
+    ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Easy", choices);
+    choiceDialog.setTitle("Choice");
+    choiceDialog.setHeaderText("Choose a difficulty for the rest of the tutorial");
+    choiceDialog.setContentText("Difficulties:");
+
+    Optional<String> result = choiceDialog.showAndWait();
+    GameConfiguration.setBotDifficulty(result.orElse(choiceDialog.getDefaultChoice()));
+  }
+
 
   private void animateHandIn(HandIn handIn) {
     activePlayerUi.updateActivePlayerTroops();

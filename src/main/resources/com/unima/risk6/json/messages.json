@@ -5,7 +5,7 @@
     "player rolling a die to determine turn order in order of highest rolls to lowest. In the",
     "Tutorial however, we start at the end of the first phase after the dice rolls; the claim",
     "phase. Each player takes turns placing one troop on one unclaimed country. Try it out by",
-    "clicking on the highlighted country. If you want to identify a country, hold M to view the",
+    "clicking on New Guinea (highlighted). If you want to identify a country, hold M to view the",
     "names of the countries!"
   ],
   [
@@ -15,7 +15,7 @@
     "will then get bonus troops. You've almost taken Australia, so keep strengthening it!"
   ],
   [
-    "Notice how the enemy is getting ready to attack your one country in South America. Start",
+    "Notice how the enemy is getting ready to attack Venezuela in South America. Start",
     "placing troops there to make it more difficult for the enemy to take the whole country. Fun",
     "fact: you can hold tab to view player statistics."
   ],
@@ -47,9 +47,7 @@
     "Notice how the enemy has split his troops almost evenly between Venezuela and Brazil. These",
     "two countries are important as they are the borders of the continent. Having a high amount of",
     "troops on such countries gives you a higher chance of defending the continent successfully.",
-    "Especially important, since the enemy now has control over South America!"
-  ],
-  [
+    "Especially important, since the enemy now has control over South America!",
     "Over the course of the game, if you conquer a country during the attack phase you will",
     "receive a random card at the end of your turn. At the beginning of a turn you have",
     "the ability to swap 3 cards matching specific rules, and get extra troops in exchange",
@@ -59,11 +57,8 @@
     "In addition to the extra amount of troops you receive at the beginning of a round",
     "which is now even higher since you own Australia, handing in cards automatically gets you more troops on the",
     "countries represented on the card along with a further amount of troops to distribute as you",
-    "choose."
-  ],
-  [
-    "That's all for our introduction to the game RISK. You can now play this specific match further",
-    "with a bot of your chosen difficulty or play single player with multiple bots of different",
+    "choose. That's all for our introduction to the game RISK. You can now play this specific match further",
+    "with the bot you chose or play single player with multiple bots of different",
     "difficulties if you want to practice further."
   ]
 ]

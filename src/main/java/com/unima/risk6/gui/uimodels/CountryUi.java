@@ -616,12 +616,12 @@ public class CountryUi extends Group {
     arrow.setStartX(clickPosInGroup.getX());
     arrow.setStartY(clickPosInGroup.getY());
     arrow.setEndX(clickPosInGroup.getX());
+    KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
     arrow.setEndY(clickPosInGroup.getY());
+    KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
     setCursor(Cursor.MOVE);
 
     Timeline timeline = new Timeline();
-    KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
-    KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
     KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXvalue, endYvalue);
 
     timeline.getKeyFrames().add(keyFrame);
