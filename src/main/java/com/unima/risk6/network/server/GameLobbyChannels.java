@@ -19,7 +19,6 @@ import com.unima.risk6.game.models.GameLobby;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.UserDto;
-import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOutboundInvoker;
@@ -151,26 +150,32 @@ public class GameLobbyChannels {
     return moveProcessors.inverse().get(channelGroup);
   }
 
-  public void replaceUser(GameState gameState, GameLobby gameLobby, String playerName) {
-    MediumBot mediumBot = new MediumBot("I should not exist");
+  public void replaceUser(GameState gameState, GameLobby gameLobby, String playerName,
+      String botType) {
+    Player bot = new Player("I should not exist");
     for (int i = 0; i < gameState.getActivePlayers().size(); i++) {
       Player player = gameState.getActivePlayers().poll();
       if (player.getUser().equals(playerName)) {
         //Player found
-        mediumBot = new MediumBot(player);
-        for (Country country : mediumBot.getCountries()) {
-          country.setPlayer((Player) mediumBot);
+        switch (botType) {
+          //case "easy" ->  bot = new EasyBot(player);
+          case "medium" -> bot = new MediumBot(player);
+          //case "hard" ->  bot = new HardBot(player);
+
         }
-        gameState.getActivePlayers().add(mediumBot);
+        for (Country country : bot.getCountries()) {
+          country.setPlayer(bot);
+        }
+        gameState.getActivePlayers().add(bot);
       } else {
         gameState.getActivePlayers().add(player);
       }
     }
 
-    gameLobby.getBots().add(mediumBot.getUser());
+    gameLobby.getBots().add(bot.getUser());
   }
 
-  public void handleExit(Channel channel, GameServerFrameHandler gsh, boolean replaceTutorialBot) {
+  public void handleExit(Channel channel, GameServerFrameHandler gsh) {
 
     LOGGER.debug("Before handle Exit : moveProcessors Size: " + moveProcessors.size()
         + " gameChannels Size: " + gameChannels.size() + "Users size: " + users.size()
@@ -202,10 +207,9 @@ public class GameLobbyChannels {
           LOGGER.debug("Current player left");
 
           Player player = gameState.getCurrentPlayer();
-          GamePhase gamePhase = player.getCurrentPhase();
           mediumBot = new MediumBot(player);
           for (Country country : mediumBot.getCountries()) {
-            country.setPlayer((Player) mediumBot);
+            country.setPlayer(mediumBot);
           }
           MoveProcessor moveProcessor = moveProcessors.inverse().get(channelGroup);
 
@@ -229,8 +233,7 @@ public class GameLobbyChannels {
 
         } else {
           LOGGER.debug("A player left");
-          //mediumBot = new MediumBot("I should not exist");
-          replaceUser(gameState, gameLobby, getUserByChannel(channel).getUsername());
+          replaceUser(gameState, gameLobby, getUserByChannel(channel).getUsername(), "medium");
         }
       } else {
         //In Gamelobby
