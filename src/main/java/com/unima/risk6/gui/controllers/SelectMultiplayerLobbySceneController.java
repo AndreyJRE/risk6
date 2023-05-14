@@ -273,8 +273,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
           lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
         } else {
           boolean confirm = showConfirmationDialog("Missing experience",
-              "Your Win / Loss Ratio does not match the minimum required"
-                  + " Ratio of the selected Lobby. Do you still want to continue?");
+              "Your Elo does not match the minimum required"
+                  + " Elo of the selected Lobby. Do you still want to continue?");
           if (confirm) {
             LobbyConfiguration.sendJoinLobby(selectedLobby);
             lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());

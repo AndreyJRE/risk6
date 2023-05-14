@@ -78,7 +78,7 @@ public class HardBot extends GreedyBot implements AiBot {
   }
 
   @Override
-  public Fortify createFortify() { // check if fortify conditions need to be validated
+  public Fortify createFortify() {
     updateBestMoves();
     firstAttack = true;
     return this.fortify;
