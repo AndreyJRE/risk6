@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import javafx.animation.PathTransition;
@@ -58,6 +59,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -102,8 +104,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private GameState gameState;
   private BorderPane root;
   private Set<CountryUi> countriesUis;
-  private double originalScreenWidth;
-  private double originalScreenHeight;
   private Group countriesGroup;
   private LinkedList<PlayerUi> playerUis;
 
@@ -136,8 +136,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       this.gameState = GameConfiguration.getGameState();
     }
     this.countriesUis = CountriesUiConfiguration.getCountriesUis();
-    this.originalScreenWidth = SceneConfiguration.getWidth();
-    this.originalScreenHeight = SceneConfiguration.getHeight();
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.initializeGameScene();
@@ -301,9 +299,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
 
   private StackPane initializeCountriesPane() {
-    double widthRatio = gameScene.getWidth() / originalScreenWidth;
-    double heightRatio = gameScene.getHeight() / originalScreenHeight;
-    double initialScale = Math.min(widthRatio, heightRatio);
 
     countryNameGroup = new Group();
 
@@ -397,8 +392,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     }
     countryNameGroup.setVisible(false);
     countriesGroup.getChildren().add(countryNameGroup);
-    countriesGroup.setScaleX(initialScale);
-    countriesGroup.setScaleY(initialScale);
 
     StackPane countriesPane = new StackPane();
     countriesPane.getChildren().add(countriesGroup);
@@ -530,16 +523,16 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private void addListeners() {
     gameScene.widthProperty().addListener((obs, oldVal, newVal) -> {
-      double widthScale = newVal.doubleValue() / originalScreenWidth;
-      double heightScale = gameScene.getHeight() / originalScreenHeight;
+      double widthScale = newVal.doubleValue() / 1080;
+      double heightScale = gameScene.getHeight() / 720;
       double scale = Math.min(widthScale, heightScale);
       countriesGroup.setScaleX(scale + 0.4);
       countriesGroup.setScaleY(scale + 0.4);
     });
 
     gameScene.heightProperty().addListener((obs, oldVal, newVal) -> {
-      double widthScale = gameScene.getWidth() / originalScreenWidth;
-      double heightScale = newVal.doubleValue() / originalScreenHeight;
+      double widthScale = gameScene.getWidth() / 1080;
+      double heightScale = newVal.doubleValue() / 720;
       double scale = Math.min(widthScale, heightScale);
       countriesGroup.setScaleX(scale + 0.3);
       countriesGroup.setScaleY(scale + 0.3);
@@ -726,8 +719,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
       GameConfiguration.updateGameStatistic(
           gameState.getActivePlayers().contains(PLAYER_CONTROLLER.getPlayer()),
-          statistic.getTroopsLost(),
-          statistic.getCountriesWon(), statistic.getTroopsGained(),
+          statistic.getTroopsLost(), statistic.getCountriesWon(), statistic.getTroopsGained(),
           statistic.getCountriesLost());
     }
 
@@ -911,11 +903,30 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private void sendTutorialMessage() {
     if (tutorialMessageCounter == 0 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
         || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
-        || tutorialMessageCounter == 11) {
+        || tutorialMessageCounter == 11 || tutorialMessageCounter == 12) {
       LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
+    }
+    if (tutorialMessageCounter == 12) {
+      showChooseTutorialDifficultyDialog();
     }
     tutorialMessageCounter++;
   }
+
+  private static void showChooseTutorialDifficultyDialog() {
+    List<String> choices = new ArrayList<>();
+    choices.add("Easy");
+    choices.add("Medium");
+    choices.add("Hard");
+
+    ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Easy", choices);
+    choiceDialog.setTitle("Choice");
+    choiceDialog.setHeaderText("Choose a difficulty for the rest of the tutorial");
+    choiceDialog.setContentText("Difficulties:");
+
+    Optional<String> result = choiceDialog.showAndWait();
+    GameConfiguration.setBotDifficulty(result.orElse(choiceDialog.getDefaultChoice()));
+  }
+
 
   private void animateHandIn(HandIn handIn) {
     activePlayerUi.updateActivePlayerTroops();

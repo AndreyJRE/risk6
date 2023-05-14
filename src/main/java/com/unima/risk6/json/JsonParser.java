@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import java.io.InputStreamReader;
 
 /**
- * Implementation of parser to wrapper class for json file
+ * Implementation of parser to wrapper class for json file.
  *
  * @author astoyano
  */

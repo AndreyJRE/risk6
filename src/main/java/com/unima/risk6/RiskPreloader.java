@@ -9,6 +9,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+
+/**
+ * A custom preloader class for our Risk application. This will be shown while our database gets
+ * configured and our images and sounds get loaded.
+ */
 public class RiskPreloader extends Preloader {
 
   private Stage preloaderStage;

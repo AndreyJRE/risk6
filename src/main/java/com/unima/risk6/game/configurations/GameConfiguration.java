@@ -35,6 +35,7 @@ public class GameConfiguration {
   private static GameStatistic currentGameStatistic;
   private static Tutorial tutorial;
   private static boolean tutorialOver = false;
+  private static String botDifficulty;
 
   /**
    * Configures the game by initializing the countries, continents, players and creating a GameState
@@ -177,5 +178,13 @@ public class GameConfiguration {
   public static void setCurrentGameStatistic(
       GameStatistic currentGameStatistic) {
     GameConfiguration.currentGameStatistic = currentGameStatistic;
+  }
+
+  public static String getBotDifficulty() {
+    return botDifficulty;
+  }
+
+  public static void setBotDifficulty(String botDifficulty) {
+    GameConfiguration.botDifficulty = botDifficulty;
   }
 }

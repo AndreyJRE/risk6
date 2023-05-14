@@ -6,6 +6,7 @@ import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.controllers.enums.Colors;
 import com.unima.risk6.gui.controllers.enums.ImageName;
@@ -82,17 +83,13 @@ public class ActivePlayerUi extends Group {
     ImageView userImage;
     Player player = playerUi.getPlayer();
     if (player instanceof EasyBot) {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.EASYBOT_ICON));
     } else if (player instanceof MediumBot) {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.MEDIUMBOT_ICON));
     } else if (player instanceof HardBot) {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.HARDBOT_ICON));
     } else {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
     }
     StackPane stackPane = new StackPane(userImage);
     stackPane.setStyle("-fx-background-color: #F5F5F5;");
@@ -168,28 +165,22 @@ public class ActivePlayerUi extends Group {
    */
 
   public void changeActivePlayerUi(PlayerUi playerUi) {
-    if (!this.playerUi.getPlayer().getUser().equals(playerUi.getPlayer().getUser())
-        && this.playerUi.getPlayer().getUser()
-        .equals(GameSceneController.getPlayerController().getPlayer().getUser())
-        && playerUi.getPlayer().getCurrentPhase() != GamePhase.CLAIM_PHASE) {
-      //todo change to work
-      // SoundConfiguration.playYourTurnSound();
-    }
     this.playerUi = playerUi;
+    if (this.playerUi.getPlayer().getUser()
+        .equals(GameSceneController.getPlayerController().getPlayer().getUser())
+        && playerUi.getPlayer().getCurrentPhase() == GamePhase.REINFORCEMENT_PHASE) {
+      SoundConfiguration.playYourTurnSound();
+    }
     Player player = playerUi.getPlayer();
     ImageView userImage;
     if (player instanceof EasyBot) {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/easyBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.EASYBOT_ICON));
     } else if (player instanceof MediumBot) {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/mediumBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.MEDIUMBOT_ICON));
     } else if (player instanceof HardBot) {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/hardBot.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.HARDBOT_ICON));
     } else {
-      userImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/playerIcon.png").toString()));
+      userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
     }
     StackPane stackPane = new StackPane(userImage);
     //stackPane.setStyle("-fx-background-color: #F5F5F5;");
@@ -224,7 +215,7 @@ public class ActivePlayerUi extends Group {
         initPhase();
       }
       case CLAIM_PHASE -> {
-        phaseLabel.setText("Place your initial troops");
+        phaseLabel.setText("Place your troops");
         iconsPane.getChildren().remove(0);
         iconsPane.getChildren().add(phaseLabel);
         StackPane.setAlignment(phaseLabel, Pos.CENTER);

@@ -43,10 +43,12 @@ public class GameOverSceneController {
   private ImageView userImage;
   private StackPane userStackPane;
   private GridPane statisticsGridPane;
-  private String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-text-fill: white";
-  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
-  private Statistic statistic;
-  private GameState gameState;
+  private final String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; "
+      + "-fx-text-fill: white";
+  private final String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
+      + "-fx-font-size: 26px; -fx-text-fill: white";
+  private final Statistic statistic;
+  private final GameState gameState;
 
 
   public GameOverSceneController(GameOverScene gameOverScene, GameState gameState) {
@@ -69,16 +71,17 @@ public class GameOverSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.WON_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.8);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true,
+        true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -107,7 +110,8 @@ public class GameOverSceneController {
     Label userName = new Label(gameState.getCurrentPlayer().getUser());
     userName.setAlignment(Pos.CENTER);
     userName.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: white");
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: "
+            + "white");
 
     // Wrap the userNameField in an HBox to center it
     HBox userNameFieldContainer = new HBox(userName);
@@ -117,13 +121,14 @@ public class GameOverSceneController {
     gridPaneContainer.setAlignment(Pos.CENTER);
 
     // Create a VBox to hold the userNameField, userStackPane, and the labels
-    VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, gridPaneContainer);
-    centerVBox.setSpacing(20);
-    centerVBox.setAlignment(Pos.CENTER);
+    VBox centervbox = new VBox(userNameFieldContainer, userStackPane, gridPaneContainer);
+    centervbox.setSpacing(20);
+    centervbox.setAlignment(Pos.CENTER);
 
     Label winner = new Label("Winner Winner Chicken Dinner!");
     winner.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 90px; -fx-text-fill: white");
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 90px; -fx-text-fill: "
+            + "white");
 
     HBox winnerBox = new HBox(winner);
     winnerBox.setAlignment(Pos.CENTER);
@@ -133,32 +138,34 @@ public class GameOverSceneController {
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
     BorderPane.setMargin(winnerBox, new Insets(10, 10, 10, 10));
-    root.setCenter(centerVBox);
+    root.setCenter(centervbox);
   }
 
   private void initGridPane() {
     statisticsGridPane = new GridPane();
     Label countriesWon = new Label("Countries won: ");
-    Label countriesLost = new Label("Countries lost: ");
-    Label troops = new Label("Total troops at the end: ");
-    Label troopsGained = new Label("Troops gained: ");
-    Label troopsLost = new Label("Troops lost: ");
     Label numberCountriesWon = new Label(Integer.toString(statistic.getCountriesWon()));
+    Label countriesLost = new Label("Countries lost: ");
     Label numberCountriesLost = new Label(Integer.toString(statistic.getCountriesLost()));
+    Label troops = new Label("Total troops at the end: ");
     Label numberTroops = new Label(Integer.toString(statistic.getNumberOfTroops()));
+    Label troopsGained = new Label("Troops gained: ");
     Label numberTroopsGained = new Label(Integer.toString(statistic.getTroopsGained()));
+    Label troopsLost = new Label("Troops lost: ");
     Label numberTroopsLost = new Label(Integer.toString(statistic.getTroopsLost()));
+
+    numberCountriesWon.setStyle(numberStyle);
+    numberCountriesLost.setStyle(numberStyle);
+    numberTroops.setStyle(numberStyle);
+    numberTroopsGained.setStyle(numberStyle);
+    numberTroopsLost.setStyle(numberStyle);
 
     countriesLost.setStyle(labelStyle);
     countriesWon.setStyle(labelStyle);
     troops.setStyle(labelStyle);
     troopsGained.setStyle(labelStyle);
     troopsLost.setStyle(labelStyle);
-    numberCountriesWon.setStyle(numberStyle);
-    numberCountriesLost.setStyle(numberStyle);
-    numberTroops.setStyle(numberStyle);
-    numberTroopsGained.setStyle(numberStyle);
-    numberTroopsLost.setStyle(numberStyle);
+
 
     statisticsGridPane.add(troops, 0, 0);
     statisticsGridPane.add(troopsGained, 0, 1);

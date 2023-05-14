@@ -45,7 +45,12 @@ public class SceneController {
     scenes.put(name, scene);
   }
 
-
+  /**
+   * Activates the scene with the specified name, performs necessary initialization, and sets it as
+   * the active scene.
+   *
+   * @param name the name of the scene to activate
+   */
   public void activate(SceneName name) {
     if (name == SceneName.TITLE) {
       initTitleScreen();
@@ -70,6 +75,9 @@ public class SceneController {
     fadeIn(scene);
   }
 
+  /**
+   * Closes the scene controller, releases any resources, and exits the JavaFX application.
+   */
   public void close() {
     DatabaseConfiguration.closeDatabaseConnectionAndServices();
     if (NetworkConfiguration.getGameServerThread() != null
@@ -82,6 +90,12 @@ public class SceneController {
     stage.close();
     Platform.exit();
   }
+
+  /**
+   * Fades in the specified scene by applying a fade and scale transition animation.
+   *
+   * @param scene the scene to fade in
+   */
 
   private void fadeIn(Scene scene) {
     FadeTransition fadeTransition = new FadeTransition(Duration.millis(400), scene.getRoot());
@@ -97,6 +111,11 @@ public class SceneController {
     ParallelTransition parallelTransition = new ParallelTransition(fadeTransition, scaleTransition);
     parallelTransition.play();
   }
+
+  /**
+   * Initializes and displays the title screen by loading the associated FXML file and setting it as
+   * the active scene.
+   */
 
   public void initTitleScreen() {
     FXMLLoader fxmlLoader = new FXMLLoader(

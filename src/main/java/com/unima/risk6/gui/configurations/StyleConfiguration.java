@@ -14,7 +14,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-
+/**
+ * This class holds the configuration for various styles used in the application. It includes
+ * button styles and methods witch which you can apply the styles
+ *
+ * @author astoyano
+ * @author fisommer
+ */
 public class StyleConfiguration {
 
   private static final String NORMAL_BUTTON_STYLE = "-fx-background-color:"

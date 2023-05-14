@@ -44,7 +44,8 @@ public class CreateLobbySceneController {
 
   private final CreateLobbyScene createLobbyScene;
   private final SceneController sceneController;
-  private final String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px;";
+  private final String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
+      + "-fx-font-size: 26px;";
   ComboBox<String> maxPlayers;
   ComboBox<String> minElo;
   CheckBox chatCheck;
@@ -61,7 +62,8 @@ public class CreateLobbySceneController {
 
   public void init() {
     this.root = (BorderPane) createLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
+        26);
     // Initialize elements
     initElements();
   }
@@ -97,39 +99,41 @@ public class CreateLobbySceneController {
     HBox createLobbyContainer = new HBox(createLobby);
     createLobbyContainer.setAlignment(Pos.CENTER);
 
-    VBox vBox = new VBox(multiplayerSettings, centerGridPane, createLobbyContainer);
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(30);
+    VBox vbox = new VBox(multiplayerSettings, centerGridPane, createLobbyContainer);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setSpacing(30);
 
     AnchorPane anchorPane = new AnchorPane();
     anchorPane.setPrefSize(900, 600);
     anchorPane.setPadding(new Insets(60, 100, 60, 100));
 
-    vBox.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 20;"
-        + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-opacity: 0.9");
-    AnchorPane.setTopAnchor(vBox, 0.0);
-    AnchorPane.setRightAnchor(vBox, 0.0);
-    AnchorPane.setBottomAnchor(vBox, 0.0);
-    AnchorPane.setLeftAnchor(vBox, 0.0);
+    vbox.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 20;"
+        + " -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0); -fx-opacity: 0"
+        + ".9");
+    AnchorPane.setTopAnchor(vbox, 0.0);
+    AnchorPane.setRightAnchor(vbox, 0.0);
+    AnchorPane.setBottomAnchor(vbox, 0.0);
+    AnchorPane.setLeftAnchor(vbox, 0.0);
 
-    vBox.setPadding(new Insets(15, 30, 15, 30));
+    vbox.setPadding(new Insets(15, 30, 15, 30));
 
-    anchorPane.getChildren().add(vBox);
+    anchorPane.getChildren().add(vbox);
 
     // Load the image into an ImageView
     Image originalImage = ImageConfiguration.getImageByName(ImageName.CREATE_LOBBY_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true,
+        true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);

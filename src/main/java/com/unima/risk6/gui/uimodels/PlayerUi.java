@@ -66,7 +66,6 @@ public class PlayerUi extends Group {
     }
     StackPane stackPane = new StackPane(userImage);
     stackPane.setStyle("-fx-background-color: #F5F5F5;");
-    //stackPane.setBackground(new Background(new BackgroundFill(Colors.COUNTRY_BACKGROUND.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
 
     ellipse.setFill(new ImagePattern(stackPane.snapshot(null, null)));
     ellipse.setStroke(playerColor);
@@ -95,9 +94,7 @@ public class PlayerUi extends Group {
     updateAmountOfTroops();
     iconsPane.getChildren().addAll(amountOfTroops, icon1);
     StackPane.setAlignment(icon1, Pos.CENTER);
-    StackPane playerNameStack = new StackPane();
     Label userLabel = new Label(player.getUser());
-    //userLabel.setBackground(new Background(new BackgroundFill(Colors.COUNTRY_BACKGROUND.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
     Rectangle userRectangle;
     if (userLabel.getWidth() > ellipse.getRadiusX() * 2 + 15) {
       userRectangle = new Rectangle(userLabel.getWidth(), userLabel.getHeight() + 20);
@@ -110,22 +107,13 @@ public class PlayerUi extends Group {
     userRectangle.setArcWidth(ellipse.getRadiusX() - 10);
     userRectangle.setArcHeight(userRectangle.getHeight());
     userLabel.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
+    StackPane playerNameStack = new StackPane();
     playerNameStack.setPrefSize(userRectangle.getWidth(), userRectangle.getHeight());
     playerNameStack.setLayoutX(0 - ellipse.getRadiusX() - 10);
     playerNameStack.setLayoutY(ellipse.getRadiusY() - 10);
     playerNameStack.getChildren().addAll(userRectangle, userLabel);
-    //playerNameStack.setBackground(new Background(new BackgroundFill(Colors.COUNTRY_BACKGROUND.getColor(), CornerRadii., Insets.EMPTY)));
     StackPane.setAlignment(userLabel, Pos.CENTER);
     getChildren().addAll(rectangle, ellipse, iconsPane, playerNameStack);
-    /*
-    DropShadow dropShadow = new DropShadow();
-    dropShadow.setColor(Color.BLACK);
-    dropShadow.setSpread(0.5);
-    dropShadow.setBlurType(BlurType.ONE_PASS_BOX);
-    this.setEffect(dropShadow);
-
-     */
-
   }
 
   public void updateAmountOfTroops() {

@@ -6,6 +6,7 @@ import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.scenes.GameScene;
 import java.util.ArrayList;
@@ -54,7 +55,6 @@ public class HandUi extends BorderPane {
    * @param gameScene  The game scene associated with the hand UI.
    * @param countryUis The set of country UIs.
    */
-
   public HandUi(GameScene gameScene, Set<CountryUi> countryUis) {
     super();
     this.gameRoot = (BorderPane) gameScene.getRoot();
@@ -104,6 +104,10 @@ public class HandUi extends BorderPane {
     this.setEffect(dropShadow);
   }
 
+  /**
+   * Displays the HandUi by setting its size, positioning it in the center of the game scene, and
+   * showing it as a popup.
+   */
   public void show() {
     this.setPrefSize(gameRoot.getWidth() * 0.5, gameRoot.getHeight() * 0.5);
     Bounds rootBounds = gameRoot.localToScreen(gameRoot.getBoundsInLocal());
@@ -179,7 +183,9 @@ public class HandUi extends BorderPane {
     selectedCardsUi.forEach(x -> System.out.println(x.getCard()));
     this.setBottom(newBottomBox);
     if (handController.holdsExchangeable() && !handController.isExchangeable(
-        handController.getHand().getSelectedCards())) {
+        handController.getHand().getSelectedCards()) && GameSceneController.getPlayerController()
+        .getPlayer().getCurrentPhase().equals(
+            GamePhase.REINFORCEMENT_PHASE)) {
       Button selectExchangeableButton = new Button("Automatic card selection");
       selectExchangeableButton.setStyle(
           "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
@@ -187,7 +193,10 @@ public class HandUi extends BorderPane {
       selectExchangeableButton.setOnMouseClicked(event -> handleSelectExchangeableButton());
       newBottomBox.getChildren().add(selectExchangeableButton);
     }
-    if (handController.isExchangeable(handController.getHand().getSelectedCards())) {
+    if (handController.isExchangeable(handController.getHand().getSelectedCards())
+        && GameSceneController.getPlayerController()
+        .getPlayer().getCurrentPhase().equals(
+            GamePhase.REINFORCEMENT_PHASE)) {
       Button handInButton = new Button("Hand in the cards!");
       handInButton.setStyle(
           "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
@@ -195,8 +204,8 @@ public class HandUi extends BorderPane {
       handInButton.setOnMouseClicked(event -> handleHandInButton());
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(handInButton);
-
-    } //TODO der fall wird nie auftreten, da ich in Logic mache,
+    }
+    //TODO der fall wird nie auftreten, da ich in Logic mache,
     // dass er nicht mehr als 3 selecten kann.
     //TODO check through the Anzahl an card UI, die glowhaben ode clicked sind.
     else if (handController.getHand().getSelectedCards().size() > 3) {
@@ -207,6 +216,12 @@ public class HandUi extends BorderPane {
     }
   }
 
+  /**
+   * Sets the Hand object associated with the HandUi and creates CardUi objects to represent each
+   * card in the hand.
+   *
+   * @param hand The Hand object representing the player's hand.
+   */
   public void setHand(Hand hand) {
     this.hand = hand;
     cardUis.clear();
@@ -222,6 +237,12 @@ public class HandUi extends BorderPane {
     }
   }
 
+  /**
+   * Retrieves the CountryUi object associated with the specified country name.
+   *
+   * @param countryName The CountryName object representing the name of the country.
+   * @return The CountryUi object associated with the country name.
+   */
   public CountryUi getCountryUiByCountryName(CountryName countryName) {
     return countryUis.stream()
         .filter(countryUi -> countryUi.getCountry().getCountryName().equals(countryName))

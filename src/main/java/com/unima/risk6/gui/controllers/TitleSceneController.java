@@ -68,36 +68,29 @@ public class TitleSceneController implements Initializable {
   @FXML
   public Slider volumeSlider;
   @FXML
+  ImageView volumeImage;
+  @FXML
   private AnchorPane root;
-
   @FXML
   private MediaView backgroundVideoView;
   @FXML
   private Label titleLabel;
-
   @FXML
   private Button singlePlayerButton;
-
   @FXML
   private Button multiPlayerButton;
   @FXML
   private Button tutorialButton;
-
   @FXML
   private Button optionsButton;
-
   @FXML
   private Button quitButton;
   @FXML
   private Rectangle background;
-
   @FXML
   private Circle trigger;
   @FXML
   private TextField ipLabel;
-  @FXML
-  ImageView volumeImage;
-
   private BooleanProperty switchedOn;
   private TranslateTransition translateAnimation;
   private FillTransition fillAnimation;
@@ -107,6 +100,32 @@ public class TitleSceneController implements Initializable {
 
   private SceneController sceneController;
   private double volume;
+
+  /**
+   * Gets the IP addresses of the machine.
+   *
+   * @return A StringBuilder containing the IP addresses.
+   */
+  private static StringBuilder getIpS() {
+    StringBuilder ipS = new StringBuilder();
+    try {
+      Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+      for (NetworkInterface netint : Collections.list(nets)) {
+        Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+          String ip = inetAddress.getHostAddress();
+          if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
+              && inetAddress.getAddress().length == 4) {
+            ipS.append(ip);
+            ipS.append(",");
+          }
+        }
+      }
+    } catch (SocketException e) {
+      throw new RuntimeException(e);
+    }
+    return ipS;
+  }
 
   /**
    * Initialize the controller. It sets the initial configurations and properties of the elements in
@@ -257,32 +276,6 @@ public class TitleSceneController implements Initializable {
   }
 
   /**
-   * Gets the IP addresses of the machine.
-   *
-   * @return A StringBuilder containing the IP addresses.
-   */
-  private static StringBuilder getIpS() {
-    StringBuilder ipS = new StringBuilder();
-    try {
-      Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-      for (NetworkInterface netint : Collections.list(nets)) {
-        Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-          String ip = inetAddress.getHostAddress();
-          if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()
-              && inetAddress.getAddress().length == 4) {
-            ipS.append(ip);
-            ipS.append(",");
-          }
-        }
-      }
-    } catch (SocketException e) {
-      throw new RuntimeException(e);
-    }
-    return ipS;
-  }
-
-  /**
    * Handles the single player button click event. It sets up the game lobby for the single player
    * mode and sends a request to the server to join the lobby.
    *
@@ -303,9 +296,8 @@ public class TitleSceneController implements Initializable {
     while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
       Thread.sleep(50);
       i++;
-
     }
-    if (i == 20) {
+    if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
@@ -361,9 +353,8 @@ public class TitleSceneController implements Initializable {
     while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
       Thread.sleep(50);
       i++;
-
     }
-    if (i == 20) {
+    if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }

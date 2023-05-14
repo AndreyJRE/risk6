@@ -4,7 +4,6 @@ import static com.unima.risk6.game.models.enums.GamePhase.ATTACK_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.FORTIFY_PHASE;
 import static com.unima.risk6.game.models.enums.GamePhase.REINFORCEMENT_PHASE;
 
-import com.unima.risk6.game.ai.tutorial.Tutorial;
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Attack;
 import com.unima.risk6.game.logic.Fortify;
@@ -70,10 +69,10 @@ public class CountryUi extends Group {
 
   private Color color;
 
-  private Tutorial tutorial = GameConfiguration.getTutorial();
   private FillTransition fillTransition;
 
   private FillTransition attackingTransition;
+  private final Popup popUp;
 
 
   public CountryUi(Country country, String svgPath) {
@@ -87,6 +86,7 @@ public class CountryUi extends Group {
     this.countryPath.setStroke(Colors.COUNTRY_STROKE.getColor());
     this.getChildren().add(new Group(this.countryPath));
     glowEffect = new DropShadow();
+    popUp = new Popup();
 
   }
 
@@ -129,8 +129,9 @@ public class CountryUi extends Group {
                 .filter(country1 -> !country1.hasPlayer()).toList().size();
             if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
                 || !country.hasPlayer()) {
-              if (tutorial != null) {
-                Country claimTutorialCountry = tutorial.getCurrentClaim().getCountry();
+              if (GameConfiguration.getTutorial() != null) {
+                Country claimTutorialCountry = GameConfiguration.getTutorial().getCurrentClaim()
+                    .getCountry();
                 if (this.country.equals(claimTutorialCountry)) {
                   this.countryPath.setFill(Color.LIGHTGRAY);
                   this.setCursor(Cursor.CROSSHAIR);
@@ -145,8 +146,8 @@ public class CountryUi extends Group {
           }
           case ATTACK_PHASE, FORTIFY_PHASE -> {
             if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-              if (tutorial != null) {
-                Attack currentAttack = tutorial.getCurrentAttack();
+              if (GameConfiguration.getTutorial() != null) {
+                Attack currentAttack = GameConfiguration.getTutorial().getCurrentAttack();
                 Country attackCountry = currentAttack.getAttackingCountry();
                 if (this.country.equals(attackCountry)) {
                   this.setCursor(Cursor.CROSSHAIR);
@@ -159,8 +160,8 @@ public class CountryUi extends Group {
           case REINFORCEMENT_PHASE -> {
             if (checkIfCountryIsMine(country)
                 && playerController.getPlayer().getDeployableTroops() > 0) {
-              if ((tutorial = GameConfiguration.getTutorial()) != null) {
-                Reinforce currentReinforce = tutorial.getCurrentReinforce();
+              if (GameConfiguration.getTutorial() != null) {
+                Reinforce currentReinforce = GameConfiguration.getTutorial().getCurrentReinforce();
                 Country reinforceCountry = currentReinforce.getCountry();
                 if (this.country.equals(reinforceCountry)) {
                   this.setCursor(Cursor.CROSSHAIR);
@@ -190,8 +191,8 @@ public class CountryUi extends Group {
               .filter(country -> !country.hasPlayer()).toList().size();
           if ((checkIfCountryIsMine(country) && numberOfNeutralCountries == 0)
               || !country.hasPlayer() && event.getClickCount() == 1) {
-            if (tutorial != null) {
-              Reinforce currentClaim = tutorial.getCurrentClaim();
+            if (GameConfiguration.getTutorial() != null) {
+              Reinforce currentClaim = GameConfiguration.getTutorial().getCurrentClaim();
               Country claimTutorialCountry = currentClaim.getCountry();
               if (this.country.equals(claimTutorialCountry)) {
                 playerController.sendReinforce(this.getCountry(), 1);
@@ -206,8 +207,8 @@ public class CountryUi extends Group {
         }
         case ATTACK_PHASE -> {
           if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-            if (tutorial != null) {
-              Attack currentAttack = tutorial.getCurrentAttack();
+            if (GameConfiguration.getTutorial() != null) {
+              Attack currentAttack = GameConfiguration.getTutorial().getCurrentAttack();
               Country attackCountry = currentAttack.getAttackingCountry();
               if (this.country.equals(attackCountry)) {
                 animateAttackPhase(countriesGroup);
@@ -220,8 +221,8 @@ public class CountryUi extends Group {
         }
         case FORTIFY_PHASE -> {
           if (checkIfCountryIsMine(country) && country.getTroops() > 1) {
-            if (tutorial != null) {
-              Fortify currentFortify = tutorial.getCurrentFortify();
+            if (GameConfiguration.getTutorial() != null) {
+              Fortify currentFortify = GameConfiguration.getTutorial().getCurrentFortify();
               Country fortifyCountry = currentFortify.getOutgoing();
               if (this.country.equals(fortifyCountry)) {
                 animateFortifyPhase(countriesGroup);
@@ -236,8 +237,8 @@ public class CountryUi extends Group {
           if (checkIfCountryIsMine(country)
               && playerController.getPlayer().getDeployableTroops() > 0
               && event.getClickCount() == 1) {
-            if (tutorial != null) {
-              Reinforce currentReinforce = tutorial.getCurrentReinforce();
+            if (GameConfiguration.getTutorial() != null) {
+              Reinforce currentReinforce = GameConfiguration.getTutorial().getCurrentReinforce();
               Country reinforceCountry = currentReinforce.getCountry();
               if (this.country.equals(reinforceCountry)) {
                 animateReinforcementPhase();
@@ -273,13 +274,14 @@ public class CountryUi extends Group {
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
     adjacentCountryPath.setOnMouseEntered(mouseEvent -> adjacentCountryPath.setCursor(Cursor.HAND));
     adjacentCountryPath.setOnMouseClicked(event -> {
-      if (gamePhase == ATTACK_PHASE) {
-        showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1), adjacentCountryUi,
-            gamePhase);
-      } else {
-        showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi, gamePhase);
+      if (event.getClickCount() == 1 && !popUp.isShowing()) {
+        if (gamePhase == ATTACK_PHASE) {
+          showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1), adjacentCountryUi,
+              gamePhase);
+        } else {
+          showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi, gamePhase);
+        }
       }
-
     });
   }
 
@@ -346,8 +348,6 @@ public class CountryUi extends Group {
     HBox chatBox = new HBox();
     chatBox.setAlignment(Pos.CENTER);
     chatBox.setSpacing(15);
-
-    Popup popUp = new Popup();
 
     closeAmountOfTroopsButton.setOnAction(event -> popUp.hide());
 
@@ -482,6 +482,7 @@ public class CountryUi extends Group {
     double popupWidth = moveTroopsPane.getPrefWidth();
     double popupHeight = moveTroopsPane.getPrefHeight();
 
+    popUp.getContent().clear();
     popUp.getContent().add(moveTroopsPane);
 
     moveTroopsPane.setFocusTraversable(true);
@@ -615,12 +616,12 @@ public class CountryUi extends Group {
     arrow.setStartX(clickPosInGroup.getX());
     arrow.setStartY(clickPosInGroup.getY());
     arrow.setEndX(clickPosInGroup.getX());
+    KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
     arrow.setEndY(clickPosInGroup.getY());
+    KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
     setCursor(Cursor.MOVE);
 
     Timeline timeline = new Timeline();
-    KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
-    KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
     KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXvalue, endYvalue);
 
     timeline.getKeyFrames().add(keyFrame);

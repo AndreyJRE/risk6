@@ -24,10 +24,18 @@ public class SoundConfiguration {
 
   private static final String YOUR_TURN_SOUND_PATH = "/com/unima/risk6/sounds/your_turn_sound.mp3";
 
-  private static final String ALARM_FOR_START_GAME =
+  private static final String ALARM_FOR_START_GAME_PATH =
       "/com/unima/risk6/sounds/alarm_for_game_start" + ".mp3";
-  private static final String TROOPS_MOVE_SOUND = "/com/unima/risk6/sounds/marching_1.mp3";
+  private static final String TROOPS_MOVE_SOUND_PATH = "/com/unima/risk6/sounds/marching_1.mp3";
+
+  private static final String NOTIFICATION_SOUND_PATH = "/com/unima/risk6/sounds/notification.mp3";
+
+  private static final String CLICK_SOUND_PATH = "/com/unima/risk6/sounds/click.mp3";
   private static MediaPlayer titleSound;
+
+  private static AudioClip clickSound;
+
+  private static AudioClip notificationSound;
 
   private static MediaPlayer inGameMusic;
   private static AudioClip rollDiceSound;
@@ -75,15 +83,26 @@ public class SoundConfiguration {
     yourTurnSound.setVolume(VOLUME.get());
     yourTurnSound.volumeProperty().bind(VOLUME);
     startGameSound = new AudioClip(
-        Objects.requireNonNull(SoundConfiguration.class.getResource(ALARM_FOR_START_GAME))
+        Objects.requireNonNull(SoundConfiguration.class.getResource(ALARM_FOR_START_GAME_PATH))
             .toExternalForm());
     startGameSound.setVolume(VOLUME.get());
     startGameSound.volumeProperty().bind(VOLUME);
     troopsMoveSound = new AudioClip(
-        Objects.requireNonNull(SoundConfiguration.class.getResource(TROOPS_MOVE_SOUND))
+        Objects.requireNonNull(SoundConfiguration.class.getResource(TROOPS_MOVE_SOUND_PATH))
             .toExternalForm());
     troopsMoveSound.setVolume(VOLUME.get());
     troopsMoveSound.volumeProperty().bind(VOLUME);
+
+    notificationSound = new AudioClip(
+        Objects.requireNonNull(SoundConfiguration.class.getResource(NOTIFICATION_SOUND_PATH))
+            .toExternalForm());
+    notificationSound.setVolume(VOLUME.get());
+    notificationSound.volumeProperty().bind(VOLUME);
+    clickSound = new AudioClip(
+        Objects.requireNonNull(SoundConfiguration.class.getResource(CLICK_SOUND_PATH))
+            .toExternalForm());
+    clickSound.setVolume(VOLUME.get());
+    clickSound.volumeProperty().bind(VOLUME);
   }
 
   public static void playTitleSound() {

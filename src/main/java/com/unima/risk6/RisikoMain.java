@@ -26,8 +26,8 @@ public class RisikoMain extends Application {
 
     UserService userService = DatabaseConfiguration.getUserService();
     List<User> users = userService.getAllUsers();
-    stage.setMinWidth(900);
-    stage.setMinHeight(700);
+    stage.setMinWidth(1080);
+    stage.setMinHeight(720);
     stage.setWidth(1080);
     stage.setHeight(720);
     SceneConfiguration.startSceneControllerConfiguration(stage);

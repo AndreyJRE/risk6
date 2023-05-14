@@ -26,7 +26,8 @@ public class ImageConfiguration {
   private static final String CREATE_ACCOUNT_IMAGE = "/com/unima/risk6/pictures"
       + "/createAccountBackground.png";
   private static final String OPTIONS_IMAGE = "/com/unima/risk6/pictures/optionsBackground.png";
-  private static final String STATISTICS_IMAGE = "/com/unima/risk6/pictures/statisticsBackground.png";
+  private static final String STATISTICS_IMAGE = "/com/unima/risk6/pictures/statisticsBackground"
+      + ".png";
   private static final String SELECTED_USER_IMAGE = "/com/unima/risk6/pictures/selectedUser.png";
   private static final String SELECT_LOBBY_BACKGROUND = "/com/unima/risk6/pictures"
       + "/selectLobbyBackground.png";
@@ -51,9 +52,11 @@ public class ImageConfiguration {
   private static final String WILD_CARD = "/com/unima/risk6/pictures/wildCard.png";
 
   private static final String PLUS_ICON = "/com/unima/risk6/pictures/plusIcon.png";
-  private static final String INFANTRY_RUNNING_GIF = "/com/unima/risk6/pictures/InfantryRunning.gif";
+  private static final String INFANTRY_RUNNING_GIF = "/com/unima/risk6/pictures/InfantryRunning"
+      + ".gif";
 
-  private static final String ATTACK_DICE_PREVIEW = "/com/unima/risk6/pictures/attackDicePreview.png";
+  private static final String ATTACK_DICE_PREVIEW = "/com/unima/risk6/pictures/attackDicePreview"
+      + ".png";
 
   private static final String DICE_PREVIEW = "/com/unima/risk6/pictures/dicePreview.png";
 
@@ -67,6 +70,9 @@ public class ImageConfiguration {
   private static HashMap<ImageName, Image> images;
   private static Media titleBackgroundVideo;
 
+  /**
+   * Loads the images and initializes the HashMap with the image resources.
+   */
 
   public static void loadImages() {
     images = new HashMap<>();
