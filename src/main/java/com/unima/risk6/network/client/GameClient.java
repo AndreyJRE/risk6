@@ -26,6 +26,12 @@ import javax.net.ssl.TrustManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The GameClient class handles the client-side logic for a game, including sending messages,
+ * leaving the game, and maintaining a connection to the server.
+ *
+ * @author jferch
+ */
 public final class GameClient implements Runnable {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
@@ -34,10 +40,20 @@ public final class GameClient implements Runnable {
 
   private volatile Channel ch;
 
+  /**
+   * Constructs a new GameClient with the specified URL.
+   *
+   * @param url The URL of the server to connect to.
+   */
   public GameClient(String url) {
     this.url = System.getProperty("url", url);
   }
 
+  /**
+   * Sends a message to the server.
+   *
+   * @param message The message to send.
+   */
   public void sendMessage(Message message) {
     String json = Serializer.serialize(message);
     WebSocketFrame frame = new TextWebSocketFrame(json);
@@ -45,11 +61,17 @@ public final class GameClient implements Runnable {
     LOGGER.debug("Sent Message: " + json);
   }
 
+  /**
+   * Leaves the game and closes the connection to the server.
+   */
   public void leaveGame() {
     ch.close();
     LobbyConfiguration.stopGameClient();
   }
 
+  /**
+   * Starts the game client.
+   */
   public void run() {
     try {
       URI uri = new URI(url);
@@ -70,7 +92,7 @@ public final class GameClient implements Runnable {
                 ChannelPipeline p = ch.pipeline();
                 KeyStore truststore = KeyStore.getInstance("JKS");
                 truststore.load(
-                    GameClient.class.getResourceAsStream("/com/unima/risk6/certs/TestKeystore.jks"),
+                    GameClient.class.getResourceAsStream("/com/unima/risk6/certs/Keystore.jks"),
                     "T0u8nUjT8TX9vTr2".toCharArray());
                 TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm());
@@ -98,6 +120,11 @@ public final class GameClient implements Runnable {
     }
   }
 
+  /**
+   * Returns the channel associated with this client.
+   *
+   * @return the channel.
+   */
   public Channel getCh() {
     return ch;
   }
