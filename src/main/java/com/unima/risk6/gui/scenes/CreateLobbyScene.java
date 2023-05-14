@@ -6,22 +6,22 @@ import javafx.scene.layout.BorderPane;
 
 public class CreateLobbyScene extends Scene implements InitializableScene {
 
-    private CreateLobbySceneController createLobbySceneController;
+  private CreateLobbySceneController createLobbySceneController;
 
-    public CreateLobbyScene() {
-        super(new BorderPane());
-    }
+  public CreateLobbyScene() {
+    super(new BorderPane());
+  }
 
-    @Override
-    public void init() {
-        if (createLobbySceneController != null) {
-            createLobbySceneController.init();
-        }
+  @Override
+  public void init() {
+    if (createLobbySceneController != null) {
+      createLobbySceneController.init();
     }
+  }
 
-    public void setController(CreateLobbySceneController createLobbySceneController) {
-        this.createLobbySceneController = createLobbySceneController;
-    }
+  public void setController(CreateLobbySceneController createLobbySceneController) {
+    this.createLobbySceneController = createLobbySceneController;
+  }
 
 }
 

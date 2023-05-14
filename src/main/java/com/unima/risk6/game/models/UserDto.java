@@ -63,7 +63,7 @@ public class UserDto {
     if (lost == 0) {
       lost += 1;
     }
-    double lossRatio = (double) won / lost;
+    double lossRatio = ((double) won / userGameStatistic.size()) * 10;
     double hoursPlayed =
         userGameStatistic.stream().mapToDouble(g -> {
               Duration duration = Duration.between(g.getStartDate(), g.getFinishDate());

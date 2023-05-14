@@ -3,6 +3,7 @@ package com.unima.risk6.gui.scenes;
 import com.unima.risk6.gui.controllers.ChangePasswordSceneController;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+
 /**
  * Represents the scene where the user can change their password.
  *
@@ -11,12 +12,14 @@ import javafx.scene.layout.BorderPane;
 public class ChangePasswordScene extends Scene implements InitializableScene {
 
   private ChangePasswordSceneController changePasswordSceneController;
+
   /**
    * Constructs a ChangePasswordScene with a BorderPane as its root.
    */
   public ChangePasswordScene() {
     super(new BorderPane());
   }
+
   /**
    * Initializes the scene. If a controller has been set, its initialization method is called.
    */
@@ -26,6 +29,7 @@ public class ChangePasswordScene extends Scene implements InitializableScene {
       changePasswordSceneController.init();
     }
   }
+
   /**
    * Sets the controller for this scene.
    *

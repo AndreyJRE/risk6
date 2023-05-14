@@ -3,6 +3,7 @@ package com.unima.risk6.gui.scenes;
 import com.unima.risk6.gui.controllers.SelectedUserSceneController;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+
 /**
  * A scene for a user to log in to his account.
  *
@@ -11,12 +12,14 @@ import javafx.scene.layout.BorderPane;
 public class SelectedUserScene extends Scene implements InitializableScene {
 
   private SelectedUserSceneController selectedUserSceneController;
+
   /**
    * Constructs a new SelectedUserScene with a BorderPane as its root.
    */
   public SelectedUserScene() {
     super(new BorderPane());
   }
+
   /**
    * Initializes the scene if the controller is present.
    */
@@ -26,6 +29,7 @@ public class SelectedUserScene extends Scene implements InitializableScene {
       selectedUserSceneController.init();
     }
   }
+
   /**
    * Sets the controller for this scene.
    *

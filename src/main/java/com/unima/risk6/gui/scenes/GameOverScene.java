@@ -1,8 +1,6 @@
 package com.unima.risk6.gui.scenes;
 
 import com.unima.risk6.gui.controllers.GameOverSceneController;
-import com.unima.risk6.gui.controllers.GameSceneController;
-import com.unima.risk6.gui.controllers.UserStatisticsSceneController;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
