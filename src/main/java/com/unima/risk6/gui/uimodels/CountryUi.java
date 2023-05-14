@@ -74,6 +74,7 @@ public class CountryUi extends Group {
   private FillTransition fillTransition;
 
   private FillTransition attackingTransition;
+  private Popup popUp;
 
 
   public CountryUi(Country country, String svgPath) {
@@ -87,6 +88,7 @@ public class CountryUi extends Group {
     this.countryPath.setStroke(Colors.COUNTRY_STROKE.getColor());
     this.getChildren().add(new Group(this.countryPath));
     glowEffect = new DropShadow();
+    popUp = new Popup();
 
   }
 
@@ -273,13 +275,14 @@ public class CountryUi extends Group {
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
     adjacentCountryPath.setOnMouseEntered(mouseEvent -> adjacentCountryPath.setCursor(Cursor.HAND));
     adjacentCountryPath.setOnMouseClicked(event -> {
-      if (gamePhase == ATTACK_PHASE) {
-        showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1), adjacentCountryUi,
-            gamePhase);
-      } else {
-        showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi, gamePhase);
+      if (event.getClickCount() == 1 && !popUp.isShowing()) {
+        if (gamePhase == ATTACK_PHASE) {
+          showAmountOfTroopsPopUp(Math.min(3, this.getCountry().getTroops() - 1), adjacentCountryUi,
+              gamePhase);
+        } else {
+          showAmountOfTroopsPopUp(this.country.getTroops() - 1, adjacentCountryUi, gamePhase);
+        }
       }
-
     });
   }
 
@@ -347,7 +350,6 @@ public class CountryUi extends Group {
     chatBox.setAlignment(Pos.CENTER);
     chatBox.setSpacing(15);
 
-    Popup popUp = new Popup();
 
     closeAmountOfTroopsButton.setOnAction(event -> popUp.hide());
 
@@ -482,6 +484,7 @@ public class CountryUi extends Group {
     double popupWidth = moveTroopsPane.getPrefWidth();
     double popupHeight = moveTroopsPane.getPrefHeight();
 
+    popUp.getContent().clear();
     popUp.getContent().add(moveTroopsPane);
 
     moveTroopsPane.setFocusTraversable(true);

@@ -5,7 +5,8 @@
     "player rolling a die to determine turn order in order of highest rolls to lowest. In the",
     "Tutorial however, we start at the end of the first phase after the dice rolls; the claim",
     "phase. Each player takes turns placing one troop on one unclaimed country. Try it out by",
-    "clicking on the highlighted country."
+    "clicking on the highlighted country. If you want to identify a country, hold M to view the",
+    "names of the countries!"
   ],
   [
     "Once all countries are claimed, each player gets an additional amount of troops depending on",
@@ -15,14 +16,16 @@
   ],
   [
     "Notice how the enemy is getting ready to attack your one country in South America. Start",
-    "placing troops there to make it more difficult for the enemy to take the whole country."
+    "placing troops there to make it more difficult for the enemy to take the whole country. Fun",
+    "fact: you can hold tab to view player statistics."
   ],
   [
     "Now the game can begin! There are three phases each round: Reinforce, Attack, Fortify.",
     "At the beginning of a reinforce phase, you get a certain amount of troops",
     "displayed on the pop up at the bottom of the screen, and can place them on any of the",
     "countries that belong to you. Australia looks like an easy win, so place all your troops",
-    "there to quickly take over. You can only go to the next phase once all troops are set."
+    "there to quickly take over. You can only go to the next phase once all troops are set.",
+    "You can use the arrow keys to increase or decrease the amount of troops in the pop up."
   ],
   [
     "Now we get to the attack phase: Select a country you own, then select one of the adjacent",
@@ -30,7 +33,8 @@
     "to attack with the maximum amount possible. In an attack, dice are rolled to determine the",
     "amount of losses in each country. Once you take over the country, you can decide how many",
     "troops to move to your newly conquered country. Move all of your troops, since you then",
-    "protect the border of your continent, making it harder for others to attack it."
+    "protect the border of your continent, making it harder for others to attack it. Make sure to",
+    "press on the next phase button once you are done attacking."
   ],
   [
     "Finally, the fortify phase: The player has the ability to pick exactly one country and",

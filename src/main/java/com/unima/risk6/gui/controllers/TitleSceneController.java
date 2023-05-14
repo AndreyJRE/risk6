@@ -303,9 +303,8 @@ public class TitleSceneController implements Initializable {
     while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
       Thread.sleep(50);
       i++;
-
     }
-    if (i == 20) {
+    if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
@@ -361,9 +360,8 @@ public class TitleSceneController implements Initializable {
     while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
       Thread.sleep(50);
       i++;
-
     }
-    if (i == 20) {
+    if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
