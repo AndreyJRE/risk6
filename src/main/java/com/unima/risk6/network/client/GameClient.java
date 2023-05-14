@@ -19,7 +19,10 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
+import io.netty.handler.ssl.SslContextBuilder;
 import java.net.URI;
+import java.security.KeyStore;
+import javax.net.ssl.TrustManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +62,22 @@ public final class GameClient implements Runnable {
                 new DefaultHttpHeaders()));
 
         Bootstrap b = new Bootstrap();
-        b.group(group).channel(NioSocketChannel.class)
+        b.group(group)
+            .channel(NioSocketChannel.class)
             .handler(new ChannelInitializer<SocketChannel>() {
               @Override
-              protected void initChannel(SocketChannel ch) {
+              protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline p = ch.pipeline();
+                KeyStore truststore = KeyStore.getInstance("JKS");
+                truststore.load(
+                    GameClient.class.getResourceAsStream("/com/unima/risk6/certs/TestKeystore.jks"),
+                    "T0u8nUjT8TX9vTr2".toCharArray());
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(truststore);
+
+                p.addLast(SslContextBuilder.forClient().trustManager(trustManagerFactory).build()
+                    .newHandler(ch.alloc()));
                 p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192),
                     WebSocketClientCompressionHandler.INSTANCE, handler);
               }
