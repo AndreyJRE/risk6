@@ -21,20 +21,41 @@ import com.unima.risk6.game.models.Player;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-
+/**
+ * A JsonSerializer and JsonDeserializer implementation for
+ * {@link com.unima.risk6.game.models.GameState} objects. This class defines how GameState objects
+ * are converted to and from their JSON representations.
+ *
+ * @author jferch
+ */
 public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     JsonDeserializer<GameState> {
 
   private GameState gameState;
 
+  /**
+   * Constructor for a GameStateTypeAdapter with a given GameState for context.
+   *
+   * @param gameState The GameState object to be used for context during serialization/deserialization.
+   */
   public GameStateTypeAdapter(GameState gameState) {
     this.gameState = gameState;
   }
 
+  /**
+   * Default constructor for a GameStateTypeAdapter.
+   */
   public GameStateTypeAdapter() {
   }
 
-  //TODO nur Continents Set Serialisieren und bei deserialiierung aus continents countries generieren.
+  /**
+   * Serializes a GameState object to its corresponding JSON representation.
+   *
+   * @param gameState The GameState object to be serialized.
+   * @param typeOfSrc The actual generic type of the source object.
+   * @param context The context for serialization.
+   * @return A JsonElement corresponding to the specified GameState.
+   */
   @Override
   public JsonElement serialize(GameState gameState, Type typeOfSrc,
       JsonSerializationContext context) {
@@ -75,21 +96,24 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     return jsonObject;
   }
 
+  /**
+   * Deserializes a JsonElement into a GameState object.
+   *
+   * @param json    The JsonElement being deserialized.
+   * @param typeOfT The type of the Object to deserialize to.
+   * @param context The context for deserialization.
+   * @return A GameState object corresponding to the specified JsonElement.
+   * @throws JsonParseException if json is not in the expected format of GameState.
+   */
   @Override
   public GameState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
 
-   /* Player currentPlayerReference = context.deserialize(jsonObject.get("currentPlayer"),
-        Player.class);*/
-
     JsonArray activePlayersJsonArray = jsonObject.getAsJsonArray("activePlayers");
     activePlayersJsonArray.forEach(x -> {
       Player p = context.deserialize(x, Player.class);
       gameState.getActivePlayers().add(p);
-      /*if (x.getAsJsonObject().get("hashCode").getAsInt() == currentPlayerReference) {
-        gameState.setCurrentPlayer(p);
-      }*/
     });
     ArrayList<Player> lostPlayers = context.deserialize(jsonObject.get("lostPlayers"),
         new TypeToken<ArrayList<Player>>() {
@@ -134,9 +158,6 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     gameState.setGameOver(isGameOver);
 
     gameState.setCurrentPlayer(context.deserialize(jsonObject.get("currentPlayer"), Player.class));
-    //gameState.setDice(context.deserialize(jsonObject.get("dice"), Dice.class));
-    //gameState.setNumberOfHandIns(jsonObject.get("numberOfHandIns").getAsInt());
-    //gameState.setCurrentPhase(GamePhase.valueOf(jsonObject.get("currentPhase").getAsString()));
 
     return gameState;
   }

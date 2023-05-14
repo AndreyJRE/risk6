@@ -28,6 +28,13 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class is a custom serializer and deserializer for the
+ * {@link com.unima.risk6.game.models.Player} class in the context of JSON serialization and
+ * deserialization.
+ *
+ * @author jferch
+ */
 public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializer<Player> {
 
 
@@ -35,13 +42,32 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
 
   private GameState gameState;
 
+
+  /**
+   * Constructs a new PlayerTypeAdapter with a provided
+   * {@link com.unima.risk6.game.models.GameState} object for context.
+   *
+   * @param gameState The GameState object to be used in this PlayerTypeAdapter.
+   */
   public PlayerTypeAdapter(GameState gameState) {
     this.gameState = gameState;
   }
 
+  /**
+   * Constructs a new PlayerTypeAdapter with no GameState provided.
+   */
   public PlayerTypeAdapter() {
   }
 
+  /**
+   * This method is used to convert a {@link com.unima.risk6.game.models.Player} object into its
+   * JSON representation.
+   *
+   * @param player    The Player object to be serialized.
+   * @param typeOfSrc The specific genericized type of src.
+   * @param context   Context for serialization that is also used to serialize src's fields.
+   * @return A JsonElement corresponding to the specified Player.
+   */
   @Override
   public JsonElement serialize(Player player, Type typeOfSrc, JsonSerializationContext context) {
     if (player == null) {
@@ -59,7 +85,6 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
         countryObject.addProperty("troops", country.getTroops());
         countryObject.addProperty("name", country.getCountryName().toString());
         countriesArray.add(countryObject);
-        //countriesArray.add(context.serialize(country, Country.class));
       }
     }
     jsonObject.add("countries", countriesArray);
@@ -71,7 +96,6 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
         JsonObject continentObject = new JsonObject();
         continentObject.addProperty("name", continent.getContinentName().toString());
         continentsArray.add(continentObject);
-        //continentsArray.add(context.serialize(continent, Continent.class));
       }
     }
     jsonObject.add("continents", continentsArray);
@@ -86,6 +110,17 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     return jsonObject;
   }
 
+  /**
+   * This method is used to convert a JsonElement into a {@link com.unima.risk6.game.models.Player}
+   * object.
+   *
+   * @param json    The JsonElement to be deserialized.
+   * @param typeOfT The specific genericized type of T.
+   * @param context Context for deserialization that is also used to deserialize json into a
+   *                Player.
+   * @return A Player resulting from the deserialization of the specified JsonElement.
+   * @throws JsonParseException If json is not in the expected format of Player.
+   */
   @Override
   public Player deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {

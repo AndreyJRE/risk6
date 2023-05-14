@@ -13,8 +13,24 @@ import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.enums.ConnectionActions;
 import java.lang.reflect.Type;
 
+/**
+ * A custom {@link com.google.gson.JsonDeserializer} for the
+ * {@link com.unima.risk6.network.message.ConnectionMessage} class. This allows for custom
+ * deserialization of StandardMessage objects, which is useful when converting from JSON.
+ *
+ * @author jferch, astoyanov
+ */
 public class ConnectionMessageAdapter implements JsonDeserializer<ConnectionMessage> {
 
+  /**
+   * Deserializes a {@link com.google.gson.JsonElement} into a {@link com.unima.risk6.network.message.ConnectionMessage} object.
+   *
+   * @param jsonElement The JSON element being deserialized.
+   * @param type The specific genericized runtime type of the object being deserialized.
+   * @param context The context for deserialization, used to deserialize other objects as needed.
+   * @return A deserialized {@link com.unima.risk6.network.message.ConnectionMessage} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a {@link com.unima.risk6.network.message.ConnectionMessage} object.
+   */
   @Override
   public ConnectionMessage deserialize(JsonElement jsonElement, Type type,
       JsonDeserializationContext context) throws JsonParseException {
