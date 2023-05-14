@@ -89,6 +89,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           gameLobbyChannels.replaceUser(moveProcessor.getGameController().getGameState(),
               gameLobbyChannels.getGameLobbyByChannel(
                   ctx.channel()), "Johnny Test", "medium");
+          GameConfiguration.setTutorialOver(false);
         }
         LOGGER.debug(
             "Server Received Message with ContentType: " + json.get("contentType").getAsString());
