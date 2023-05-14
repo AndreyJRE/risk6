@@ -1,12 +1,16 @@
 package com.unima.risk6.gui.uimodels;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
+import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
+import com.unima.risk6.gui.controllers.SceneController;
+import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.GameScene;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -116,7 +120,25 @@ public class SettingsUi extends BorderPane {
               statistic.getCountriesWon(), statistic.getTroopsGained(),
               statistic.getCountriesLost());
         }
-        SceneConfiguration.getSceneController().close();
+        try {
+          SoundConfiguration.stopInGameMusic();
+          LobbyConfiguration.stopGameClient();
+          Thread.sleep(250);
+          if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
+            NetworkConfiguration.stopGameServer();
+          }
+          Thread.sleep(150);
+          SceneController sceneController = SceneConfiguration.getSceneController();
+          sceneController.activate(SceneName.TITLE);
+          sceneController.getStage().setMaximized(false);
+          sceneController.getStage().setWidth(1220);
+          sceneController.getStage().setHeight(820);
+          SceneConfiguration.setWidth(1220);
+          SceneConfiguration.setHeight(820);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+
       } else {
         alert.close();
         settingPopup.hide();

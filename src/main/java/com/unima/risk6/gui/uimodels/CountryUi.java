@@ -614,9 +614,11 @@ public class CountryUi extends Group {
       if (attacker.getCountry().getTroops() > 1 && lastAttack.getHasConquered()
           && activePlayerUi.getPlayerUi().getPlayer()
           .equals(GameSceneController.getPlayerController().getPlayer())) {
-        attacker.showAmountOfTroopsPopUp(
-            lastAttack.getAttackingCountry().getTroops() - 1 - lastAttack.getTroopNumber(),
-            defender, FORTIFY_PHASE);
+        if (!GameConfiguration.getGameState().isGameOver()) {
+          attacker.showAmountOfTroopsPopUp(
+              lastAttack.getAttackingCountry().getTroops() - 1 - lastAttack.getTroopNumber(),
+              defender, FORTIFY_PHASE);
+        }
       }
     });
     BorderPane dicePane = new BorderPane();

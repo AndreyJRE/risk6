@@ -111,13 +111,12 @@ public class SceneConfiguration {
    * Joins the server lobby scene and activates it in the scene controller.
    */
   public static void joinServerLobbyScene() {
-    SelectMultiplayerLobbyScene scene =
-        (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
-            .getSceneBySceneName(SceneName.SELECT_LOBBY);
+    SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SELECT_LOBBY);
     if (scene == null) {
       scene = new SelectMultiplayerLobbyScene();
-      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController =
-          new SelectMultiplayerLobbySceneController(scene);
+      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController = new SelectMultiplayerLobbySceneController(
+          scene);
       scene.setController(selectMultiplayerLobbySceneController);
       sceneController.addScene(SceneName.SELECT_LOBBY, scene);
     }
@@ -135,8 +134,8 @@ public class SceneConfiguration {
     if (scene == null) {
       scene = new MultiplayerLobbyScene();
       //TODO Overwrite game lobby owner
-      MultiplayerLobbySceneController multiplayerLobbySceneController =
-          new MultiplayerLobbySceneController(scene);
+      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
+          scene);
       scene.setController(multiplayerLobbySceneController);
       sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
     }
@@ -149,13 +148,12 @@ public class SceneConfiguration {
    */
 
   public static void joinSinglePlayerLobby() {
-    SinglePlayerSettingsScene scene =
-        (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-            .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController =
-          new SinglePlayerSettingsSceneController(scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
@@ -169,13 +167,12 @@ public class SceneConfiguration {
    */
 
   public static void joinTutorialLobbyScene() {
-    SinglePlayerSettingsScene scene =
-        (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
-            .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+        .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController =
-          new SinglePlayerSettingsSceneController(scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
+          scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
@@ -203,6 +200,10 @@ public class SceneConfiguration {
     pauseTitleSound();
     sceneController.activate(SceneName.GAME_OVER);
     sceneController.getStage().setMaximized(false);
+    sceneController.getStage().setWidth(1220);
+    sceneController.getStage().setHeight(820);
+    SceneConfiguration.setWidth(1220);
+    SceneConfiguration.setHeight(820);
   }
 
   public static SceneController getSceneController() {

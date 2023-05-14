@@ -30,9 +30,8 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 /**
- * A controller class for managing the game over scene.
- * It handles the UI elements such as user statistics display and navigating back
- * to the title scene.
+ * A controller class for managing the game over scene. It handles the UI elements such as user
+ * statistics display and navigating back to the title scene.
  *
  * @author fisommer
  */
@@ -41,16 +40,16 @@ public class GameOverSceneController {
 
   private final GameOverScene gameOverScene;
   private final SceneController sceneController;
-  private BorderPane root;
-  private ImageView userImage;
-  private StackPane userStackPane;
-  private GridPane statisticsGridPane;
-  private final String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; "
-      + "-fx-text-fill: white";
+  private final String numberStyle =
+      "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; " + "-fx-text-fill: white";
   private final String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; "
       + "-fx-font-size: 26px; -fx-text-fill: white";
   private final Statistic statistic;
   private final GameState gameState;
+  private BorderPane root;
+  private ImageView userImage;
+  private StackPane userStackPane;
+  private GridPane statisticsGridPane;
 
   /**
    * Constructor for the GameOverSceneController.
@@ -67,15 +66,13 @@ public class GameOverSceneController {
   }
 
   /**
-   * Initializes the game over scene.
-   * This includes loading the background image, initializing the UI elements,
-   * and setting the opacity for the ImageView.
+   * Initializes the game over scene. This includes loading the background image, initializing the
+   * UI elements, and setting the opacity for the ImageView.
    */
 
   public void init() {
     this.root = (BorderPane) gameOverScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
     // Initialize elements
     initUserStackPane();
     initGridPane();
@@ -93,8 +90,7 @@ public class GameOverSceneController {
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
     // Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true,
-        true);
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -103,8 +99,8 @@ public class GameOverSceneController {
   }
 
   /**
-   * Initializes various UI elements of the game over scene.
-   * This includes the back arrow, user name, and statistics display.
+   * Initializes various UI elements of the game over scene. This includes the back arrow, username,
+   * and statistics display.
    */
 
   private void initElements() {
@@ -121,7 +117,7 @@ public class GameOverSceneController {
     Label userName = new Label(gameState.getCurrentPlayer().getUser());
     userName.setAlignment(Pos.CENTER);
     userName.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: "
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 55px; -fx-text-fill: "
             + "white");
 
     // Wrap the userNameField in an HBox to center it
@@ -138,7 +134,7 @@ public class GameOverSceneController {
 
     Label winner = new Label("Winner Winner Chicken Dinner!");
     winner.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 90px; -fx-text-fill: "
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 70px; -fx-text-fill: "
             + "white");
 
     HBox winnerBox = new HBox(winner);
@@ -153,8 +149,8 @@ public class GameOverSceneController {
   }
 
   /**
-   * Initializes the grid pane that displays the user's game statistics.
-   * These statistics include countries won/lost and troops count.
+   * Initializes the grid pane that displays the user's game statistics. These statistics include
+   * countries won/lost and troops count.
    */
 
   private void initGridPane() {

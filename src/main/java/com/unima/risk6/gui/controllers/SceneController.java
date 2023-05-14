@@ -123,7 +123,7 @@ public class SceneController {
 
   public void initTitleScreen() {
     FXMLLoader fxmlLoader = new FXMLLoader(
-        RisikoMain.class.getResource("fxml/TitleScene" + ".fxml"));
+        RisikoMain.class.getResource("fxml/TitleScene.fxml"));
     Parent root;
     try {
       root = fxmlLoader.load();
