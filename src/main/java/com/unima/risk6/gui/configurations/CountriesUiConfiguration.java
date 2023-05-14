@@ -72,12 +72,10 @@ public class CountriesUiConfiguration {
    */
 
   private static void setNeighboursCountryUisForEachCountry() {
-    countriesUis.forEach(countryUi -> {
-      countryUi.setAdjacentCountryUis(countriesUis.stream()
-          .filter(countryUi1 -> countryUi1.getCountry().getAdjacentCountries()
-              .contains(countryUi.getCountry()))
-          .collect(Collectors.toSet()));
-    });
+    countriesUis.forEach(countryUi -> countryUi.setAdjacentCountryUis(countriesUis.stream()
+        .filter(countryUi1 -> countryUi1.getCountry().getAdjacentCountries()
+            .contains(countryUi.getCountry()))
+        .collect(Collectors.toSet())));
   }
 
   public static Set<CountryUi> getCountriesUis() {

@@ -34,9 +34,7 @@ public class RiskPreloader extends Preloader {
 
   @Override
   public void start(Stage stage) throws Exception {
-
     this.preloaderStage = stage;
-
     preloaderStage.setScene(scene);
     preloaderStage.initStyle(StageStyle.UNDECORATED);
     preloaderStage.show();
