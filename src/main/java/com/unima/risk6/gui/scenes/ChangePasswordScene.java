@@ -16,6 +16,7 @@ public class ChangePasswordScene extends Scene implements InitializableScene {
   /**
    * Constructs a ChangePasswordScene with a BorderPane as its root.
    */
+
   public ChangePasswordScene() {
     super(new BorderPane());
   }
@@ -23,6 +24,7 @@ public class ChangePasswordScene extends Scene implements InitializableScene {
   /**
    * Initializes the scene. If a controller has been set, its initialization method is called.
    */
+
   @Override
   public void init() {
     if (changePasswordSceneController != null) {

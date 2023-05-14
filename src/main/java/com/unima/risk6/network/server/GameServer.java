@@ -47,6 +47,10 @@ public final class GameServer implements Runnable {
     this.hostIp = host_ip;
   }
 
+  public String getHostIp() {
+    return hostIp;
+  }
+
   /**
    * The main loop of the server, which initializes and starts the server. The server will keep
    * running until an exception occurs or the server is shut down.
@@ -70,6 +74,8 @@ public final class GameServer implements Runnable {
       bossGroup.shutdownGracefully();
       workerGroup.shutdownGracefully();
     }
+
+
   }
 
 }

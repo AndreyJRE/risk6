@@ -34,26 +34,47 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * The UserStatisticsSceneController manages the user statistics scene in the UI.
+ * It handles the initialization and display of user-specific statistics and profile information,
+ * such as hours played, ranking, number of countries lost and won.
+ * This class also manages the transition back to the user option scene.
+ *
+ * @author fisommer
+ * @author astoyano
+ */
 
 public class UserStatisticsSceneController {
 
   private final UserStatisticsScene userStatisticsScene;
   private final SceneController sceneController;
+  private final GameStatisticService gameStatisticService;
   private User user;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
-  private final GameStatisticService gameStatisticService;
   private GridPane statisticsGridPane;
-  private String numberStyle = "-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-text-fill: white";
-  private String labelStyle = "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
+  private final String numberStyle = "-fx-font-family: 'Segoe UI'; "
+      + "-fx-font-size: 26px; -fx-text-fill: white";
+  private final String labelStyle = "-fx-font-family: 'Segoe UI'; "
+      + "-fx-font-weight: bold; -fx-font-size: 26px; -fx-text-fill: white";
 
+  /**
+   * Creates a UserStatisticsSceneController associated with a given UserStatisticsScene.
+   *
+   * @param userStatisticsScene the UserStatisticsScene this controller will manage.
+   */
 
   public UserStatisticsSceneController(UserStatisticsScene userStatisticsScene) {
     this.userStatisticsScene = userStatisticsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
   }
+
+  /**
+   * Initializes the scene with the current user's statistics and relevant UI components.
+   * Sets the background image and initializes the UI elements for displaying statistics.
+   */
 
   public void init() {
     this.user = SessionManager.getUser();
@@ -68,15 +89,15 @@ public class UserStatisticsSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
+    // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
@@ -84,6 +105,11 @@ public class UserStatisticsSceneController {
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
+
+  /**
+   * Initializes the UI elements for the scene, including the back arrow,
+   * user name, and statistical data display components.
+   */
 
   private void initElements() {
     // Back arrow
@@ -118,41 +144,44 @@ public class UserStatisticsSceneController {
     root.setCenter(centerVBox);
   }
 
+  /**
+   * Initializes the GridPane for displaying statistical data.
+   * Retrieves data from the GameStatisticService and updates the UI components accordingly.
+   */
+
   private void initGridPane() {
     statisticsGridPane = new GridPane();
     List<GameStatistic> statisticList = gameStatisticService.getAllStatisticsByUserId(user.getId());
     Label hoursPlayedLabel = new Label("Hours played: ");
+    hoursPlayedLabel.setStyle(labelStyle);
     Label eloLabel = new Label("Ranking: ");
+    eloLabel.setStyle(labelStyle);
     Label countriesLostLabel = new Label("Number of countries lost: ");
+    countriesLostLabel.setStyle(labelStyle);
     Label countriesWonLabel = new Label("Number of countries defeated: ");
+    countriesWonLabel.setStyle(labelStyle);
 
     Label numberHoursPlayed = new Label("0");
-    Label numberRanking = new Label("0");
-    Label numberCountriesLost = new Label("0");
-    Label numberCountriesWon = new Label("0");
-    eloLabel.setStyle(labelStyle);
-    hoursPlayedLabel.setStyle(labelStyle);
-    countriesLostLabel.setStyle(labelStyle);
-    countriesWonLabel.setStyle(labelStyle);
-    numberCountriesWon.setStyle(numberStyle);
-    numberCountriesLost.setStyle(numberStyle);
     numberHoursPlayed.setStyle(numberStyle);
+    Label numberRanking = new Label("0");
     numberRanking.setStyle(numberStyle);
+    Label numberCountriesLost = new Label("0");
+    numberCountriesLost.setStyle(numberStyle);
+    Label numberCountriesWon = new Label("0");
+    numberCountriesWon.setStyle(numberStyle);
     int won = (int) statisticList.stream().filter(GameStatistic::isGameWon).count();
-    double hoursPlayed =
-        statisticList.stream().mapToDouble(g -> {
-              Duration duration = Duration.between(g.getStartDate(), g.getFinishDate());
-              return duration.toSeconds() / 3600.0;
-            })
-            .sum();
     double lossRatio = ((double) won / statisticList.size()) * 10;
+    numberRanking.setText(String.format("%.2f", lossRatio));
     int lostCountries = statisticList.stream()
         .mapToInt(GameStatistic::getCountriesWon).sum();
+    numberCountriesLost.setText(Integer.toString(lostCountries));
+    double hoursPlayed = statisticList.stream().mapToDouble(g -> {
+      Duration duration = Duration.between(g.getStartDate(), g.getFinishDate());
+      return duration.toSeconds() / 3600.0;
+    }).sum();
+    numberHoursPlayed.setText(String.format("%.2f", hoursPlayed));
     int wonCountries = statisticList.stream()
         .mapToInt(GameStatistic::getCountriesLost).sum();
-    numberCountriesLost.setText(Integer.toString(lostCountries));
-    numberRanking.setText(String.format("%.2f", lossRatio));
-    numberHoursPlayed.setText(String.format("%.2f", hoursPlayed));
     numberCountriesWon.setText(Integer.toString(wonCountries));
     statisticsGridPane.add(hoursPlayedLabel, 0, 0);
     statisticsGridPane.add(eloLabel, 0, 1);
@@ -166,6 +195,11 @@ public class UserStatisticsSceneController {
     statisticsGridPane.setHgap(30); // Set horizontal gap
     statisticsGridPane.setVgap(40); // Set vertical gap
   }
+
+  /**
+   * Initializes the StackPane for displaying the user's profile picture.
+   * The image is clipped to fit within a circular boundary.
+   */
 
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));

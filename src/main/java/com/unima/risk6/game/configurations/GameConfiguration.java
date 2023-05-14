@@ -187,4 +187,8 @@ public class GameConfiguration {
   public static void setBotDifficulty(String botDifficulty) {
     GameConfiguration.botDifficulty = botDifficulty;
   }
+
+  public static GameStatistic getCurrentGameStatistic() {
+    return currentGameStatistic;
+  }
 }

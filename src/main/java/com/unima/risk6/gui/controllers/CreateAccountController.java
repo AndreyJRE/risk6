@@ -21,6 +21,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -32,6 +34,7 @@ import javafx.scene.layout.AnchorPane;
  *
  * @author fisommer
  */
+
 public class CreateAccountController implements Initializable {
 
   private UserService userService;
@@ -55,11 +58,13 @@ public class CreateAccountController implements Initializable {
   private ImageView backgroundImageView;
 
   private SceneController sceneController;
+
   /**
    * This method is called when the user wants to log into an existing account.
    * If there are no existing users in the database, an error dialog will be shown.
    * Otherwise, the login scene will be activated.
    */
+
   @FXML
   private void handleLoginToAccount() {
     if (userService.getAllUsers().size() == 0) {
@@ -70,11 +75,13 @@ public class CreateAccountController implements Initializable {
       sceneController.activate(SceneName.LOGIN);
     }
   }
+
   /**
    * This method is called when the user attempts to create a new account.
    * It validates the user's input and attempts to save a new user to the database.
    * If the username is not unique or the password is not valid, an error dialog will be shown.
    */
+
   @FXML
   private void handleCreateButton() {
     String username = usernameField.getText();
@@ -106,22 +113,28 @@ public class CreateAccountController implements Initializable {
       checkPasswordField.setText("");
     }
   }
+
   /**
    * This method is called when the mouse enters a Label object.
    * It changes the style of the label to indicate it's interactive.
+   *
    * @param event The MouseEvent object that triggered this method.
    */
+
   @FXML
   private void handleMouseEntered(MouseEvent event) {
     Label label = (Label) event.getSource();
     label.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-text-fill: "
         + "#007FFF; -fx-underline: true; -fx-cursor: hand");
   }
+
   /**
    * This method is called when the mouse exits a Label object.
    * It resets the style of the label.
+   *
    * @param event The MouseEvent object that triggered this method.
    */
+
   @FXML
   private void handleMouseExited(MouseEvent event) {
     Label label = (Label) event.getSource();
@@ -132,10 +145,15 @@ public class CreateAccountController implements Initializable {
 
   /**
    * This method is called when all FXML loading is complete.
-   * It binds properties, applies styles, initializes services, sets up listeners, and configures the scene.
-   * @param url The location used to resolve relative paths for the root object, or null if the location is not known.
-   * @param resourceBundle The resources used to localize the root object, or null if the root object was not localized.
+   * It binds properties, applies styles, initializes services, sets up listeners,
+   * and configures the scene.
+   *
+   * @param url The location used to resolve relative paths for the root object,
+   *            or null if the location is not known.
+   * @param resourceBundle The resources used to localize the root object,
+   *                       or null if the root object was not localized.
    */
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     backgroundImageView.fitWidthProperty().bind(root.widthProperty());
@@ -158,5 +176,11 @@ public class CreateAccountController implements Initializable {
     });
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefHeight(SceneConfiguration.getWidth());
+    root.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+      e.consume();
+      if (e.getCode() == KeyCode.ENTER) {
+        handleCreateButton();
+      }
+    });
   }
 }

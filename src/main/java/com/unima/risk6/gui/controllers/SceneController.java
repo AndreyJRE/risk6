@@ -51,6 +51,7 @@ public class SceneController {
    *
    * @param name the name of the scene to activate
    */
+
   public void activate(SceneName name) {
     if (name == SceneName.TITLE) {
       initTitleScreen();
@@ -78,6 +79,7 @@ public class SceneController {
   /**
    * Closes the scene controller, releases any resources, and exits the JavaFX application.
    */
+
   public void close() {
     DatabaseConfiguration.closeDatabaseConnectionAndServices();
     if (NetworkConfiguration.getGameServerThread() != null

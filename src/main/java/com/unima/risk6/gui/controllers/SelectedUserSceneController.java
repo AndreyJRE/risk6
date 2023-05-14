@@ -40,6 +40,7 @@ import javafx.scene.text.Font;
  *
  * @author fisommer
  */
+
 public class SelectedUserSceneController {
 
   private final SelectedUserScene selectedUserScene;
@@ -57,6 +58,7 @@ public class SelectedUserSceneController {
    *
    * @param selectedUserScene the scene this controller will manage
    */
+
   public SelectedUserSceneController(SelectedUserScene selectedUserScene) {
     this.selectedUserScene = selectedUserScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -66,6 +68,7 @@ public class SelectedUserSceneController {
    * Initializes the scene. This includes setting up user interface components and loading the
    * user's image.
    */
+
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) selectedUserScene.getRoot();
@@ -85,9 +88,9 @@ public class SelectedUserSceneController {
     HBox hbox = new HBox(passwordEntryBox);
     hbox.setAlignment(Pos.CENTER);
 
-    VBox vBox = new VBox(welcomeBack, hbox);
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(50);
+    VBox vbox = new VBox(welcomeBack, hbox);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setSpacing(50);
     root.setLeft(backButton);
 
     // Add some spacing around backButton
@@ -97,28 +100,30 @@ public class SelectedUserSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECTED_USER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
+        true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
     // Add passwordEntryBox to the center of the BorderPane
-    root.setCenter(vBox);
+    root.setCenter(vbox);
   }
 
   /**
    * Initializes the StackPane that holds the user image.
    */
+
   private void initUserStackPane() {
     Circle circle = new Circle();
     circle.setRadius(125);
@@ -144,6 +149,7 @@ public class SelectedUserSceneController {
    * @param user          the user whose password is being validated
    * @param passwordField the field containing the entered password
    */
+
   private void passwordValidation(User user, PasswordField passwordField) {
     String enteredPassword = passwordField.getText();
     if (PasswordEncryption.validatePassword(enteredPassword, user.getPassword())) {
@@ -158,6 +164,7 @@ public class SelectedUserSceneController {
   /**
    * Initializes various elements of the scene, such as text labels and buttons.
    */
+
   private void initElements() {
     Label selectedUserName = new Label(user.getUsername());
     selectedUserName.setStyle("-fx-font-size: 40; -fx-text-fill: white");

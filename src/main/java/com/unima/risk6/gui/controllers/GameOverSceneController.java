@@ -1,13 +1,9 @@
 package com.unima.risk6.gui.controllers;
 
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.models.User;
-import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
@@ -33,12 +29,18 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * A controller class for managing the game over scene.
+ * It handles the UI elements such as user statistics display and navigating back
+ * to the title scene.
+ *
+ * @author fisommer
+ */
 
 public class GameOverSceneController {
 
   private final GameOverScene gameOverScene;
   private final SceneController sceneController;
-  private final GameStatisticService gameStatisticService;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
@@ -50,14 +52,25 @@ public class GameOverSceneController {
   private final Statistic statistic;
   private final GameState gameState;
 
+  /**
+   * Constructor for the GameOverSceneController.
+   *
+   * @param gameOverScene the game over scene associated with this controller
+   * @param gameState     the current state of the game
+   */
 
   public GameOverSceneController(GameOverScene gameOverScene, GameState gameState) {
     this.gameOverScene = gameOverScene;
     this.sceneController = SceneConfiguration.getSceneController();
-    gameStatisticService = DatabaseConfiguration.getGameStatisticService();
     this.statistic = gameState.getCurrentPlayer().getStatistic();
     this.gameState = gameState;
   }
+
+  /**
+   * Initializes the game over scene.
+   * This includes loading the background image, initializing the UI elements,
+   * and setting the opacity for the ImageView.
+   */
 
   public void init() {
     this.root = (BorderPane) gameOverScene.getRoot();
@@ -89,20 +102,18 @@ public class GameOverSceneController {
     root.setBackground(background);
   }
 
+  /**
+   * Initializes various UI elements of the game over scene.
+   * This includes the back arrow, user name, and statistics display.
+   */
+
   private void initElements() {
     // Back arrow
     Path arrow = StyleConfiguration.generateBackArrow();
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    //TODO database after a game
     backButton.setOnMouseClicked(e -> {
-      User user = SessionManager.getUser();
-      /*LobbyConfiguration.sendJoinServer(UserDto.mapUserAndHisGameStatistics(user,
-          gameStatisticService
-              .getAllStatisticsByUserId(user.getId())));
-
-       */
       sceneController.activate(SceneName.TITLE);
     });
 
@@ -141,31 +152,33 @@ public class GameOverSceneController {
     root.setCenter(centervbox);
   }
 
+  /**
+   * Initializes the grid pane that displays the user's game statistics.
+   * These statistics include countries won/lost and troops count.
+   */
+
   private void initGridPane() {
     statisticsGridPane = new GridPane();
     Label countriesWon = new Label("Countries won: ");
-    Label numberCountriesWon = new Label(Integer.toString(statistic.getCountriesWon()));
-    Label countriesLost = new Label("Countries lost: ");
-    Label numberCountriesLost = new Label(Integer.toString(statistic.getCountriesLost()));
-    Label troops = new Label("Total troops at the end: ");
-    Label numberTroops = new Label(Integer.toString(statistic.getNumberOfTroops()));
-    Label troopsGained = new Label("Troops gained: ");
-    Label numberTroopsGained = new Label(Integer.toString(statistic.getTroopsGained()));
-    Label troopsLost = new Label("Troops lost: ");
-    Label numberTroopsLost = new Label(Integer.toString(statistic.getTroopsLost()));
-
-    numberCountriesWon.setStyle(numberStyle);
-    numberCountriesLost.setStyle(numberStyle);
-    numberTroops.setStyle(numberStyle);
-    numberTroopsGained.setStyle(numberStyle);
-    numberTroopsLost.setStyle(numberStyle);
-
-    countriesLost.setStyle(labelStyle);
     countriesWon.setStyle(labelStyle);
+    Label numberCountriesWon = new Label(Integer.toString(statistic.getCountriesWon()));
+    numberCountriesWon.setStyle(numberStyle);
+    Label countriesLost = new Label("Countries lost: ");
+    countriesLost.setStyle(labelStyle);
+    Label numberCountriesLost = new Label(Integer.toString(statistic.getCountriesLost()));
+    numberCountriesLost.setStyle(numberStyle);
+    Label troops = new Label("Total troops at the end: ");
     troops.setStyle(labelStyle);
+    Label numberTroops = new Label(Integer.toString(statistic.getNumberOfTroops()));
+    numberTroops.setStyle(numberStyle);
+    Label troopsGained = new Label("Troops gained: ");
     troopsGained.setStyle(labelStyle);
+    Label numberTroopsGained = new Label(Integer.toString(statistic.getTroopsGained()));
+    numberTroopsGained.setStyle(numberStyle);
+    Label troopsLost = new Label("Troops lost: ");
     troopsLost.setStyle(labelStyle);
-
+    Label numberTroopsLost = new Label(Integer.toString(statistic.getTroopsLost()));
+    numberTroopsLost.setStyle(numberStyle);
 
     statisticsGridPane.add(troops, 0, 0);
     statisticsGridPane.add(troopsGained, 0, 1);
@@ -182,6 +195,10 @@ public class GameOverSceneController {
     statisticsGridPane.setHgap(30); // Set horizontal gap
     statisticsGridPane.setVgap(20); // Set vertical gap
   }
+
+  /**
+   * Initializes the user stack pane that displays the user's icon.
+   */
 
   private void initUserStackPane() {
     userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));

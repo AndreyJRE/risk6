@@ -4,8 +4,6 @@ import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonS
 import static com.unima.risk6.gui.configurations.StyleConfiguration.generateBackArrow;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
 
-import com.unima.risk6.database.models.User;
-import com.unima.risk6.game.ai.AiBot;
 import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
@@ -47,19 +45,29 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * The SinglePlayerSettingsSceneController handles interactions within the single player settings scene.
+ * It manages UI components, game lobby, bot addition/removal, and scene transitions.
+ * Implements GameLobbyObserver to receive game lobby updates.
+ *
+ * @author fisommer
+ * @author astoyano
+ */
 
 public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
 
   private final SinglePlayerSettingsScene singlePlayerSettingsScene;
   private final SceneController sceneController;
-  private User user;
   private BorderPane root;
-  private HBox centralHBox;
-  private final List<AiBot> aiBots = new ArrayList<>();
-  private StackPane plus;
   private UserDto myUser;
   private GameLobby gameLobby;
   private boolean tutorial;
+
+  /**
+   * Constructs a SinglePlayerSettingsSceneController object that handles user interactions in the SinglePlayerSettingsScene.
+   *
+   * @param singlePlayerSettingsScene a reference to the single player settings scene
+   */
 
   public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
@@ -67,14 +75,19 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     LobbyConfiguration.addGameLobbyObserver(this);
   }
 
+  /**
+   * Initializes the single player settings scene, sets up the game lobby, user, and the UI elements.
+   */
+
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) singlePlayerSettingsScene.getRoot();
     this.tutorial = singlePlayerSettingsScene.isTutorial();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
+        26);
     // Initialize elements
-    initHBox();
+    initHbox();
     initElements(tutorial ? "Tutorial" : "Singleplayer");
   }
 
@@ -89,7 +102,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     Label title = new Label(lobbyName);
     title.setAlignment(Pos.CENTER);
     title.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; "
+            + "-fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -110,16 +124,17 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.SINGLEPLAYER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
+        true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -142,14 +157,14 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     }
   }
 
-  private void initHBox() {
-    HBox centralHBox = new HBox();
-    VBox userVBox = createPlayerVBox(myUser);
-    centralHBox.getChildren().add(userVBox);
+  private void initHbox() {
+    HBox centralhbox = new HBox();
+    VBox userVbox = createPlayerVbox(myUser);
+    centralhbox.getChildren().add(userVbox);
     if (tutorial) {
       for (String s : gameLobby.getBots()) {
-        VBox botVBox = createBotVBox(3, s);
-        centralHBox.getChildren().add(botVBox);
+        VBox botVbox = createBotVbox(3, s);
+        centralhbox.getChildren().add(botVbox);
       }
     } else {
       for (String bot : gameLobby.getBots()) {
@@ -160,20 +175,20 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
         if (bot.contains("Hard")) {
           i = 2;
         }
-        VBox botVBox = createBotVBox(i, bot);
-        centralHBox.getChildren().add(botVBox);
+        VBox botVbox = createBotVbox(i, bot);
+        centralhbox.getChildren().add(botVbox);
       }
     }
     if (gameLobby.getBots().size() + gameLobby.getUsers().size() < gameLobby.getMaxPlayers()) {
       StackPane plus = createPlusStackpane();
-      centralHBox.getChildren().add(plus);
+      centralhbox.getChildren().add(plus);
     }
-    centralHBox.setAlignment(Pos.CENTER);
-    centralHBox.setSpacing(20.0);
-    root.setCenter(centralHBox);
+    centralhbox.setAlignment(Pos.CENTER);
+    centralhbox.setSpacing(20.0);
+    root.setCenter(centralhbox);
   }
 
-  private VBox createPlayerVBox(UserDto userDto) {
+  private VBox createPlayerVbox(UserDto userDto) {
     StackPane userImage = createPlayerStackPane(ImageName.PLAYER_ICON, false);
     Label userName = new Label(userDto.getUsername());
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
@@ -290,13 +305,14 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     });
   }
 
-  private VBox createBotVBox(int difficultyNumber, String botName) {
+  private VBox createBotVbox(int difficultyNumber, String botName) {
     StackPane botImage = new StackPane();
     switch (difficultyNumber) {
       case 0 -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
       case 1 -> botImage = createPlayerStackPane(ImageName.MEDIUMBOT_ICON, true);
       case 2 -> botImage = createPlayerStackPane(ImageName.HARDBOT_ICON, true);
       case 3 -> botImage = createPlayerStackPane(ImageName.TUTORIAL_ICON, true);
+      default -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
     }
     Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
@@ -331,11 +347,16 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     LobbyConfiguration.sendRemoveBotFromLobby(gameLobby);
   }
 
+  /**
+   * Handles the action of the "Play" button. Validates the number of players and initiates the game or tutorial.
+   */
+
   private void handlePlayButton() {
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();
     if (together < 2 || together > gameLobby.getMaxPlayers()) {
-      showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
+      showErrorDialog("Not enough players",
+          "You need at least 2 players to start the game.");
       return;
     }
     if (tutorial) {
@@ -360,6 +381,12 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   public void setTutorial(boolean tutorial) {
     this.tutorial = tutorial;
   }
+
+  /**
+   * Updates the current game lobby and re-initializes the scene.
+   *
+   * @param gameLobby the updated game lobby
+   */
 
   @Override
   public void updateGameLobby(GameLobby gameLobby) {

@@ -19,6 +19,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * The RisikoMain class is the entry point for the application.
+ * It extends the JavaFX Application class and overrides the start() and init() methods.
+ * It also includes the main() method which launches the application.
+ *
+ * @author astoyano
+ * @author fisommer
+ * @author mmeider
+ */
+
 public class RisikoMain extends Application {
 
   @Override

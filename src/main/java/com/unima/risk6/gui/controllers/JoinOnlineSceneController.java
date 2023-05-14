@@ -37,25 +37,47 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * Controller for handling operations related to joining an online game.
+ * This includes initialization of the join online scene and handle joining the game.
+ *
+ * @author fisommer
+ * @author astoyano
+ */
+
 public class JoinOnlineSceneController {
 
   private final JoinOnlineScene joinOnlineScene;
   private final SceneController sceneController;
   private BorderPane root;
 
+  /**
+   * Constructs a new JoinOnlineSceneController.
+   *
+   * @param joinOnlineScene the scene for joining online games
+   */
+
   public JoinOnlineSceneController(JoinOnlineScene joinOnlineScene) {
     this.joinOnlineScene = joinOnlineScene;
     this.sceneController = SceneConfiguration.getSceneController();
   }
 
+  /**
+   * Initializes the join online scene with the appropriate UI elements.
+   */
+
   public void init() {
     this.root = (BorderPane) joinOnlineScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
+        26);
     initElements();
   }
 
+  /**
+   * Initializes the elements of the join online scene.
+   */
+
   private void initElements() {
-    AnchorPane centralBox = initCentralVBox();
     // Back arrow
     Path arrow = generateBackArrow();
 
@@ -67,21 +89,22 @@ public class JoinOnlineSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
+    // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
+    AnchorPane centralBox = initCentralVbox();
 
     root.setCenter(centralBox);
     root.setLeft(backButton);
@@ -89,29 +112,37 @@ public class JoinOnlineSceneController {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
   }
 
-  private AnchorPane initCentralVBox() {
+  /**
+   * Initializes a VBox to be placed in the center of the scene.
+   *
+   * @return the initialized VBox
+   */
 
-    HBox hBox = new HBox();
-    hBox.setAlignment(Pos.CENTER);
+  private AnchorPane initCentralVbox() {
+
+    HBox hbox = new HBox();
+    hbox.setAlignment(Pos.CENTER);
 
     AnchorPane anchorPane = new AnchorPane();
     anchorPane.setPrefSize(600, 495);
     anchorPane.setPadding(new Insets(190, 270, 190, 270));
 
-    VBox vBox = new VBox();
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(22);
-    vBox.setStyle(
-        "-fx-opacity:0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
-    AnchorPane.setTopAnchor(vBox, 0.0);
-    AnchorPane.setRightAnchor(vBox, 0.0);
-    AnchorPane.setBottomAnchor(vBox, 0.0);
-    AnchorPane.setLeftAnchor(vBox, 0.0);
+    VBox vbox = new VBox();
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setSpacing(22);
+    vbox.setStyle(
+        "-fx-opacity:0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; "
+            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+    AnchorPane.setTopAnchor(vbox, 0.0);
+    AnchorPane.setRightAnchor(vbox, 0.0);
+    AnchorPane.setBottomAnchor(vbox, 0.0);
+    AnchorPane.setLeftAnchor(vbox, 0.0);
 
     Label titleLabel = new Label("Join Online");
     titleLabel.setFont(Font.font("BentonSans Bold", 41));
     titleLabel.setStyle(
-        "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
+        "-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 36px; -fx-font-weight: bold; "
+            + "-fx-text-fill: #2D2D2D;");
 
     TextField ipAdressTextField = new TextField();
     ipAdressTextField.setPrefSize(800, 40);
@@ -145,10 +176,10 @@ public class JoinOnlineSceneController {
     centerGrid.setHgap(20);
     centerGrid.setVgap(15);
 
-    vBox.getChildren().addAll(titleLabel, centerGrid, serverNotFoundLabel, joinButton);
-    vBox.setPadding(new Insets(15, 15, 15, 15));
+    vbox.getChildren().addAll(titleLabel, centerGrid, serverNotFoundLabel, joinButton);
+    vbox.setPadding(new Insets(15, 15, 15, 15));
 
-    anchorPane.getChildren().add(vBox);
+    anchorPane.getChildren().add(vbox);
 
     ipAdressTextField.setOnAction(
         e -> handleJoin(ipAdressTextField.getText()));
@@ -158,6 +189,12 @@ public class JoinOnlineSceneController {
 
     return anchorPane;
   }
+
+  /**
+   * Handles the join request when the player wants to join a game.
+   *
+   * @param host the host address of the game server
+   */
 
   private void handleJoin(String host) {
 

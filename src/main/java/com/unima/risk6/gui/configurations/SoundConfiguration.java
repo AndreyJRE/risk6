@@ -96,13 +96,11 @@ public class SoundConfiguration {
     notificationSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(NOTIFICATION_SOUND_PATH))
             .toExternalForm());
-    notificationSound.setVolume(VOLUME.get());
-    notificationSound.volumeProperty().bind(VOLUME);
+    notificationSound.setVolume(1);
     clickSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(CLICK_SOUND_PATH))
             .toExternalForm());
-    clickSound.setVolume(VOLUME.get());
-    clickSound.volumeProperty().bind(VOLUME);
+    clickSound.setVolume(1);
   }
 
   public static void playTitleSound() {
@@ -143,6 +141,14 @@ public class SoundConfiguration {
 
   public static void setVolume(double volume) {
     SoundConfiguration.VOLUME.set(volume);
+  }
+
+  public static void playNotificationSound() {
+    notificationSound.play();
+  }
+
+  public static void playClickSound() {
+    clickSound.play();
   }
 
 }

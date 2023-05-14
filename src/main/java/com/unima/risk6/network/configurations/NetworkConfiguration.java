@@ -65,4 +65,8 @@ public class NetworkConfiguration {
   public static Thread getGameServerThread() {
     return gameServerThread;
   }
+
+  public static GameServer getGameServer() {
+    return gameServer;
+  }
 }

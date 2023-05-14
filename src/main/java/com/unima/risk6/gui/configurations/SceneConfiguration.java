@@ -73,6 +73,8 @@ public class SceneConfiguration {
     GameSceneController gameSceneController = null;
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
+    SceneName beforeCurrentScene = SceneConfiguration.getSceneController().getCurrentSceneName();
+    System.out.println("Start game " + beforeCurrentScene);
     if (gameScene == null) {
       gameScene = new GameScene();
       gameSceneController = new GameSceneController(gameScene);
@@ -90,14 +92,19 @@ public class SceneConfiguration {
       throw new RuntimeException(e);
     }
     assert gameSceneController != null;
-    if (GameConfiguration.getTutorial() == null) {
+    if (beforeCurrentScene == SceneName.MULTIPLAYER_LOBBY) {
       GameStatistic gameStatistic = new GameStatistic(SessionManager.getUser());
       DatabaseConfiguration.getGameStatisticService().saveGameStatistic(gameStatistic);
       GameConfiguration.setCurrentGameStatistic(gameStatistic);
       gameSceneController.showOrderPopup();
     } else {
-      gameSceneController.updateActivePlayerUi();
+      if (GameConfiguration.getTutorial() != null) {
+        gameSceneController.updateActivePlayerUi();
+      } else {
+        gameSceneController.showOrderPopup();
+      }
     }
+    gameSceneController.addCloseRequestListener();
   }
 
   /**
@@ -141,7 +148,7 @@ public class SceneConfiguration {
    * Starts the single player game settings scene and activates it in the scene controller.
    */
 
-  public static void startSinglePlayer() {
+  public static void joinSinglePlayerLobby() {
     SinglePlayerSettingsScene scene =
         (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
             .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);

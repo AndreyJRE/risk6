@@ -9,6 +9,7 @@ import javafx.scene.layout.BorderPane;
  *
  * @author fisommer
  */
+
 public class SelectedUserScene extends Scene implements InitializableScene {
 
   private SelectedUserSceneController selectedUserSceneController;
@@ -16,6 +17,7 @@ public class SelectedUserScene extends Scene implements InitializableScene {
   /**
    * Constructs a new SelectedUserScene with a BorderPane as its root.
    */
+
   public SelectedUserScene() {
     super(new BorderPane());
   }
@@ -23,6 +25,7 @@ public class SelectedUserScene extends Scene implements InitializableScene {
   /**
    * Initializes the scene if the controller is present.
    */
+
   @Override
   public void init() {
     if (selectedUserSceneController != null) {
@@ -30,11 +33,6 @@ public class SelectedUserScene extends Scene implements InitializableScene {
     }
   }
 
-  /**
-   * Sets the controller for this scene.
-   *
-   * @param selectedUserSceneController the controller to be used with this scene
-   */
   public void setController(
       SelectedUserSceneController selectedUserSceneController) {
     this.selectedUserSceneController = selectedUserSceneController;

@@ -24,6 +24,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -39,6 +41,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * This class is responsible for controlling the scene where a new game lobby is created in the UI.
+ * It includes all of the necessary UI components and their associated functionalities.
+ * It also creates and sends the game lobby to the server when the "Create Lobby" button is clicked.
+ *
+ * @author fisommer
+ */
 
 public class CreateLobbySceneController {
 
@@ -60,12 +69,22 @@ public class CreateLobbySceneController {
     this.sceneController = SceneConfiguration.getSceneController();
   }
 
+  /**
+   * Initializes the UI components for the scene.
+   */
+
   public void init() {
     this.root = (BorderPane) createLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
         26);
     // Initialize elements
     initElements();
+    root.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+      e.consume();
+      if (e.getCode() == KeyCode.ENTER) {
+        handleCreateButton();
+      }
+    });
   }
 
   private void initElements() {
@@ -186,12 +205,14 @@ public class CreateLobbySceneController {
     maxPlayersList.addAll("2", "3", "4", "5", "6");
     maxPlayers.setItems(maxPlayersList);
     maxPlayers.setPrefWidth(800);
+    maxPlayers.getSelectionModel().select(4);
 
     minElo = new ComboBox<>();
     ObservableList<String> minEloList = FXCollections.observableArrayList();
     minEloList.addAll("0", "1", "2", "3", "4", "5");
     minElo.setItems(minEloList);
     minElo.setPrefWidth(800);
+    minElo.getSelectionModel().select(0);
 
     chatCheck = new CheckBox();
 
@@ -206,7 +227,7 @@ public class CreateLobbySceneController {
     maxPlayers.setStyle(comboBoxStyle);
     minElo.setStyle(comboBoxStyle);
 
-// CheckBox styling
+    // CheckBox styling
     String checkBoxBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: "
         + "#cccccc; -fx-border-radius: 3; -fx-background-radius: 3;";
     String checkBoxSelectedBoxStyle = "-fx-font-size: 20; -fx-background-color: #93d2f8; "

@@ -26,10 +26,12 @@ import java.util.Optional;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -46,6 +48,13 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * Controller for managing the multiplayer lobby scene.
+ *
+ * @author fisommer
+ * @author astoyano
+ */
+
 public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   private final MultiplayerLobbyScene multiplayerLobbyScene;
@@ -54,6 +63,13 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   private BorderPane root;
   private GameLobby gameLobby;
 
+  private DropShadow dropShadow;
+
+  /**
+   * Constructor for MultiplayerLobbySceneController.
+   *
+   * @param multiplayerLobbyScene The multiplayer lobby scene to be managed by this controller.
+   */
 
   public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
     this.multiplayerLobbyScene = multiplayerLobbyScene;
@@ -61,13 +77,20 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     LobbyConfiguration.addGameLobbyObserver(this);
   }
 
+  /**
+   * Initialize the game lobby and the user, and setup the root layout and other UI elements.
+   */
+
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
-    // Initialize elements
-    initHBox();
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
+        26);
+    dropShadow = new DropShadow();
+    dropShadow.setRadius(15.0);
+    dropShadow.setColor(Color.LIGHTSKYBLUE.darker());
+    initHbox();
     initElements();
   }
 
@@ -82,7 +105,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     Label title = new Label("Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
     title.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; "
+            + "-fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -102,7 +126,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     } else {
       Label waiting = new Label("Waiting for the host to start the game...");
       waiting.setStyle(
-          "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px; -fx-text-fill: white");
+          "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px; "
+              + "-fx-text-fill: white");
       HBox waitingLabelBox = new HBox(waiting);
       waitingLabelBox.setAlignment(Pos.CENTER);
       root.setBottom(waitingLabelBox);
@@ -110,22 +135,21 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
     }
 
-    //TODO: Implement Gridpane for Multiplayer Settings
-
     // Load the image into an ImageView
     Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.8);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
+        true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -153,12 +177,12 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     }
   }
 
-  private void initHBox() {
-    HBox centralHBox = new HBox();
+  private void initHbox() {
+    HBox centralhbox = new HBox();
     List<UserDto> users = gameLobby.getUsers();
     for (UserDto user : users) {
-      VBox userVBox = createPlayerVBox(user);
-      centralHBox.getChildren().add(userVBox);
+      VBox uservbox = createplayervbox(user);
+      centralhbox.getChildren().add(uservbox);
     }
     for (String bot : gameLobby.getBots()) {
       int i = 0;
@@ -168,29 +192,30 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
       if (bot.contains("Hard")) {
         i = 2;
       }
-      VBox botVBox = createBotVBox(i, bot);
-      centralHBox.getChildren().add(botVBox);
+      VBox botvbox = createbotvbox(i, bot);
+      centralhbox.getChildren().add(botvbox);
     }
     if (gameLobby.getBots().size() + gameLobby.getUsers().size() < gameLobby.getMaxPlayers()) {
       StackPane plus = createPlusStackpane();
       if (checkIfUserIsOwner()) {
-        centralHBox.getChildren().add(plus);
+        centralhbox.getChildren().add(plus);
       }
 
     }
-    centralHBox.setAlignment(Pos.CENTER);
-    centralHBox.setSpacing(20.0);
-    root.setCenter(centralHBox);
+    centralhbox.setAlignment(Pos.CENTER);
+    centralhbox.setSpacing(20.0);
+    root.setCenter(centralhbox);
 
   }
 
   private void userClicked(UserDto user) {
-    LobbyUserStatisticScene scene = (LobbyUserStatisticScene) SceneConfiguration.getSceneController()
+    LobbyUserStatisticScene scene =
+        (LobbyUserStatisticScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.LOBBY_USER_STATISTIC);
     if (scene == null) {
       scene = new LobbyUserStatisticScene();
-      LobbyUserStatisticSceneController lobbyUserStatisticSceneController = new LobbyUserStatisticSceneController(
-          scene);
+      LobbyUserStatisticSceneController lobbyUserStatisticSceneController = new
+          LobbyUserStatisticSceneController(scene);
       scene.setController(lobbyUserStatisticSceneController);
       sceneController.addScene(SceneName.LOBBY_USER_STATISTIC, scene);
     }
@@ -200,7 +225,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   }
 
 
-  private VBox createPlayerVBox(UserDto userDto) {
+  private VBox createplayervbox(UserDto userDto) {
     StackPane userImage = createPlayerStackPane(ImageName.PLAYER_ICON, false);
     Label userName = new Label(userDto.getUsername());
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "
@@ -208,6 +233,15 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
         + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
         + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
     VBox playerBox = new VBox(userImage, userName);
+    userImage.hoverProperty().addListener((observableValue, aBoolean, t1) -> {
+      if (t1) {
+        userImage.setEffect(dropShadow);
+        userImage.setCursor(Cursor.HAND);
+      } else {
+        userImage.setCursor(Cursor.DEFAULT);
+        userImage.setEffect(null);
+      }
+    });
     playerBox.setOnMouseClicked(e -> userClicked(userDto));
     playerBox.setAlignment(Pos.CENTER);
     playerBox.setSpacing(-10);
@@ -322,7 +356,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     });
   }
 
-  private VBox createBotVBox(int difficultyNumber, String botName) {
+  private VBox createbotvbox(int difficultyNumber, String botName) {
     StackPane botImage = new StackPane();
     switch (difficultyNumber) {
       case 0 -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
@@ -364,7 +398,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();
     if (together < 2 || together > gameLobby.getMaxPlayers()) {
-      showErrorDialog("Not enough players", "You need at least 2 players to start the game.");
+      showErrorDialog("Not enough players",
+          "You need at least 2 players to start the game.");
       return;
     }
     LobbyConfiguration.sendStartGame(gameLobby);
