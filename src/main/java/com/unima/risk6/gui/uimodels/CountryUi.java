@@ -53,6 +53,15 @@ import javafx.scene.shape.SVGPath;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
+/**
+ * The CountryUi class represents the graphical user interface (UI) for a country in the RISK game.
+ * It provides methods for updating the country's visual appearance, handling interactions with the
+ * country, and displaying related information depending on the game phase.
+ *
+ * @author mmeider
+ * @author astoyano
+ */
+
 public class CountryUi extends Group {
 
   private Country country;
@@ -74,7 +83,12 @@ public class CountryUi extends Group {
   private FillTransition attackingTransition;
   private final Popup popUp;
 
-
+  /**
+   * Constructs a new instance of the `CountryUi` class with the specified country and SVG path.
+   *
+   * @param country the country associated with this UI element
+   * @param svgPath the SVG path representing the shape of the country
+   */
   public CountryUi(Country country, String svgPath) {
     super();
     this.country = country;
@@ -90,6 +104,14 @@ public class CountryUi extends Group {
 
   }
 
+  /**
+   * Adjusts the placement of the ellipse based on the given country and coordinates.
+   *
+   * @param country  the country to adjust the ellipse placement for
+   * @param ellipseX the X-coordinate of the ellipse
+   * @param ellipseY the Y-coordinate of the ellipse
+   * @return the adjusted coordinates as a `Point2D` object
+   */
   public static Point2D correctEllipsePlacement(Country country, double ellipseX, double ellipseY) {
     String countryName = country.getCountryName().name();
 
@@ -117,6 +139,9 @@ public class CountryUi extends Group {
     return new Point2D(ellipseX, ellipseY);
   }
 
+  /**
+   * Initializes the mouse listener for the country UI element.
+   */
   public void initMouseListener() {
     this.hoverProperty().addListener((observable, oldValue, newValue) -> {
       PlayerController playerController = GameSceneController.getPlayerController();
@@ -251,14 +276,17 @@ public class CountryUi extends Group {
         }
         default -> {
         }
-        // add more cases for other enum values
       }
       this.setCursor(Cursor.DEFAULT);
-
-
     });
   }
 
+  /**
+   * Creates a clone of the given SVG path.
+   *
+   * @param original the original SVG path to clone
+   * @return a new instance of `SVGPath` with the same content and properties as the original
+   */
   public SVGPath svgPathClone(SVGPath original) {
     SVGPath clone = new SVGPath();
     clone.setContent(original.getContent());
@@ -270,6 +298,14 @@ public class CountryUi extends Group {
     return clone;
   }
 
+  /**
+   * Adds event handlers to the adjacent country path for the specified country UI element and game
+   * phase.
+   *
+   * @param adjacentCountryPath the SVG path representing the adjacent country
+   * @param adjacentCountryUi   the adjacent country UI element
+   * @param gamePhase           the current game phase
+   */
   public void addEventHandlersToAdjacentCountryPath(SVGPath adjacentCountryPath,
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
     adjacentCountryPath.setOnMouseEntered(mouseEvent -> adjacentCountryPath.setCursor(Cursor.HAND));
@@ -285,6 +321,13 @@ public class CountryUi extends Group {
     });
   }
 
+
+  /**
+   * Animates the attack phase by showing the possible attack paths and highlighting adjacent
+   * countries.
+   *
+   * @param countriesGroup the parent group of the country UI elements
+   */
   public void animateAttackPhase(Group countriesGroup) {
     if (isCountrySelected) {
       removeArrowsAndAdjacentCountries();
@@ -301,12 +344,23 @@ public class CountryUi extends Group {
     }
   }
 
+  /**
+   * Animates the reinforcement phase by showing the pop-up window for selecting the number of
+   * troops to reinforce.
+   */
   private void animateReinforcementPhase() {
     showAmountOfTroopsPopUp(
         GameSceneController.getPlayerController().getPlayer().getDeployableTroops(), null,
         REINFORCEMENT_PHASE);
   }
 
+
+  /**
+   * Animates the fortify phase by showing the possible fortification paths and highlighting
+   * adjacent countries.
+   *
+   * @param countriesGroup the parent group of the country UI elements
+   */
   private void animateFortifyPhase(Group countriesGroup) {
     if (isCountrySelected) {
       removeArrowsAndAdjacentCountries();
@@ -324,6 +378,14 @@ public class CountryUi extends Group {
     }
   }
 
+  /**
+   * Shows a pop-up window for selecting the number of troops to move and performs the corresponding
+   * action based on the game phase.
+   *
+   * @param troopBound        the maximum number of troops that can be moved
+   * @param adjacentCountryUi the adjacent country UI element
+   * @param gamePhase         the current game phase
+   */
   public void showAmountOfTroopsPopUp(int troopBound, CountryUi adjacentCountryUi,
       GamePhase gamePhase) {
     AtomicInteger amountOfTroops = new AtomicInteger(1);
@@ -380,24 +442,18 @@ public class CountryUi extends Group {
       public void handle(KeyEvent event) {
         switch (event.getCode()) {
           case LEFT:
-            // Handle left arrow key press
-            System.out.println("Left Arrow Key Pressed");
             if (amountOfTroops.get() > 1) {
               amountOfTroops.getAndDecrement();
               chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
             }
             break;
           case RIGHT:
-            // Handle right arrow key press
-            System.out.println("Right Arrow Key Pressed");
             if (amountOfTroops.get() < troopBound) {
               amountOfTroops.getAndIncrement();
               chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
             }
             break;
           case ENTER:
-            // Handle enter key press
-            System.out.println("Enter Key Pressed");
             popUp.hide();
             PlayerController playerController = GameSceneController.getPlayerController();
             if (gamePhase == FORTIFY_PHASE) {
@@ -425,6 +481,8 @@ public class CountryUi extends Group {
                 playerController.sendEndPhase(gamePhase);
               }
             }
+            break;
+          default:
             break;
         }
       }
@@ -493,6 +551,9 @@ public class CountryUi extends Group {
     Platform.runLater(() -> moveTroopsPane.requestFocus());
   }
 
+  /**
+   * Removes the arrow and adjacent countries from the UI.
+   */
   public void removeArrowsAndAdjacentCountries() {
     Group countriesGroup = (Group) this.getParent();
     countriesGroup.getChildren().removeIf(countriesGroupNode -> countriesGroupNode instanceof Line
@@ -500,6 +561,14 @@ public class CountryUi extends Group {
     isCountrySelected = false;
   }
 
+  /**
+   * Displays a pop-up window showing the roll and result of an attack.
+   *
+   * @param lastAttack     the details of the last attack
+   * @param attacker       the UI representation of the attacking country
+   * @param defender       the UI representation of the defending country
+   * @param activePlayerUi the UI representation of the active player
+   */
   private void showAttackDicePopUp(Attack lastAttack, CountryUi attacker, CountryUi defender,
       ActivePlayerUi activePlayerUi) {
     BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
@@ -581,9 +650,16 @@ public class CountryUi extends Group {
       defender.animateInAttackActiveCountry((Color) defender.getCountryPath().getFill());
     }
     delayTransition.play();
-
   }
 
+  /**
+   * Creates an arrow and animates it between the current country and an adjacent country.
+   *
+   * @param countriesGroup    the parent group containing all country UI elements
+   * @param adjacentCountryUi the UI representation of the adjacent country
+   * @param gamePhase         the current phase of the game
+   * @return the created arrow line
+   */
   private Line createArrowAndAnimateAdjacentCountries(Group countriesGroup,
       CountryUi adjacentCountryUi, GamePhase gamePhase) {
     SVGPath adjacentCountryPath = svgPathClone(adjacentCountryUi.getCountryPath());
@@ -604,6 +680,13 @@ public class CountryUi extends Group {
     return arrow;
   }
 
+
+  /**
+   * Animates the arrow line between the current country and an adjacent country.
+   *
+   * @param adjacentCountryUi the UI representation of the adjacent country
+   * @param arrow             the arrow line to animate
+   */
   private void animateArrow(CountryUi adjacentCountryUi, Line arrow) {
     Point2D clickPosInScene = this.localToScene(
         this.getTroopsCounterUi().getEllipseCounter().getCenterX(),
@@ -630,6 +713,11 @@ public class CountryUi extends Group {
     timeline.play();
   }
 
+  /**
+   * Updates the visual appearance of the country based on the active player and game state.
+   *
+   * @param activePlayerUi the UI representation of the active player
+   */
   public void update(ActivePlayerUi activePlayerUi) {
     troopsCounterUi.update(country.getTroops());
     Color playerColor = activePlayerUi.getPlayerUi().getPlayerColor();
@@ -646,6 +734,11 @@ public class CountryUi extends Group {
     this.color = playerColor;
   }
 
+  /**
+   * Animates the visual appearance of the country as the active country.
+   *
+   * @param currentColor the current color of the country
+   */
   private void animateActiveCountry(Color currentColor) {
     Color brightHighlightColor = currentColor.deriveColor(0, 0, 0, 0.8);
     FillTransition highlightTransition = new FillTransition(Duration.seconds(0.2), this.countryPath,
@@ -659,6 +752,11 @@ public class CountryUi extends Group {
     sequentialTransition.play();
   }
 
+  /**
+   * Animates the visual appearance of the country during an attack.
+   *
+   * @param currentCountryColor the current color of the country
+   */
   private void animateInAttackActiveCountry(Color currentCountryColor) {
     Color brightHighlightColor = currentCountryColor.deriveColor(0, 0, 0, 0.7);
     attackingTransition = new FillTransition(Duration.seconds(0.25), this.countryPath,
@@ -669,6 +767,16 @@ public class CountryUi extends Group {
     attackingTransition.play();
   }
 
+
+  /**
+   * Updates the UI after an attack occurs, including displaying a pop-up and updating troop
+   * counts.
+   *
+   * @param activePlayerUi the UI representation of the active player
+   * @param attack         the details of the attack
+   * @param attacker       the UI representation of the attacking country
+   * @param defender       the UI representation of the defending country
+   */
   public void updateAfterAttack(ActivePlayerUi activePlayerUi, Attack attack, CountryUi attacker,
       CountryUi defender) {
     showAttackDicePopUp(attack, attacker, defender, activePlayerUi);
@@ -694,6 +802,13 @@ public class CountryUi extends Group {
 
   }
 
+
+  /**
+   * Checks if the given country belongs to the current player.
+   *
+   * @param country the country to check
+   * @return {@code true} if the country belongs to the current player, {@code false} otherwise
+   */
   public boolean checkIfCountryIsMine(Country country) {
     if (country.getPlayer() == null) {
       return false;
@@ -701,42 +816,10 @@ public class CountryUi extends Group {
     return country.getPlayer().equals(GameSceneController.getPlayerController().getPlayer());
   }
 
-  public SVGPath getCountryPath() {
-    return countryPath;
-  }
 
-  public Country getCountry() {
-    return country;
-  }
-
-  public void setTroopsCounterUi(TroopsCounterUi troopsCounterUi) {
-    this.troopsCounterUi = troopsCounterUi;
-  }
-
-  public TroopsCounterUi getTroopsCounterUi() {
-    return troopsCounterUi;
-  }
-
-  public DropShadow getGlowEffect() {
-    return glowEffect;
-  }
-
-  public void setAdjacentCountryUis(Set<CountryUi> adjacentCountryUis) {
-    this.adjacentCountryUis = adjacentCountryUis;
-  }
-
-  public void setCountry(Country country) {
-    this.country = country;
-  }
-
-  public Set<CountryUi> getAdjacentCountryUis() {
-    return adjacentCountryUis;
-  }
-
-  public void setColor(Color color) {
-    this.color = color;
-  }
-
+  /**
+   * Animates the country to indicate it as part of a tutorial by using FillTransition animations.
+   */
   public void animateTutorialCountry() {
     fillTransition = new FillTransition(Duration.seconds(0.5));
     fillTransition.setShape(this.getCountryPath());
@@ -747,8 +830,43 @@ public class CountryUi extends Group {
     fillTransition.play();
   }
 
+  public SVGPath getCountryPath() {
+    return countryPath;
+  }
+
+  public Country getCountry() {
+    return country;
+  }
+
+  public TroopsCounterUi getTroopsCounterUi() {
+    return troopsCounterUi;
+  }
+
+  public Set<CountryUi> getAdjacentCountryUis() {
+    return adjacentCountryUis;
+  }
+
+  public DropShadow getGlowEffect() {
+    return glowEffect;
+  }
+
   public FillTransition getAttackingTransition() {
     return attackingTransition;
   }
-}
 
+  public void setCountry(Country country) {
+    this.country = country;
+  }
+
+  public void setColor(Color color) {
+    this.color = color;
+  }
+
+  public void setTroopsCounterUi(TroopsCounterUi troopsCounterUi) {
+    this.troopsCounterUi = troopsCounterUi;
+  }
+
+  public void setAdjacentCountryUis(Set<CountryUi> adjacentCountryUis) {
+    this.adjacentCountryUis = adjacentCountryUis;
+  }
+}
