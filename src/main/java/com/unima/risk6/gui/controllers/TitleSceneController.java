@@ -315,16 +315,25 @@ public class TitleSceneController implements Initializable {
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
     int i = 0;
-    while (LobbyConfiguration.getGameClient().getHandler() == null) {
+    while (LobbyConfiguration.getGameClient().getHandler() == null && i < 20) {
       Thread.sleep(50);
-    }
-    while (!LobbyConfiguration.getGameClient().isHandshakeComplete()) {
-      Thread.sleep(50);
+      i++;
     }
     if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
+    i = 0;
+    while (!LobbyConfiguration.getGameClient().isHandshakeComplete() && i < 20) {
+      Thread.sleep(50);
+      i++;
+
+    }
+    if (i >= 20) {
+      showErrorDialog("Connection error.", "Please start the game again.");
+      return;
+    }
+
     Thread.sleep(250);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
@@ -376,23 +385,26 @@ public class TitleSceneController implements Initializable {
     Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
-
     int i = 0;
-    while (LobbyConfiguration.getGameClient().getHandler() == null) {
-      Thread.sleep(50);
-    }
-    while (!LobbyConfiguration.getGameClient().isHandshakeComplete()) {
-      Thread.sleep(50);
-    }
-    /*while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
+    while (LobbyConfiguration.getGameClient().getHandler() == null && i < 20) {
       Thread.sleep(50);
       i++;
-    }*/
+    }
     if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
-    Thread.sleep(250);
+    i = 0;
+    while (!LobbyConfiguration.getGameClient().isHandshakeComplete() && i < 20) {
+      Thread.sleep(50);
+      i++;
+
+    }
+    if (i >= 20) {
+      showErrorDialog("Connection error.", "Please start the game again.");
+      return;
+    }
+
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());

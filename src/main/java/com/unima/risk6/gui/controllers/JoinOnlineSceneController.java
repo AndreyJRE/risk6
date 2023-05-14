@@ -38,8 +38,8 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 /**
- * Controller for handling operations related to joining an online game.
- * This includes initialization of the join online scene and handle joining the game.
+ * Controller for handling operations related to joining an online game. This includes
+ * initialization of the join online scene and handle joining the game.
  *
  * @author fisommer
  * @author astoyano
@@ -201,48 +201,38 @@ public class JoinOnlineSceneController {
     LobbyConfiguration.configureGameClient(host);
     LobbyConfiguration.startGameClient();
     int i = 0;
-    while (LobbyConfiguration.getGameClient().getHandler() == null) {
+    while (LobbyConfiguration.getGameClient().getHandler() == null && i < 20) {
       try {
         Thread.sleep(50);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
+      i++;
     }
-    while (!LobbyConfiguration.getGameClient().isHandshakeComplete()) {
+    if (i >= 20) {
+      showErrorDialog("Connection error.", "Please start the game again.");
+      return;
+    }
+    i = 0;
+    while (!LobbyConfiguration.getGameClient().isHandshakeComplete() && i < 20) {
       try {
         Thread.sleep(50);
       } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    /*while (LobbyConfiguration.getGameClient().getCh() == null && i < 10) {
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        showErrorDialog("Error",
-            "Failed to connect to Server. Please correct your inputs if necessary.");
         throw new RuntimeException(e);
       }
       i++;
 
-    }*/
-    if (i >= 10) {
-      showErrorDialog("Error",
-          "Failed to connect to Server. Please correct your inputs if necessary.");
-    } else {
-      UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
-          DatabaseConfiguration.getGameStatisticService()
-              .getAllStatisticsByUserId(SessionManager.getUser().getId()));
-      GameConfiguration.setMyGameUser(userDto);
-      try {
-        Thread.sleep(200);
-      } catch (InterruptedException e) {
-        showErrorDialog("Error",
-            "Failed to connect to Server. Please correct your inputs if necessary.");
-        throw new RuntimeException(e);
-      }
-      LobbyConfiguration.sendJoinServer(userDto);
-
     }
+    if (i >= 20) {
+      showErrorDialog("Connection error.", "Please start the game again.");
+      return;
+    }
+    UserDto userDto = UserDto.mapUserAndHisGameStatistics(SessionManager.getUser(),
+        DatabaseConfiguration.getGameStatisticService()
+            .getAllStatisticsByUserId(SessionManager.getUser().getId()));
+    GameConfiguration.setMyGameUser(userDto);
+    LobbyConfiguration.sendJoinServer(userDto);
+
   }
 }
+
