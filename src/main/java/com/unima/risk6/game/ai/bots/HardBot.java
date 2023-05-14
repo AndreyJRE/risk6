@@ -8,6 +8,7 @@ import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.Country;
 import com.unima.risk6.game.models.GameState;
+import com.unima.risk6.game.models.Player;
 import java.util.List;
 import java.util.Queue;
 
@@ -25,11 +26,27 @@ public class HardBot extends GreedyBot implements AiBot {
   private GameState gameState;
   private boolean firstAttack = true;
 
+  /**
+   * Constructs a new HardBot as a copy of a player.
+   *
+   * @param player The player to be copied.
+   */
+  public HardBot(Player player) {
+    super(player);
+  }
 
+  /**
+   * Constructs a default HardBot with a specified username.
+   *
+   * @param username The username of the HardBot.
+   */
   public HardBot(String username) {
     super(username);
   }
 
+  /**
+   * Constructs a default HardBot with a randomized name.
+   */
   public HardBot() {
     this("HardBot #" + RNG.nextInt(1000));
   }

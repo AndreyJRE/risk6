@@ -27,6 +27,18 @@ public class EasyBot extends Player implements AiBot {
   private double attackProbability;
 
   /**
+   * Constructs a new EasyBot as a copy of a player.
+   *
+   * @param player The player to be copied.
+   */
+  public EasyBot(Player player) {
+    super(player);
+    playerController = new PlayerController();
+    playerController.setPlayer(this);
+    this.resetAttackProbability();
+  }
+
+  /**
    * Constructs an EasyBot with a specified username.
    *
    * @param username The username for the EasyBot.
@@ -103,7 +115,6 @@ public class EasyBot extends Player implements AiBot {
       int troopsToMove = RNG.nextInt(1, toFortify.getOutgoing().getTroops());
       return toFortify.createFortify(troopsToMove);
     }
-    // return end phase
     return null;
   }
 

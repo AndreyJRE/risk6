@@ -63,7 +63,7 @@ public abstract class GreedyBot extends Player implements AiBot {
   }
 
   /**
-   * Constructs a default GreedyBot.
+   * Constructs a default GreedyBot with a specific username.
    *
    * @param username the username of the bot.
    */
