@@ -401,6 +401,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             return (AiBot) new HardBot(x);
           }
         }).toList());
+    System.out.println("Test 1");
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
@@ -410,6 +411,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
     int queueSize = gameState.getActivePlayers().size();
+    System.out.println("Test 2");
     GameController gameController = moveProcessor.getGameController();
     for (int i = queueSize; i > 0; i--) {
       Player player = gameController.getGameState().getActivePlayers().poll();
@@ -417,6 +419,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           Dice.rollDice());
       gameState.getActivePlayers().add(player);
     }
+    System.out.println("Test 3");
     HashMap<String, Integer> diceRollsString = new HashMap<>();
     diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
     Player activePlayer = gameController.getGameState().getActivePlayers()
@@ -425,6 +428,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
+    System.out.println("Test 4");
     sendFirstGamestate(gameLobby);
     try {
       Thread.sleep(100);

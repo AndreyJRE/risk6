@@ -135,6 +135,9 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), dtf);
+        if (rs.getString(7) == null) {
+          continue;
+        }
         LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7), dtf);
         int countriesWon = rs.getInt(8);
         int countriesLost = rs.getInt(9);
@@ -223,6 +226,9 @@ public class GameStatisticRepository implements GameStatisticDao {
         boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6)
             , dtf);
+        if (rs.getString(7) == null) {
+          continue;
+        }
         LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7)
             , dtf);
         int countriesWon = rs.getInt(8);

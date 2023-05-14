@@ -2,6 +2,7 @@ package com.unima.risk6.gui.controllers;
 
 import static com.unima.risk6.gui.configurations.SoundConfiguration.pauseTitleSound;
 import static com.unima.risk6.gui.configurations.StyleConfiguration.applyButtonStyle;
+import static com.unima.risk6.gui.configurations.StyleConfiguration.showErrorDialog;
 
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.configurations.LobbyConfiguration;
@@ -295,14 +296,24 @@ public class TitleSceneController implements Initializable {
     }
     Thread.sleep(100);
     NetworkConfiguration.startSinglePlayerServer();
-    Thread.sleep(150);
+    Thread.sleep(100);
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
-    Thread.sleep(150);
+    int i = 0;
+    while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
+      Thread.sleep(50);
+      i++;
+
+    }
+    if (i == 20) {
+      showErrorDialog("Connection error.", "Please start the game again.");
+      return;
+    }
+    Thread.sleep(100);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
-    Thread.sleep(50);
+    Thread.sleep(100);
     gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
         false, 0, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
@@ -346,11 +357,21 @@ public class TitleSceneController implements Initializable {
     Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
-    Thread.sleep(200);
+    int i = 0;
+    while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
+      Thread.sleep(50);
+      i++;
+
+    }
+    if (i == 20) {
+      showErrorDialog("Connection error.", "Please start the game again.");
+      return;
+    }
+    Thread.sleep(100);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
-    Thread.sleep(20);
+    Thread.sleep(100);
     gameLobby = new GameLobby("Tutorial Lobby", 2, SessionManager.getUser().getUsername(), true, 0,
         GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
