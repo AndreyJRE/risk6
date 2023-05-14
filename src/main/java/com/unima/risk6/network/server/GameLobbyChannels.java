@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class GameLobbyChannels {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameLobbyChannels.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GameLobbyChannels.class);
 
   final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
   final BiMap<MoveProcessor, ChannelGroup> moveProcessors = HashBiMap.create();
@@ -259,7 +259,7 @@ public class GameLobbyChannels {
           case "easy" -> bot = new EasyBot(player);
           case "medium" -> bot = new MediumBot(player);
           case "hard" -> bot = new HardBot(player);
-
+          default -> LOGGER.debug("A invalid bot was chosen");
         }
         for (Country country : bot.getCountries()) {
           country.setPlayer(bot);

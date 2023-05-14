@@ -5,7 +5,7 @@ import com.unima.risk6.network.message.enums.ContentType;
 
 /**
  * Message wrapper used for wrapping objects that are used to create and manipulate game lobbies,
- * server lobbies, etc
+ * server lobbies, etc.
  *
  * @param <T> the type of the content this message carries.
  * @author jferch

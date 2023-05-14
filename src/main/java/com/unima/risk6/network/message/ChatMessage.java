@@ -3,7 +3,7 @@ package com.unima.risk6.network.message;
 import com.unima.risk6.network.message.enums.ContentType;
 
 /**
- * Message wrapper used for wrapping chat message objects
+ * Message wrapper used for wrapping chat message objects.
  *
  * @author jferch
  */

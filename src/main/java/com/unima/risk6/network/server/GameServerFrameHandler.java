@@ -44,9 +44,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Handles and processes the incoming messages.
+ *
+ * @author jferch
+ */
 public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
 
   protected static ChannelGroup channels;
   private final GameLobbyChannels gameLobbyChannels;
@@ -117,7 +122,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       JsonObject json = null;
       try {
         moveProcessor = gameLobbyChannels.getMoveProcessor(ctx.channel());
-      } catch (java.util.NoSuchElementException ignored) {
+      } catch (java.util.NoSuchElementException e) {
+        LOGGER.debug(e.toString());
       }
       try {
         LOGGER.debug("Server: Trying to read message");
@@ -176,8 +182,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           }
           case "END_PHASE" -> {
             LOGGER.debug("The server received a end phase object");
-            Player currentPlayer = moveProcessor.getGameController().getCurrentPlayer();
             EndPhase endPhase = (EndPhase) Deserializer.deserialize(request).getContent();
+            final Player currentPlayer = moveProcessor.getGameController().getCurrentPlayer();
             moveProcessor.processEndPhase(endPhase);
             Player currentPlayerAfter = moveProcessor.getGameController().getCurrentPlayer();
             sendGamestate(channelGroup);
@@ -307,7 +313,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 }
                 case LEAVE_GAME_LOBBY -> {
                   LOGGER.debug("At LEAVE_GAME_LOBBY");
-                  //LOGGER.debug("Sizes of ChannelGroup " + channels.size() + " ServerLobby " + NetworkConfiguration.getServerLobby().getUsers().size() + " UsersList " + users.size());
                   gameLobbyChannels.removeUserFromGameLobby(ctx.channel(), this, false);
                   sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
 
@@ -650,7 +655,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
         }
 
-
+        default -> LOGGER.debug("Unexpected value: " + player.getCurrentPhase());
       }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
@@ -667,7 +672,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
    */
   void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
-    player.setDeployableTroops( // to ensure numbers are right
+    player.setDeployableTroops(// to ensure numbers are right
         moveProcessor.getPlayerController().getPlayer().getDeployableTroops());
     List<Reinforce> reinforces = aiBot.createAllReinforcements();
     reinforces.stream().filter(x -> x.getToAdd() > 0).forEach(x -> {

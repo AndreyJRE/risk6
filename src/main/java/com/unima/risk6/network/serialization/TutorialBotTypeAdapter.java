@@ -18,12 +18,12 @@ import java.lang.reflect.Type;
 public class TutorialBotTypeAdapter implements JsonSerializer<TutorialBot> {
 
   /**
-   * This method is used to convert an {@link com.unima.risk6.game.ai.tutorial.TutorialBot} object into its
-   * JSON representation.
+   * This method is used to convert an {@link com.unima.risk6.game.ai.tutorial.TutorialBot} object
+   * into its JSON representation.
    *
    * @param tutorialBot The TutorialBot object to be serialized.
-   * @param type    The specific genericized type of src.
-   * @param context Context for serialization that is also used to serialize src's fields.
+   * @param type        The specific genericized type of src.
+   * @param context     Context for serialization that is also used to serialize src's fields.
    * @return A JsonElement corresponding to the specified TutorialBot.
    */
   @Override

@@ -28,9 +28,10 @@ import com.unima.risk6.network.message.StandardMessage;
 public class Deserializer {
 
   /**
-   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.Message} object, using a given GameState for context.
+   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.Message} object, using
+   * a given GameState for context.
    *
-   * @param json The JSON string to be deserialized.
+   * @param json      The JSON string to be deserialized.
    * @param gameState The GameState object to be used for context during deserialization.
    * @return The deserialized Message object.
    */

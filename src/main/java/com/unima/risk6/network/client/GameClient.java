@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class GameClient implements Runnable {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GameClient.class);
 
   private final String url;
 

@@ -26,7 +26,7 @@ public final class GameServer implements Runnable {
   final String hostIp;
   static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GameServer.class);
 
 
   /**
@@ -41,10 +41,10 @@ public final class GameServer implements Runnable {
    * Constructor that initializes the server with a provided IP address. Use 127.0.0.1 for single
    * player modes.
    *
-   * @param host_ip the IP address of the host server.
+   * @param hostIp the IP address of the host server.
    */
-  public GameServer(String host_ip) {
-    this.hostIp = host_ip;
+  public GameServer(String hostIp) {
+    this.hostIp = hostIp;
   }
 
   public String getHostIp() {

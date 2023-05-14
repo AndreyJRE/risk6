@@ -24,12 +24,14 @@ import java.lang.reflect.Type;
 public class CardTypeAdapter implements JsonDeserializer<Card>, JsonSerializer<Card> {
 
   /**
-   * Serializes a {@link com.unima.risk6.game.models.Card} object into a {@link com.google.gson.JsonElement}.
+   * Serializes a {@link com.unima.risk6.game.models.Card} object into a
+   * {@link com.google.gson.JsonElement}.
    *
-   * @param src The source {@link com.unima.risk6.game.models.Card} object to be serialized.
+   * @param src       The source {@link com.unima.risk6.game.models.Card} object to be serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
-   * @param context The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized {@link com.unima.risk6.game.models.Card} data.
+   * @param context   The context for serialization, used to serialize other objects as needed.
+   * @return A {@link com.google.gson.JsonElement} representing the serialized
+   * {@link com.unima.risk6.game.models.Card} data.
    */
   @Override
   public JsonElement serialize(Card src, Type typeOfSrc, JsonSerializationContext context) {
@@ -46,13 +48,15 @@ public class CardTypeAdapter implements JsonDeserializer<Card>, JsonSerializer<C
   }
 
   /**
-   * Deserializes a {@link com.google.gson.JsonElement} into a {@link com.unima.risk6.game.models.Card} object.
+   * Deserializes a {@link com.google.gson.JsonElement} into a
+   * {@link com.unima.risk6.game.models.Card} object.
    *
-   * @param json The JSON element being deserialized.
+   * @param json    The JSON element being deserialized.
    * @param typeOfT The specific generalized runtime type of the object being deserialized.
    * @param context The context for deserialization, used to deserialize other objects as needed.
    * @return A deserialized {@link com.unima.risk6.game.models.Card} object.
-   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a {@link com.unima.risk6.game.models.Card} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a
+   *                                            {@link com.unima.risk6.game.models.Card} object.
    */
   @Override
   public Card deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

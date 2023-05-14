@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializer<Player> {
 
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(PlayerTypeAdapter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlayerTypeAdapter.class);
 
   private GameState gameState;
 
@@ -131,9 +131,6 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
     Hand hand = context.deserialize(jsonObject.get("hand"), Hand.class);
 
     String user = context.deserialize(jsonObject.get("user"), String.class);
-    GamePhase currentPhase = context.deserialize(jsonObject.get("currentPhase"), GamePhase.class);
-    int deployableTroops = jsonObject.get("deployableTroops").getAsInt();
-    int initialTroops = jsonObject.get("initialTroops").getAsInt();
     switch (jsonObject.get("type").getAsString()) {
       case "Player":
         player = new Player(user);
@@ -188,8 +185,11 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
             player.getContinents().add(x);
           });
     }
+    GamePhase currentPhase = context.deserialize(jsonObject.get("currentPhase"), GamePhase.class);
     player.setCurrentPhase(currentPhase);
+    int deployableTroops = jsonObject.get("deployableTroops").getAsInt();
     player.setDeployableTroops(deployableTroops);
+    int initialTroops = jsonObject.get("initialTroops").getAsInt();
     player.setInitialTroops(initialTroops);
     player.setStatistic(context.deserialize(jsonObject.get("statistic"), Statistic.class));
     if (jsonObject.get("type").getAsString().equals("TutorialBot")) {

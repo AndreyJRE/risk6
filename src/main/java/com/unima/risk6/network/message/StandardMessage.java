@@ -1,7 +1,7 @@
 package com.unima.risk6.network.message;
 
 /**
- * Message wrapper for most objects like: gamestate and move objects
+ * Message wrapper for most objects like: gamestate and move objects.
  *
  * @param <T> the type of the content this message carries.
  * @author jferch

@@ -20,17 +20,21 @@ import org.slf4j.LoggerFactory;
  */
 public class ChatMessageTypeAdapter implements JsonDeserializer<ChatMessage> {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(ChatMessageTypeAdapter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChatMessageTypeAdapter.class);
 
 
   /**
-   * Deserializes a {@link com.google.gson.JsonElement} into a {@link com.unima.risk6.network.message.ChatMessage} object.
+   * Deserializes a {@link com.google.gson.JsonElement} into a
+   * {@link com.unima.risk6.network.message.ChatMessage} object.
    *
    * @param jsonElement The JSON element being deserialized.
-   * @param type The specific genericized runtime type of the object being deserialized.
-   * @param context The context for deserialization, used to deserialize other objects as needed.
+   * @param type        The specific genericized runtime type of the object being deserialized.
+   * @param context     The context for deserialization, used to deserialize other objects as
+   *                    needed.
    * @return A deserialized {@link com.unima.risk6.network.message.ChatMessage} object.
-   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a {@link com.unima.risk6.network.message.ChatMessage} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a
+   *                                            {@link com.unima.risk6.network.message.ChatMessage}
+   *                                            object.
    */
   @Override
   public ChatMessage deserialize(JsonElement jsonElement, Type type,

@@ -25,28 +25,34 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
   private GameState gameState;
 
   /**
-   * Constructs a new {@link com.unima.risk6.network.serialization.FortifyTypeAdapter} with a reference to a {@link com.unima.risk6.game.models.GameState}.
+   * Constructs a new {@link com.unima.risk6.network.serialization.FortifyTypeAdapter} with a
+   * reference to a {@link com.unima.risk6.game.models.GameState}.
    *
-   * @param gameState The game state, which is used for resolving references during deserialization.
+   * @param gameState The game state, which is used for resolving references during
+   *                  deserialization.
    */
   public FortifyTypeAdapter(GameState gameState) {
     this.gameState = gameState;
   }
 
   /**
-   * Default constructor for the {@link com.unima.risk6.network.serialization.FortifyTypeAdapter} if no {@link com.unima.risk6.game.models.GameState} is provided.
+   * Default constructor for the {@link com.unima.risk6.network.serialization.FortifyTypeAdapter} if
+   * no {@link com.unima.risk6.game.models.GameState} is provided.
    */
   public FortifyTypeAdapter() {
 
   }
 
   /**
-   * Serializes an {@link com.unima.risk6.game.logic.Fortify} object into a {@link com.google.gson.JsonElement}.
+   * Serializes an {@link com.unima.risk6.game.logic.Fortify} object into a
+   * {@link com.google.gson.JsonElement}.
    *
-   * @param fortify The source {@link com.unima.risk6.game.logic.Fortify} object to be serialized.
+   * @param fortify   The source {@link com.unima.risk6.game.logic.Fortify} object to be
+   *                  serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
-   * @param context The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized {@link com.unima.risk6.game.logic.Fortify} data.
+   * @param context   The context for serialization, used to serialize other objects as needed.
+   * @return A {@link com.google.gson.JsonElement} representing the serialized
+   * {@link com.unima.risk6.game.logic.Fortify} data.
    */
   @Override
   public JsonElement serialize(Fortify fortify, Type typeOfSrc, JsonSerializationContext context) {
@@ -60,13 +66,15 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
   }
 
   /**
-   * Deserializes a {@link com.google.gson.JsonElement} into an {@link com.unima.risk6.game.logic.Fortify} object.
+   * Deserializes a {@link com.google.gson.JsonElement} into an
+   * {@link com.unima.risk6.game.logic.Fortify} object.
    *
-   * @param json The JSON element being deserialized.
+   * @param json    The JSON element being deserialized.
    * @param typeOfT The specific genericized runtime type of the object being deserialized.
    * @param context The context for deserialization, used to deserialize other objects as needed.
    * @return A deserialized {@link com.unima.risk6.game.logic.Fortify} object.
-   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into an {@link com.unima.risk6.game.logic.Fortify} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into an
+   *                                            {@link com.unima.risk6.game.logic.Fortify} object.
    */
   @Override
   public Fortify deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)

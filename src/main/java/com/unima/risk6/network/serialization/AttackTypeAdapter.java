@@ -29,9 +29,11 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
   private GameState gameState;
 
   /**
-   * Constructs a new {@link com.unima.risk6.network.serialization.AttackTypeAdapter} with a reference to a {@link com.unima.risk6.game.models.GameState}.
+   * Constructs a new {@link com.unima.risk6.network.serialization.AttackTypeAdapter} with a
+   * reference to a {@link com.unima.risk6.game.models.GameState}.
    *
-   * @param gameState The game state, which is used for resolving references during deserialization.
+   * @param gameState The game state, which is used for resolving references during
+   *                  deserialization.
    */
 
   public AttackTypeAdapter(GameState gameState) {
@@ -39,19 +41,22 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
   }
 
   /**
-   * Default constructor for the {@link com.unima.risk6.network.serialization.AttackTypeAdapter} if no {@link com.unima.risk6.game.models.GameState} is provided.
+   * Default constructor for the {@link com.unima.risk6.network.serialization.AttackTypeAdapter} if
+   * no {@link com.unima.risk6.game.models.GameState} is provided.
    */
   public AttackTypeAdapter() {
 
   }
 
   /**
-   * Serializes an {@link com.unima.risk6.game.logic.Attack} object into a {@link com.google.gson.JsonElement}.
+   * Serializes an {@link com.unima.risk6.game.logic.Attack} object into a
+   * {@link com.google.gson.JsonElement}.
    *
-   * @param src The source {@link com.unima.risk6.game.logic.Attack} object to be serialized.
+   * @param src       The source {@link com.unima.risk6.game.logic.Attack} object to be serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
-   * @param context The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized {@link com.unima.risk6.game.logic.Attack} data.
+   * @param context   The context for serialization, used to serialize other objects as needed.
+   * @return A {@link com.google.gson.JsonElement} representing the serialized
+   * {@link com.unima.risk6.game.logic.Attack} data.
    */
   @Override
   public JsonElement serialize(Attack src, Type typeOfSrc, JsonSerializationContext context) {
@@ -72,13 +77,15 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
   }
 
   /**
-   * Deserializes a {@link com.google.gson.JsonElement} into an {@link com.unima.risk6.game.logic.Attack} object.
+   * Deserializes a {@link com.google.gson.JsonElement} into an
+   * {@link com.unima.risk6.game.logic.Attack} object.
    *
-   * @param json The JSON element being deserialized.
+   * @param json    The JSON element being deserialized.
    * @param typeOfT The specific genericized runtime type of the object being deserialized.
    * @param context The context for deserialization, used to deserialize other objects as needed.
    * @return A deserialized {@link com.unima.risk6.game.logic.Attack} object.
-   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into an {@link com.unima.risk6.game.logic.Attack} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into an
+   *                                            {@link com.unima.risk6.game.logic.Attack} object.
    */
   @Override
   public Attack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -86,12 +93,12 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
     JsonObject jsonObject = json.getAsJsonObject();
     Country attackingCountry = gameState.getCountries().stream()
         .filter(x -> x.getCountryName().toString()
-            .equals(jsonObject.get("attackingCountry").getAsString())).findFirst()
-        .get();
+            .equals(jsonObject.get("attackingCountry").getAsString()))
+        .findFirst().get();
     Country defendingCountry = gameState.getCountries().stream()
         .filter(x -> x.getCountryName().toString()
-            .equals(jsonObject.get("defendingCountry").getAsString())).findFirst()
-        .get();
+            .equals(jsonObject.get("defendingCountry").getAsString()))
+        .findFirst().get();
     int troopNumber = jsonObject.get("troopNumber").getAsInt();
     //TODO
     Attack attack = new Attack(attackingCountry, defendingCountry, troopNumber);
@@ -104,7 +111,8 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
         integerListTypeToken.getType());
     ArrayList<Integer> defendDiceResult = context.deserialize(jsonObject.get("defendDiceResult"),
         integerListTypeToken.getType());
-    // Set values for attackDiceResult and defendDiceResult using reflection, as they are final fields
+    //Set values for attackDiceResult and defendDiceResult using reflection,
+    //as they are final fields
     try {
       Field attackDiceResultField = Attack.class.getDeclaredField("attackDiceResult");
       Field defendDiceResultField = Attack.class.getDeclaredField("defendDiceResult");

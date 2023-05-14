@@ -14,7 +14,12 @@ import java.security.KeyStore;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
-
+/**
+ * Initializes the channel pipeline for a GameServer. This class extends the ChannelInitializer
+ * class provided by Netty and specifies the pipeline configuration for new channels.
+ *
+ * @author jferch
+ */
 public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
 
   private static final String WEBSOCKET_PATH = "/game";
@@ -23,6 +28,11 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
 
   private GameLobbyChannels gameLobbyChannels;
 
+  /**
+   * Constructs a new GameServerInitializer with the specified ChannelGroup.
+   *
+   * @param channels The ChannelGroup that keeps track of all active channels.
+   */
   public GameServerInitializer(ChannelGroup channels) {
     GameServerInitializer.channels = channels;
     this.gameLobbyChannels = new GameLobbyChannels();
@@ -31,7 +41,7 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
   @Override
   public void initChannel(SocketChannel ch) throws Exception {
     ChannelPipeline pipeline = ch.pipeline();
-    pipeline.addLast(createSSLContext().newHandler(ch.alloc()));
+    pipeline.addLast(createSslContext().newHandler(ch.alloc()));
     pipeline.addLast(new HttpServerCodec());
     pipeline.addLast(new HttpObjectAggregator(65536));
     pipeline.addLast(new WebSocketServerCompressionHandler());
@@ -39,7 +49,13 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
     pipeline.addLast(new GameServerFrameHandler(channels, gameLobbyChannels));
   }
 
-  private SslContext createSSLContext() throws Exception {
+  /**
+   * Create an SSL context for secure communication.
+   *
+   * @return An initialized SSL context.
+   * @throws Exception If an error occurs during SSL context creation.
+   */
+  private SslContext createSslContext() throws Exception {
     KeyStore keystore = KeyStore.getInstance("JKS");
     keystore.load(
         GameServerInitializer.class.getResourceAsStream("/com/unima/risk6/certs/Keystore.jks"),

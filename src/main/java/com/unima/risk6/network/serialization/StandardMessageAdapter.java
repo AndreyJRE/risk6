@@ -27,13 +27,18 @@ import java.util.Map;
 public class StandardMessageAdapter implements JsonDeserializer<StandardMessage> {
 
   /**
-   * Deserializes a {@link com.google.gson.JsonElement} into a {@link com.unima.risk6.network.message.StandardMessage} object.
+   * Deserializes a {@link com.google.gson.JsonElement} into a
+   * {@link com.unima.risk6.network.message.StandardMessage} object.
    *
    * @param jsonElement The JSON element being deserialized.
-   * @param type The specific genericized runtime type of the object being deserialized.
-   * @param context The context for deserialization, used to deserialize other objects as needed.
+   * @param type        The specific genericized runtime type of the object being deserialized.
+   * @param context     The context for deserialization, used to deserialize other objects as
+   *                    needed.
    * @return A deserialized {@link com.unima.risk6.network.message.StandardMessage} object.
-   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a {@link com.unima.risk6.network.message.StandardMessage} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a
+   *                                            {@link
+   *                                            com.unima.risk6.network.message.StandardMessage}
+   *                                            object.
    */
   @Override
   public StandardMessage deserialize(JsonElement jsonElement, Type type,
@@ -70,7 +75,8 @@ public class StandardMessageAdapter implements JsonDeserializer<StandardMessage>
       }
       case ORDER -> {
         HashMap<String, Integer> map = new HashMap<>();
-        for (Map.Entry<String, JsonElement> entry : jsonObject.get("content").getAsJsonObject().entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : jsonObject.get("content").getAsJsonObject()
+            .entrySet()) {
           map.put(entry.getKey(), entry.getValue().getAsInt());
         }
         message = new StandardMessage<HashMap<String, Integer>>(map, statusCode);

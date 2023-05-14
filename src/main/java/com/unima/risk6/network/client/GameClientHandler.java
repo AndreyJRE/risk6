@@ -35,13 +35,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * In this class incoming messages get handled and processed
+ * In this class incoming messages get handled and processed.
  *
  * @author jferch
  */
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
 
   private final WebSocketClientHandshaker handshaker;
   private ChannelPromise handshakeFuture;
@@ -201,7 +201,8 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
               }
               case "ACCEPT_START_GAME" -> {
                 LOGGER.debug(
-                    "At ACCEPT_START_GAME: Got first Gamestate: Overwrite GameState with new GameState from Server");
+                    "At ACCEPT_START_GAME: Got first Gamestate: Overwrite GameState with new "
+                        + "GameState from Server");
                 GameState g = (GameState) Deserializer.deserializeConnectionMessage(
                         textFrame.text(),
                         GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>()))

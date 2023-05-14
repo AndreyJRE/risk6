@@ -25,13 +25,14 @@ import org.slf4j.LoggerFactory;
  */
 public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserializer<Country> {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(CountryTypeAdapter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CountryTypeAdapter.class);
   private GameState gameState;
 
   /**
    * Constructor for a CountryTypeAdapter with a given GameState for context.
    *
-   * @param gameState The GameState object to be used for context during serialization/deserialization.
+   * @param gameState The GameState object to be used for context during
+   *                  serialization/deserialization.
    */
   public CountryTypeAdapter(GameState gameState) {
     this.gameState = gameState;
@@ -47,9 +48,9 @@ public class CountryTypeAdapter implements JsonSerializer<Country>, JsonDeserial
   /**
    * Serializes a Country object to its corresponding JSON representation.
    *
-   * @param country The Country object to be serialized.
+   * @param country   The Country object to be serialized.
    * @param typeOfSrc The actual generic type of the source object.
-   * @param context The context for serialization.
+   * @param context   The context for serialization.
    * @return A JsonElement corresponding to the specified Country.
    */
   @Override

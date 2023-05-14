@@ -36,7 +36,8 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
   /**
    * Constructor for a GameStateTypeAdapter with a given GameState for context.
    *
-   * @param gameState The GameState object to be used for context during serialization/deserialization.
+   * @param gameState The GameState object to be used for context during
+   *                  serialization/deserialization.
    */
   public GameStateTypeAdapter(GameState gameState) {
     this.gameState = gameState;
@@ -53,7 +54,7 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
    *
    * @param gameState The GameState object to be serialized.
    * @param typeOfSrc The actual generic type of the source object.
-   * @param context The context for serialization.
+   * @param context   The context for serialization.
    * @return A JsonElement corresponding to the specified GameState.
    */
   @Override
@@ -72,7 +73,8 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
         );
     jsonObject.add("lostPlayers", lostPlayersJsonArray);
 
-    //to ensure that the current player and the players in the activePlayers List have the right reference
+    //to ensure that the current player and the players in the activePlayers List
+    //have the right reference
     jsonObject.add("currentPlayer",
         context.serialize(context.serialize(gameState.getCurrentPlayer())));
 
@@ -87,8 +89,7 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
 
     JsonArray deckJsonArray = new JsonArray();
     gameState.getDeck().getDeckCards()
-        .forEach(x -> deckJsonArray.add(context.serialize(x))
-        );
+        .forEach(x -> deckJsonArray.add(context.serialize(x)));
     jsonObject.add("deck", deckJsonArray);
     jsonObject.addProperty("isGameOver", gameState.isGameOver());
     jsonObject.addProperty("chatEnabled", gameState.isChatEnabled());
@@ -122,12 +123,9 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
     gameState.getLostPlayers().addAll(lostPlayers);
 
     int numberOfHandIns = jsonObject.get("numberOfHandIns").getAsInt();
-    ArrayList<Card> deckArray = context.deserialize(jsonObject.get("deck"),
-        new TypeToken<ArrayList<Card>>() {
-        }.getType());
     boolean isGameOver = jsonObject.get("isGameOver").getAsBoolean();
     boolean chatEnabled = jsonObject.get("chatEnabled").getAsBoolean();
-
+    gameState.setGameOver(isGameOver);
     gameState.setChatEnabled(chatEnabled);
     gameState.setNumberOfHandIns(numberOfHandIns);
 
@@ -152,10 +150,10 @@ public class GameStateTypeAdapter implements JsonSerializer<GameState>,
       }
 
     }
-    ArrayList<Card> currentDeck = gameState.getDeck().getDeckCards();
-    currentDeck.addAll(deckArray);
-
-    gameState.setGameOver(isGameOver);
+    ArrayList<Card> deckArray = context.deserialize(jsonObject.get("deck"),
+        new TypeToken<ArrayList<Card>>() {
+        }.getType());
+    gameState.getDeck().getDeckCards().addAll(deckArray);
 
     gameState.setCurrentPlayer(context.deserialize(jsonObject.get("currentPlayer"), Player.class));
 
