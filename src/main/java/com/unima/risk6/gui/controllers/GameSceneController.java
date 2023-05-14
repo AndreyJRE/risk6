@@ -547,7 +547,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     SceneController sceneController = SceneConfiguration.getSceneController();
     gameScene.getWindow().setOnCloseRequest(e -> {
       e.consume();
-      System.out.println("Closing game");
       Alert alert = new Alert(AlertType.WARNING);
       alert.setTitle("Warning: Exiting Game");
       alert.setHeaderText("Are you sure you want to to leave the game?");

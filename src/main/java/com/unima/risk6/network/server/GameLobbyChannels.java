@@ -127,8 +127,6 @@ public class GameLobbyChannels {
     LOGGER.debug("Remove from server lobby: " + users.inverse().get(channel));
     NetworkConfiguration.getServerLobby().getUsers()
         .remove(users.inverse().get(channel));
-    NetworkConfiguration.getServerLobby().getUsers()
-        .forEach(x -> System.out.println(x.getUsername() + " is in ServerLobby"));
     users.inverse().remove(channel);
     channels.remove(channel);
   }

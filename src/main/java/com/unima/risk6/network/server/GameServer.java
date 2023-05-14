@@ -56,7 +56,6 @@ public final class GameServer implements Runnable {
    * running until an exception occurs or the server is shut down.
    */
   public void run() {
-    System.out.println("Starting Server");
     EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     EventLoopGroup workerGroup = new NioEventLoopGroup();
     try {

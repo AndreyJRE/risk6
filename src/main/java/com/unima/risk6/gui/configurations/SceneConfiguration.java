@@ -74,7 +74,6 @@ public class SceneConfiguration {
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
     SceneName beforeCurrentScene = SceneConfiguration.getSceneController().getCurrentSceneName();
-    System.out.println("Start game " + beforeCurrentScene);
     if (gameScene == null) {
       gameScene = new GameScene();
       gameSceneController = new GameSceneController(gameScene);

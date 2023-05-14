@@ -165,7 +165,7 @@ public class GameStatisticRepository implements GameStatisticDao {
       addGameStatisticStatement.setString(2, gameStatistic.getStartDate().format(dtf));
       addGameStatisticStatement.execute();
       ResultSet generatedKeys = addGameStatisticStatement.getGeneratedKeys();
-      Long id = null;
+      Long id;
       if (generatedKeys.next()) {
         id = generatedKeys.getLong(1);
         gameStatistic.setId(id);

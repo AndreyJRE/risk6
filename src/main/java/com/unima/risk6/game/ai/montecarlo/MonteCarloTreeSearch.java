@@ -59,7 +59,6 @@ import java.util.Queue;
  */
 public class MonteCarloTreeSearch {
 
-  private static int counter = 0;
   private static int simulationCount = 150; // best choice is more, but shorter simulations
   private static final int SIMULATION_TIME_LIMIT = 100;
   private static final double STRENGTH_WEIGHT = 0.5;
@@ -103,8 +102,6 @@ public class MonteCarloTreeSearch {
       simulationCount = simulationCount / 2;
     }
     for (int i = 0; i < simulationCount; i++) {
-      System.out.print("i = " + i + " ");
-      counter = 0;
       MonteCarloNode node = select(root);
       double oldStrength = this.calculateGameStateScore(node.getGameState());
       double newStrength = 0;
@@ -114,9 +111,7 @@ public class MonteCarloTreeSearch {
         newStrength = simulate(node.getGameState());
       }
       backpropagate(node, newStrength > oldStrength);
-      System.out.printf("Rounds per simulation: %s%n", counter);
     }
-    System.out.println();
     return chooseBestMove(root);
   }
 
@@ -268,7 +263,6 @@ public class MonteCarloTreeSearch {
    */
   public void playTurn(GameController simulationController, PlayerController playerController,
       MoveProcessor moveProcessor) {
-    counter++;
     AiBot current = (AiBot) simulationController.getCurrentPlayer();
     HandController handController = playerController.getHandController();
     simulateHandIn(handController, moveProcessor);

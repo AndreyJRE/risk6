@@ -149,7 +149,6 @@ public class LobbyConfiguration {
    */
   public static void setLastChatMessage(String string) {
     messages.add(string);
-    System.out.println(messages);
     notifyChatLobbyObservers();
   }
 
