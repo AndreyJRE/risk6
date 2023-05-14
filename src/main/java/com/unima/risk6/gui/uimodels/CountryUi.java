@@ -533,12 +533,11 @@ public class CountryUi extends Group {
     moveTroopsPane.setStyle(
         "-fx-background-color: rgba(255, 255, 255, 0.7); -fx-background-radius: 10;");
 
-    Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
-
     popUp.getContent().clear();
     popUp.getContent().add(moveTroopsPane);
 
     moveTroopsPane.setFocusTraversable(true);
+    Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
     double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
     double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;

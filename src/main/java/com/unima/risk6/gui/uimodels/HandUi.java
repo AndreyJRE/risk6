@@ -204,11 +204,7 @@ public class HandUi extends BorderPane {
       handInButton.setOnMouseClicked(event -> handleHandInButton());
       newBottomBox.getChildren().clear();
       newBottomBox.getChildren().add(handInButton);
-    }
-    //TODO der fall wird nie auftreten, da ich in Logic mache,
-    // dass er nicht mehr als 3 selecten kann.
-    //TODO check through the Anzahl an card UI, die glowhaben ode clicked sind.
-    else if (handController.getHand().getSelectedCards().size() > 3) {
+    } else if (handController.getHand().getSelectedCards().size() > 3) {
       Label removeCardLabel = new Label("You selected too many cards! Only three are allowed!");
       removeCardLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: red; -fx-font-weight: bold;");
       newBottomBox.getChildren().clear();

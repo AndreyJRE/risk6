@@ -336,8 +336,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       ellipseX = correctedCoordinates.getX();
       ellipseY = correctedCoordinates.getY();
 
-      TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
-
       Label countryName = new Label(
           countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
 
@@ -389,7 +387,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       });
 
       countryNameGroup.getChildren().add(countryName);
-
+      TroopsCounterUi troopsCounterUi = new TroopsCounterUi(ellipseX, ellipseY);
       troopsCounterUi.setText(countryUi.getCountry().getTroops().toString());
       countryUi.setTroopsCounterUi(troopsCounterUi);
       countriesGroup.getChildren().add(troopsCounterUi);
@@ -1042,12 +1040,21 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     activePlayerUi.changeActivePlayerUi(getCurrentPlayerUi());
   }
 
+
+  /**
+   * Retrieves the PlayerUi object of the current player.
+   *
+   * @return the PlayerUi object representing the current player
+   */
   public PlayerUi getCurrentPlayerUi() {
     Player currentPlayer = gameState.getCurrentPlayer();
     return playerUis.stream().filter(playerUi -> currentPlayer.equals(playerUi.getPlayer()))
         .findFirst().get();
   }
 
+  /**
+   * Initializes the tutorial by updating the UI elements and displaying tutorial messages.
+   */
   public void initTutorial() {
     for (CountryUi countryUi : countriesUis) {
       if (countryUi.getCountry().hasPlayer()) {
