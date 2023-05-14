@@ -51,7 +51,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-
+/**
+ * Controller class for managing the selection of a multiplayer lobby scene.
+ * This class implements ServerLobbyObserver and ChatObserver interfaces to get
+ * updates about server lobbies and chat respectively.
+ *
+ * @author fisommer
+ * @author astoyano
+ * @author eameri
+ * @author jferch
+ */
 public class SelectMultiplayerLobbySceneController implements ServerLobbyObserver, ChatObserver {
 
   private final SelectMultiplayerLobbyScene selectMultiplayerLobbyScene;
@@ -65,7 +74,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   private UserDto user;
   private ObservableList<GameLobby> lobbies;
 
-
+  /**
+   * Constructor for the SelectMultiplayerLobbySceneController.
+   *
+   * @param selectMultiplayerLobbyScene The SelectMultiplayerLobbyScene that this controller manages.
+   */
   public SelectMultiplayerLobbySceneController(
       SelectMultiplayerLobbyScene selectMultiplayerLobbyScene) {
     this.selectMultiplayerLobbyScene = selectMultiplayerLobbyScene;
@@ -73,12 +86,15 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     LobbyConfiguration.addServerLobbyObserver(this);
     LobbyConfiguration.addChatObserver(this);
   }
-
+  /**
+   * Initialization method for the controller.
+   */
   public void init() {
     this.serverLobby = LobbyConfiguration.getServerLobby();
     this.user = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) selectMultiplayerLobbyScene.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
+        26);
     for (int i = lobbyChatSplit.getItems().size(); i > 0; i--) {
       lobbyChatSplit.getItems().remove(i - 1);
     }
@@ -96,7 +112,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     Label title = new Label("Select Multiplayer Lobby");
     title.setAlignment(Pos.CENTER);
     title.setStyle(
-        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; -fx-text-fill: white");
+        "-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 46px; "
+            + "-fx-text-fill: white");
 
     HBox titleBox = new HBox(title);
     titleBox.setAlignment(Pos.CENTER);
@@ -130,16 +147,17 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECT_LOBBY_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
+        true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -232,13 +250,16 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     lobbyChatSplit.setDividerPositions(0.6666);
   }
 
-
+  /**
+   * Method to handle the event of clicking the 'Join' button.
+   */
   private void handleJoinButton() {
     GameLobby selectedLobby = lobbyList.getSelectionModel().getSelectedItem();
     if (selectedLobby != null) {
       if ((selectedLobby.getUsers().size() + selectedLobby.getBots().size())
           == selectedLobby.getMaxPlayers()) {
-        showErrorDialog("Selected lobby is already full", "Please select another lobby!");
+        showErrorDialog("Selected lobby is already full",
+            "Please select another lobby!");
       } else {
         if (selectedLobby.getMatchMakingElo() <= user.getWinLossRatio()) {
           LobbyConfiguration.sendJoinLobby(selectedLobby);
@@ -257,7 +278,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
     }
   }
-
+  /**
+   * Method to handle the event of clicking the 'Create' button.
+   */
   private void handleCreateButton() {
     CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.CREATE_LOBBY);
@@ -271,7 +294,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
     sceneController.activate(SceneName.CREATE_LOBBY);
   }
-
+  /**
+   * Method to handle the event of quitting the server lobby.
+   */
   private void handleQuitServerLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
@@ -279,7 +304,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       sceneController.activate(SceneName.TITLE);
     }
   }
-
+  /**
+   * Method to update the server lobby. Implements the method from ServerLobbyObserver interface.
+   *
+   * @param serverLobby The updated ServerLobby object.
+   */
   @Override
   public void updateServerLobby(ServerLobby serverLobby) {
     this.serverLobby = serverLobby;
@@ -293,6 +322,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     });
 
   }
+  /**
+   * Method to update the chat. Implements the method from ChatObserver interface.
+   *
+   * @param messages The updated list of chat messages.
+   */
 
   @Override
   public void updateChat(List<String> messages) {

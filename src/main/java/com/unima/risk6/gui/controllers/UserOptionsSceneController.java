@@ -94,16 +94,17 @@ public class UserOptionsSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.OPTION_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
+        true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -116,7 +117,6 @@ public class UserOptionsSceneController {
    * and various buttons.
    */
   private void initElements() {
-    BooleanProperty enterPressed = new SimpleBooleanProperty(false);
     // Back arrow
     Path arrow = generateBackArrow();
 
@@ -150,6 +150,7 @@ public class UserOptionsSceneController {
     };
 
     userNameField.setOnMouseClicked(mouseClickedHandler);
+    BooleanProperty enterPressed = new SimpleBooleanProperty(false);
 
     userNameField.focusedProperty().addListener((observable, oldValue, newValue) -> {
       if (!newValue && !enterPressed.get()) {
@@ -221,16 +222,16 @@ public class UserOptionsSceneController {
     Button changePasswordButton = createChangePasswordButton();
     Button deleteUser = createDeleteUserButton();
     // Create a VBox to hold the userNameField, userStackPane, and the labels
-    VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
+    VBox centerVbox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
         changePasswordButton,
         changeUserButton, deleteUser);
-    centerVBox.setSpacing(10);
-    centerVBox.setAlignment(Pos.CENTER);
+    centerVbox.setSpacing(10);
+    centerVbox.setAlignment(Pos.CENTER);
 
     root.setLeft(backButton);
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
-    root.setCenter(centerVBox);
+    root.setCenter(centerVbox);
   }
 
   /**
@@ -251,8 +252,8 @@ public class UserOptionsSceneController {
           .getSceneBySceneName(SceneName.CHANGE_PASSWORD);
       if (changePasswordScene == null) {
         changePasswordScene = new ChangePasswordScene();
-        ChangePasswordSceneController changePasswordSceneController = new ChangePasswordSceneController(
-            changePasswordScene);
+        ChangePasswordSceneController changePasswordSceneController = new
+            ChangePasswordSceneController(changePasswordScene);
         changePasswordScene.setController(changePasswordSceneController);
         sceneController.addScene(SceneName.CHANGE_PASSWORD, changePasswordScene);
       }
@@ -276,7 +277,9 @@ public class UserOptionsSceneController {
 
     deleteUserButton.setOnAction(e -> {
       boolean confirm = showConfirmationDialog("Delete User",
-          "Are you sure that you want to delete your user? All Statistics will be permanently deleted and you will be redirected to the Log-in View.");
+          "Are you sure that you want to delete your user? "
+              + "All Statistics will be permanently deleted and you "
+              + "will be redirected to the Log-in View.");
       if (confirm) {
         UserService userService = DatabaseConfiguration.getUserService();
         Long id = SessionManager.getUser().getId();

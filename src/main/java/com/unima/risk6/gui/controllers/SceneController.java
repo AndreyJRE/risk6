@@ -96,7 +96,6 @@ public class SceneController {
    *
    * @param scene the scene to fade in
    */
-
   private void fadeIn(Scene scene) {
     FadeTransition fadeTransition = new FadeTransition(Duration.millis(400), scene.getRoot());
     fadeTransition.setFromValue(0.0);

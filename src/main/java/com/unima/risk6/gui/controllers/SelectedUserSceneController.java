@@ -85,9 +85,9 @@ public class SelectedUserSceneController {
     HBox hbox = new HBox(passwordEntryBox);
     hbox.setAlignment(Pos.CENTER);
 
-    VBox vBox = new VBox(welcomeBack, hbox);
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(50);
+    VBox vbox = new VBox(welcomeBack, hbox);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setSpacing(50);
     root.setLeft(backButton);
 
     // Add some spacing around backButton
@@ -97,23 +97,24 @@ public class SelectedUserSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.SELECTED_USER_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
+        true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
     // Add passwordEntryBox to the center of the BorderPane
-    root.setCenter(vBox);
+    root.setCenter(vbox);
   }
 
   /**
