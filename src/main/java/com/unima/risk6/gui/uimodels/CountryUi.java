@@ -611,6 +611,7 @@ public class CountryUi extends Group {
         adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterX(),
         adjacentCountryUi.getTroopsCounterUi().getEllipseCounter().getCenterY());
     Point2D clickPosInGroup = this.sceneToLocal(clickPosInScene);
+    Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
     arrow.setStartX(clickPosInGroup.getX());
     arrow.setStartY(clickPosInGroup.getY());
     arrow.setEndX(clickPosInGroup.getX());
@@ -618,7 +619,6 @@ public class CountryUi extends Group {
     setCursor(Cursor.MOVE);
 
     Timeline timeline = new Timeline();
-    Point2D clickPosInGroupToCountry = this.sceneToLocal(clickPosInSceneToCountry);
     KeyValue endXvalue = new KeyValue(arrow.endXProperty(), clickPosInGroupToCountry.getX());
     KeyValue endYvalue = new KeyValue(arrow.endYProperty(), clickPosInGroupToCountry.getY());
     KeyFrame keyFrame = new KeyFrame(Duration.millis(600), endXvalue, endYvalue);
