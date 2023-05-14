@@ -127,7 +127,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       if (json != null) {
         if (GameConfiguration.isTutorialOver()) {
           gameLobbyChannels.replaceUser(moveProcessor.getGameController().getGameState(),
-              gameLobbyChannels.getGameLobbyByChannel(ctx.channel()), "Johnny Test", "medium");
+              gameLobbyChannels.getGameLobbyByChannel(ctx.channel()), "Johnny Test",
+              GameConfiguration.getBotDifficulty().toLowerCase());
           GameConfiguration.setTutorialOver(false);
         }
         LOGGER.debug(
