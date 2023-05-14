@@ -39,6 +39,7 @@ public final class GameClient implements Runnable {
   private final String url;
 
   private volatile Channel ch;
+  private GameClientHandler handler;
 
   /**
    * Constructs a new GameClient with the specified URL.
@@ -79,7 +80,7 @@ public final class GameClient implements Runnable {
 
       EventLoopGroup group = new NioEventLoopGroup();
       try {
-        final GameClientHandler handler = new GameClientHandler(
+        handler = new GameClientHandler(
             WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, true,
                 new DefaultHttpHeaders()));
 
@@ -127,5 +128,13 @@ public final class GameClient implements Runnable {
    */
   public Channel getCh() {
     return ch;
+  }
+
+  public boolean isHandshakeComplete() {
+    return handler.getHandshaker().isHandshakeComplete();
+  }
+
+  public GameClientHandler getHandler() {
+    return handler;
   }
 }

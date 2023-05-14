@@ -201,7 +201,21 @@ public class JoinOnlineSceneController {
     LobbyConfiguration.configureGameClient(host);
     LobbyConfiguration.startGameClient();
     int i = 0;
-    while (LobbyConfiguration.getGameClient().getCh() == null && i < 10) {
+    while (LobbyConfiguration.getGameClient().getHandler() == null) {
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    while (!LobbyConfiguration.getGameClient().isHandshakeComplete()) {
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    /*while (LobbyConfiguration.getGameClient().getCh() == null && i < 10) {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
@@ -211,7 +225,7 @@ public class JoinOnlineSceneController {
       }
       i++;
 
-    }
+    }*/
     if (i >= 10) {
       showErrorDialog("Error",
           "Failed to connect to Server. Please correct your inputs if necessary.");

@@ -315,9 +315,11 @@ public class TitleSceneController implements Initializable {
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
     int i = 0;
-    while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
+    while (LobbyConfiguration.getGameClient().getHandler() == null) {
       Thread.sleep(50);
-      i++;
+    }
+    while (!LobbyConfiguration.getGameClient().isHandshakeComplete()) {
+      Thread.sleep(50);
     }
     if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
@@ -376,11 +378,18 @@ public class TitleSceneController implements Initializable {
     Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();
+
     int i = 0;
-    while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
+    while (LobbyConfiguration.getGameClient().getHandler() == null) {
+      Thread.sleep(50);
+    }
+    while (!LobbyConfiguration.getGameClient().isHandshakeComplete()) {
+      Thread.sleep(50);
+    }
+    /*while (LobbyConfiguration.getGameClient().getCh() == null && i < 20) {
       Thread.sleep(50);
       i++;
-    }
+    }*/
     if (i >= 20) {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;

@@ -146,6 +146,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
             if (g.isGameOver()) {
+
               Thread.sleep(3000);
               LobbyConfiguration.stopGameClient();
               Thread.sleep(150);
@@ -269,6 +270,10 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
       System.out.println("Received closing from Server");
       ch.close();
     }
+  }
+
+  public WebSocketClientHandshaker getHandshaker() {
+    return handshaker;
   }
 
 
