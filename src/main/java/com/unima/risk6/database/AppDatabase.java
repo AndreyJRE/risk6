@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Database creating and connection configuration
+ * Database creating and connection configuration.
  *
  * @author astoyano
  */

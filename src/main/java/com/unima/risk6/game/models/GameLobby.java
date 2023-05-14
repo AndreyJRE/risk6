@@ -3,6 +3,10 @@ package com.unima.risk6.game.models;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Game lobby model. Contains all the information about a game lobby. A game lobby is a lobby where
+ * players can join to play a game.
+ */
 public class GameLobby {
 
   private final String lobbyName;
@@ -21,9 +25,19 @@ public class GameLobby {
 
   private final List<String> bots;
 
-
-  public GameLobby(String lobbyName, int maxPlayers, String hostName,
-      boolean isChatEnabled, int matchMakingElo, UserDto lobbyOwner) {
+  /**
+   * Constructor for a game lobby. Creates a new game lobby with the given name, max players, host
+   * name, chat enabled, match making elo and lobby owner.
+   *
+   * @param lobbyName      The name of the lobby.
+   * @param maxPlayers     The max players of the lobby.
+   * @param hostName       The name of the host.
+   * @param isChatEnabled  If the chat is enabled.
+   * @param matchMakingElo The matchmaking elo.
+   * @param lobbyOwner     The lobby owner.
+   */
+  public GameLobby(String lobbyName, int maxPlayers, String hostName, boolean isChatEnabled,
+      int matchMakingElo, UserDto lobbyOwner) {
     this.lobbyName = lobbyName;
     this.maxPlayers = maxPlayers;
     this.name = hostName;
@@ -78,9 +92,9 @@ public class GameLobby {
 
   @Override
   public String toString() {
-    return "GameLobby{" +
-        "lobbyName='" + lobbyName + '\'' + ", name='" + name + '\'' + ", maxPlayers=" + maxPlayers
-        + ", isChatEnabled=" + isChatEnabled + ", matchMakingElo=" + matchMakingElo
-        + ", lobbyOwner=" + lobbyOwner + ", users=" + users + ", bots=" + bots + '}';
+    return "GameLobby{" + "lobbyName='" + lobbyName + '\'' + ", name='" + name + '\''
+        + ", maxPlayers=" + maxPlayers + ", isChatEnabled=" + isChatEnabled + ", matchMakingElo="
+        + matchMakingElo + ", lobbyOwner=" + lobbyOwner + ", users=" + users + ", bots=" + bots
+        + '}';
   }
 }

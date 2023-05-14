@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class GameStatisticService {
 
   private final GameStatisticRepository gameStatisticRepository;
-  private final static Logger LOGGER = LoggerFactory.getLogger(GameStatisticService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GameStatisticService.class);
 
   /**
    * Constructs a new GameStatisticService object with the specified GameStatisticRepository.
@@ -85,7 +85,6 @@ public class GameStatisticService {
    * Saves a GameStatistic object in the database.
    *
    * @param gameStatistic The GameStatistic object to save.
-   * @return The ID of the saved GameStatistic object.
    */
   public void saveGameStatistic(GameStatistic gameStatistic) {
     gameStatistic.setStartDate(LocalDateTime.now());

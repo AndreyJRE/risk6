@@ -13,33 +13,36 @@ import java.util.Optional;
 public interface Dao<T> {
 
   /**
-   * @param id Entity ID
-   * @return An optional instance of the entity with the specified ID.
+   * Get an entity by id.
+   *
+   * @param id Entity id
+   * @return Entity
    */
   Optional<T> get(Long id);
 
   /**
-   * @return A list of all instances of the entity.
+   * Get all entities from database.
+   *
+   * @return List of entities
    */
   List<T> getAll();
 
   /**
-   * Save a object in Database
+   * Save a object in Database.
    *
    * @param t Database Entity
-   * @return ID of Database
    */
-  Long save(T t);
+  void save(T t);
 
   /**
-   * Update a entity in database
+   * Update a entity in database.
    *
    * @param t Database Entity
    */
   void update(T t);
 
   /**
-   * Deleting a database entity by id
+   * Deleting a database entity by id.
    *
    * @param id Entity id
    */

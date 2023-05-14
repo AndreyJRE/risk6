@@ -20,9 +20,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * The RisikoMain class is the entry point for the application.
- * It extends the JavaFX Application class and overrides the start() and init() methods.
- * It also includes the main() method which launches the application.
+ * The RisikoMain class is the entry point for the application. It extends the JavaFX Application
+ * class and overrides the start() and init() methods. It also includes the main() method which
+ * launches the application.
  *
  * @author astoyano
  * @author fisommer
@@ -34,7 +34,6 @@ public class RisikoMain extends Application {
   @Override
   public void start(Stage stage) throws IOException {
 
-    UserService userService = DatabaseConfiguration.getUserService();
     stage.setMinWidth(1080);
     stage.setMinHeight(720);
     stage.setWidth(1080);
@@ -45,6 +44,7 @@ public class RisikoMain extends Application {
     LoginSceneController loginSceneController = new LoginSceneController(loginScene);
     loginScene.setLoginSceneController(loginSceneController);
     sceneController.addScene(SceneName.LOGIN, loginScene);
+    UserService userService = DatabaseConfiguration.getUserService();
     List<User> users = userService.getAllUsers();
     if (users.isEmpty()) {
       FXMLLoader fxmlLoader = new FXMLLoader(

@@ -24,7 +24,7 @@ public class DatabaseConfiguration {
   private static UserRepository userRepository;
   private static GameStatisticRepository gameStatisticRepository;
   private static Connection databaseConnection;
-  private final static Logger LOGGER = LoggerFactory.getLogger(DatabaseConfiguration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
   /**
    * The method is called to initialize the database configuration by calling the

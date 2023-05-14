@@ -68,9 +68,6 @@ public class PlayersConfiguration {
     }
   }
 
-  /**
-   * @return The queue of players, which contains both human players and AI bots.
-   */
   public Queue<Player> getPlayers() {
     return players;
   }

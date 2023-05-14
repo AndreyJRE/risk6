@@ -34,7 +34,8 @@ public class CountriesConfiguration {
    * jsonCountriesFilePath representing the file path of the JSON file containing the country and
    * continent data.
    *
-   * @param jsonCountriesFilePath
+   * @param jsonCountriesFilePath The file path of the JSON file containing the country and
+   *                              continent data.
    */
   public CountriesConfiguration(String jsonCountriesFilePath) {
     InputStream inputStream = getClass().getResourceAsStream(jsonCountriesFilePath);
@@ -61,15 +62,14 @@ public class CountriesConfiguration {
       Country country = new Country(countryJson.getCountryName());
       countries.add(country);
       Continent continent;
-      if (continents.stream().noneMatch(x ->
-          countryJson.getContinent().equals(x.getContinentName()))) {
+      if (continents.stream()
+          .noneMatch(x -> countryJson.getContinent().equals(x.getContinentName()))) {
         continent = new Continent(countryJson.getContinent());
         continents.add(continent);
       } else {
-        continent =
-            continents.stream().filter(cont -> cont
-                    .getContinentName().equals(countryJson.getContinent()))
-                .findFirst().get();
+        continent = continents.stream()
+            .filter(cont -> cont.getContinentName().equals(countryJson.getContinent())).findFirst()
+            .get();
       }
       country.setContinent(continent);
 
@@ -86,17 +86,11 @@ public class CountriesConfiguration {
   private void setNeighboursCountriesForEachCountry() {
     Arrays.stream(countryJsonObjects).forEach(countryJsonObject -> {
       Country c = countries.stream()
-          .filter(country -> country
-              .getCountryName().equals(countryJsonObject.getCountryName()))
-          .findFirst()
-          .get();
-      c.setAdjacentCountries(countries
-          .stream()
-          .filter(x -> Arrays.stream(countryJsonObject
-                  .getAdjacentCountries())
-              .toList()
-              .contains(x.getCountryName()))
-          .collect(Collectors.toSet()));
+          .filter(country -> country.getCountryName().equals(countryJsonObject.getCountryName()))
+          .findFirst().get();
+      c.setAdjacentCountries(countries.stream().filter(
+          x -> Arrays.stream(countryJsonObject.getAdjacentCountries()).toList()
+              .contains(x.getCountryName())).collect(Collectors.toSet()));
     });
   }
 
@@ -106,23 +100,15 @@ public class CountriesConfiguration {
    * Continent object.
    */
   private void setCountriesForContinents() {
-    continents.forEach(continent -> continent
-        .setCountries(countries
-            .stream()
-            .filter(c -> c.getContinent().equals(continent))
+    continents.forEach(continent -> continent.setCountries(
+        countries.stream().filter(c -> c.getContinent().equals(continent))
             .collect(Collectors.toSet())));
   }
 
-  /**
-   * @return Set of countries objects
-   */
   public Set<Country> getCountries() {
     return countries;
   }
 
-  /**
-   * @return Set of continents objects
-   */
   public Set<Continent> getContinents() {
     return continents;
   }
