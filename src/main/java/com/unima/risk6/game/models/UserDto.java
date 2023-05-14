@@ -59,7 +59,11 @@ public class UserDto {
       return new UserDto(user.getUsername(), 0, 0, 0, 0, 0);
     }
     int won = (int) userGameStatistic.stream().filter(GameStatistic::isGameWon).count();
-    double lossRatio = (double) won / userGameStatistic.size() - won;
+    int lost = userGameStatistic.size() - won;
+    if (lost == 0) {
+      lost += 1;
+    }
+    double lossRatio = ((double) won / userGameStatistic.size()) * 10;
     double hoursPlayed =
         userGameStatistic.stream().mapToDouble(g -> {
               Duration duration = Duration.between(g.getStartDate(), g.getFinishDate());
@@ -69,19 +73,15 @@ public class UserDto {
     int countriesConquered = userGameStatistic.stream()
         .mapToInt(GameStatistic::getCountriesWon).sum();
     return new UserDto(user.getUsername(), lossRatio, hoursPlayed,
-        won, userGameStatistic.size() - won, countriesConquered);
+        won, lost, countriesConquered);
   }
 
   @Override
   public String toString() {
     return "UserDto{" +
-        "username='" + username + '\'' +
-        ", winLossRatio=" + winLossRatio +
-        ", hoursPlayed=" + hoursPlayed +
-        ", gamesWon=" + gamesWon +
-        ", gamesLost=" + gamesLost +
-        ", countriesConquered=" + countriesConquered +
-        '}';
+        "username='" + username + '\'' + ", winLossRatio=" + winLossRatio + ", hoursPlayed="
+        + hoursPlayed + ", gamesWon=" + gamesWon + ", gamesLost=" + gamesLost
+        + ", countriesConquered=" + countriesConquered + '}';
   }
 
   @Override

@@ -17,13 +17,15 @@ import javafx.scene.shape.Path;
 
 public class StyleConfiguration {
 
-  private static final String NORMAL_BUTTON_STYLE = "-fx-background-color: linear-gradient(#5a5c5e, #3e3f41);"
+  private static final String NORMAL_BUTTON_STYLE = "-fx-background-color:"
+      + " linear-gradient(#5a5c5e, #3e3f41);"
       + " -fx-background-radius: 20; -fx-border-radius: 20;"
       + " -fx-text-fill: #FFFFFF";
 
-  private static final String HOVER_BUTTON_STYLE = "-fx-background-color: linear-gradient(#6a6c6e, #4e4f51);"
-      + " -fx-background-radius: 20; -fx-border-radius: 20;"
-      + "-fx-text-fill: #FFFFFF";
+  private static final String HOVER_BUTTON_STYLE =
+      "-fx-background-color: linear-gradient(#6a6c6e, #4e4f51);"
+          + " -fx-background-radius: 20; -fx-border-radius: 20;"
+          + "-fx-text-fill: #FFFFFF";
 
 
   public static void applyButtonStyle(Button button) {

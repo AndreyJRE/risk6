@@ -33,9 +33,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
+
 /**
- * Controller for managing the selected user scene.
- * This includes user interaction such as logging in with a password.
+ * Controller for managing the selected user scene. This includes user interaction such as logging
+ * in with a password.
  *
  * @author fisommer
  */
@@ -62,8 +63,8 @@ public class SelectedUserSceneController {
   }
 
   /**
-   * Initializes the scene. This includes setting up user interface components
-   * and loading the user's image.
+   * Initializes the scene. This includes setting up user interface components and loading the
+   * user's image.
    */
   public void init() {
     this.user = SessionManager.getUser();
@@ -114,6 +115,7 @@ public class SelectedUserSceneController {
     // Add passwordEntryBox to the center of the BorderPane
     root.setCenter(vBox);
   }
+
   /**
    * Initializes the StackPane that holds the user image.
    */
@@ -135,10 +137,11 @@ public class SelectedUserSceneController {
     userStackPane = new StackPane();
     userStackPane.getChildren().addAll(circle, userImage);
   }
+
   /**
    * Validates the password entered by the user.
    *
-   * @param user the user whose password is being validated
+   * @param user          the user whose password is being validated
    * @param passwordField the field containing the entered password
    */
   private void passwordValidation(User user, PasswordField passwordField) {

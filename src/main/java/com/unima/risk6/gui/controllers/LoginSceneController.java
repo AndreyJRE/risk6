@@ -34,6 +34,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
 /**
  * Controller for the login scene, handling user interactions and updating the view accordingly.
  *
@@ -52,6 +53,7 @@ public class LoginSceneController {
   private final SceneController sceneController;
 
   private DropShadow dropShadow;
+
   /**
    * Constructs a LoginSceneController with a given LogInScene.
    *
@@ -62,6 +64,7 @@ public class LoginSceneController {
     this.sceneController = SceneConfiguration.getSceneController();
     this.userService = DatabaseConfiguration.getUserService();
   }
+
   /**
    * Initializes the scene, sets up the user interface and loads all users from the UserService.
    */
@@ -100,6 +103,7 @@ public class LoginSceneController {
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
+
   /**
    * Creates a GridPane page of users to be displayed.
    *
@@ -169,6 +173,7 @@ public class LoginSceneController {
     }
     return usersGridPane;
   }
+
   /**
    * Initializes the Pagination component for navigating through users.
    *
@@ -218,7 +223,8 @@ public class LoginSceneController {
 
   /**
    * Defines the action to be taken when the 'Create Account' button is clicked.
-   */  private void handleCreateButton() {
+   */
+  private void handleCreateButton() {
     FXMLLoader fxmlLoader = new FXMLLoader(
         RisikoMain.class.getResource("fxml/CreateAccount" + ".fxml"));
     Parent root;
