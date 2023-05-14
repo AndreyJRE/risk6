@@ -87,9 +87,10 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 /**
- * This class represents the controller of the actual game scene in the application. It gets created
- * by the game scene and then starts initialising as well as updating and adapting the game scene to
- * represent the different phases of the board game Risk.
+ * The GameSceneController class controls the game scene and handles various user interactions and
+ * events. It gets created by the game scene and then starts the initialization of the game scene,
+ * including player UI, country UI, chat UI, and bottom pane UI. It is also responsible for updating
+ * and adapting the game scene to represent the different phases of the board game Risk.
  *
  * @author astoyano
  * @author mmeider
@@ -121,11 +122,20 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   Group countryNameGroup;
   private int tutorialMessageCounter = 0;
 
-
+  /**
+   * Initializes the GameSceneController with the provided GameScene object.
+   *
+   * @param gameScene the GameScene object associated with the controller
+   */
   public GameSceneController(GameScene gameScene) {
     this.gameScene = gameScene;
   }
 
+
+  /**
+   * Initializes the game scene by calling initializeGameScene() and event filters. It also prepares
+   * the chatUi and handUi. the tutorial will get initialized if that is active.
+   */
   public void init() {
     tutorial = GameConfiguration.getTutorial();
     if (tutorial != null) {
@@ -152,6 +162,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   }
 
+
+  /**
+   * Initializes the game scene by setting up the background, player pane, countries pane, bottom
+   * pane.
+   */
   private void initializeGameScene() {
     Image waterImage = ImageConfiguration.getImageByName(ImageName.WATER_GIF);
     BackgroundImage backgroundImage = new BackgroundImage(waterImage, BackgroundRepeat.REPEAT,
@@ -176,7 +191,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   }
 
-
+  /**
+   * Displays an order popup showing the order of players' dice rolls. It includes dice UIs for each
+   * player and a label indicating the player's position. Afterward, the popup is hidden and the
+   * player pane is updated.
+   */
   public void showOrderPopup() {
     BorderPane orderPane = new BorderPane();
     Popup orderPopup = new Popup();
@@ -294,7 +313,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     orderPopup.show(gameScene.getWindow());
   }
 
-
+  /**
+   * Initializes the countries pane by adding country UI elements, troops counters, and country
+   * names. It also handles the placement of troops counters and country names.
+   *
+   * @return a StackPane containing the countries pane
+   */
   private StackPane initializeCountriesPane() {
 
     countryNameGroup = new Group();
@@ -321,7 +345,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       double finalEllipseX;
 
       switch (countryUi.getCountry().getCountryName().name()) {
-        case "SOUTHERN_EUROPE" -> {
+        case "SOUTHERN_EUROPE", "SOUTH_AFRICA", "EAST_AFRICA", "ALASKA", "QUEBEC" -> {
           finalEllipseY = ellipseY - 5;
           finalEllipseX = ellipseX;
         }
@@ -337,24 +361,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           finalEllipseY = ellipseY + 10;
           finalEllipseX = ellipseX;
         }
-        case "SOUTH_AFRICA" -> {
-          finalEllipseY = ellipseY - 5;
-          finalEllipseX = ellipseX;
-        }
-        case "EAST_AFRICA" -> {
-          finalEllipseY = ellipseY - 5;
-          finalEllipseX = ellipseX;
-        }
         case "EASTERN_UNITED_STATES" -> {
           finalEllipseY = ellipseY + 5;
-          finalEllipseX = ellipseX;
-        }
-        case "ALASKA" -> {
-          finalEllipseY = ellipseY - 5;
-          finalEllipseX = ellipseX;
-        }
-        case "QUEBEC" -> {
-          finalEllipseY = ellipseY - 5;
           finalEllipseX = ellipseX;
         }
         case "WESTERN_AUSTRALIA" -> {
@@ -395,6 +403,14 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     return countriesPane;
   }
 
+
+  /**
+   * Initializes the players pane by adding player UI elements and setting up their colors and
+   * sizes. It also sets the active player UI and initializes the player controller for the user's
+   * player.
+   *
+   * @return a StackPane containing the players pane
+   */
   private StackPane initializePlayersPane() {
     VBox playersVbox = new VBox();
     playersVbox.setMaxWidth(100);
@@ -424,6 +440,13 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     return playerPane;
   }
 
+
+  /**
+   * Initializes the bottom pane by adding chat button, chat counter label, active player UI, next
+   * phase button, and cards button. It also handles their visibility and event handling.
+   *
+   * @return a StackPane containing the bottom pane
+   */
   private StackPane initializeBottomPane() {
     Button chatButton = new Button();
     ImageView chatIcon = new ImageView(
@@ -499,6 +522,13 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     return bottomPane;
   }
 
+
+  /**
+   * Updates the chat display with the given list of messages. This method is run on the JavaFX
+   * application thread using Platform.runLater() to ensure thread safety.
+   *
+   * @param messages the list of messages to update the chat with
+   */
   @Override
   public void updateChat(List<String> messages) {
     Platform.runLater(() -> {
@@ -517,6 +547,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     handUi.show();
   }
 
+
+  /**
+   * Adds a close request listener to the game scene. When the user tries to close the game scene's
+   * window, a confirmation dialog is shown, and the behavior is handled based on the user's
+   * response.
+   */
   public void addCloseRequestListener() {
     SceneController sceneController = SceneConfiguration.getSceneController();
     gameScene.getWindow().setOnCloseRequest(e -> {
@@ -547,6 +583,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     });
   }
 
+
+  /**
+   * Adds listeners to the game scene for various events such as window resizing, key presses, and
+   * releases.
+   */
   private void addListeners() {
     gameScene.widthProperty().addListener((obs, oldVal, newVal) -> {
       double widthScale = newVal.doubleValue() / 1080;
@@ -594,6 +635,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     });
   }
 
+  /**
+   * Displays a popup showing the statistics of each player in the game.
+   */
   private void showStatisticsPopup() {
     GridPane statisticsGrid = new GridPane();
     statisticsGrid.setAlignment(Pos.CENTER);
@@ -681,6 +725,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     isStatisticsShowing = true;
   }
 
+  /**
+   * Updates the game state and performs animations based on the last moves in the game.
+   *
+   * @param gameState The updated game state.
+   */
   @Override
   public void update(GameState gameState) {
     this.gameState = gameState;
@@ -722,9 +771,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           statistic.getCountriesLost());
       GameConfiguration.setCurrentGameStatistic(null);
     }
-
   }
 
+  /**
+   * Updates the troops count for the active player's country.
+   */
   private void updateActivePlayerTroops() {
     if (activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase()
         == GamePhase.REINFORCEMENT_PHASE) {
@@ -732,6 +783,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     }
   }
 
+  /**
+   * Updates the references to player UI objects based on the current game state.
+   */
   private void updateReferencesFromGameState() {
     this.gameState.getActivePlayers().forEach(this::updatePlayerUiReferenceByPlayer);
     this.gameState.getLostPlayers().forEach(this::updatePlayerUiReferenceByPlayer);
@@ -749,6 +803,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     handUi.setHand(myPlayerUi.getPlayer().getHand());
   }
 
+  /**
+   * Updates the reference to the player UI object for a specific player.
+   *
+   * @param player The player for which to update the player UI reference.
+   */
   private void updatePlayerUiReferenceByPlayer(Player player) {
     if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
       myPlayerUi.setPlayer(player);
@@ -763,11 +822,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     }
   }
 
-  public CountryUi getCountryUiByCountry(Country country) {
-    return countriesUis.stream().filter(countryUi -> countryUi.getCountry().equals(country))
-        .findFirst().get();
-  }
 
+  /**
+   * Animates the movement of troops during a fortification phase.
+   *
+   * @param fortify The fortification move to animate.
+   */
   public void animateTroopsMovement(Fortify fortify) {
     double maxOffsetX = 3;
     double maxOffsetY = 3;
@@ -817,6 +877,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     countryUi1.update(activePlayerUi);
   }
 
+  /**
+   * Animates an attack between two countries.
+   *
+   * @param attack The attack move to animate.
+   */
   private void animateAttack(Attack attack) {
     CountryUi countryUi = getCountryUiByCountry(attack.getAttackingCountry());
     CountryUi countryUi1 = getCountryUiByCountry(attack.getDefendingCountry());
@@ -824,12 +889,22 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   }
 
+  /**
+   * Animates the reinforcement of troops to a country.
+   *
+   * @param reinforce The reinforce move to animate.
+   */
   private void animateReinforce(Reinforce reinforce) {
     CountryUi countryUi = getCountryUiByCountry(reinforce.getCountry());
     countryUi.update(activePlayerUi);
 
   }
 
+  /**
+   * Animates the end of a game phase.
+   *
+   * @param endPhase The end phase move to animate.
+   */
   private void animateEndPhase(EndPhase endPhase) {
     updateActivePlayerUi();
     if (endPhase.getPhaseToEnd() == GamePhase.FORTIFY_PHASE) {
@@ -899,6 +974,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
             != GamePhase.CLAIM_PHASE));
   }
 
+  /**
+   * Sends the next tutorial message and performs necessary actions based on the current phase.
+   */
   private void sendTutorialMessage() {
     if (tutorialMessageCounter == 0 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
         || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
@@ -911,6 +989,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     tutorialMessageCounter++;
   }
 
+  /**
+   * Displays a dialog for the player to choose the difficulty for the rest of the tutorial.
+   */
   private static void showChooseTutorialDifficultyDialog() {
     List<String> choices = new ArrayList<>();
     choices.add("Easy");
@@ -926,14 +1007,35 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     GameConfiguration.setBotDifficulty(result.orElse(choiceDialog.getDefaultChoice()));
   }
 
-
+  /**
+   * Animates the hand-in of cards during the game.
+   *
+   * @param handIn The hand-in move to animate.
+   */
   private void animateHandIn(HandIn handIn) {
     activePlayerUi.updateActivePlayerTroops();
   }
 
+  /**
+   * Checks if the current player is the local player.
+   *
+   * @return {@code true} if the current player is the local player, {@code false} otherwise.
+   */
   public boolean checkIfCurrentPlayerIsMe() {
     return gameState.getCurrentPlayer().getUser()
         .equals(GameConfiguration.getMyGameUser().getUsername());
+  }
+
+
+  /**
+   * Retrieves the {@link CountryUi} object associated with a given country.
+   *
+   * @param country The country to find the associated CountryUi object for.
+   * @return The CountryUi object associated with the given country.
+   */
+  public CountryUi getCountryUiByCountry(Country country) {
+    return countriesUis.stream().filter(countryUi -> countryUi.getCountry().equals(country))
+        .findFirst().get();
   }
 
   public void updateActivePlayerUi() {
