@@ -136,7 +136,7 @@ public class MoveProcessor {
    *
    * @param attack the Attack move that should be processed.
    */
-  public void processAttack(Attack attack) {
+  public boolean processAttack(Attack attack) {
     Country attackingCountry = getCountryByCountryName(
         attack.getAttackingCountry().getCountryName());
 
@@ -216,7 +216,7 @@ public class MoveProcessor {
 
     }
     this.updateInGameStatistics();
-
+    return gameController.getGameState().isGameOver();
   }
 
   /**
