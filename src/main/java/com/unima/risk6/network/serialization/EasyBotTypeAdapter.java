@@ -8,27 +8,27 @@ import com.unima.risk6.game.ai.bots.EasyBot;
 import com.unima.risk6.game.models.Player;
 import java.lang.reflect.Type;
 
-public class EasyBotTypeAdapter implements JsonSerializer<EasyBot>/*, JsonDeserializer<EasyBot>*/ {
+/**
+ * This class is a custom serializer for the {@link com.unima.risk6.game.ai.bots.EasyBot} class in
+ * the context of JSON serialization and deserialization.
+ *
+ * @author jferch
+ */
+public class EasyBotTypeAdapter implements JsonSerializer<EasyBot> {
 
+  /**
+   * This method is used to convert an {@link com.unima.risk6.game.ai.bots.EasyBot} object into its
+   * JSON representation.
+   *
+   * @param easyBot The EasyBot object to be serialized.
+   * @param type    The specific genericized type of src.
+   * @param context Context for serialization that is also used to serialize src's fields.
+   * @return A JsonElement corresponding to the specified EasyBot.
+   */
   @Override
   public JsonElement serialize(EasyBot easyBot, Type type, JsonSerializationContext context) {
     JsonObject jsonObject = context.serialize(easyBot, Player.class).getAsJsonObject();
     return jsonObject;
   }
 
-  /*@Override
-  public EasyBot deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
-    Player player = context.deserialize(jsonElement, Player.class);
-    //TODO
-    //EasyBot easyBot = new EasyBot(GameConfiguration.configureGame(users, bots));
-
-    // Copy fields from the deserialized Player object to the EasyBot object
-    /*try {
-      FieldUtils.copyFields(player, easyBot);
-    } catch (IllegalAccessException e) {
-      throw new JsonParseException("Error copying fields from Player to EasyBot", e);
-    }*/
-
-    /*return easyBot;
-  }*/
 }

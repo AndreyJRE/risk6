@@ -11,8 +11,24 @@ import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.models.enums.GamePhase;
 import java.lang.reflect.Type;
 
+/**
+ * A custom {@link com.google.gson.JsonSerializer} and {@link com.google.gson.JsonDeserializer} for
+ * the {@link com.unima.risk6.game.logic.EndPhase} class. This allows for custom serialization and
+ * deserialization of EndPhase objects, which is useful for preserving specific information when
+ * converting to and from JSON.
+ *
+ * @author jferch
+ */
 public class EndPhaseTypeAdapter implements JsonSerializer<EndPhase>, JsonDeserializer<EndPhase> {
 
+  /**
+   * Serializes an {@link com.unima.risk6.game.logic.EndPhase} object into a {@link com.google.gson.JsonElement}.
+   *
+   * @param endPhase The source {@link com.unima.risk6.game.logic.EndPhase} object to be serialized.
+   * @param typeOfSrc The specific generalized runtime type of src.
+   * @param context The context for serialization, used to serialize other objects as needed.
+   * @return A {@link com.google.gson.JsonElement} representing the serialized {@link com.unima.risk6.game.logic.EndPhase} data.
+   */
   @Override
   public JsonElement serialize(EndPhase endPhase, Type typeOfSrc,
       JsonSerializationContext context) {
@@ -23,6 +39,15 @@ public class EndPhaseTypeAdapter implements JsonSerializer<EndPhase>, JsonDeseri
     return jsonObject;
   }
 
+  /**
+   * Deserializes a {@link com.google.gson.JsonElement} into an {@link com.unima.risk6.game.logic.EndPhase} object.
+   *
+   * @param json The JSON element being deserialized.
+   * @param typeOfT The specific genericized runtime type of the object being deserialized.
+   * @param context The context for deserialization, used to deserialize other objects as needed.
+   * @return A deserialized {@link com.unima.risk6.game.logic.EndPhase} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into an {@link com.unima.risk6.game.logic.EndPhase} object.
+   */
   @Override
   public EndPhase deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {

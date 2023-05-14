@@ -1,17 +1,40 @@
 package com.unima.risk6.network.serialization;
 
-import com.google.gson.*;
-import com.unima.risk6.game.logic.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.unima.risk6.game.logic.Attack;
+import com.unima.risk6.game.logic.EndPhase;
+import com.unima.risk6.game.logic.Fortify;
+import com.unima.risk6.game.logic.HandIn;
+import com.unima.risk6.game.logic.Reinforce;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.network.message.StandardMessage;
 import com.unima.risk6.network.message.enums.ContentType;
-
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A custom {@link com.google.gson.JsonDeserializer} for the
+ * {@link com.unima.risk6.network.message.StandardMessage} class. This allows for custom
+ * deserialization of StandardMessage objects, which is useful when converting from JSON.
+ *
+ * @author jferch
+ */
 public class StandardMessageAdapter implements JsonDeserializer<StandardMessage> {
 
+  /**
+   * Deserializes a {@link com.google.gson.JsonElement} into a {@link com.unima.risk6.network.message.StandardMessage} object.
+   *
+   * @param jsonElement The JSON element being deserialized.
+   * @param type The specific genericized runtime type of the object being deserialized.
+   * @param context The context for deserialization, used to deserialize other objects as needed.
+   * @return A deserialized {@link com.unima.risk6.network.message.StandardMessage} object.
+   * @throws com.google.gson.JsonParseException If there is a problem parsing the JSON into a {@link com.unima.risk6.network.message.StandardMessage} object.
+   */
   @Override
   public StandardMessage deserialize(JsonElement jsonElement, Type type,
       JsonDeserializationContext context) throws JsonParseException {

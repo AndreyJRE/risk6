@@ -18,12 +18,24 @@ import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.Player;
 import com.unima.risk6.network.message.Message;
 
+/**
+ * A utility class for serializing objects into their JSON string representations. This class uses
+ * Gson's {@link com.google.gson.GsonBuilder} for serialization, with custom type adapters
+ * registered for certain object types.
+ *
+ * @author jferch
+ */
 public class Serializer {
 
+  /**
+   * Serializes an object into a JSON string.
+   *
+   * @param obj The object to be serialized.
+   * @return The JSON string representation of the object.
+   */
   public static String serialize(Message obj) {
     return new GsonBuilder()
         .registerTypeAdapter(GameState.class, new GameStateTypeAdapter())
-
         .registerTypeAdapter(Country.class, new CountryTypeAdapter())
         .registerTypeAdapter(Continent.class, new ContinentTypeAdapter())
         .registerTypeAdapter(Card.class, new CardTypeAdapter())

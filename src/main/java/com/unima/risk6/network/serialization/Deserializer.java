@@ -18,10 +18,22 @@ import com.unima.risk6.network.message.ConnectionMessage;
 import com.unima.risk6.network.message.Message;
 import com.unima.risk6.network.message.StandardMessage;
 
-
+/**
+ * A utility class for deserializing JSON strings into their corresponding object representations.
+ * This class uses Gson's {@link com.google.gson.GsonBuilder} for deserialization, with custom type
+ * adapters registered for certain object types.
+ *
+ * @author jferch
+ */
 public class Deserializer {
 
-  //TODO
+  /**
+   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.Message} object, using a given GameState for context.
+   *
+   * @param json The JSON string to be deserialized.
+   * @param gameState The GameState object to be used for context during deserialization.
+   * @return The deserialized Message object.
+   */
   public static Message deserialize(String json, GameState gameState) {
     return new GsonBuilder()
         .registerTypeAdapter(StandardMessage.class, new StandardMessageAdapter())
@@ -33,8 +45,6 @@ public class Deserializer {
         .registerTypeAdapter(Card.class, new CardTypeAdapter())
         .registerTypeAdapter(Hand.class, new HandTypeAdapter())
         .registerTypeAdapter(Player.class, new PlayerTypeAdapter(gameState))
-        //.registerTypeAdapter(EasyBot.class, new EasyBotTypeAdapter())
-
         .registerTypeAdapter(Attack.class, new AttackTypeAdapter(gameState))
         .registerTypeAdapter(Fortify.class, new FortifyTypeAdapter(gameState))
         .registerTypeAdapter(Reinforce.class, new ReinforceTypeAdapter(gameState))
@@ -42,9 +52,14 @@ public class Deserializer {
         .registerTypeAdapter(EndPhase.class, new EndPhaseTypeAdapter())
         .create()
         .fromJson(json, StandardMessage.class);
-    //return new Gson().fromJson(json, StandardMessage.class);
   }
 
+  /**
+   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.Message} object.
+   *
+   * @param json The JSON string to be deserialized.
+   * @return The deserialized Message object.
+   */
   public static Message deserialize(String json) {
     return new GsonBuilder()
         .registerTypeAdapter(StandardMessage.class, new StandardMessageAdapter())
@@ -65,6 +80,13 @@ public class Deserializer {
     //return new Gson().fromJson(json, StandardMessage.class);
   }
 
+  /**
+   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.ConnectionMessage}
+   * object.
+   *
+   * @param json The JSON string to be deserialized.
+   * @return The deserialized ConnectionMessage object.
+   */
   public static Message deserializeConnectionMessage(String json) {
     return new GsonBuilder()
         .registerTypeAdapter(ConnectionMessage.class, new ConnectionMessageAdapter())
@@ -81,6 +103,14 @@ public class Deserializer {
         .fromJson(json, ConnectionMessage.class);
   }
 
+  /**
+   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.ConnectionMessage}
+   * object, using a given GameState for context.
+   *
+   * @param json      The JSON string to be deserialized.
+   * @param gameState The GameState object to be used for context during deserialization.
+   * @return The deserialized ConnectionMessage object.
+   */
   public static Message deserializeConnectionMessage(String json, GameState gameState) {
     return new GsonBuilder()
         .registerTypeAdapter(ConnectionMessage.class, new ConnectionMessageAdapter())
@@ -99,6 +129,12 @@ public class Deserializer {
         .fromJson(json, ConnectionMessage.class);
   }
 
+  /**
+   * Deserializes a JSON string into a {@link com.unima.risk6.network.message.ChatMessage} object.
+   *
+   * @param json The JSON string to be deserialized.
+   * @return The deserialized ChatMessage object.
+   */
   public static ChatMessage deserializeChatMessage(String json) {
     return new GsonBuilder()
         .registerTypeAdapter(ChatMessage.class, new ChatMessageTypeAdapter())

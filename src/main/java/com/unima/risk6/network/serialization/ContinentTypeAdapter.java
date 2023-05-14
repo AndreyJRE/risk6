@@ -10,8 +10,22 @@ import com.unima.risk6.game.models.Country;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+/**
+ * A JsonSerializer implementation for {@link com.unima.risk6.game.models.Continent} objects. This
+ * class defines how Continent objects are converted to their JSON representations.
+ *
+ * @author jferch
+ */
 public class ContinentTypeAdapter implements JsonSerializer<Continent> {
 
+  /**
+   * Serializes a Continent object to its corresponding JSON representation.
+   *
+   * @param continent The Continent object to be serialized.
+   * @param typeOfSrc The actual generic type of the source object.
+   * @param context The context for serialization.
+   * @return A JsonElement corresponding to the specified Continent.
+   */
   @Override
   public JsonElement serialize(Continent continent, Type typeOfSrc,
       JsonSerializationContext context) {
