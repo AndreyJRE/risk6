@@ -57,6 +57,7 @@ import javafx.util.Duration;
  *
  * @author fisommer
  */
+
 public class UserOptionsSceneController {
 
   private final UserOptionsScene userOptions;
@@ -72,6 +73,7 @@ public class UserOptionsSceneController {
    *
    * @param userOptions The UserOptionsScene object associated with this controller.
    */
+
   public UserOptionsSceneController(UserOptionsScene userOptions) {
     this.userOptions = userOptions;
     this.userService = DatabaseConfiguration.getUserService();
@@ -82,6 +84,7 @@ public class UserOptionsSceneController {
    * Initializes the User Options Scene by setting the user, root, font, and user stack pane. Also
    * sets the background image.
    */
+
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) userOptions.getRoot();
@@ -116,6 +119,7 @@ public class UserOptionsSceneController {
    * Initializes the elements of the User Options Scene, including the back arrow, username field,
    * and various buttons.
    */
+
   private void initElements() {
     // Back arrow
     Path arrow = generateBackArrow();
@@ -239,6 +243,7 @@ public class UserOptionsSceneController {
    *
    * @return A Button object for changing the password.
    */
+
   private Button createChangePasswordButton() {
     Button changePasswordButton = new Button("Change Password");
     changePasswordButton.setPrefWidth(470);
@@ -267,6 +272,7 @@ public class UserOptionsSceneController {
    *
    * @return A Button object for deleting the user.
    */
+
   private Button createDeleteUserButton() {
     Button deleteUserButton = new Button("Delete User");
     deleteUserButton.setPrefWidth(470);
@@ -322,6 +328,7 @@ public class UserOptionsSceneController {
    *
    * @param userNameField The TextField object representing the username.
    */
+
   private void changeUsernameConfirmation(TextField userNameField) {
     if (!user.getUsername().equals(userNameField.getText())) {
       boolean confirm = showConfirmationDialog("Change username",
@@ -346,6 +353,7 @@ public class UserOptionsSceneController {
   /**
    * Initializes the user's profile image and places it on a stack pane.
    */
+
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(200);

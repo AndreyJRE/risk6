@@ -47,12 +47,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
+
 /**
  * Controller for managing the multiplayer lobby scene.
  *
  * @author fisommer
  * @author astoyano
  */
+
 public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   private final MultiplayerLobbyScene multiplayerLobbyScene;
@@ -68,14 +70,17 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
    *
    * @param multiplayerLobbyScene The multiplayer lobby scene to be managed by this controller.
    */
+
   public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
     this.multiplayerLobbyScene = multiplayerLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addGameLobbyObserver(this);
   }
+
   /**
    * Initialize the game lobby and the user, and setup the root layout and other UI elements.
    */
+
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.myUser = GameConfiguration.getMyGameUser();
@@ -129,8 +134,6 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
       BorderPane.setMargin(waitingLabelBox, new Insets(10, 20, 20, 10));
 
     }
-
-    //TODO: Implement Gridpane for Multiplayer Settings
 
     // Load the image into an ImageView
     Image originalImage = ImageConfiguration.getImageByName(ImageName.MULTIPLAYER_BACKGROUND);

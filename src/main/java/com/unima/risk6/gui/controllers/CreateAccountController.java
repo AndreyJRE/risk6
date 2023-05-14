@@ -34,6 +34,7 @@ import javafx.scene.layout.AnchorPane;
  *
  * @author fisommer
  */
+
 public class CreateAccountController implements Initializable {
 
   private UserService userService;
@@ -57,6 +58,7 @@ public class CreateAccountController implements Initializable {
   private ImageView backgroundImageView;
 
   private SceneController sceneController;
+
   /**
    * This method is called when the user wants to log into an existing account.
    * If there are no existing users in the database, an error dialog will be shown.
@@ -73,6 +75,7 @@ public class CreateAccountController implements Initializable {
       sceneController.activate(SceneName.LOGIN);
     }
   }
+
   /**
    * This method is called when the user attempts to create a new account.
    * It validates the user's input and attempts to save a new user to the database.
@@ -110,6 +113,7 @@ public class CreateAccountController implements Initializable {
       checkPasswordField.setText("");
     }
   }
+
   /**
    * This method is called when the mouse enters a Label object.
    * It changes the style of the label to indicate it's interactive.
@@ -123,6 +127,7 @@ public class CreateAccountController implements Initializable {
     label.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 14px; -fx-text-fill: "
         + "#007FFF; -fx-underline: true; -fx-cursor: hand");
   }
+
   /**
    * This method is called when the mouse exits a Label object.
    * It resets the style of the label.

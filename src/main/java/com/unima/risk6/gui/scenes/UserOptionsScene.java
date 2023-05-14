@@ -36,11 +36,6 @@ public class UserOptionsScene extends Scene implements InitializableScene {
     }
   }
 
-  /**
-   * Sets the controller for this scene.
-   *
-   * @param userOptionsSceneController The controller to be set for this scene.
-   */
   public void setController(UserOptionsSceneController userOptionsSceneController) {
     this.userOptionsSceneController = userOptionsSceneController;
   }

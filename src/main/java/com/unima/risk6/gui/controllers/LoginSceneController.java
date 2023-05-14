@@ -41,6 +41,7 @@ import javafx.scene.shape.Circle;
  *
  * @author fisommer
  */
+
 public class LoginSceneController {
 
   private final LogInScene loginScene;
@@ -60,6 +61,7 @@ public class LoginSceneController {
    *
    * @param loginScene the login scene to be managed by this controller
    */
+
   public LoginSceneController(LogInScene loginScene) {
     this.loginScene = loginScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -69,6 +71,7 @@ public class LoginSceneController {
   /**
    * Initializes the scene, sets up the user interface and loads all users from the UserService.
    */
+
   public void init() {
     users = userService.getAllUsers();
     root = (VBox) loginScene.getRoot();
@@ -111,6 +114,7 @@ public class LoginSceneController {
    * @param usersPage the list of users to be included on this page
    * @return the created GridPane
    */
+
   private GridPane createUsersGridPanePage(List<User> usersPage) {
     GridPane usersGridPane = new GridPane();
     usersGridPane.setHgap(30);
@@ -182,6 +186,7 @@ public class LoginSceneController {
    *
    * @return the initialized Pagination
    */
+
   private Pagination initializeUsersPagination() {
     int usersPerPage = 5;
     int pageCount = (int) Math.ceil(users.size() / (double) usersPerPage);
@@ -203,6 +208,7 @@ public class LoginSceneController {
    *
    * @return the created Button
    */
+
   private Button createCustomCreateButton() {
     Button createButton = new Button("New Account needed?");
     // set the button's properties
@@ -227,6 +233,7 @@ public class LoginSceneController {
   /**
    * Defines the action to be taken when the 'Create Account' button is clicked.
    */
+
   private void handleCreateButton() {
     FXMLLoader fxmlLoader = new FXMLLoader(
         RisikoMain.class.getResource("fxml/CreateAccount" + ".fxml"));
@@ -253,6 +260,7 @@ public class LoginSceneController {
    *
    * @param user the selected User
    */
+
   public void showSelectedUser(User user) {
     SelectedUserScene scene = (SelectedUserScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.SELECTED_USER);

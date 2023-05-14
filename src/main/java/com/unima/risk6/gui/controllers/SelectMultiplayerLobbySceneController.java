@@ -51,6 +51,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
+
 /**
  * Controller class for managing the selection of a multiplayer lobby scene.
  * This class implements ServerLobbyObserver and ChatObserver interfaces to get
@@ -61,6 +62,7 @@ import javafx.scene.text.Font;
  * @author eameri
  * @author jferch
  */
+
 public class SelectMultiplayerLobbySceneController implements ServerLobbyObserver, ChatObserver {
 
   private final SelectMultiplayerLobbyScene selectMultiplayerLobbyScene;
@@ -79,6 +81,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
    *
    * @param selectMultiplayerLobbyScene The SelectMultiplayerLobbyScene that this controller manages.
    */
+
   public SelectMultiplayerLobbySceneController(
       SelectMultiplayerLobbyScene selectMultiplayerLobbyScene) {
     this.selectMultiplayerLobbyScene = selectMultiplayerLobbyScene;
@@ -86,9 +89,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     LobbyConfiguration.addServerLobbyObserver(this);
     LobbyConfiguration.addChatObserver(this);
   }
+
   /**
    * Initialization method for the controller.
    */
+
   public void init() {
     this.serverLobby = LobbyConfiguration.getServerLobby();
     this.user = GameConfiguration.getMyGameUser();
@@ -253,6 +258,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   /**
    * Method to handle the event of clicking the 'Join' button.
    */
+
   private void handleJoinButton() {
     GameLobby selectedLobby = lobbyList.getSelectionModel().getSelectedItem();
     if (selectedLobby != null) {
@@ -278,9 +284,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       showErrorDialog("No Lobby selected", "Please select a Lobby in order to join.");
     }
   }
+
   /**
    * Method to handle the event of clicking the 'Create' button.
    */
+
   private void handleCreateButton() {
     CreateLobbyScene scene = (CreateLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.CREATE_LOBBY);
@@ -294,9 +302,11 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     lobbyChatSplit.getItems().removeAll(lobbyChatSplit.getItems());
     sceneController.activate(SceneName.CREATE_LOBBY);
   }
+
   /**
    * Method to handle the event of quitting the server lobby.
    */
+
   private void handleQuitServerLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
@@ -304,11 +314,13 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
       sceneController.activate(SceneName.TITLE);
     }
   }
+
   /**
    * Method to update the server lobby. Implements the method from ServerLobbyObserver interface.
    *
    * @param serverLobby The updated ServerLobby object.
    */
+
   @Override
   public void updateServerLobby(ServerLobby serverLobby) {
     this.serverLobby = serverLobby;
@@ -322,6 +334,7 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     });
 
   }
+
   /**
    * Method to update the chat. Implements the method from ChatObserver interface.
    *

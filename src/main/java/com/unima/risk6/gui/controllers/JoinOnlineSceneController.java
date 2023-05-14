@@ -36,6 +36,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
+
 /**
  * Controller for handling operations related to joining an online game.
  * This includes initialization of the join online scene and handle joining the game.
@@ -43,32 +44,39 @@ import javafx.scene.text.Font;
  * @author fisommer
  * @author astoyano
  */
+
 public class JoinOnlineSceneController {
 
   private final JoinOnlineScene joinOnlineScene;
   private final SceneController sceneController;
   private BorderPane root;
+
   /**
    * Constructs a new JoinOnlineSceneController.
    *
    * @param joinOnlineScene the scene for joining online games
    */
+
   public JoinOnlineSceneController(JoinOnlineScene joinOnlineScene) {
     this.joinOnlineScene = joinOnlineScene;
     this.sceneController = SceneConfiguration.getSceneController();
   }
+
   /**
    * Initializes the join online scene with the appropriate UI elements.
    */
+
   public void init() {
     this.root = (BorderPane) joinOnlineScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
         26);
     initElements();
   }
+
   /**
    * Initializes the elements of the join online scene.
    */
+
   private void initElements() {
     // Back arrow
     Path arrow = generateBackArrow();
@@ -103,11 +111,13 @@ public class JoinOnlineSceneController {
 
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
   }
+
   /**
    * Initializes a VBox to be placed in the center of the scene.
    *
    * @return the initialized VBox
    */
+
   private AnchorPane initCentralVbox() {
 
     HBox hbox = new HBox();
@@ -179,11 +189,13 @@ public class JoinOnlineSceneController {
 
     return anchorPane;
   }
+
   /**
    * Handles the join request when the player wants to join a game.
    *
    * @param host the host address of the game server
    */
+
   private void handleJoin(String host) {
 
     LobbyConfiguration.configureGameClient(host);

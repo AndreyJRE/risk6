@@ -54,6 +54,7 @@ public class ChangePasswordSceneController {
    *
    * @param changePasswordScene the scene that this controller is responsible for.
    */
+
   public ChangePasswordSceneController(ChangePasswordScene changePasswordScene) {
     this.changePasswordScene = changePasswordScene;
     this.userService = DatabaseConfiguration.getUserService();
@@ -63,6 +64,7 @@ public class ChangePasswordSceneController {
   /**
    * Initializes the controller and sets up the scene.
    */
+
   public void init() {
     root = (BorderPane) changePasswordScene.getRoot();
     root.setPrefWidth(SceneConfiguration.getWidth());
@@ -107,6 +109,7 @@ public class ChangePasswordSceneController {
    *
    * @return the created button.
    */
+
   private Button createConfirmButton() {
     Button confirmButton = new Button("Confirm");
     confirmButton.setPrefWidth(800);
@@ -122,6 +125,7 @@ public class ChangePasswordSceneController {
    *
    * @return an AnchorPane containing the fields for entering the new password.
    */
+
   private AnchorPane createNewPasswordFields() {
     AnchorPane anchorPane = new AnchorPane();
     anchorPane.setPrefSize(600, 495);

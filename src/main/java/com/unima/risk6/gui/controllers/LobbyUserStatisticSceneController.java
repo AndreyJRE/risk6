@@ -34,6 +34,7 @@ import javafx.scene.text.Font;
  *
  * @author fisommer
  */
+
 public class LobbyUserStatisticSceneController {
 
   private final LobbyUserStatisticScene lobbyUserStatisticScene;
@@ -52,6 +53,7 @@ public class LobbyUserStatisticSceneController {
    *
    * @param lobbyUserStatisticScene The LobbyUserStatisticScene for this controller.
    */
+
   public LobbyUserStatisticSceneController(LobbyUserStatisticScene lobbyUserStatisticScene) {
     this.lobbyUserStatisticScene = lobbyUserStatisticScene;
     this.sceneController = SceneConfiguration.getSceneController();
@@ -62,6 +64,7 @@ public class LobbyUserStatisticSceneController {
    *
    * @param user The user to display statistics for.
    */
+
   public void init(UserDto user) {
     this.user = user;
     this.root = (BorderPane) lobbyUserStatisticScene.getRoot();
@@ -72,9 +75,11 @@ public class LobbyUserStatisticSceneController {
     initGridPane();
     initElements();
   }
+
   /**
    * Initializes the scene elements.
    */
+
   private void initElements() {
     // Back arrow
     Path arrow = StyleConfiguration.generateBackArrow();
@@ -106,15 +111,15 @@ public class LobbyUserStatisticSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
+    // Use the semi-transparent image for the background
     BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
         true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
@@ -128,9 +133,11 @@ public class LobbyUserStatisticSceneController {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
     root.setCenter(centerVbox);
   }
+
   /**
    * Initializes the statistics GridPane.
    */
+
   private void initGridPane() {
     statisticsGridPane = new GridPane();
     Label gamesLost = new Label("Games lost: ");
@@ -170,9 +177,11 @@ public class LobbyUserStatisticSceneController {
     statisticsGridPane.setHgap(30); // Set horizontal gap
     statisticsGridPane.setVgap(20); // Set vertical gap
   }
+
   /**
    * Initializes the user StackPane.
    */
+
   private void initUserStackPane() {
     userImage = new ImageView(
         ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));

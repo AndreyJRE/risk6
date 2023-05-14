@@ -53,6 +53,7 @@ import javafx.scene.text.Font;
  * @author fisommer
  * @author astoyano
  */
+
 public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
 
   private final SinglePlayerSettingsScene singlePlayerSettingsScene;
@@ -61,19 +62,23 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private UserDto myUser;
   private GameLobby gameLobby;
   private boolean tutorial;
+
   /**
    * Constructs a SinglePlayerSettingsSceneController object that handles user interactions in the SinglePlayerSettingsScene.
    *
    * @param singlePlayerSettingsScene a reference to the single player settings scene
    */
+
   public SinglePlayerSettingsSceneController(SinglePlayerSettingsScene singlePlayerSettingsScene) {
     this.singlePlayerSettingsScene = singlePlayerSettingsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     LobbyConfiguration.addGameLobbyObserver(this);
   }
+
   /**
    * Initializes the single player settings scene, sets up the game lobby, user, and the UI elements.
    */
+
   public void init() {
     this.gameLobby = LobbyConfiguration.getGameLobby();
     this.myUser = GameConfiguration.getMyGameUser();
@@ -341,9 +346,11 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     gameLobby.getBots().remove(bot);
     LobbyConfiguration.sendRemoveBotFromLobby(gameLobby);
   }
+
   /**
    * Handles the action of the "Play" button. Validates the number of players and initiates the game or tutorial.
    */
+
   private void handlePlayButton() {
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();

@@ -46,7 +46,7 @@ import javafx.scene.text.Font;
  * It includes all of the necessary UI components and their associated functionalities.
  * It also creates and sends the game lobby to the server when the "Create Lobby" button is clicked.
  *
- * @author Your Name
+ * @author fisommer
  */
 
 public class CreateLobbySceneController {

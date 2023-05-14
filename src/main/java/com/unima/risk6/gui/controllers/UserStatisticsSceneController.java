@@ -43,6 +43,7 @@ import javafx.scene.text.Font;
  * @author fisommer
  * @author astoyano
  */
+
 public class UserStatisticsSceneController {
 
   private final UserStatisticsScene userStatisticsScene;
@@ -63,15 +64,18 @@ public class UserStatisticsSceneController {
    *
    * @param userStatisticsScene the UserStatisticsScene this controller will manage.
    */
+
   public UserStatisticsSceneController(UserStatisticsScene userStatisticsScene) {
     this.userStatisticsScene = userStatisticsScene;
     this.sceneController = SceneConfiguration.getSceneController();
     gameStatisticService = DatabaseConfiguration.getGameStatisticService();
   }
+
   /**
    * Initializes the scene with the current user's statistics and relevant UI components.
    * Sets the background image and initializes the UI elements for displaying statistics.
    */
+
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) userStatisticsScene.getRoot();
@@ -101,10 +105,12 @@ public class UserStatisticsSceneController {
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
+
   /**
    * Initializes the UI elements for the scene, including the back arrow,
    * user name, and statistical data display components.
    */
+
   private void initElements() {
     // Back arrow
     Path arrow = StyleConfiguration.generateBackArrow();
@@ -137,10 +143,12 @@ public class UserStatisticsSceneController {
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
     root.setCenter(centerVBox);
   }
+
   /**
    * Initializes the GridPane for displaying statistical data.
    * Retrieves data from the GameStatisticService and updates the UI components accordingly.
    */
+
   private void initGridPane() {
     statisticsGridPane = new GridPane();
     List<GameStatistic> statisticList = gameStatisticService.getAllStatisticsByUserId(user.getId());
@@ -187,10 +195,12 @@ public class UserStatisticsSceneController {
     statisticsGridPane.setHgap(30); // Set horizontal gap
     statisticsGridPane.setVgap(40); // Set vertical gap
   }
+
   /**
    * Initializes the StackPane for displaying the user's profile picture.
    * The image is clipped to fit within a circular boundary.
    */
+
   private void initUserStackPane() {
     userImage = new ImageView(new Image(getClass().getResource(user.getImagePath()).toString()));
     userImage.setFitHeight(200);

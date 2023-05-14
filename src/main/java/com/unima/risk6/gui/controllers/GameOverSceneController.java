@@ -36,6 +36,7 @@ import javafx.scene.text.Font;
  *
  * @author fisommer
  */
+
 public class GameOverSceneController {
 
   private final GameOverScene gameOverScene;
@@ -57,17 +58,20 @@ public class GameOverSceneController {
    * @param gameOverScene the game over scene associated with this controller
    * @param gameState     the current state of the game
    */
+
   public GameOverSceneController(GameOverScene gameOverScene, GameState gameState) {
     this.gameOverScene = gameOverScene;
     this.sceneController = SceneConfiguration.getSceneController();
     this.statistic = gameState.getCurrentPlayer().getStatistic();
     this.gameState = gameState;
   }
+
   /**
    * Initializes the game over scene.
    * This includes loading the background image, initializing the UI elements,
    * and setting the opacity for the ImageView.
    */
+
   public void init() {
     this.root = (BorderPane) gameOverScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
@@ -97,10 +101,12 @@ public class GameOverSceneController {
     Background background = new Background(backgroundImage);
     root.setBackground(background);
   }
+
   /**
    * Initializes various UI elements of the game over scene.
    * This includes the back arrow, user name, and statistics display.
    */
+
   private void initElements() {
     // Back arrow
     Path arrow = StyleConfiguration.generateBackArrow();
@@ -145,10 +151,12 @@ public class GameOverSceneController {
     BorderPane.setMargin(winnerBox, new Insets(10, 10, 10, 10));
     root.setCenter(centervbox);
   }
+
   /**
    * Initializes the grid pane that displays the user's game statistics.
    * These statistics include countries won/lost and troops count.
    */
+
   private void initGridPane() {
     statisticsGridPane = new GridPane();
     Label countriesWon = new Label("Countries won: ");
@@ -187,9 +195,11 @@ public class GameOverSceneController {
     statisticsGridPane.setHgap(30); // Set horizontal gap
     statisticsGridPane.setVgap(20); // Set vertical gap
   }
+
   /**
    * Initializes the user stack pane that displays the user's icon.
    */
+
   private void initUserStackPane() {
     userImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLAYER_ICON));
     userImage.setFitHeight(200);

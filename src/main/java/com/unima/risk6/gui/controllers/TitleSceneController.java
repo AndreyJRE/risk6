@@ -64,6 +64,7 @@ import javafx.util.Duration;
  * @author astoyano
  * @author eameri
  */
+
 public class TitleSceneController implements Initializable {
 
   @FXML
@@ -107,6 +108,7 @@ public class TitleSceneController implements Initializable {
    *
    * @return A StringBuilder containing the IP addresses.
    */
+
   private static StringBuilder getIpS() {
     StringBuilder ipS = new StringBuilder();
     try {
@@ -136,6 +138,7 @@ public class TitleSceneController implements Initializable {
    *                       World Wide Web.
    * @param resourceBundle Contains locale-specific objects.
    */
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     applyButtonStyle(singlePlayerButton);
@@ -224,6 +227,7 @@ public class TitleSceneController implements Initializable {
    * Handles the volume clicked event. It either mutes or unmutes the volume based on the current
    * volume level.
    */
+
   @FXML
   private void volumeClicked() {
     if (volumeSlider.getValue() == 0.0) {
@@ -240,6 +244,7 @@ public class TitleSceneController implements Initializable {
   /**
    * Handles the button click event to toggle the multiplayer and tutorial buttons.
    */
+
   private void toggleButtonClicked() {
     boolean isOn = switchedOn.get();
     switchedOn.set(!isOn);
@@ -268,6 +273,7 @@ public class TitleSceneController implements Initializable {
   /**
    * Sets the IP address label in the scene.
    */
+
   private void setIpLabel() {
     if (switchedOn.get()) {
       StringBuilder ipS = getIpS();
@@ -296,6 +302,7 @@ public class TitleSceneController implements Initializable {
    *
    * @throws InterruptedException if any thread has interrupted the current thread.
    */
+
   @FXML
   private void handleSinglePlayer() throws InterruptedException {
     if (switchedOn.get()) {
@@ -334,6 +341,7 @@ public class TitleSceneController implements Initializable {
   /**
    * Handles the multi player button click event. It switches the scene to the JoinOnlineScene.
    */
+
   @FXML
   private void handleMultiPlayer() {
     JoinOnlineScene scene = (JoinOnlineScene) SceneConfiguration.getSceneController()
@@ -356,6 +364,7 @@ public class TitleSceneController implements Initializable {
    *
    * @throws InterruptedException if any thread has interrupted the current thread.
    */
+
   @FXML
   private void handleTutorial() throws InterruptedException {
     //TODO: Play Tutorial
@@ -393,6 +402,7 @@ public class TitleSceneController implements Initializable {
   /**
    * Handles the options button click event. It switches the scene to the UserOptionsScene.
    */
+
   @FXML
   private void handleOptions() {
     UserOptionsScene scene = (UserOptionsScene) SceneConfiguration.getSceneController()
@@ -411,6 +421,7 @@ public class TitleSceneController implements Initializable {
   /**
    * Handles the quit game button click event. It closes the application.
    */
+
   @FXML
   private void handleQuitGame() {
     SoundConfiguration.playClickSound();
@@ -422,6 +433,7 @@ public class TitleSceneController implements Initializable {
    * Animates the title label. It creates and plays an animation that includes rotation, scaling and
    * color change.
    */
+
   private void animateTitleLabel() {
     // Rotate animation
     TranslateTransition movementTransition = new TranslateTransition(Duration.seconds(1),
