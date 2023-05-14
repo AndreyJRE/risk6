@@ -85,6 +85,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         LOGGER.debug("Not a JSON: " + request + "\n Exception: " + e);
       }
       if (json != null) {
+        if (GameConfiguration.isTutorialOver()) {
+          gameLobbyChannels.replaceUser(moveProcessor.getGameController().getGameState(),
+              gameLobbyChannels.getGameLobbyByChannel(
+                  ctx.channel()), "Johnny Test");
+        }
         LOGGER.debug(
             "Server Received Message with ContentType: " + json.get("contentType").getAsString());
         ChannelGroup channelGroup = gameLobbyChannels.getChannelGroupByChannel(ctx.channel());
@@ -645,7 +650,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     LOGGER.info("Lost connection to one client.");
-    gameLobbyChannels.handleExit(ctx.channel(), this);
+    gameLobbyChannels.handleExit(ctx.channel(), this, false);
 
   }
 
