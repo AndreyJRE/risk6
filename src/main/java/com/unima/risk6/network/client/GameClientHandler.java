@@ -273,6 +273,10 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     }
   }
 
+  public WebSocketClientHandshaker getHandshaker() {
+    return handshaker;
+  }
+
 
   /**
    * Handles exceptions that occur in the channel pipeline. This method prints the stack trace of
