@@ -98,6 +98,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     channels.add(ctx.channel());
+    LOGGER.debug("Channel: " + ctx.channel().id() + " got active.");
   }
 
   /**
@@ -142,10 +143,10 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             LOGGER.debug("The server received a attack object");
             Attack attack = (Attack) Deserializer.deserialize(request,
                 moveProcessor.getGameController().getGameState()).getContent();
-            moveProcessor.processAttack(attack);
+            boolean isGameOver = moveProcessor.processAttack(attack);
             sendGamestate(channelGroup);
             moveProcessor.clearLastMoves();
-            if (moveProcessor.getGameController().getGameState().isGameOver()) {
+            if (isGameOver) {
               LOGGER.info("Game Over!");
               gameLobbyChannels.handleGameOver(ctx.channel(), this);
             }
@@ -205,7 +206,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
               switch (connectionMessage.getConnectionActions()) {
 
                 case JOIN_SERVER_LOBBY -> {
-                  System.out.println(connectionMessage.getContent().getClass());
                   UserDto userDto = (UserDto) connectionMessage.getContent();
                   NetworkConfiguration.getServerLobby().getUsers()
                       .forEach(x -> LOGGER.debug(x.getUsername() + " is in ServerLobby"));
@@ -255,7 +255,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   GameLobby gameLobby = (GameLobby) connectionMessage.getContent();
                   GameLobby gameLobbyFromServer = getServerGameLobby(gameLobby,
                       NetworkConfiguration.getServerLobby());
-                  System.out.println(gameLobby);
                   String bot = gameLobby.getBots().stream()
                       .filter(x -> !gameLobbyFromServer.getBots().contains(x)).findFirst().get();
                   gameLobbyFromServer.getBots().add(bot);
@@ -343,7 +342,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 }
                 default -> LOGGER.error("Server received a faulty connection message");
               }
-            } catch (NullPointerException ignored) {
+            } catch (NullPointerException e) {
+              LOGGER.debug(e.toString());
             }
           }
           default -> {
@@ -528,7 +528,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
             return (AiBot) new HardBot(x);
           }
         }).toList());
-    System.out.println("Test 1");
     gameState.getActivePlayers().stream().filter(x -> x instanceof AiBot)
         .forEach(x -> ((AiBot) x).setGameState(gameState));
     gameState.setChatEnabled(gameLobby.isChatEnabled());
@@ -538,14 +537,12 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.setPlayerController(playerController);
     HashMap<Player, Integer> diceRolls = new HashMap<>();
     int queueSize = gameState.getActivePlayers().size();
-    System.out.println("Test 2");
     GameController gameController = moveProcessor.getGameController();
     for (int i = queueSize; i > 0; i--) {
       Player player = gameController.getGameState().getActivePlayers().poll();
       diceRolls.put(player, Dice.rollDice());
       gameState.getActivePlayers().add(player);
     }
-    System.out.println("Test 3");
     HashMap<String, Integer> diceRollsString = new HashMap<>();
     diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
     Player activePlayer = gameController.getGameState().getActivePlayers().peek();
@@ -553,7 +550,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
     Probabilities.init();
-    System.out.println("Test 4");
     sendFirstGamestate(gameLobby);
     try {
       Thread.sleep(100);

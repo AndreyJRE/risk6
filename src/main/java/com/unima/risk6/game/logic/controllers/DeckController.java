@@ -30,17 +30,6 @@ public class DeckController {
   }
 
   /**
-   * Constructs a new DeckController with the given decks.
-   *
-   * @param deck     The deck to be managed by this controller.
-   * @param handedIn the cards that were already handedIn
-   */
-  public DeckController(Deck deck, Deck handedIn) {
-    this.deck = deck;
-    this.handedIn = handedIn;
-  }
-
-  /**
    * Initializes the deck by creating and adding cards based on country names and symbols.
    */
   public void initDeck() {

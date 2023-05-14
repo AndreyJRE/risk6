@@ -98,7 +98,7 @@ import javafx.util.Duration;
 
 public class GameSceneController implements GameStateObserver, ChatObserver {
 
-  private static final PlayerController PLAYER_CONTROLLER = new PlayerController();
+  private static PlayerController playerController;
   private static PlayerUi myPlayerUi;
   private final GameScene gameScene;
   private GameState gameState;
@@ -121,6 +121,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private Label chatCounterLabel;
   Group countryNameGroup;
   private int tutorialMessageCounter = 0;
+  private SettingsUi settingsUi;
 
   /**
    * Initializes the GameSceneController with the provided GameScene object.
@@ -137,6 +138,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
    * the chatUi and handUi. the tutorial will get initialized if that is active.
    */
   public void init() {
+    playerController = new PlayerController();
     tutorial = GameConfiguration.getTutorial();
     if (tutorial != null) {
       this.gameState = tutorial.getTutorialState();
@@ -173,21 +175,13 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
     root.setBackground(new Background(backgroundImage));
-    //root.setBackground(new Background(
-    //    new BackgroundFill(Colors.WATER.getColor(), CornerRadii.EMPTY, Insets.EMPTY)));
     StackPane playerPane = initializePlayersPane();
     root.setLeft(playerPane);
     StackPane countriesPane = initializeCountriesPane();
     root.setCenter(countriesPane);
     StackPane bottomPane = initializeBottomPane();
     root.setBottom(bottomPane);
-    SettingsUi settingsUi = new SettingsUi(gameScene);
-    this.gameScene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-      if (keyEvent.getCode() == KeyCode.ESCAPE) {
-        keyEvent.consume();
-        settingsUi.show();
-      }
-    });
+    settingsUi = new SettingsUi(gameScene);
 
   }
 
@@ -200,9 +194,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     BorderPane orderPane = new BorderPane();
     Popup orderPopup = new Popup();
     orderPopup.getContent().add(orderPane);
-
-    Image image = new Image(
-        getClass().getResource("/com/unima/risk6/pictures/dicePreview.png").toString());
+    Image image = ImageConfiguration.getImageByName(ImageName.DICE_PREVIEW);
 
     int numImages = gameState.getActivePlayers().size() - 1;
 
@@ -423,8 +415,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       playerUis.offer(playerUi);
       if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi = playerUi;
-        PLAYER_CONTROLLER.setPlayer(player);
-        PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
+        playerController.setPlayer(player);
+        playerController.getHandController().setHand(player.getHand());
       }
       colorIndex++;
     }
@@ -478,14 +470,14 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     nextPhaseButton.setOnAction(event -> {
       Player currentPlayer = myPlayerUi.getPlayer();
       GamePhase currentPhase = currentPlayer.getCurrentPhase();
-      if ((currentPlayer.getDeployableTroops() > 0 || PLAYER_CONTROLLER.getHandController()
+      if ((currentPlayer.getDeployableTroops() > 0 || playerController.getHandController()
           .mustExchange()) && currentPlayer.getCurrentPhase()
           .equals(GamePhase.REINFORCEMENT_PHASE)) {
         StyleConfiguration.showErrorDialog("Can't end phase yet!",
             "You either still have troops to deploy or must exchange cards in your hand. "
                 + "Deploy them all before ending the phase.");
       } else {
-        PLAYER_CONTROLLER.sendEndPhase(currentPhase);
+        playerController.sendEndPhase(currentPhase);
       }
       for (CountryUi countryUi : countriesUis) {
         countryUi.removeArrowsAndAdjacentCountries();
@@ -567,7 +559,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       alert.showAndWait().ifPresent(buttonType -> {
         if (buttonType == buttonYes) {
           if (GameConfiguration.getCurrentGameStatistic() != null) {
-            Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
+            Statistic statistic = playerController.getPlayer().getStatistic();
             GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
                 statistic.getCountriesWon(), statistic.getTroopsGained(),
                 statistic.getCountriesLost());
@@ -629,6 +621,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         countryNameGroup.setVisible(false);
         isCountryNameShowing = false;
         event.consume();
+      }
+    });
+    gameScene.addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+      if (keyEvent.getCode() == KeyCode.ESCAPE) {
+        settingsUi.show();
+        keyEvent.consume();
       }
     });
   }
@@ -755,16 +753,16 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     Platform.runLater(() -> {
       playerUis.forEach(PlayerUi::updateAmountOfTroops);
       handUi.setHand(myPlayerUi.getPlayer().getHand());
-      if (PLAYER_CONTROLLER.getHandController().holdsExchangeable()) {
+      if (playerController.getHandController().holdsExchangeable()) {
         cardsButton.setStyle("-fx-background-color: rgb(88,8,8); -fx-border-color: rgb(88,8,8);");
       } else {
         cardsButton.setStyle("-fx-background-radius: 15px;");
       }
     });
     if (gameState.isGameOver() && GameConfiguration.getCurrentGameStatistic() != null) {
-      Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
+      Statistic statistic = playerController.getPlayer().getStatistic();
       GameConfiguration.updateGameStatistic(
-          gameState.getActivePlayers().contains(PLAYER_CONTROLLER.getPlayer()),
+          gameState.getActivePlayers().contains(playerController.getPlayer()),
           statistic.getTroopsLost(), statistic.getCountriesWon(), statistic.getTroopsGained(),
           statistic.getCountriesLost());
       GameConfiguration.setCurrentGameStatistic(null);
@@ -809,8 +807,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private void updatePlayerUiReferenceByPlayer(Player player) {
     if (player.getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
       myPlayerUi.setPlayer(player);
-      PLAYER_CONTROLLER.setPlayer(player);
-      PLAYER_CONTROLLER.getHandController().setHand(player.getHand());
+      playerController.setPlayer(player);
+      playerController.getHandController().setHand(player.getHand());
     } else {
       playerUis.forEach(playerUi -> {
         if (playerUi.getPlayer().getUser().equals(player.getUser())) {
@@ -1089,7 +1087,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   }
 
   public static PlayerController getPlayerController() {
-    return PLAYER_CONTROLLER;
+    return playerController;
   }
 }
 

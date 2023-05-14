@@ -2,7 +2,6 @@ package com.unima.risk6.game.logic;
 
 import com.unima.risk6.game.models.Country;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * The Attack class represents an attack move in the Risk game. It stores the attacking and
@@ -124,8 +123,8 @@ public class Attack extends Move {
    * Sorts the dice roll lists in descending order.
    */
   public void sortDicelist() {
-    Collections.sort(defendDiceResult, (x, y) -> y - x);
-    Collections.sort(attackDiceResult, (x, y) -> y - x);
+    defendDiceResult.sort((x, y) -> y - x);
+    attackDiceResult.sort((x, y) -> y - x);
   }
 
   /**
