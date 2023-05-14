@@ -6,6 +6,7 @@ import com.unima.risk6.game.logic.controllers.PlayerController;
 import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.enums.CountryName;
+import com.unima.risk6.game.models.enums.GamePhase;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.scenes.GameScene;
 import java.util.ArrayList;
@@ -179,7 +180,9 @@ public class HandUi extends BorderPane {
     selectedCardsUi.forEach(x -> System.out.println(x.getCard()));
     this.setBottom(newBottomBox);
     if (handController.holdsExchangeable() && !handController.isExchangeable(
-        handController.getHand().getSelectedCards())) {
+        handController.getHand().getSelectedCards()) && GameSceneController.getPlayerController()
+        .getPlayer().getCurrentPhase().equals(
+            GamePhase.REINFORCEMENT_PHASE)) {
       Button selectExchangeableButton = new Button("Automatic card selection");
       selectExchangeableButton.setStyle(
           "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
@@ -187,7 +190,10 @@ public class HandUi extends BorderPane {
       selectExchangeableButton.setOnMouseClicked(event -> handleSelectExchangeableButton());
       newBottomBox.getChildren().add(selectExchangeableButton);
     }
-    if (handController.isExchangeable(handController.getHand().getSelectedCards())) {
+    if (handController.isExchangeable(handController.getHand().getSelectedCards())
+        && GameSceneController.getPlayerController()
+        .getPlayer().getCurrentPhase().equals(
+            GamePhase.REINFORCEMENT_PHASE)) {
       Button handInButton = new Button("Hand in the cards!");
       handInButton.setStyle(
           "-fx-background-radius: 15px; -fx-font-size: 14; -fx-font-weight: bold;");
