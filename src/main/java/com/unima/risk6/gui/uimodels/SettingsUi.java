@@ -19,6 +19,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Popup;
 
+/**
+ * Represents a SettingsUi object, which extends BorderPane and provides options for adjusting game
+ * settings such as volume and leaving the game.
+ *
+ * @author astoyano
+ */
+
 public class SettingsUi extends BorderPane {
 
   private final Button continueGameButton;
@@ -29,11 +36,15 @@ public class SettingsUi extends BorderPane {
 
   public Slider volumeSlider;
 
+  /**
+   * Constructs a SettingsUi object with the specified GameScene.
+   *
+   * @param gameScene The GameScene object representing the game.
+   */
   public SettingsUi(GameScene gameScene) {
     super();
     this.gameRoot = (BorderPane) gameScene.getRoot();
     settingPopup = new Popup();
-    VBox vBox = new VBox();
     continueGameButton = new Button("Continue Game");
     leaveGameButton = new Button("Leave Game");
     this.volumeSlider = new Slider();
@@ -41,18 +52,17 @@ public class SettingsUi extends BorderPane {
     StyleConfiguration.applyButtonStyle(leaveGameButton);
     continueGameButton.setOnAction(event -> handleContinueButton());
     leaveGameButton.setOnAction(event -> handleLeaveButton());
-
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(20);
-    vBox.getChildren().addAll(volumeSlider, continueGameButton, leaveGameButton);
-    this.setCenter(vBox);
+    VBox optionsBox = new VBox();
+    optionsBox.setAlignment(Pos.CENTER);
+    optionsBox.setSpacing(20);
+    optionsBox.getChildren().addAll(volumeSlider, continueGameButton, leaveGameButton);
+    this.setCenter(optionsBox);
     this.setStyle("-fx-background-color: #F5F5F5; -fx-background-radius: 10;");
     continueGameButton.setPrefHeight(50);
     leaveGameButton.setPrefHeight(50);
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
     continueGameButton.setFont(new Font(18));
     leaveGameButton.setFont(new Font(18));
-    // Slider Styling
     volumeSlider.setStyle("-fx-control-inner-background: #F5F5F5; -fx-accent: #007BFF;");
     volumeSlider.setMinWidth(100);
     volumeSlider.setStyle("-fx-control-inner-background: #F5F5F5; -fx-accent: #007BFF;");
@@ -65,8 +75,11 @@ public class SettingsUi extends BorderPane {
     settingPopup.getContent().add(this);
   }
 
+  /**
+   * Displays the SettingsUi by setting its size, positioning it in the center of the game scene,
+   * and showing it as a popup.
+   */
   public void show() {
-
     this.setPrefSize(gameRoot.getWidth() * 0.25, gameRoot.getHeight() * 0.25);
     continueGameButton.setMinWidth(this.getPrefWidth() - 20);
     leaveGameButton.setMinWidth(this.getPrefWidth() - 20);
@@ -81,10 +94,10 @@ public class SettingsUi extends BorderPane {
     settingPopup.show(gameRoot.getScene().getWindow());
   }
 
-  public void handleContinueButton() {
-    settingPopup.hide();
-  }
-
+  /**
+   * Handles the action when the "Leave Game" button is clicked. Displays a confirmation dialog and
+   * takes appropriate action based on the user's choice.
+   */
   public void handleLeaveButton() {
     Alert alert = new Alert(AlertType.WARNING);
     alert.setTitle("Warning: Exiting Game");
@@ -109,6 +122,10 @@ public class SettingsUi extends BorderPane {
         settingPopup.hide();
       }
     });
+  }
+
+  public void handleContinueButton() {
+    settingPopup.hide();
   }
 }
 
