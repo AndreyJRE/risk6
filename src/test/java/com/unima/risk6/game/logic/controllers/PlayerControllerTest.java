@@ -103,58 +103,7 @@ class PlayerControllerTest {
 
   }
 
-  @Test
-  void handInCardsTest() {
 
-    //TODO Move to Class with all controllers
-    /*
-    //Adds exchangeable cards to hand of currently controlled player
-    Card[] cards = new Card[3];
-    cards[0] = new Card(CardSymbol.CAVALRY, CountryName.ALASKA);
-    cards[1] = new Card(CardSymbol.CAVALRY, CountryName.KAMCHATKA);
-    cards[2] = new Card(CardSymbol.CAVALRY, CountryName.CONGO);
-    playerController.getHandController().getHand().getCards().add(cards[0]);
-    playerController.getHandController().getHand().getCards().add(cards[1]);
-    playerController.getHandController().getHand().getCards().add(cards[2]);
-
-    playerController.getHandController().selectExchangeableCards();
-    assertTrue(playerController.getHandController().isExchangeable());
-    //The first hand in should give 4 Troops
-    playerController.handInCards(1);
-    assertEquals(4, playerController.getPlayer().getDeployableTroops());
-
-    player.setDeployableTroops(0);
-    //The second hand in should give 6 Troops
-    playerController.getHandController().getHand().getCards().add(cards[0]);
-    playerController.getHandController().getHand().getCards().add(cards[1]);
-    playerController.getHandController().getHand().getCards().add(cards[2]);
-    playerController.getHandController().selectExchangeableCards();
-    playerController.handInCards(2);
-    assertEquals(6, playerController.getPlayer().getDeployableTroops());
-
-    player.setDeployableTroops(0);
-    //The 6th hand in should give 15 troops
-    playerController.getHandController().getHand().getCards().add(cards[0]);
-    playerController.getHandController().getHand().getCards().add(cards[1]);
-    playerController.getHandController().getHand().getCards().add(cards[2]);
-    playerController.getHandController().selectExchangeableCards();
-    playerController.handInCards(6);
-    assertEquals(15, playerController.getPlayer().getDeployableTroops());
-
-    player.setDeployableTroops(0);
-    //The 7th hand in should give 20 troops
-    playerController.getHandController().getHand().getCards().add(cards[0]);
-    playerController.getHandController().getHand().getCards().add(cards[1]);
-    playerController.getHandController().getHand().getCards().add(cards[2]);
-    playerController.getHandController().selectExchangeableCards();
-    playerController.handInCards(7);
-    assertEquals(20, playerController.getPlayer().getDeployableTroops());
-
-     */
-
-  }
-
-  //TODO Test methods that give you a List of CountryPair
   Country getCountryByCountryName(CountryName countryName) {
     final Country[] country = new Country[1];
     gameState.getCountries().stream().filter(n -> n.getCountryName().equals(countryName))
