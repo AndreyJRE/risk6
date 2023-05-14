@@ -109,7 +109,7 @@ public class SettingsUi extends BorderPane {
     alert.getButtonTypes().setAll(buttonYes, buttonNo);
     alert.showAndWait().ifPresent(buttonType -> {
       if (buttonType == buttonYes) {
-        if (GameConfiguration.getTutorial() == null) {
+        if (GameConfiguration.getCurrentGameStatistic() != null) {
           Statistic statistic = GameSceneController.getPlayerController().getPlayer()
               .getStatistic();
           GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),

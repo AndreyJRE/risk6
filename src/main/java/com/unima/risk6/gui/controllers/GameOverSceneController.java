@@ -1,13 +1,9 @@
 package com.unima.risk6.gui.controllers;
 
-import com.unima.risk6.database.configurations.DatabaseConfiguration;
-import com.unima.risk6.database.models.User;
-import com.unima.risk6.database.services.GameStatisticService;
 import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.Statistic;
 import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
-import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
@@ -38,7 +34,6 @@ public class GameOverSceneController {
 
   private final GameOverScene gameOverScene;
   private final SceneController sceneController;
-  private final GameStatisticService gameStatisticService;
   private BorderPane root;
   private ImageView userImage;
   private StackPane userStackPane;
@@ -54,7 +49,6 @@ public class GameOverSceneController {
   public GameOverSceneController(GameOverScene gameOverScene, GameState gameState) {
     this.gameOverScene = gameOverScene;
     this.sceneController = SceneConfiguration.getSceneController();
-    gameStatisticService = DatabaseConfiguration.getGameStatisticService();
     this.statistic = gameState.getCurrentPlayer().getStatistic();
     this.gameState = gameState;
   }
@@ -95,14 +89,7 @@ public class GameOverSceneController {
 
     // Wrap the arrow in a StackPane to handle the click event
     StackPane backButton = new StackPane(arrow);
-    //TODO database after a game
     backButton.setOnMouseClicked(e -> {
-      User user = SessionManager.getUser();
-      /*LobbyConfiguration.sendJoinServer(UserDto.mapUserAndHisGameStatistics(user,
-          gameStatisticService
-              .getAllStatisticsByUserId(user.getId())));
-
-       */
       sceneController.activate(SceneName.TITLE);
     });
 
@@ -165,7 +152,6 @@ public class GameOverSceneController {
     troops.setStyle(labelStyle);
     troopsGained.setStyle(labelStyle);
     troopsLost.setStyle(labelStyle);
-
 
     statisticsGridPane.add(troops, 0, 0);
     statisticsGridPane.add(troopsGained, 0, 1);

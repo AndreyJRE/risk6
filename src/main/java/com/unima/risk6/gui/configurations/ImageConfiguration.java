@@ -67,6 +67,10 @@ public class ImageConfiguration {
 
   private static final String WATER_GIF = "/com/unima/risk6/pictures/flowingWater.gif";
 
+  private static final String SOUND_ICON = "/com/unima/risk6/pictures/soundIcon.png";
+
+  private static final String MUTED_ICON = "/com/unima/risk6/pictures/muteIcon.png";
+
   private static HashMap<ImageName, Image> images;
   private static Media titleBackgroundVideo;
 
@@ -134,6 +138,10 @@ public class ImageConfiguration {
     images.put(ImageName.DICE_ROLLING, diceRollingGif);
     Image waterGif = initImage(WATER_GIF);
     images.put(ImageName.WATER_GIF, waterGif);
+    Image soundIcon = initImage(SOUND_ICON);
+    images.put(ImageName.SOUND_ICON, soundIcon);
+    Image mutedIcon = initImage(MUTED_ICON);
+    images.put(ImageName.MUTED_ICON, mutedIcon);
 
     URL mediaUrl = ImageConfiguration.class.getResource(
         "/com/unima/risk6/pictures/backgroundVideo.png");

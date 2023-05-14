@@ -12,6 +12,7 @@ import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
+import com.unima.risk6.network.configurations.NetworkConfiguration;
 import com.unima.risk6.network.serialization.Deserializer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -104,6 +105,12 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             GameConfiguration.setGameState(g);
             if (g.isGameOver()) {
               Thread.sleep(3000);
+              LobbyConfiguration.stopGameClient();
+              Thread.sleep(150);
+              if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
+                NetworkConfiguration.stopGameServer();
+              }
+              Thread.sleep(150);
               Platform.runLater(() -> SceneConfiguration.gameOverScene(g));
             }
           }
@@ -142,7 +149,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.TITLE) {
-                  Platform.runLater(SceneConfiguration::startSinglePlayer);
+                  Platform.runLater(SceneConfiguration::joinSinglePlayerLobby);
 
                 } else {
                   Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);

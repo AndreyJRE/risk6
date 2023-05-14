@@ -12,6 +12,7 @@ import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SessionManager;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
+import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.JoinOnlineScene;
 import com.unima.risk6.gui.scenes.UserOptionsScene;
@@ -38,12 +39,12 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.MediaPlayer;
@@ -146,6 +147,13 @@ public class TitleSceneController implements Initializable {
     volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
       SoundConfiguration.setVolume(newValue.doubleValue() / 100.0);
     });
+    volumeImage.hoverProperty().addListener((observable, oldVal, nVal) -> {
+      if (nVal) {
+        volumeImage.setCursor(Cursor.HAND);
+      } else {
+        volumeImage.setCursor(Cursor.DEFAULT);
+      }
+    });
     MediaPlayer mediaPlayer = new MediaPlayer(ImageConfiguration.getTitleBackgroundVideo());
     backgroundVideoView.setMediaPlayer(mediaPlayer);
     mediaPlayer.setOnEndOfMedia(() -> {
@@ -156,6 +164,7 @@ public class TitleSceneController implements Initializable {
     backgroundVideoView.fitWidthProperty().bind(root.widthProperty());
     backgroundVideoView.fitHeightProperty().bind(root.heightProperty());
     switchedOn = new SimpleBooleanProperty(false);
+
     translateAnimation = new TranslateTransition(Duration.seconds(0.25));
     fillAnimation = new FillTransition(Duration.seconds(0.25));
     animation = new ParallelTransition(translateAnimation, fillAnimation);
@@ -167,14 +176,20 @@ public class TitleSceneController implements Initializable {
     dropShadow.setOffsetY(3.0);
     dropShadow.setColor(Color.BLACK);
     titleLabel.setEffect(dropShadow);
+
     animateTitleLabel();
     root.setPrefHeight(SceneConfiguration.getHeight());
     root.setPrefWidth(SceneConfiguration.getWidth());
+
     // Set the style of the buttons
     applyButtonStyle(singlePlayerButton);
+
     applyButtonStyle(multiPlayerButton);
+
     applyButtonStyle(optionsButton);
+
     applyButtonStyle(quitButton);
+
     sceneController = SceneConfiguration.getSceneController();
 
     translateAnimation.setNode(trigger);
@@ -201,6 +216,7 @@ public class TitleSceneController implements Initializable {
       fillAnimation.setToValue(isOn ? Color.LIGHTGREEN : Color.WHITE);
       animation.play();
     });
+
     toggleLocalButtons(switchedOn.get());
   }
 
@@ -212,14 +228,13 @@ public class TitleSceneController implements Initializable {
   private void volumeClicked() {
     if (volumeSlider.getValue() == 0.0) {
       volumeSlider.setValue(volume);
-      volumeImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/soundIcon.png").toString()));
+      volumeImage.setImage(ImageConfiguration.getImageByName(ImageName.SOUND_ICON));
     } else {
+      volume = volumeSlider.getValue();
       volumeSlider.setValue(0.0);
-      volumeImage = new ImageView(
-          new Image(getClass().getResource("/com/unima/risk6/pictures/muteIcon.png").toString()));
+      volumeImage.setImage(ImageConfiguration.getImageByName(ImageName.MUTED_ICON));
     }
-    volume = volumeSlider.getValue();
+
   }
 
   /**
@@ -309,6 +324,8 @@ public class TitleSceneController implements Initializable {
     gameLobby = new GameLobby("Single Player Lobby", 6, SessionManager.getUser().getUsername(),
         false, 0, GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
+    pauseTitleSound();
+    SoundConfiguration.playClickSound();
     LobbyConfiguration.sendCreateLobby(gameLobby);
   }
 
@@ -328,6 +345,7 @@ public class TitleSceneController implements Initializable {
       sceneController.addScene(SceneName.JOIN_ONLINE, scene);
     }
     pauseTitleSound();
+    SoundConfiguration.playClickSound();
     sceneController.activate(SceneName.JOIN_ONLINE);
 
   }
@@ -367,6 +385,8 @@ public class TitleSceneController implements Initializable {
         GameConfiguration.getMyGameUser());
     gameLobby.getUsers().add(GameConfiguration.getMyGameUser());
     gameLobby.getBots().add("Johnny Test");
+    SoundConfiguration.playClickSound();
+    pauseTitleSound();
     LobbyConfiguration.sendTutorialCreateLobby(gameLobby);
   }
 
@@ -384,6 +404,7 @@ public class TitleSceneController implements Initializable {
       sceneController.addScene(SceneName.USER_OPTION, scene);
     }
     pauseTitleSound();
+    SoundConfiguration.playClickSound();
     sceneController.activate(SceneName.USER_OPTION);
   }
 
@@ -392,6 +413,7 @@ public class TitleSceneController implements Initializable {
    */
   @FXML
   private void handleQuitGame() {
+    SoundConfiguration.playClickSound();
     SceneController sceneController = SceneConfiguration.getSceneController();
     sceneController.close();
   }

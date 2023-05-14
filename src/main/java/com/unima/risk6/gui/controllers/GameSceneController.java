@@ -84,7 +84,6 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.stage.Popup;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 /**
@@ -119,7 +118,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private Button cardsButton;
   private Tutorial tutorial;
   private Label chatCounterLabel;
-  private int lastChatUpdate;
   Group countryNameGroup;
   private int tutorialMessageCounter = 0;
 
@@ -146,8 +144,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     this.handUi.setHand(hand);
     GameConfiguration.addObserver(this);
     LobbyConfiguration.addChatObserver(this);
-    this.addListeners();
-
+    addListeners();
     if (tutorial != null) {
       initTutorial();
     }
@@ -437,17 +434,15 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     chatButton.setStyle("-fx-background-radius: 15px;");
     chatButton.setFocusTraversable(false);
     chatButton.setOnAction(event -> {
-      lastChatUpdate = 0;
       chatCounterLabel.setVisible(false);
       chatUi.show();
     });
-    lastChatUpdate = 0;
     chatCounterLabel = new Label("");
-    chatCounterLabel.setStyle("-fx-background-radius: 10px;"
-        + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 18px;");
+    chatCounterLabel.setStyle("-fx-background-radius: 12px;"
+        + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 22px; -fx-padding: 3px");
     chatCounterLabel.setTextFill(Color.WHITE);
     chatButton.setVisible(gameState.isChatEnabled());
-    chatCounterLabel.setVisible(gameState.isChatEnabled());
+    chatCounterLabel.setVisible(false);
     activePlayerUi = new ActivePlayerUi(40, 40, 300, 75, getCurrentPlayerUi());
     activePlayerUi.controlDeployableTroops();
     nextPhaseButton = new Button();
@@ -512,6 +507,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       } else {
         chatCounterLabel.setText(String.valueOf(messages.size() - chatUi.getLastChatUpdate()));
         chatCounterLabel.setVisible(true);
+        SoundConfiguration.playNotificationSound();
       }
     });
 
@@ -519,6 +515,36 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private void showCardsPopup() {
     handUi.show();
+  }
+
+  public void addCloseRequestListener() {
+    SceneController sceneController = SceneConfiguration.getSceneController();
+    gameScene.getWindow().setOnCloseRequest(e -> {
+      e.consume();
+      System.out.println("Closing game");
+      Alert alert = new Alert(AlertType.WARNING);
+      alert.setTitle("Warning: Exiting Game");
+      alert.setHeaderText("Are you sure you want to to leave the game?");
+      alert.setContentText(
+          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
+      ButtonType buttonYes = new ButtonType("Yes, exit game");
+      ButtonType buttonNo = new ButtonType("No, continue playing");
+      alert.getButtonTypes().setAll(buttonYes, buttonNo);
+      alert.showAndWait().ifPresent(buttonType -> {
+        if (buttonType == buttonYes) {
+          if (GameConfiguration.getCurrentGameStatistic() != null) {
+            Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
+            GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
+                statistic.getCountriesWon(), statistic.getTroopsGained(),
+                statistic.getCountriesLost());
+          }
+          sceneController.close();
+        }
+        if (buttonType == buttonNo) {
+          alert.close();
+        }
+      });
+    });
   }
 
   private void addListeners() {
@@ -565,33 +591,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         isCountryNameShowing = false;
         event.consume();
       }
-    });
-
-    SceneController sceneController = SceneConfiguration.getSceneController();
-    sceneController.getStage().setOnCloseRequest((WindowEvent event) -> {
-      event.consume();
-      Alert alert = new Alert(AlertType.WARNING);
-      alert.setTitle("Warning: Exiting Game");
-      alert.setHeaderText("Are you sure you want to to leave the game?");
-      alert.setContentText(
-          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
-      ButtonType buttonYes = new ButtonType("Yes, exit game");
-      ButtonType buttonNo = new ButtonType("No, continue playing");
-      alert.getButtonTypes().setAll(buttonYes, buttonNo);
-      alert.showAndWait().ifPresent(buttonType -> {
-        if (buttonType == buttonYes) {
-          if (GameConfiguration.getTutorial() == null) {
-            Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
-            GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
-                statistic.getCountriesWon(), statistic.getTroopsGained(),
-                statistic.getCountriesLost());
-          }
-          sceneController.close();
-        }
-        if (buttonType == buttonNo) {
-          alert.close();
-        }
-      });
     });
   }
 
@@ -715,12 +714,13 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
         cardsButton.setStyle("-fx-background-radius: 15px;");
       }
     });
-    if (gameState.isGameOver()) {
+    if (gameState.isGameOver() && GameConfiguration.getCurrentGameStatistic() != null) {
       Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
       GameConfiguration.updateGameStatistic(
           gameState.getActivePlayers().contains(PLAYER_CONTROLLER.getPlayer()),
           statistic.getTroopsLost(), statistic.getCountriesWon(), statistic.getTroopsGained(),
           statistic.getCountriesLost());
+      GameConfiguration.setCurrentGameStatistic(null);
     }
 
   }
@@ -747,7 +747,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
                     .equals(adjacentCountryUi.getCountry().getCountryName())).findFirst().get()
             .getCountry())));
     handUi.setHand(myPlayerUi.getPlayer().getHand());
-    //TODO Update reference for the deckUi,handUi, etc
   }
 
   private void updatePlayerUiReferenceByPlayer(Player player) {

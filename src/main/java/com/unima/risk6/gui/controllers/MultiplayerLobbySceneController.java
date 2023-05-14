@@ -26,10 +26,12 @@ import java.util.Optional;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -54,6 +56,8 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
   private BorderPane root;
   private GameLobby gameLobby;
 
+  private DropShadow dropShadow;
+
 
   public MultiplayerLobbySceneController(MultiplayerLobbyScene multiplayerLobbyScene) {
     this.multiplayerLobbyScene = multiplayerLobbyScene;
@@ -66,7 +70,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     this.myUser = GameConfiguration.getMyGameUser();
     this.root = (BorderPane) multiplayerLobbyScene.getRoot();
     Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
-    // Initialize elements
+    dropShadow = new DropShadow();
+    dropShadow.setRadius(15.0);
+    dropShadow.setColor(Color.LIGHTSKYBLUE.darker());
     initHBox();
     initElements();
   }
@@ -208,6 +214,15 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
         + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
         + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
     VBox playerBox = new VBox(userImage, userName);
+    userImage.hoverProperty().addListener((observableValue, aBoolean, t1) -> {
+      if (t1) {
+        userImage.setEffect(dropShadow);
+        userImage.setCursor(Cursor.HAND);
+      } else {
+        userImage.setCursor(Cursor.DEFAULT);
+        userImage.setEffect(null);
+      }
+    });
     playerBox.setOnMouseClicked(e -> userClicked(userDto));
     playerBox.setAlignment(Pos.CENTER);
     playerBox.setSpacing(-10);

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -146,8 +147,10 @@ public class LoginSceneController {
       userStackPane.setOnMouseClicked(e -> showSelectedUser(user));
       userStackPane.hoverProperty().addListener((observableValue, aBoolean, t1) -> {
         if (t1) {
+          userStackPane.setCursor(Cursor.HAND);
           userStackPane.setEffect(dropShadow);
         } else {
+          userStackPane.setCursor(Cursor.DEFAULT);
           userStackPane.setEffect(null);
         }
       });
