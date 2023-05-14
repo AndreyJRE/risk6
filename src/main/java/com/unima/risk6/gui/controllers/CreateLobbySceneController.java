@@ -24,6 +24,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -77,6 +79,12 @@ public class CreateLobbySceneController {
         26);
     // Initialize elements
     initElements();
+    root.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+      e.consume();
+      if (e.getCode() == KeyCode.ENTER) {
+        handleCreateButton();
+      }
+    });
   }
 
   private void initElements() {
@@ -197,12 +205,14 @@ public class CreateLobbySceneController {
     maxPlayersList.addAll("2", "3", "4", "5", "6");
     maxPlayers.setItems(maxPlayersList);
     maxPlayers.setPrefWidth(800);
+    maxPlayers.getSelectionModel().select(4);
 
     minElo = new ComboBox<>();
     ObservableList<String> minEloList = FXCollections.observableArrayList();
     minEloList.addAll("0", "1", "2", "3", "4", "5");
     minElo.setItems(minEloList);
     minElo.setPrefWidth(800);
+    minElo.getSelectionModel().select(0);
 
     chatCheck = new CheckBox();
 
