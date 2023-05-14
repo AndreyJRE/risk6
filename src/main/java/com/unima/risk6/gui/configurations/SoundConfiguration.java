@@ -31,6 +31,8 @@ public class SoundConfiguration {
   private static final String NOTIFICATION_SOUND_PATH = "/com/unima/risk6/sounds/notification.mp3";
 
   private static final String CLICK_SOUND_PATH = "/com/unima/risk6/sounds/click.mp3";
+
+  private static final String HAND_IN_SOUND_PATH = "/com/unima/risk6/sounds/hand_in.mp3";
   private static MediaPlayer titleSound;
 
   private static AudioClip clickSound;
@@ -45,6 +47,8 @@ public class SoundConfiguration {
   private static AudioClip startGameSound;
 
   private static AudioClip troopsMoveSound;
+
+  private static AudioClip handInSound;
 
   private static final SimpleDoubleProperty VOLUME = new SimpleDoubleProperty(0.1);
 
@@ -92,7 +96,10 @@ public class SoundConfiguration {
             .toExternalForm());
     troopsMoveSound.setVolume(VOLUME.get());
     troopsMoveSound.volumeProperty().bind(VOLUME);
-
+    handInSound = new AudioClip(
+        Objects.requireNonNull(SoundConfiguration.class.getResource(HAND_IN_SOUND_PATH))
+            .toExternalForm());
+    handInSound.setVolume(0.6);
     notificationSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(NOTIFICATION_SOUND_PATH))
             .toExternalForm());
@@ -100,7 +107,8 @@ public class SoundConfiguration {
     clickSound = new AudioClip(
         Objects.requireNonNull(SoundConfiguration.class.getResource(CLICK_SOUND_PATH))
             .toExternalForm());
-    clickSound.setVolume(1);
+    clickSound.setVolume(0.6);
+
   }
 
   public static void playTitleSound() {
@@ -149,6 +157,14 @@ public class SoundConfiguration {
 
   public static void playClickSound() {
     clickSound.play();
+  }
+
+  public static void stopInGameMusic() {
+    inGameMusic.stop();
+  }
+
+  public static void playHandInSound() {
+    handInSound.play();
   }
 
 }

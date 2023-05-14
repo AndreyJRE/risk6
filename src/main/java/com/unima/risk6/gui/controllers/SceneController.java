@@ -65,8 +65,10 @@ public class SceneController {
     }
     currentSceneName = name;
     stage.setScene(scene);
-    stage.setWidth(SceneConfiguration.getWidth() + 0.1);
-    stage.setHeight(SceneConfiguration.getHeight() + 0.1);
+    SceneConfiguration.setWidth(stage.getWidth() - 0.1);
+    SceneConfiguration.setHeight(stage.getHeight() - 0.1);
+    stage.setWidth(SceneConfiguration.getWidth());
+    stage.setHeight(SceneConfiguration.getHeight());
     stage.setOnCloseRequest((WindowEvent event) -> close());
     switch (name) {
       case GAME -> SoundConfiguration.playInGameMusic();

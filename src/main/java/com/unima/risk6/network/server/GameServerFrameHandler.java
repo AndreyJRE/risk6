@@ -750,7 +750,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
           moveProcessor.processAttack(attack1);
           sendGamestate(channelGroup);
           moveProcessor.clearLastMoves();
-          Thread.sleep(3500);
+          Thread.sleep(3250);
         } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
         aiBot.setGameState(moveProcessor.getGameController().getGameState());
         if (moveProcessor.getGameController().getGameState().isGameOver()) {

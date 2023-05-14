@@ -307,9 +307,9 @@ public class TitleSceneController implements Initializable {
   private void handleSinglePlayer() throws InterruptedException {
     if (switchedOn.get()) {
       NetworkConfiguration.stopGameServer();
+      Thread.sleep(200);
       switchedOn.setValue(false);
     }
-    Thread.sleep(100);
     NetworkConfiguration.startSinglePlayerServer();
     Thread.sleep(100);
     LobbyConfiguration.configureGameClient("127.0.0.1");
@@ -323,7 +323,7 @@ public class TitleSceneController implements Initializable {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
-    Thread.sleep(100);
+    Thread.sleep(250);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());
@@ -336,10 +336,8 @@ public class TitleSceneController implements Initializable {
     LobbyConfiguration.sendCreateLobby(gameLobby);
   }
 
-  // Define the event handler for the multi player button
-
   /**
-   * Handles the multi player button click event. It switches the scene to the JoinOnlineScene.
+   * Handles the multiplayer button click event. It switches the scene to the JoinOnlineScene.
    */
 
   @FXML
@@ -367,10 +365,10 @@ public class TitleSceneController implements Initializable {
 
   @FXML
   private void handleTutorial() throws InterruptedException {
-    //TODO: Play Tutorial
     if (switchedOn.get()) {
       NetworkConfiguration.stopGameServer();
       switchedOn.setValue(false);
+      Thread.sleep(200);
     }
     NetworkConfiguration.startGameServer();
     Thread.sleep(200);
@@ -385,7 +383,7 @@ public class TitleSceneController implements Initializable {
       showErrorDialog("Connection error.", "Please start the game again.");
       return;
     }
-    Thread.sleep(100);
+    Thread.sleep(250);
     GameConfiguration.setMyGameUser(
         new UserDto(SessionManager.getUser().getUsername(), 0, 0, 0, 0, 0));
     LobbyConfiguration.sendJoinServer(GameConfiguration.getMyGameUser());

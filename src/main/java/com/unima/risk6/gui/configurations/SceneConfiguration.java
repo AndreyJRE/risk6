@@ -202,6 +202,7 @@ public class SceneConfiguration {
     }
     pauseTitleSound();
     sceneController.activate(SceneName.GAME_OVER);
+    sceneController.getStage().setMaximized(false);
   }
 
   public static SceneController getSceneController() {
@@ -214,5 +215,13 @@ public class SceneConfiguration {
 
   public static double getHeight() {
     return height;
+  }
+
+  public static void setWidth(double width) {
+    SceneConfiguration.width = width;
+  }
+
+  public static void setHeight(double height) {
+    SceneConfiguration.height = height;
   }
 }

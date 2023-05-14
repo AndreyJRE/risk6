@@ -7,6 +7,7 @@ import com.unima.risk6.game.models.Card;
 import com.unima.risk6.game.models.Hand;
 import com.unima.risk6.game.models.enums.CountryName;
 import com.unima.risk6.game.models.enums.GamePhase;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.controllers.GameSceneController;
 import com.unima.risk6.gui.scenes.GameScene;
 import java.util.ArrayList;
@@ -148,6 +149,7 @@ public class HandUi extends BorderPane {
     cardUis.removeAll(selectedCardsUi);
     PlayerController playerController = GameSceneController.getPlayerController();
     playerController.sendHandIn();
+    SoundConfiguration.playHandInSound();
     popup.hide();
     GameSceneController.getPlayerController().getHandController().deselectAllCards();
     cardUis.forEach(x -> x.setClicked(false));

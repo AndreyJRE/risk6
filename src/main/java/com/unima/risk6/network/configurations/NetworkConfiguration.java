@@ -44,8 +44,14 @@ public class NetworkConfiguration {
    * thread.
    */
   public static void stopGameServer() {
-    serverLobby = null;
     gameServerThread.interrupt();
+    try {
+      Thread.sleep(500);
+      serverLobby = null;
+      gameServer = null;
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**

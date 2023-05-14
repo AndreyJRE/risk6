@@ -10,6 +10,7 @@ import com.unima.risk6.game.models.GameState;
 import com.unima.risk6.game.models.ServerLobby;
 import com.unima.risk6.gui.configurations.CountriesUiConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
+import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
 import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.network.configurations.NetworkConfiguration;
@@ -146,8 +147,9 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 GameConfiguration.configureGame(new ArrayList<>(), new ArrayList<>())).getContent();
             GameConfiguration.setGameState(g);
             if (g.isGameOver()) {
-              Thread.sleep(3000);
+              Thread.sleep(3500);
               LobbyConfiguration.stopGameClient();
+              SoundConfiguration.stopInGameMusic();
               Thread.sleep(150);
               if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
                 NetworkConfiguration.stopGameServer();
