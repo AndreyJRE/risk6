@@ -43,9 +43,9 @@ public class GameLobbyChannels {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameLobbyChannels.class);
 
-  private final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
-  private final BiMap<MoveProcessor, ChannelGroup> moveProcessors = HashBiMap.create();
-  private final BiMap<UserDto, Channel> users = HashBiMap.create();
+  final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
+  final BiMap<MoveProcessor, ChannelGroup> moveProcessors = HashBiMap.create();
+  final BiMap<UserDto, Channel> users = HashBiMap.create();
 
   public GameLobbyChannels() {
   }
