@@ -102,8 +102,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private GameState gameState;
   private BorderPane root;
   private Set<CountryUi> countriesUis;
-  private double originalScreenWidth;
-  private double originalScreenHeight;
   private Group countriesGroup;
   private LinkedList<PlayerUi> playerUis;
 
@@ -136,8 +134,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       this.gameState = GameConfiguration.getGameState();
     }
     this.countriesUis = CountriesUiConfiguration.getCountriesUis();
-    this.originalScreenWidth = SceneConfiguration.getWidth();
-    this.originalScreenHeight = SceneConfiguration.getHeight();
     this.root = (BorderPane) gameScene.getRoot();
     this.countriesGroup = new Group();
     this.initializeGameScene();
@@ -301,9 +297,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
 
   private StackPane initializeCountriesPane() {
-    double widthRatio = gameScene.getWidth() / originalScreenWidth;
-    double heightRatio = gameScene.getHeight() / originalScreenHeight;
-    double initialScale = Math.min(widthRatio, heightRatio);
 
     countryNameGroup = new Group();
 
@@ -397,8 +390,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     }
     countryNameGroup.setVisible(false);
     countriesGroup.getChildren().add(countryNameGroup);
-    countriesGroup.setScaleX(initialScale);
-    countriesGroup.setScaleY(initialScale);
 
     StackPane countriesPane = new StackPane();
     countriesPane.getChildren().add(countriesGroup);
@@ -530,16 +521,16 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
   private void addListeners() {
     gameScene.widthProperty().addListener((obs, oldVal, newVal) -> {
-      double widthScale = newVal.doubleValue() / originalScreenWidth;
-      double heightScale = gameScene.getHeight() / originalScreenHeight;
+      double widthScale = newVal.doubleValue() / 1080;
+      double heightScale = gameScene.getHeight() / 720;
       double scale = Math.min(widthScale, heightScale);
       countriesGroup.setScaleX(scale + 0.4);
       countriesGroup.setScaleY(scale + 0.4);
     });
 
     gameScene.heightProperty().addListener((obs, oldVal, newVal) -> {
-      double widthScale = gameScene.getWidth() / originalScreenWidth;
-      double heightScale = newVal.doubleValue() / originalScreenHeight;
+      double widthScale = gameScene.getWidth() / 1080;
+      double heightScale = newVal.doubleValue() / 720;
       double scale = Math.min(widthScale, heightScale);
       countriesGroup.setScaleX(scale + 0.3);
       countriesGroup.setScaleY(scale + 0.3);
@@ -726,8 +717,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       Statistic statistic = PLAYER_CONTROLLER.getPlayer().getStatistic();
       GameConfiguration.updateGameStatistic(
           gameState.getActivePlayers().contains(PLAYER_CONTROLLER.getPlayer()),
-          statistic.getTroopsLost(),
-          statistic.getCountriesWon(), statistic.getTroopsGained(),
+          statistic.getTroopsLost(), statistic.getCountriesWon(), statistic.getTroopsGained(),
           statistic.getCountriesLost());
     }
 
