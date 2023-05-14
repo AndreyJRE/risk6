@@ -104,7 +104,12 @@ public class PlayerController {
     player.setDeployableTroops(player.getDeployableTroops() + diff);
   }
 
-  //TODO Können wir das auf ehre bitte zu AI moven?
+  /**
+   * Gets a List of CountryPairs that one can Fortify move from the given country.
+   *
+   * @param country the country that one wants to Fortify move from.
+   * @return List of CountryPairs that one can make a fortify move on.
+   */
   public List<CountryPair> getValidFortifiesFromCountry(Country country) {
     List<CountryPair> fortifiable = new ArrayList<>();
     if (country.getTroops() > 1) {
@@ -117,6 +122,12 @@ public class PlayerController {
     return fortifiable;
   }
 
+  /**
+   * Gets a List of CountryPairs that one can fortify or attack from the given country.
+   *
+   * @param country the country that one wants to fortify or attack move from.
+   * @return List of CountryPairs that one can make a fortify or attack move on.
+   */
   public List<CountryPair> getValidCountryPairsFromCountry(Country country) {
     List<CountryPair> attackable = new ArrayList<>();
     if (country.getTroops() >= troopLimitPerPhase()) {
@@ -130,12 +141,19 @@ public class PlayerController {
     return attackable;
   }
 
+  /**
+   * Gets a lower limit of troops that one needs to perform moves such as Attack and Fortify.
+   */
   private int troopLimitPerPhase() {
     return this.player.getCurrentPhase() == GamePhase.REINFORCEMENT_PHASE
         || this.player.getCurrentPhase() == GamePhase.CLAIM_PHASE ? 1 : 2;
   }
 
-
+  /**
+   * Returns a List of CountryPairs that are countries one can use to make Fortify move.
+   *
+   * @return a List of CountryPairs that are countries one can use to make a Fortify move.
+   */
   public List<CountryPair> getAllValidFortifies() {
     List<CountryPair> countriesFortifiable = new ArrayList<>();
     for (Country country : this.player.getCountries()) {
@@ -147,6 +165,12 @@ public class PlayerController {
     return countriesFortifiable;
   }
 
+  /**
+   * Returns a List of CountryPairs that one can use to make a move on a given Continent.
+   *
+   * @param continent the Continent one wants to have the CountryPairs from.
+   * @return a List of CountryPairs that one can make valid moves from.
+   */
   public List<CountryPair> getAllValidCountryPairs(Continent continent) {
     List<CountryPair> countriesAttackable = new ArrayList<>();
     for (Country country : continent.getCountries()) {

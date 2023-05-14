@@ -36,9 +36,15 @@ public class MoveProcessor {
   private PlayerController playerController;
   private DeckController deckController;
 
+  /**
+   * Constructs a MoveProcessor object with the given controllers.
+   *
+   * @param playerController a PlayerController object that is used to manage a Player object
+   * @param deckController   a DeckController object that is used to manage a Deck object
+   * @param gameController   a GameController object that is used to manage a GameState object.
+   */
   public MoveProcessor(PlayerController playerController, GameController gameController,
       DeckController deckController) {
-
     this.gameController = gameController;
     this.deckController = deckController;
     this.playerController = playerController;
@@ -192,7 +198,7 @@ public class MoveProcessor {
     } else {
       if (!(attacker.equals(currentPlayer) && !attacker.equals(defender))) {
         throw new InvalidMoveException(
-            "Invalid Move because: Attack made by not current player or attacker tries to attack himself");
+            "Invalid Attack made by not current player or attacker tries to attack himself");
       }
       if (!(currentPlayer.getCurrentPhase().equals(ATTACK_PHASE))) {
         throw new InvalidMoveException("Invalid Attack because not in attack phase");
