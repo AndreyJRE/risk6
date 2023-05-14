@@ -50,6 +50,8 @@ public class MoveProcessor {
   /**
    * Validates if the Reinforce move is legal and if it is, GameState is updated according to the
    * Reinforce move received. If the Reinforce move is not legal an InvalidMoveException is thrown.
+   *
+   * @param reinforce the Reinforce move that should be processed.
    */
   public void processReinforce(Reinforce reinforce) {
     Player currentPlayer = gameController.getCurrentPlayer();
@@ -125,6 +127,8 @@ public class MoveProcessor {
   /**
    * Validates if the Attack move is legal and if it is, the GameState is updated according to the
    * Attack move received. If the Attack move is illegal an InvalidMoveExcepiton is thrown.
+   *
+   * @param attack the Attack move that should be processed.
    */
   public void processAttack(Attack attack) {
     Country attackingCountry = getCountryByCountryName(
@@ -210,8 +214,10 @@ public class MoveProcessor {
   }
 
   /**
-   * Validates if the fortify is legal and if it is updates the game state according to the
-   * fortification move received.
+   * Validates if the fortify is legal and if it is updates the game state according to the Fortify
+   * move received.
+   *
+   * @param fortify the Fortify move that should be processed.
    */
   public void processFortify(Fortify fortify) throws InvalidMoveException {
 
@@ -253,6 +259,8 @@ public class MoveProcessor {
   /**
    * Processes a HandIn move of cards and increases the deployable troops of the current Player
    * according to the number of hand ins that had already occurred.
+   *
+   * @param handIn the HandIn move that should be processed.
    */
   public void processHandIn(HandIn handIn) {
     HandController handController = playerController.getHandController();
@@ -304,6 +312,8 @@ public class MoveProcessor {
   /**
    * Processes an EndPhase move of and changes the GamePhase into the next phase according to the
    * current GameState and GamePhase.
+   *
+   * @param endPhase the EndPhase move that should be processed.
    */
   public void processEndPhase(EndPhase endPhase) {
     Player currentPlayer = gameController.getCurrentPlayer();
