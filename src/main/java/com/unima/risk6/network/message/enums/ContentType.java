@@ -2,7 +2,7 @@ package com.unima.risk6.network.message.enums;
 
 public enum ContentType {
   /**
-   * Enumeration of the Classes that will be serialized
+   * Enumeration of the types of messages.
    *
    * @author jferch
    */

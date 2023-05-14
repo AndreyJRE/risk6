@@ -33,6 +33,11 @@ import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * In this class incoming messages get handled and processed
+ *
+ * @author jferch
+ */
 public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameClientHandler.class);
@@ -40,29 +45,66 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
   private final WebSocketClientHandshaker handshaker;
   private ChannelPromise handshakeFuture;
 
+
+  /**
+   * Constructs a new GameClientHandler.
+   *
+   * @param handshaker the handshaker used to handle the WebSocket handshake.
+   */
   public GameClientHandler(WebSocketClientHandshaker handshaker) {
     this.handshaker = handshaker;
   }
 
+  /**
+   * Returns a ChannelFuture for the WebSocket handshake. This future completes when the handshake
+   * completes.
+   *
+   * @return the handshake future.
+   */
   public ChannelFuture handshakeFuture() {
     return handshakeFuture;
   }
 
+  /**
+   * Called when a handler is added to a pipeline. This method creates a new promise for the
+   * WebSocket handshake.
+   *
+   * @param ctx the context of the channel handler.
+   */
   @Override
   public void handlerAdded(ChannelHandlerContext ctx) {
     handshakeFuture = ctx.newPromise();
   }
 
+  /**
+   * Called when a channel becomes active. This method initiates the WebSocket handshake.
+   *
+   * @param ctx the context of the channel handler.
+   */
   @Override
   public void channelActive(ChannelHandlerContext ctx) {
     handshaker.handshake(ctx.channel());
   }
 
+  /**
+   * Called when a channel becomes inactive. This method logs that the client has disconnected.
+   *
+   * @param ctx the context of the channel handler.
+   */
   @Override
   public void channelInactive(ChannelHandlerContext ctx) {
     LOGGER.info("Client disconnected");
   }
 
+  /**
+   * Handles the reading of messages from the server. This method performs the handshake if it's not
+   * complete. If the handshake is complete, it reads WebSocket frames and handles them
+   * accordingly.
+   *
+   * @param ctx the context of the channel handler.
+   * @param msg the received message.
+   * @throws Exception if an exception occurs during the processing of the message.
+   */
   @Override
   public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
     Channel ch = ctx.channel();
@@ -229,6 +271,14 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     }
   }
 
+
+  /**
+   * Handles exceptions that occur in the channel pipeline. This method prints the stack trace of
+   * the cause, and if the handshake is not done, it sets the handshake future to failure.
+   *
+   * @param ctx   the context of the channel handler.
+   * @param cause the cause of the exception.
+   */
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     cause.printStackTrace();

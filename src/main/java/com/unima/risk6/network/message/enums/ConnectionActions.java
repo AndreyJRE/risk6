@@ -1,5 +1,10 @@
 package com.unima.risk6.network.message.enums;
 
+/**
+ * Enumeration of the possible ConnectionActions.
+ *
+ * @author jferch
+ */
 public enum ConnectionActions {
   //Server Side Join
   JOIN_SERVER_LOBBY, JOIN_GAME_LOBBY, CREATE_GAME_LOBBY, START_GAME,
@@ -18,6 +23,6 @@ public enum ConnectionActions {
   //Configuration
   JOIN_BOT_GAME_LOBBY,
 
-  //Currently not Used
+  //Currently not Used //TODO
   ACCEPT_USER_GAME, REMOVE_BOT_FROM_LOBBY, START_TUTORIAL, CREATE_TUTORIAL_LOBBY, ACCEPT_TUTORIAL_CREATE_LOBBY, ACCEPT_JOIN_GAME
 }
