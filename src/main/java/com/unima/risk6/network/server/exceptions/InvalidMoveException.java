@@ -1,18 +1,18 @@
 package com.unima.risk6.network.server.exceptions;
 
-
 /**
- * An exception that is thrown when an invalid move is attempted in the server.
+ * Exception for when a move is invalid.
  *
  * @author wphung
  */
 public class InvalidMoveException extends RuntimeException {
 
   /**
-   * Constructs a new InvalidMoveException with the specified detail message.
+   * Constructor for the exception.
    *
-   * @param message the detail message
+   * @param message The message to be displayed.
    */
+
   public InvalidMoveException(String message) {
     super(message);
   }

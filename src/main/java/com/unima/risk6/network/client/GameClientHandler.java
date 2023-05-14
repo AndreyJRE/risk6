@@ -128,7 +128,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     WebSocketFrame frame = (WebSocketFrame) msg;
-    System.out.println("ctx = " + ctx + ", msg = " + msg);
     if (frame instanceof TextWebSocketFrame textFrame) {
       JsonObject json = null;
       try {

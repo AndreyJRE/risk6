@@ -1,5 +1,10 @@
 package com.unima.risk6.game.models;
 
+/**
+ * Statistic model. Contains all the information about a statistic in game.
+ *
+ * @author astoyano
+ */
 public class Statistic {
 
   private int troopsLost;
@@ -9,7 +14,9 @@ public class Statistic {
   private int numberOfOwnedCountries;
   private int numberOfTroops;
 
-
+  /**
+   * Constructor for a statistic.
+   */
   public Statistic() {
     this.troopsGained = 0;
     this.troopsLost = 0;
@@ -21,14 +28,10 @@ public class Statistic {
 
   @Override
   public String toString() {
-    return "Statistic{" +
-        "troopsLost=" + troopsLost +
-        ", troopsGained=" + troopsGained +
-        ", countriesWon=" + countriesWon +
-        ", countriesLost=" + countriesLost +
-        ", numberOfOwnedCountries=" + numberOfOwnedCountries +
-        ", numberOfTroops=" + numberOfTroops +
-        '}';
+    return "Statistic{" + "troopsLost=" + troopsLost + ", troopsGained=" + troopsGained
+        + ", countriesWon=" + countriesWon + ", countriesLost=" + countriesLost
+        + ", numberOfOwnedCountries=" + numberOfOwnedCountries + ", numberOfTroops="
+        + numberOfTroops + '}';
   }
 
   public int getNumberOfOwnedCountries() {

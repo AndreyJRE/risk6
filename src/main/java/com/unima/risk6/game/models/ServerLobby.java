@@ -3,6 +3,9 @@ package com.unima.risk6.game.models;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Server lobby model. Contains all the information about a server lobby.
+ */
 public class ServerLobby {
 
   private final String lobbyName;
@@ -11,6 +14,12 @@ public class ServerLobby {
 
   private final List<UserDto> users;
 
+  /**
+   * Constructor for a server lobby. Creates a new server lobby with the given name and host.
+   *
+   * @param lobbyName The name of the lobby.
+   * @param hostName  The name of the host.
+   */
   public ServerLobby(String lobbyName,
       String hostName) {
     this.lobbyName = lobbyName;
@@ -19,6 +28,11 @@ public class ServerLobby {
     this.users = new ArrayList<>();
   }
 
+  /**
+   * Constructor for a server lobby. Creates a new server lobby with the given host.
+   *
+   * @param hostName The name of the host.
+   */
   public ServerLobby(String hostName) {
     this.hostName = hostName;
     this.gameLobbies = new ArrayList<>();
@@ -44,11 +58,8 @@ public class ServerLobby {
 
   @Override
   public String toString() {
-    return "ServerLobby{" +
-        "lobbyName='" + lobbyName + '\'' +
-        ", hostName='" + hostName + '\'' +
-        ", gameLobbies=" + gameLobbies +
-        ", users=" + users +
-        '}';
+    return "ServerLobby{" + "lobbyName='" + lobbyName + '\'' + ", hostName='" + hostName + '\''
+        + ", gameLobbies="
+        + gameLobbies + ", users=" + users + '}';
   }
 }

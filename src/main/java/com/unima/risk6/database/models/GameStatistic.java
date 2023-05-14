@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * A game statistic model from one game for database
+ * A game statistic model from one game for database.
  *
  * @author astoyano
  */

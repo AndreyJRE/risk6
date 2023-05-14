@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * User model for database
+ * User model for database.
  *
  * @author astoyano
  */
@@ -27,12 +27,29 @@ public class User {
   public User() {
   }
 
+  /**
+   * Constructor for a user.
+   *
+   * @param username  The username of the user.
+   * @param password  The password of the user.
+   * @param imagePath The path to the image of the user.
+   */
   public User(String username, String password, String imagePath) {
     this.username = username;
     this.password = password;
     this.imagePath = imagePath;
   }
 
+  /**
+   * Constructor for a user.
+   *
+   * @param id        The id of the user.
+   * @param username  The username of the user.
+   * @param password  The password of the user.
+   * @param imagePath The path to the image of the user.
+   * @param active    The active status of the user.
+   * @param createdAt The date the user was created.
+   */
   public User(Long id, String username, String password, String imagePath, boolean active,
       LocalDate createdAt) {
     this.id = id;
@@ -95,8 +112,8 @@ public class User {
   @Override
   public String toString() {
     return "User{ id=" + id + ", username='" + username + '\'' + ", password='" + password + '\''
-           + ", imagePath='" + imagePath + '\'' + ", active=" + active + ", createdAt=" + createdAt
-           + '}';
+        + ", imagePath='" + imagePath + '\'' + ", active=" + active + ", createdAt=" + createdAt
+        + '}';
   }
 
   @Override
@@ -109,7 +126,7 @@ public class User {
     }
     User user = (User) o;
     return active == user.active && id.equals(user.id) && username.equals(user.username)
-           && Objects.equals(password, user.password) && Objects.equals(imagePath,
+        && Objects.equals(password, user.password) && Objects.equals(imagePath,
         user.imagePath) && createdAt.equals(user.createdAt);
   }
 

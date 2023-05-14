@@ -74,7 +74,6 @@ public class SceneConfiguration {
     GameScene gameScene = (GameScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.GAME);
     SceneName beforeCurrentScene = SceneConfiguration.getSceneController().getCurrentSceneName();
-    System.out.println("Start game " + beforeCurrentScene);
     if (gameScene == null) {
       gameScene = new GameScene();
       gameSceneController = new GameSceneController(gameScene);
@@ -111,12 +110,13 @@ public class SceneConfiguration {
    * Joins the server lobby scene and activates it in the scene controller.
    */
   public static void joinServerLobbyScene() {
-    SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration.getSceneController()
+    SelectMultiplayerLobbyScene scene = (SelectMultiplayerLobbyScene) SceneConfiguration
+        .getSceneController()
         .getSceneBySceneName(SceneName.SELECT_LOBBY);
     if (scene == null) {
       scene = new SelectMultiplayerLobbyScene();
-      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController = new SelectMultiplayerLobbySceneController(
-          scene);
+      SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController =
+          new SelectMultiplayerLobbySceneController(scene);
       scene.setController(selectMultiplayerLobbySceneController);
       sceneController.addScene(SceneName.SELECT_LOBBY, scene);
     }
@@ -127,15 +127,14 @@ public class SceneConfiguration {
   /**
    * Joins the multiplayer lobby scene and activates it in the scene controller.
    */
-
   public static void joinMultiplayerLobbyScene() {
     MultiplayerLobbyScene scene = (MultiplayerLobbyScene) SceneConfiguration.getSceneController()
         .getSceneBySceneName(SceneName.MULTIPLAYER_LOBBY);
     if (scene == null) {
       scene = new MultiplayerLobbyScene();
       //TODO Overwrite game lobby owner
-      MultiplayerLobbySceneController multiplayerLobbySceneController = new MultiplayerLobbySceneController(
-          scene);
+      MultiplayerLobbySceneController multiplayerLobbySceneController =
+          new MultiplayerLobbySceneController(scene);
       scene.setController(multiplayerLobbySceneController);
       sceneController.addScene(SceneName.MULTIPLAYER_LOBBY, scene);
     }
@@ -146,14 +145,14 @@ public class SceneConfiguration {
   /**
    * Starts the single player game settings scene and activates it in the scene controller.
    */
-
   public static void joinSinglePlayerLobby() {
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration
+        .getSceneController()
         .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController =
+          new SinglePlayerSettingsSceneController(scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }
@@ -167,12 +166,13 @@ public class SceneConfiguration {
    */
 
   public static void joinTutorialLobbyScene() {
-    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration.getSceneController()
+    SinglePlayerSettingsScene scene = (SinglePlayerSettingsScene) SceneConfiguration
+        .getSceneController()
         .getSceneBySceneName(SceneName.SINGLE_PLAYER_SETTINGS);
     if (scene == null) {
       scene = new SinglePlayerSettingsScene();
-      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController = new SinglePlayerSettingsSceneController(
-          scene);
+      SinglePlayerSettingsSceneController singlePlayerSettingsSceneController =
+          new SinglePlayerSettingsSceneController(scene);
       scene.setController(singlePlayerSettingsSceneController);
       sceneController.addScene(SceneName.SINGLE_PLAYER_SETTINGS, scene);
     }

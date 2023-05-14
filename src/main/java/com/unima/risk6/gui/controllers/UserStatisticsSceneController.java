@@ -153,7 +153,7 @@ public class UserStatisticsSceneController {
     statisticsGridPane = new GridPane();
     Label hoursPlayedLabel = new Label("Hours played: ");
     hoursPlayedLabel.setStyle(labelStyle);
-    Label eloLabel = new Label("Ranking: ");
+    Label eloLabel = new Label("Elo: ");
     eloLabel.setStyle(labelStyle);
     Label countriesLostLabel = new Label("Number of countries lost: ");
     countriesLostLabel.setStyle(labelStyle);

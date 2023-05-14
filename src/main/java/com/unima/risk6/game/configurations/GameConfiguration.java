@@ -39,7 +39,7 @@ public class GameConfiguration {
 
   /**
    * Configures the game by initializing the countries, continents, players and creating a GameState
-   * object
+   * object.
    *
    * @param users List of usernames from users
    * @param bots  List of different bots
@@ -58,7 +58,7 @@ public class GameConfiguration {
   }
 
   /**
-   * Gets the game state
+   * Gets the game state.
    *
    * @return The game state
    */
@@ -67,7 +67,7 @@ public class GameConfiguration {
   }
 
   /**
-   * Sets the game state and notifies the observers
+   * Sets the game state and notifies the observers.
    *
    * @param gameState The game state
    */
@@ -77,7 +77,7 @@ public class GameConfiguration {
   }
 
   /**
-   * Adds a Game Stete observer to the list of observers
+   * Adds a Game state observer to the list of observers.
    *
    * @param observer The Game State observer
    */
@@ -90,7 +90,7 @@ public class GameConfiguration {
   }
 
   /**
-   * Notifies the observers of the game state
+   * Notifies the observers of the game state.
    */
   private static void notifyObservers() {
     for (GameStateObserver observer : observers) {
@@ -99,7 +99,7 @@ public class GameConfiguration {
   }
 
   /**
-   * Gets the user that is playing the game
+   * Gets the user that is playing the game.
    *
    * @return The user that is playing the game
    */
@@ -108,7 +108,7 @@ public class GameConfiguration {
   }
 
   /**
-   * Sets the user that is playing the game
+   * Sets the user that is playing the game.
    *
    * @param myGameUser The user that is playing the game
    */
@@ -159,10 +159,18 @@ public class GameConfiguration {
 
   public static void setTutorialOver(boolean tutorialOver) {
     GameConfiguration.tutorialOver = tutorialOver;
-
-
   }
 
+  /**
+   * Updates the game statistic after a game is finished. The game statistic is updated in the local
+   * database.
+   *
+   * @param gameWon       true if the game was won, false otherwise
+   * @param troopsLost    the number of troops lost
+   * @param countriesWon  the number of countries won
+   * @param troopsGained  the number of troops gained
+   * @param countriesLost the number of countries lost
+   */
   public static void updateGameStatistic(boolean gameWon, int troopsLost, int countriesWon,
       int troopsGained, int countriesLost) {
     currentGameStatistic.setGameWon(gameWon);
@@ -175,8 +183,7 @@ public class GameConfiguration {
 
   }
 
-  public static void setCurrentGameStatistic(
-      GameStatistic currentGameStatistic) {
+  public static void setCurrentGameStatistic(GameStatistic currentGameStatistic) {
     GameConfiguration.currentGameStatistic = currentGameStatistic;
   }
 

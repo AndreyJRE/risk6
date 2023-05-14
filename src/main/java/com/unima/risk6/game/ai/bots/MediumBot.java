@@ -108,7 +108,6 @@ public class MediumBot extends GreedyBot implements AiBot {
     // order works, need to invert values to make them positive
     // there shouldn't be any diffs less than 0, since they would have been cleared in step before
     ownedCountryDiffs.replaceAll((country, diff) -> -diff);
-    // adjust to make win probability >70%
     ownedCountryDiffs.replaceAll((country, diff) -> Math.max(diff, 2));
     return reinforceSortedCountryList(ownedCountryDiffs, countriesByLowestReinforce);
   }

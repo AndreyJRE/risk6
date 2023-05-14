@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
 public class UserService {
 
   private final UserRepository userRepository;
-  private final static String PASSWORD_EXCEPTION_MESSAGE = """
+  private static final String PASSWORD_EXCEPTION_MESSAGE = """
       Password should contain:
       at least one uppercase letter (A-Z)
       at least one lowercase letter (a-z)
       at least one digit (0-9)
       at least one special character (#?!@$%^&*-)
       and has a minimum length of 8 characters""";
-  private final static Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
   private static final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?="
       + ".*?[#?!@$%^&*-]).{8,}$";
 
@@ -69,7 +69,6 @@ public class UserService {
    * is thrown. If the password is not valid, a NotValidPasswordException is thrown.
    *
    * @param user The user to save
-   * @return The ID of the saved user
    * @throws UsernameNotUniqueException If the username is not unique in the database
    * @throws NotValidPasswordException  If the password is not valid (does not match the password
    *                                    regex)

@@ -148,7 +148,7 @@ public class LobbyUserStatisticSceneController {
     countriesConquered.setStyle(labelStyle);
     Label hoursPlayed = new Label("Total hours played: ");
     hoursPlayed.setStyle(labelStyle);
-    Label winLossRatio = new Label("Win / Loss Ratio: ");
+    Label winLossRatio = new Label("Elo: ");
     winLossRatio.setStyle(labelStyle);
     Label numberGamesLost = new Label(Integer.toString(user.getGamesLost()));
     numberGamesLost.setStyle(numberStyle);

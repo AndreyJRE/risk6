@@ -98,9 +98,9 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getBoolean(5);
         LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), dtf);
-        LocalDateTime finishDate = (rs.getString(7) != null) ?
-            LocalDateTime.parse(rs.getString(7),
-                dtf) : null;
+        LocalDateTime finishDate = (rs.getString(7) != null)
+            ? LocalDateTime.parse(rs.getString(7),
+            dtf) : null;
         int countriesWon = rs.getInt(8);
         int countriesLost = rs.getInt(9);
         gameStatistic = Optional.of(new GameStatistic(id, user, startDate, finishDate,
@@ -156,23 +156,21 @@ public class GameStatisticRepository implements GameStatisticDao {
    * Saves a  GameStatistic object to the database.
    *
    * @param gameStatistic the game statistic to save
-   * @return the ID of the saved game statistic
    */
 
   @Override
-  public Long save(GameStatistic gameStatistic) {
+  public void save(GameStatistic gameStatistic) {
     try {
       addGameStatisticStatement.setLong(1, gameStatistic.getUser().getId());
       addGameStatisticStatement.setString(2, gameStatistic.getStartDate().format(dtf));
       addGameStatisticStatement.execute();
       ResultSet generatedKeys = addGameStatisticStatement.getGeneratedKeys();
-      Long id = null;
+      Long id;
       if (generatedKeys.next()) {
         id = generatedKeys.getLong(1);
         gameStatistic.setId(id);
       }
       generatedKeys.close();
-      return id;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -186,8 +184,8 @@ public class GameStatisticRepository implements GameStatisticDao {
   @Override
   public void update(GameStatistic gameStatistic) {
     try {
-      updateGameStatisticStatement.setString(1
-          , gameStatistic.getFinishDate().format(dtf));
+      updateGameStatisticStatement.setString(1,
+          gameStatistic.getFinishDate().format(dtf));
       updateGameStatisticStatement.setBoolean(2, gameStatistic.isGameWon());
       updateGameStatisticStatement.setInt(3, gameStatistic.getTroopsGained());
       updateGameStatisticStatement.setInt(4, gameStatistic.getTroopsLost());
@@ -205,8 +203,7 @@ public class GameStatisticRepository implements GameStatisticDao {
    * ID.
    *
    * @param id a Long representing the ID of the user whose game statistics to retrieve
-   * @return a List of GameStatistic objects associated with the user, or an empty List if none are
-   * found
+   * @return a list of GameStatistic objects associated with the specified user
    * @throws RuntimeException  if there is a problem executing the query
    * @throws NotFoundException if the specified user ID is not found in the database
    */
@@ -224,13 +221,11 @@ public class GameStatisticRepository implements GameStatisticDao {
         int troopsLost = rs.getInt(3);
         int troopsGained = rs.getInt(4);
         boolean gameWon = rs.getBoolean(5);
-        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6)
-            , dtf);
+        LocalDateTime startDate = LocalDateTime.parse(rs.getString(6), dtf);
         if (rs.getString(7) == null) {
           continue;
         }
-        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7)
-            , dtf);
+        LocalDateTime finishDate = LocalDateTime.parse(rs.getString(7), dtf);
         int countriesWon = rs.getInt(8);
         int countriesLost = rs.getInt(9);
         GameStatistic gameStatistic = new GameStatistic(statisticId, user, startDate, finishDate,
@@ -263,8 +258,7 @@ public class GameStatisticRepository implements GameStatisticDao {
    *
    * @param gameWon a boolean representing the gameWon value of the game statistics to retrieve from
    *                the database (true for won, false for lost)
-   * @return a List of GameStatistic objects with the specified gameWon value, or an empty List if
-   * none are found in the database with the specified gameWon value
+   * @return a list of GameStatistic objects with the specified gameWon value
    */
   @Override
   public List<GameStatistic> getAllStatisticsByGameWon(boolean gameWon) {

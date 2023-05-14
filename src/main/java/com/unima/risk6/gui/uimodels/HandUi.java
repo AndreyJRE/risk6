@@ -182,7 +182,6 @@ public class HandUi extends BorderPane {
         handController.deselectCardsThroughCard(((CardUi) cardNode).getCard());
       }
     }
-    selectedCardsUi.forEach(x -> System.out.println(x.getCard()));
     this.setBottom(newBottomBox);
     if (handController.holdsExchangeable() && !handController.isExchangeable(
         handController.getHand().getSelectedCards()) && GameSceneController.getPlayerController()

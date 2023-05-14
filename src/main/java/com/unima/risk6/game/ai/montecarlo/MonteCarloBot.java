@@ -66,7 +66,6 @@ public class MonteCarloBot extends GreedyBot implements AiBot {
         }
       }
     }
-    System.out.println(diffMap);
     return diffMap;
   }
 

@@ -209,8 +209,7 @@ public class GameController {
   /**
    * Counts the troops of each player and saves it in a HashMap which is then returned.
    *
-   * @return a HashMap<Player, Integer> which maps each player to their respective number of troops
-   * they have control over in the game.
+   * @return HashMap of Player to int which maps each player to their respective number of troops
    */
   public HashMap<Player, Integer> countTroops() {
     HashMap<Player, Integer> totalTroopsOfPlayers = new HashMap<>();
@@ -227,8 +226,7 @@ public class GameController {
   /**
    * Counts the countries of each player and saves it in a HashMap which is then returned.
    *
-   * @return HashMap<Player, Integer> which maps each player to their respective number of countries
-   * they own in the game.
+   * @return HashMap of Player to int which maps each player to their respective number of countries
    */
   public HashMap<Player, Integer> countCountries() {
     HashMap<Player, Integer> numberOfCountries = new HashMap<>();

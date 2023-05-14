@@ -147,11 +147,10 @@ public class UserRepository implements UserDao {
    * Adds a User object to the database.
    *
    * @param user a User object to add to the database
-   * @return the ID of the newly added User object, or null if the add operation failed
    * @throws RuntimeException if there is a problem executing the query
    */
   @Override
-  public Long save(User user) {
+  public void save(User user) {
     try {
       addUserStatement.setString(1, user.getUsername());
       addUserStatement.setString(2, user.getPassword());
@@ -164,7 +163,6 @@ public class UserRepository implements UserDao {
         id = generatedKeys.getLong(1);
         user.setId(id);
       }
-      return id;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
