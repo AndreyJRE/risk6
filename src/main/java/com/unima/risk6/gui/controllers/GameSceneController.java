@@ -279,7 +279,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     orderPane.setBottom(diceHbox);
     BorderPane.setMargin(diceHbox, new Insets(10));
 
-    orderPane.setStyle("-fx-background-radius: 10;-fx-background-color: rgba(255, 255, 255, 0.3);");
+    orderPane.setStyle("-fx-background-radius: 10;-fx-background-color: rgba(255, 255, 255, 0.7);");
 
     orderPane.setPrefSize(root.getWidth() * 0.70, root.getHeight() * 0.70);
 
