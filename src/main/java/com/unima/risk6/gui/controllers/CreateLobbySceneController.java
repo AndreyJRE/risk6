@@ -39,6 +39,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
+/**
+ * This class is responsible for controlling the scene where a new game lobby is created in the UI.
+ * It includes all of the necessary UI components and their associated functionalities.
+ * It also creates and sends the game lobby to the server when the "Create Lobby" button is clicked.
+ *
+ * @author Your Name
+ */
 
 public class CreateLobbySceneController {
 
@@ -59,6 +66,10 @@ public class CreateLobbySceneController {
     this.createLobbyScene = createLobbyScene;
     this.sceneController = SceneConfiguration.getSceneController();
   }
+
+  /**
+   * Initializes the UI components for the scene.
+   */
 
   public void init() {
     this.root = (BorderPane) createLobbyScene.getRoot();
@@ -206,7 +217,7 @@ public class CreateLobbySceneController {
     maxPlayers.setStyle(comboBoxStyle);
     minElo.setStyle(comboBoxStyle);
 
-// CheckBox styling
+    // CheckBox styling
     String checkBoxBoxStyle = "-fx-font-size: 20; -fx-background-color: white; -fx-border-color: "
         + "#cccccc; -fx-border-radius: 3; -fx-background-radius: 3;";
     String checkBoxSelectedBoxStyle = "-fx-font-size: 20; -fx-background-color: #93d2f8; "

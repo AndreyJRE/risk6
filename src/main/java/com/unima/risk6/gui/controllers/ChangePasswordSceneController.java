@@ -127,16 +127,16 @@ public class ChangePasswordSceneController {
     anchorPane.setPrefSize(600, 495);
     anchorPane.setPadding(new Insets(150, 200, 150, 200));
 
-    VBox vBox = new VBox();
-    vBox.setAlignment(Pos.CENTER);
-    vBox.setSpacing(22);
-    vBox.setStyle(
+    VBox vbox = new VBox();
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setSpacing(22);
+    vbox.setStyle(
         "-fx-opacity: 0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: "
             + "dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
-    AnchorPane.setTopAnchor(vBox, 0.0);
-    AnchorPane.setRightAnchor(vBox, 0.0);
-    AnchorPane.setBottomAnchor(vBox, 0.0);
-    AnchorPane.setLeftAnchor(vBox, 0.0);
+    AnchorPane.setTopAnchor(vbox, 0.0);
+    AnchorPane.setRightAnchor(vbox, 0.0);
+    AnchorPane.setBottomAnchor(vbox, 0.0);
+    AnchorPane.setLeftAnchor(vbox, 0.0);
 
     Label selectUser = new Label("Change Password");
     selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 41px; "
@@ -184,7 +184,7 @@ public class ChangePasswordSceneController {
     });
     newPasswordField.textProperty().addListener(passwordFieldChangeListener);
     confirmPasswordField.textProperty().addListener(passwordFieldChangeListener);
-    vBox.setAlignment(Pos.CENTER);
+    vbox.setAlignment(Pos.CENTER);
 
     Label enterNewPassword = new Label("Enter new password:");
     Label confirmPassword = new Label("Confirm new password:");
@@ -203,10 +203,10 @@ public class ChangePasswordSceneController {
     centerGrid.setHgap(20);
     centerGrid.setVgap(15);
 
-    vBox.getChildren().addAll(selectUser, centerGrid, errorMessage, confirmButton);
-    vBox.setPadding(new Insets(15, 20, 15, 20));
+    vbox.getChildren().addAll(selectUser, centerGrid, errorMessage, confirmButton);
+    vbox.setPadding(new Insets(15, 20, 15, 20));
 
-    anchorPane.getChildren().add(vBox);
+    anchorPane.getChildren().add(vbox);
     return anchorPane;
   }
 }

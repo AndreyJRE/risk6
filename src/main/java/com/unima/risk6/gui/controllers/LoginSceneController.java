@@ -145,7 +145,7 @@ public class LoginSceneController {
       userStackPane.getChildren().addAll(circle, userImage);
 
       userStackPane.setOnMouseClicked(e -> showSelectedUser(user));
-      userStackPane.hoverProperty().addListener((observableValue, aBoolean, t1) -> {
+      userStackPane.hoverProperty().addListener((observableValue, aboolean, t1) -> {
         if (t1) {
           userStackPane.setCursor(Cursor.HAND);
           userStackPane.setEffect(dropShadow);
@@ -210,7 +210,7 @@ public class LoginSceneController {
     createButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; "
         + "-fx-font-style: italic; -fx-font-size: 24; -fx-underline: false");
 
-// Hinzufügen von Hover-Style für Textfarbe und Unterstreichung
+    // Hinzufügen von Hover-Style für Textfarbe und Unterstreichung
     createButton.setOnMouseEntered(e -> createButton.setStyle("-fx-background-color: transparent;"
         + " -fx-text-fill: white; -fx-underline: true; -fx-font-style: italic;  -fx-font-size: "
         + "24"));

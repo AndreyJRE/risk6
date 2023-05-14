@@ -60,6 +60,7 @@ public class CreateAccountController implements Initializable {
    * If there are no existing users in the database, an error dialog will be shown.
    * Otherwise, the login scene will be activated.
    */
+
   @FXML
   private void handleLoginToAccount() {
     if (userService.getAllUsers().size() == 0) {
@@ -75,6 +76,7 @@ public class CreateAccountController implements Initializable {
    * It validates the user's input and attempts to save a new user to the database.
    * If the username is not unique or the password is not valid, an error dialog will be shown.
    */
+
   @FXML
   private void handleCreateButton() {
     String username = usernameField.getText();
@@ -109,8 +111,10 @@ public class CreateAccountController implements Initializable {
   /**
    * This method is called when the mouse enters a Label object.
    * It changes the style of the label to indicate it's interactive.
+   *
    * @param event The MouseEvent object that triggered this method.
    */
+
   @FXML
   private void handleMouseEntered(MouseEvent event) {
     Label label = (Label) event.getSource();
@@ -120,8 +124,10 @@ public class CreateAccountController implements Initializable {
   /**
    * This method is called when the mouse exits a Label object.
    * It resets the style of the label.
+   *
    * @param event The MouseEvent object that triggered this method.
    */
+
   @FXML
   private void handleMouseExited(MouseEvent event) {
     Label label = (Label) event.getSource();
@@ -132,10 +138,15 @@ public class CreateAccountController implements Initializable {
 
   /**
    * This method is called when all FXML loading is complete.
-   * It binds properties, applies styles, initializes services, sets up listeners, and configures the scene.
-   * @param url The location used to resolve relative paths for the root object, or null if the location is not known.
-   * @param resourceBundle The resources used to localize the root object, or null if the root object was not localized.
+   * It binds properties, applies styles, initializes services, sets up listeners,
+   * and configures the scene.
+   *
+   * @param url The location used to resolve relative paths for the root object,
+   *            or null if the location is not known.
+   * @param resourceBundle The resources used to localize the root object,
+   *                       or null if the root object was not localized.
    */
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     backgroundImageView.fitWidthProperty().bind(root.widthProperty());
