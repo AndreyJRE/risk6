@@ -42,7 +42,7 @@ public class GameServerInitializer extends ChannelInitializer<SocketChannel> {
   private SslContext createSSLContext() throws Exception {
     KeyStore keystore = KeyStore.getInstance("JKS");
     keystore.load(
-        GameServerInitializer.class.getResourceAsStream("/com/unima/risk6/certs/TestKeystore.jks"),
+        GameServerInitializer.class.getResourceAsStream("/com/unima/risk6/certs/Keystore.jks"),
         "T0u8nUjT8TX9vTr2".toCharArray());
 
     KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
