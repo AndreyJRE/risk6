@@ -10,6 +10,8 @@ import static com.unima.risk6.network.server.GameServer.channels;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.unima.risk6.game.ai.AiBot;
+import com.unima.risk6.game.ai.bots.EasyBot;
+import com.unima.risk6.game.ai.bots.HardBot;
 import com.unima.risk6.game.ai.bots.MediumBot;
 import com.unima.risk6.game.logic.EndPhase;
 import com.unima.risk6.game.logic.Reinforce;
@@ -158,9 +160,9 @@ public class GameLobbyChannels {
       if (player.getUser().equals(playerName)) {
         //Player found
         switch (botType) {
-          //case "easy" ->  bot = new EasyBot(player);
+          case "easy" -> bot = new EasyBot(player);
           case "medium" -> bot = new MediumBot(player);
-          //case "hard" ->  bot = new HardBot(player);
+          case "hard" -> bot = new HardBot(player);
 
         }
         for (Country country : bot.getCountries()) {
