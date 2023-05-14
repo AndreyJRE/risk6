@@ -1,7 +1,5 @@
 package com.unima.risk6.network.server;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.unima.risk6.game.ai.AiBot;
@@ -49,24 +47,67 @@ import org.slf4j.LoggerFactory;
 public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GameServerFrameHandler.class);
-  private static final BiMap<GameLobby, ChannelGroup> gameChannels = HashBiMap.create();
-  private static final BiMap<UserDto, Channel> users = HashBiMap.create();
 
   protected static ChannelGroup channels;
-  private GameLobbyChannels gameLobbyChannels;
+  private final GameLobbyChannels gameLobbyChannels;
   private MoveProcessor moveProcessor;
 
+  /**
+   * Constructor of GameServerFrameHandler with the given channels and GameLobbyChannels.
+   *
+   * @param channels          the ChannelGroup of active channels.
+   * @param gameLobbyChannels the GameLobbyChannels which manages game lobbies.
+   */
   GameServerFrameHandler(ChannelGroup channels, GameLobbyChannels gameLobbyChannels) {
     GameServerFrameHandler.channels = channels;
     this.gameLobbyChannels = gameLobbyChannels;
   }
 
+  /**
+   * Returns the same game lobby as given as parameter but ensures that the reference is correct.
+   *
+   * @param gameLobby   the game lobby to search for.
+   * @param serverLobby the server lobby where the game lobby is stored.
+   * @return a game lobby with correct references.
+   */
   private static GameLobby getServerGameLobby(GameLobby gameLobby, ServerLobby serverLobby) {
-    GameLobby gameLobbyFromServer = serverLobby.getGameLobbies().stream()
+    return serverLobby.getGameLobbies().stream()
         .filter(x -> x.getLobbyName().equals(gameLobby.getLobbyName())).findFirst().get();
-    return gameLobbyFromServer;
   }
 
+  /**
+   * Called when a client's channel becomes inactive. Logs the occurrence and handles the exit of
+   * the client from the game.
+   *
+   * @param ctx the ChannelHandlerContext tied to the client's channel.
+   * @throws Exception if an error occurs during the handling of the client's exit.
+   */
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    LOGGER.info("Lost connection to one client.");
+    gameLobbyChannels.handleExit(ctx.channel(), this);
+
+  }
+
+  /**
+   * Called when a client's channel becomes active. Adds the new channel to the ChannelGroup.
+   *
+   * @param ctx the ChannelHandlerContext tied to the client's channel.
+   * @throws Exception if an error occurs during the addition of the channel to the group.
+   */
+  @Override
+  public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    channels.add(ctx.channel());
+  }
+
+  /**
+   * Handles the reading of a WebSocketFrame from a client's channel. The Message gets deserialized
+   * and then processed.
+   *
+   * @param ctx   the ChannelHandlerContext tied to the client's channel.
+   * @param frame the WebSocketFrame read from the client's channel.
+   * @throws Exception if an error occurs during the handling of the WebSocketFrame.
+   */
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
 
@@ -80,15 +121,14 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       try {
         LOGGER.debug("Server: Trying to read message");
         json = JsonParser.parseString(request).getAsJsonObject();
-        //TODO Error Handling
       } catch (Exception e) {
         LOGGER.debug("Not a JSON: " + request + "\n Exception: " + e);
       }
       if (json != null) {
         if (GameConfiguration.isTutorialOver()) {
           gameLobbyChannels.replaceUser(moveProcessor.getGameController().getGameState(),
-              gameLobbyChannels.getGameLobbyByChannel(
-                  ctx.channel()), "Johnny Test", "medium");
+              gameLobbyChannels.getGameLobbyByChannel(ctx.channel()), "Johnny Test", "medium");
+          GameConfiguration.setTutorialOver(false);
         }
         LOGGER.debug(
             "Server Received Message with ContentType: " + json.get("contentType").getAsString());
@@ -177,7 +217,8 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                   } else {
                     gameLobbyChannels.putUsers(userDto, ctx.channel());
                     NetworkConfiguration.getServerLobby().getUsers().add(userDto);
-                    sendServerLobby(NetworkConfiguration.getServerLobby());
+                    sendServerLobby(NetworkConfiguration.getServerLobby(),
+                        ConnectionActions.ACCEPT_JOIN_SERVER_LOBBY);
                   }
                 }
                 case JOIN_GAME_LOBBY -> {
@@ -302,7 +343,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
                 default -> LOGGER.error("Server received a faulty connection message");
               }
             } catch (NullPointerException ignored) {
-              //TODO
             }
           }
           default -> {
@@ -318,20 +358,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
-  private void sendCreatedTutorialGameLobby(GameLobby gameLobby) {
-    String serialized1 = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_TUTORIAL_CREATE_LOBBY, gameLobby));
-    for (Channel channel : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
-      LOGGER.debug("Send game lobby to : " + channel.id());
-      channel.writeAndFlush(new TextWebSocketFrame(serialized1));
-
-    }
-  }
-
-  private void sendGameOver(ChannelGroup channelGroup) {
-    //TODO
-  }
-
+  /**
+   * Sends the current game state to all the clients in the given ChannelGroup.
+   *
+   * @param channelGroup the group of clients to send the game state to.
+   */
   void sendGamestate(ChannelGroup channelGroup) {
     String message = Serializer.serialize(
         new StandardMessage<GameState>(moveProcessor.getGameController().getGameState()));
@@ -342,6 +373,12 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
+  /**
+   * Sends a specific game state to all the clients in the given ChannelGroup.
+   *
+   * @param channelGroup the group of clients to send the game state to.
+   * @param gameState    the specific game state to send.
+   */
   protected void sendGamestate(ChannelGroup channelGroup, GameState gameState) {
     String message = Serializer.serialize(new StandardMessage<GameState>(gameState));
     LOGGER.debug(message);
@@ -351,13 +388,46 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  private void sendCreatedGameLobby(ServerLobby serverLobby, GameLobby gameLobby) {
-    String serialized = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
-    for (Channel ch : channels) {
-      LOGGER.debug("Send new server lobby to: " + ch.id());
-      ch.writeAndFlush(new TextWebSocketFrame(serialized));
+  /**
+   * Sends the first game state to all the clients in the given GameLobby. Only use it, to start the
+   * game!
+   *
+   * @param gameLobby the lobby of clients to send the first game state to.
+   */
+  private void sendFirstGamestate(GameLobby gameLobby) {
+    String message = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_START_GAME,
+            moveProcessor.getGameController().getGameState()));
+    LOGGER.debug(message);
+    for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      LOGGER.debug("Send first gamestate to: " + ch.id());
+      ch.writeAndFlush(new TextWebSocketFrame(message));
     }
+  }
+
+  /**
+   * Sends the current game lobby state to all the clients in the given GameLobby.
+   *
+   * @param gameLobby the lobby of clients to send the game lobby state to.
+   */
+  protected void sendGameLobby(GameLobby gameLobby) {
+    String serializedGameLobby = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_GAME_LOBBY, gameLobby));
+    for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      LOGGER.debug("Send a game lobby to: " + ch.id());
+      ch.writeAndFlush(new TextWebSocketFrame(serializedGameLobby));
+    }
+  }
+
+  /**
+   * Sends the updated server lobby to all the clients in the given ServerLobby. Sends the created.
+   * GameLobby to the user who created it.
+   *
+   * @param serverLobby the server lobby to send to the clients.
+   * @param gameLobby   the game lobby to send.
+   */
+  private void sendCreatedGameLobby(ServerLobby serverLobby, GameLobby gameLobby) {
+    sendServerLobby(serverLobby, ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY);
     String serialized1 = Serializer.serialize(
         new ConnectionMessage<>(ConnectionActions.ACCEPT_CREATE_LOBBY, gameLobby));
 
@@ -368,26 +438,82 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
-  private void sendServerLobby(ServerLobby serverLobby) {
+  /**
+   * Sends the created tutorial game lobby to the user who started the Tutorial.
+   *
+   * @param gameLobby the tutorial game lobby to send.
+   */
+  private void sendCreatedTutorialGameLobby(GameLobby gameLobby) {
+    String serialized1 = Serializer.serialize(
+        new ConnectionMessage<>(ConnectionActions.ACCEPT_TUTORIAL_CREATE_LOBBY, gameLobby));
+    for (Channel channel : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
+      LOGGER.debug("Send game lobby to : " + channel.id());
+      channel.writeAndFlush(new TextWebSocketFrame(serialized1));
+
+    }
+  }
+
+  /**
+   * Sends the current state of the server lobby to all connected clients.
+   *
+   * @param serverLobby       the current state of the server lobby.
+   * @param connectionActions the type of action that triggered this update.
+   */
+  private void sendServerLobby(ServerLobby serverLobby, ConnectionActions connectionActions) {
+    String serialized = Serializer.serialize(
+        new ConnectionMessage<>(connectionActions, serverLobby));
     for (Channel ch : channels) {
       LOGGER.debug("Send new server lobby to: " + ch.id());
-      ch.writeAndFlush(new TextWebSocketFrame(Serializer.serialize(
-          new ConnectionMessage<ServerLobby>(ConnectionActions.ACCEPT_JOIN_SERVER_LOBBY,
-              serverLobby))));
+      ch.writeAndFlush(new TextWebSocketFrame(serialized));
     }
   }
 
-  private void sendFirstGamestate(GameLobby gameLobby) {
-    String message = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_START_GAME,
-            moveProcessor.getGameController().getGameState()));
-    LOGGER.debug(message);
-    for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
-      LOGGER.debug("Send new gamestate to: " + ch.id());
+  /**
+   * Sends the updated state of the server lobby to all connected clients.
+   *
+   * @param serverLobby the updated state of the server lobby.
+   */
+  protected void sendUpdatedServerLobby(ServerLobby serverLobby) {
+    sendServerLobby(serverLobby, ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY);
+  }
+
+  /**
+   * Sends a chat message from a specific channel to all channels in the same channel group. The
+   * channel group is either the channel group of a running game or of the server lobby.
+   *
+   * @param channel the channel from which the chat message originates.
+   * @param request the original content of the chat message.
+   */
+  public void sendChatMessage(Channel channel, String request) {
+    ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
+    chatMessage.setContent(gameLobbyChannels.getUserByChannel(channel).getUsername() + ": "
+        + chatMessage.getContent());
+    String message = Serializer.serialize(chatMessage);
+    gameLobbyChannels.getChannelGroupByChannel(channel).forEach(ch -> {
+      LOGGER.debug("Send chatmessage: " + message + " to channel: " + channel.id());
       ch.writeAndFlush(new TextWebSocketFrame(message));
-    }
+    });
+
+
   }
 
+  /**
+   * Sends a message indicating that a players request got dropped.
+   *
+   * @param channel           the channel to which the drop message is to be sent.
+   * @param connectionActions the type of action that triggered this message.
+   * @param string            an explanation, why the request got dropped.
+   */
+  public void sendDropMessage(Channel channel, ConnectionActions connectionActions, String string) {
+    channel.writeAndFlush(new TextWebSocketFrame(
+        Serializer.serialize(new ConnectionMessage<String>(connectionActions, string))));
+  }
+
+  /**
+   * Processes the start of a game in the given game lobby.
+   *
+   * @param gameLobby the game lobby to start the game in.
+   */
   public void processStartGame(GameLobby gameLobby) {
     //TODO Bots should not start the game
     List<String> usersList = gameLobby.getUsers().stream().map(UserDto::getUsername).toList();
@@ -415,15 +541,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     GameController gameController = moveProcessor.getGameController();
     for (int i = queueSize; i > 0; i--) {
       Player player = gameController.getGameState().getActivePlayers().poll();
-      diceRolls.put(player,
-          Dice.rollDice());
+      diceRolls.put(player, Dice.rollDice());
       gameState.getActivePlayers().add(player);
     }
     System.out.println("Test 3");
     HashMap<String, Integer> diceRollsString = new HashMap<>();
     diceRolls.keySet().forEach(x -> diceRollsString.put(x.getUser(), diceRolls.get(x)));
-    Player activePlayer = gameController.getGameState().getActivePlayers()
-        .peek();
+    Player activePlayer = gameController.getGameState().getActivePlayers().peek();
     gameController.getGameState().setCurrentPlayer(activePlayer);
     moveProcessor.getPlayerController().setPlayer(activePlayer);
     moveProcessor.getDeckController().initDeck();
@@ -447,8 +571,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
-    gameController
-        .setNewPlayerOrder(gameController.getNewPlayerOrder(diceRolls));
+    gameController.setNewPlayerOrder(gameController.getNewPlayerOrder(diceRolls));
     playerController.setPlayer(gameController.getCurrentPlayer());
     sendGamestate(gameLobbyChannels.getChannelsByGameLobby(gameLobby));
     moveProcessor.clearLastMoves();
@@ -462,6 +585,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
+  /**
+   * Processes the start of a tutorial in the given game lobby.
+   *
+   * @param myServerGameLobby the game lobby to start the game in.
+   */
   private void processStartTutorial(GameLobby myServerGameLobby) {
     Tutorial tutorial = new Tutorial(myServerGameLobby.getUsers().get(0).getUsername());
     moveProcessor.setGameController(new GameController(tutorial.getTutorialState()));
@@ -477,39 +605,12 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
-
-  protected void sendGameLobby(GameLobby gameLobby) {
-    String serializedGameLobby = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_JOIN_GAME_LOBBY, gameLobby));
-    for (Channel ch : gameLobbyChannels.getChannelsByGameLobby(gameLobby)) {
-      LOGGER.debug("Send a game lobby to: " + ch.id());
-      ch.writeAndFlush(new TextWebSocketFrame(serializedGameLobby));
-    }
-  }
-
-
-  public void sendChatMessage(Channel channel, String request) {
-    ChatMessage chatMessage = Deserializer.deserializeChatMessage(request);
-    chatMessage.setContent(gameLobbyChannels.getUserByChannel(channel).getUsername() + ": "
-        + chatMessage.getContent());
-    gameLobbyChannels.getChannelGroupByChannel(channel).forEach(ch -> {
-      String message = Serializer.serialize(chatMessage);
-      LOGGER.debug("Send chatmessage: " + message + " to channel: " + channel.id());
-      ch.writeAndFlush(new TextWebSocketFrame(message));
-    });
-
-
-  }
-
-  protected void sendUpdatedServerLobby(ServerLobby serverLobby) {
-    String serialized = Serializer.serialize(
-        new ConnectionMessage<>(ConnectionActions.ACCEPT_UPDATE_SERVER_LOBBY, serverLobby));
-    for (Channel ch : channels) {
-      LOGGER.debug("Send updated server lobby to: " + ch.id());
-      ch.writeAndFlush(new TextWebSocketFrame(serialized));
-    }
-  }
-
+  /**
+   * Processes the move of an AI bot in the game.
+   *
+   * @param aiBot        the AI bot to process the move for.
+   * @param channelGroup the channel group for the game lobby.
+   */
   private void processBotMove(AiBot aiBot, ChannelGroup channelGroup) {
     aiBot.setGameState(moveProcessor.getGameController().getGameState());
     Player player = (Player) aiBot;
@@ -560,6 +661,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   }
 
+  /**
+   * Processes a reinforcement phase for the given bot.
+   *
+   * @param aiBot        the AI bot to process the move for.
+   * @param channelGroup the channel group for the game lobby.
+   * @param player       parameter aiBot cast to a player.
+   */
   void processBotReinforcementPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     player.setDeployableTroops( // to ensure numbers are right
@@ -580,6 +688,11 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
+  /**
+   * Processes a bot hand in.
+   *
+   * @param channelGroup the channel group for the game lobby.
+   */
   void processBotHandIn(ChannelGroup channelGroup) {
     HandController handController = moveProcessor.getPlayerController().getHandController();
     if (handController.holdsExchangeable()) {
@@ -591,6 +704,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
   }
 
+  /**
+   * Processes a fortify phase for the given bot.
+   *
+   * @param aiBot        the AI bot to process the move for.
+   * @param channelGroup the channel group for the game lobby.
+   * @param player       parameter aiBot cast to a player.
+   */
   void processBotFortifyPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     Fortify fortify = aiBot.createFortify();
@@ -605,6 +725,13 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
     moveProcessor.clearLastMoves();
   }
 
+  /**
+   * Processes an attack phase for the given bot.
+   *
+   * @param aiBot        the AI bot to process the move for.
+   * @param channelGroup the channel group for the game lobby.
+   * @param player       parameter aiBot cast to a player.
+   */
   void processBotAttackPhase(AiBot aiBot, ChannelGroup channelGroup, Player player)
       throws InterruptedException {
     boolean quitEarly = false;
@@ -626,7 +753,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
         } while (!attack1.getHasConquered() && attack1.getAttackingCountry().getTroops() >= 2);
         aiBot.setGameState(moveProcessor.getGameController().getGameState());
         if (moveProcessor.getGameController().getGameState().isGameOver()) {
-          sendGameOver(channelGroup);
           break;
         }
         if (attack1.getHasConquered()) {
@@ -649,26 +775,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       sendGamestate(channelGroup);
       moveProcessor.clearLastMoves();
     }
-  }
-
-  @Override
-  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    LOGGER.info("Lost connection to one client.");
-    gameLobbyChannels.handleExit(ctx.channel(), this);
-
-  }
-
-  public void sendDropMessage(Channel channel, ConnectionActions connectionActions, String string) {
-    channel.writeAndFlush(new TextWebSocketFrame(
-        Serializer.serialize(new ConnectionMessage<String>(connectionActions, string))));
-  }
-
-  //TODO Handle verbindungsabbruch
-  @Override
-  public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    channels.add(ctx.channel());
-    //TODO Manage the different games and the server lobby, multiple channelGroups could be the solution
-    // ctx.channel().attr(AttributeKey.newInstance("name")).set("Test");
   }
 
 
