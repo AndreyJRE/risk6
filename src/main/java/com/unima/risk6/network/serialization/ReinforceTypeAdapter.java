@@ -53,8 +53,7 @@ public class ReinforceTypeAdapter implements JsonSerializer<Reinforce>,
    *                  serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
    * @param context   The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized
-   * {@link com.unima.risk6.game.logic.Reinforce} data.
+   * @return A JsonElement representing the serialized Reinforce data.
    */
   @Override
   public JsonElement serialize(Reinforce reinforce, Type typeOfSrc,

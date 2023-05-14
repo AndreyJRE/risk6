@@ -30,8 +30,7 @@ public class CardTypeAdapter implements JsonDeserializer<Card>, JsonSerializer<C
    * @param src       The source {@link com.unima.risk6.game.models.Card} object to be serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
    * @param context   The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized
-   * {@link com.unima.risk6.game.models.Card} data.
+   * @return A JsonElement representing the serialized Card data.
    */
   @Override
   public JsonElement serialize(Card src, Type typeOfSrc, JsonSerializationContext context) {

@@ -31,8 +31,7 @@ public class HandInTypeAdapter implements JsonSerializer<HandIn>, JsonDeserializ
    * @param handIn    The source {@link com.unima.risk6.game.logic.HandIn} object to be serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
    * @param context   The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized
-   * {@link com.unima.risk6.game.logic.HandIn} data.
+   * @return A JsonElement representing the serialized HandIn data.
    */
   @Override
   public JsonElement serialize(HandIn handIn, Type typeOfSrc, JsonSerializationContext context) {

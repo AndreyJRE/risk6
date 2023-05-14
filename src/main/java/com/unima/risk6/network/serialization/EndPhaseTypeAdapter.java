@@ -29,8 +29,7 @@ public class EndPhaseTypeAdapter implements JsonSerializer<EndPhase>, JsonDeseri
    *                  serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
    * @param context   The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized
-   * {@link com.unima.risk6.game.logic.EndPhase} data.
+   * @return A JsonElement representing the serialized EndPhase data.
    */
   @Override
   public JsonElement serialize(EndPhase endPhase, Type typeOfSrc,

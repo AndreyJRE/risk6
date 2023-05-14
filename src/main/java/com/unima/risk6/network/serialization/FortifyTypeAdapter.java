@@ -51,16 +51,13 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
    *                  serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
    * @param context   The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized
-   * {@link com.unima.risk6.game.logic.Fortify} data.
+   * @return A JsonElement representing the serialized Fortify data.
    */
   @Override
   public JsonElement serialize(Fortify fortify, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("outgoing", fortify.getOutgoing().getCountryName().toString());
     jsonObject.addProperty("incoming", fortify.getIncoming().getCountryName().toString());
-    //jsonObject.add("outgoing", context.serialize(fortify.getOutgoing()));
-    //jsonObject.add("incoming", context.serialize(fortify.getIncoming()));
     jsonObject.addProperty("troopsToMove", fortify.getTroopsToMove());
     return jsonObject;
   }

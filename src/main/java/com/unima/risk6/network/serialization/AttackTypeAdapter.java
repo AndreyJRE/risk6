@@ -55,8 +55,7 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
    * @param src       The source {@link com.unima.risk6.game.logic.Attack} object to be serialized.
    * @param typeOfSrc The specific generalized runtime type of src.
    * @param context   The context for serialization, used to serialize other objects as needed.
-   * @return A {@link com.google.gson.JsonElement} representing the serialized
-   * {@link com.unima.risk6.game.logic.Attack} data.
+   * @return A JsonElement representing the serialized Attack data.
    */
   @Override
   public JsonElement serialize(Attack src, Type typeOfSrc, JsonSerializationContext context) {
