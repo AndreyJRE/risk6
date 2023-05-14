@@ -46,10 +46,8 @@ public class ChangePasswordSceneController {
   private final ChangePasswordScene changePasswordScene;
 
   private final SceneController sceneController;
-
-  private BorderPane root;
-
   private final UserService userService;
+  private BorderPane root;
 
   /**
    * Constructor for the ChangePasswordSceneController.
@@ -72,7 +70,6 @@ public class ChangePasswordSceneController {
     Path arrow = StyleConfiguration.generateBackArrow();
     StackPane backButton = new StackPane(arrow);
     backButton.setOnMouseClicked(event -> sceneController.activate(SceneName.USER_OPTION));
-    AnchorPane anchorPane = createNewPasswordFields();
 
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
@@ -80,20 +77,24 @@ public class ChangePasswordSceneController {
     Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
     ImageView imageView = new ImageView(originalImage);
 
-// Set the opacity
+    // Set the opacity
     imageView.setOpacity(0.9);
 
-// Create a snapshot of the ImageView
+    // Create a snapshot of the ImageView
     SnapshotParameters parameters = new SnapshotParameters();
     parameters.setFill(Color.TRANSPARENT);
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
-// Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
+    // Use the semi-transparent image for the background
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true,
+        true, true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
     Background background = new Background(backgroundImage);
+
+    AnchorPane anchorPane = createNewPasswordFields();
+
     root.setBackground(background);
     root.setCenter(anchorPane);
     root.setLeft(backButton);
@@ -130,7 +131,8 @@ public class ChangePasswordSceneController {
     vBox.setAlignment(Pos.CENTER);
     vBox.setSpacing(22);
     vBox.setStyle(
-        "-fx-opacity: 0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
+        "-fx-opacity: 0.9; -fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: "
+            + "dropshadow(three-pass-box, rgba(0,0,0,0.14), 10, 0, 0, 0);");
     AnchorPane.setTopAnchor(vBox, 0.0);
     AnchorPane.setRightAnchor(vBox, 0.0);
     AnchorPane.setBottomAnchor(vBox, 0.0);
@@ -140,11 +142,11 @@ public class ChangePasswordSceneController {
     selectUser.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 41px; "
         + "-fx-font-weight: bold; -fx-text-fill: #2D2D2D;");
     PasswordField newPasswordField = new PasswordField();
-    PasswordField confirmPasswordField = new PasswordField();
     newPasswordField.setPromptText("New password");
     newPasswordField.setStyle(
         "-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");
     newPasswordField.setPrefWidth(470);
+    PasswordField confirmPasswordField = new PasswordField();
     confirmPasswordField.setPromptText("Confirm password");
     confirmPasswordField.setStyle(
         "-fx-font-size: 20; -fx-background-radius: 20; -fx-border-radius: 20;");

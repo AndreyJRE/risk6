@@ -22,7 +22,7 @@
       </ImageView>
       <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <center>
-            <VBox fx:id="centerVBox" alignment="CENTER" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: transparent;">
+            <VBox alignment="CENTER" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: transparent;">
               <children>
                 <HBox alignment="CENTER" style="-fx-background-color: transparent;" VBox.vgrow="NEVER">
                   <children>
