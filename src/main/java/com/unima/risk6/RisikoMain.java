@@ -35,7 +35,6 @@ public class RisikoMain extends Application {
   public void start(Stage stage) throws IOException {
 
     UserService userService = DatabaseConfiguration.getUserService();
-    List<User> users = userService.getAllUsers();
     stage.setMinWidth(1080);
     stage.setMinHeight(720);
     stage.setWidth(1080);
@@ -46,6 +45,7 @@ public class RisikoMain extends Application {
     LoginSceneController loginSceneController = new LoginSceneController(loginScene);
     loginScene.setLoginSceneController(loginSceneController);
     sceneController.addScene(SceneName.LOGIN, loginScene);
+    List<User> users = userService.getAllUsers();
     if (users.isEmpty()) {
       FXMLLoader fxmlLoader = new FXMLLoader(
           RisikoMain.class.getResource("fxml/CreateAccount.fxml"));

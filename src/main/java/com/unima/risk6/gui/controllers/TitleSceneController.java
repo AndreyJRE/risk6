@@ -150,8 +150,8 @@ public class TitleSceneController implements Initializable {
     volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
       SoundConfiguration.setVolume(newValue.doubleValue() / 100.0);
     });
-    volumeImage.hoverProperty().addListener((observable, oldVal, nVal) -> {
-      if (nVal) {
+    volumeImage.hoverProperty().addListener((observable, oldVal, nval) -> {
+      if (nval) {
         volumeImage.setCursor(Cursor.HAND);
       } else {
         volumeImage.setCursor(Cursor.DEFAULT);

@@ -46,7 +46,8 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 /**
- * The SinglePlayerSettingsSceneController handles interactions within the single player settings scene.
+ * The SinglePlayerSettingsSceneController handles interactions within the single player
+ * settings scene.
  * It manages UI components, game lobby, bot addition/removal, and scene transitions.
  * Implements GameLobbyObserver to receive game lobby updates.
  *
@@ -64,7 +65,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private boolean tutorial;
 
   /**
-   * Constructs a SinglePlayerSettingsSceneController object that handles user interactions in the SinglePlayerSettingsScene.
+   * Constructs a SinglePlayerSettingsSceneController object that handles user interactions
+   * in the SinglePlayerSettingsScene.
    *
    * @param singlePlayerSettingsScene a reference to the single player settings scene
    */
@@ -76,7 +78,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   /**
-   * Initializes the single player settings scene, sets up the game lobby, user, and the UI elements.
+   * Initializes the single player settings scene, sets up the game lobby, user, and
+   * the UI elements.
    */
 
   public void init() {
@@ -348,7 +351,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   /**
-   * Handles the action of the "Play" button. Validates the number of players and initiates the game or tutorial.
+   * Handles the action of the "Play" button. Validates the number of players and
+   * initiates the game or tutorial.
    */
 
   private void handlePlayButton() {

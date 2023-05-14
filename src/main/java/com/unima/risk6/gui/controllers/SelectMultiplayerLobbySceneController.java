@@ -79,7 +79,8 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   /**
    * Constructor for the SelectMultiplayerLobbySceneController.
    *
-   * @param selectMultiplayerLobbyScene The SelectMultiplayerLobbyScene that this controller manages.
+   * @param selectMultiplayerLobbyScene The SelectMultiplayerLobbyScene that this controller
+   * manages.
    */
 
   public SelectMultiplayerLobbySceneController(

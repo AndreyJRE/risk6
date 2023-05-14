@@ -36,6 +36,13 @@ public class StyleConfiguration {
           + "-fx-text-fill: #FFFFFF";
 
 
+  /**
+   * Applies the specified button style to the given button.
+   * Changes the button style when it is hovered.
+   *
+   * @param button the button to which the style is to be applied
+   */
+
   public static void applyButtonStyle(Button button) {
     button.setStyle(NORMAL_BUTTON_STYLE);
     button.hoverProperty().addListener((observable, oldValue, newValue) -> {
@@ -46,6 +53,12 @@ public class StyleConfiguration {
       }
     });
   }
+
+  /**
+   * Generates a Path instance that represents a back arrow.
+   *
+   * @return a Path instance representing a back arrow
+   */
 
   public static Path generateBackArrow() {
     Path arrow = new Path();
@@ -58,6 +71,14 @@ public class StyleConfiguration {
     arrow.setFill(Color.TRANSPARENT);
     return arrow;
   }
+
+  /**
+   * Shows a confirmation dialog with the specified title and message.
+   *
+   * @param title the title of the confirmation dialog
+   * @param message the message of the confirmation dialog
+   * @return true if the user clicks the "Yes" button, false otherwise
+   */
 
   public static boolean showConfirmationDialog(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -92,6 +113,13 @@ public class StyleConfiguration {
     return result.isPresent() && result.get() == yesButton;
   }
 
+  /**
+   * Shows an error dialog with the specified title and message.
+   *
+   * @param title the title of the error dialog
+   * @param message the message of the error dialog
+   */
+
   public static void showErrorDialog(String title, String message) {
     Alert alert = new Alert(AlertType.ERROR);
     alert.setTitle(title);
@@ -113,6 +141,13 @@ public class StyleConfiguration {
     alert.showAndWait();
   }
 
+  /**
+   * Handles the case when the username already exists.
+   *
+   * @param problem the problem description
+   * @param title the title of the dialog
+   * @param body the body of the dialog
+   */
 
   public static void handleUsernameExists(String problem, String title, String body) {
     Alert alert = new Alert(Alert.AlertType.WARNING, problem,
@@ -131,6 +166,12 @@ public class StyleConfiguration {
       }
     }
   }
+
+  /**
+   * Handles the case when the lobby already exists.
+   *
+   * @param problem the problem description
+   */
 
   public static void handleLobbyExists(String problem) {
     Alert alert = new Alert(Alert.AlertType.WARNING, problem,

@@ -233,7 +233,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
         + "-fx-background-color: #CCCCCC; -fx-border-color: #000000; -fx-border-radius: 20; "
         + "-fx-background-radius: 20; -fx-padding: 5 10 5 10; -fx-border-width: 2.0");
     VBox playerBox = new VBox(userImage, userName);
-    userImage.hoverProperty().addListener((observableValue, aBoolean, t1) -> {
+    userImage.hoverProperty().addListener((observableValue, aboolean, t1) -> {
       if (t1) {
         userImage.setEffect(dropShadow);
         userImage.setCursor(Cursor.HAND);
@@ -362,6 +362,7 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
       case 0 -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
       case 1 -> botImage = createPlayerStackPane(ImageName.MEDIUMBOT_ICON, true);
       case 2 -> botImage = createPlayerStackPane(ImageName.HARDBOT_ICON, true);
+      default -> botImage = createPlayerStackPane(ImageName.EASYBOT_ICON, true);
     }
     Label userName = new Label(botName);
     userName.setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-size: 20px; "

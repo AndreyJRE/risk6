@@ -1,6 +1,7 @@
 package com.unima.risk6.gui.configurations;
 
 import com.unima.risk6.database.models.User;
+
 /**
  * This class manages the active user for the other scenes to access it.
  *

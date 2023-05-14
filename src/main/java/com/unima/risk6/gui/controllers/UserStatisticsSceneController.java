@@ -134,14 +134,14 @@ public class UserStatisticsSceneController {
     gridPaneContainer.setAlignment(Pos.CENTER);
 
     // Create a VBox to hold the userNameField, userStackPane, and the labels
-    VBox centerVBox = new VBox(userNameFieldContainer, userStackPane, gridPaneContainer);
-    centerVBox.setSpacing(20);
-    centerVBox.setAlignment(Pos.CENTER);
+    VBox centervbox = new VBox(userNameFieldContainer, userStackPane, gridPaneContainer);
+    centervbox.setSpacing(20);
+    centervbox.setAlignment(Pos.CENTER);
 
     root.setLeft(backButton);
     // Add some spacing around backButton
     BorderPane.setMargin(backButton, new Insets(10, 0, 0, 10));
-    root.setCenter(centerVBox);
+    root.setCenter(centervbox);
   }
 
   /**
@@ -151,7 +151,6 @@ public class UserStatisticsSceneController {
 
   private void initGridPane() {
     statisticsGridPane = new GridPane();
-    List<GameStatistic> statisticList = gameStatisticService.getAllStatisticsByUserId(user.getId());
     Label hoursPlayedLabel = new Label("Hours played: ");
     hoursPlayedLabel.setStyle(labelStyle);
     Label eloLabel = new Label("Ranking: ");
@@ -169,6 +168,7 @@ public class UserStatisticsSceneController {
     numberCountriesLost.setStyle(numberStyle);
     Label numberCountriesWon = new Label("0");
     numberCountriesWon.setStyle(numberStyle);
+    List<GameStatistic> statisticList = gameStatisticService.getAllStatisticsByUserId(user.getId());
     int won = (int) statisticList.stream().filter(GameStatistic::isGameWon).count();
     double lossRatio = ((double) won / statisticList.size()) * 10;
     numberRanking.setText(String.format("%.2f", lossRatio));
