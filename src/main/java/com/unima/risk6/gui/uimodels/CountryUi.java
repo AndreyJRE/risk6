@@ -389,8 +389,6 @@ public class CountryUi extends Group {
   public void showAmountOfTroopsPopUp(int troopBound, CountryUi adjacentCountryUi,
       GamePhase gamePhase) {
     AtomicInteger amountOfTroops = new AtomicInteger(1);
-    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-    BorderPane moveTroopsPane = new BorderPane();
     Label chatLabel = new Label("Amount of Troops: " + amountOfTroops);
     chatLabel.setStyle("-fx-font-size: 18px;");
 
@@ -404,6 +402,7 @@ public class CountryUi extends Group {
     closeAmountOfTroopsButton.setStyle(
         "-fx-background-color: rgba(255, 255, 255, 0.7);" + "-fx-background-radius: 10px;");
     closeAmountOfTroopsButton.setFocusTraversable(false);
+    BorderPane moveTroopsPane = new BorderPane();
     moveTroopsPane.setTop(closeAmountOfTroopsButton);
     BorderPane.setAlignment(closeAmountOfTroopsButton, Pos.TOP_RIGHT);
 
@@ -527,6 +526,8 @@ public class CountryUi extends Group {
     chatBox.getChildren().addAll(leftCircle, chatLabel, rightCircle, confirmCircle);
     HBox.setHgrow(confirmCircle, Priority.ALWAYS);
 
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
+
     moveTroopsPane.setCenter(chatBox);
     moveTroopsPane.setPrefSize(gamePane.getWidth() * 0.30, gamePane.getHeight() * 0.15);
     moveTroopsPane.setStyle(
@@ -534,16 +535,15 @@ public class CountryUi extends Group {
 
     Bounds rootBounds = gamePane.localToScreen(gamePane.getBoundsInLocal());
 
-    double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
-    double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
-
-    double popupWidth = moveTroopsPane.getPrefWidth();
-    double popupHeight = moveTroopsPane.getPrefHeight();
-
     popUp.getContent().clear();
     popUp.getContent().add(moveTroopsPane);
 
     moveTroopsPane.setFocusTraversable(true);
+
+    double centerX = rootBounds.getMinX() + rootBounds.getWidth() / 2;
+    double centerY = rootBounds.getMinY() + rootBounds.getHeight() / 2;
+    double popupWidth = moveTroopsPane.getPrefWidth();
+    double popupHeight = moveTroopsPane.getPrefHeight();
 
     popUp.setX(centerX - popupWidth / 2);
     popUp.setY(centerY - popupHeight / 2);
@@ -571,9 +571,6 @@ public class CountryUi extends Group {
    */
   private void showAttackDicePopUp(Attack lastAttack, CountryUi attacker, CountryUi defender,
       ActivePlayerUi activePlayerUi) {
-    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
-    BorderPane dicePane = new BorderPane();
-
     HBox diceHbox = new HBox();
     diceHbox.setAlignment(Pos.CENTER);
     diceHbox.setSpacing(20);
@@ -623,7 +620,9 @@ public class CountryUi extends Group {
             defender, FORTIFY_PHASE);
       }
     });
+    BorderPane dicePane = new BorderPane();
     dicePane.setCenter(diceHbox);
+    BorderPane gamePane = (BorderPane) this.getParent().getParent().getParent();
     dicePane.setPrefSize(gamePane.getWidth() * 0.50, gamePane.getHeight() * 0.50);
     dicePane.setStyle("-fx-background-color: rgba(255, 255, 255, 0.7); -fx-background-radius: 10;");
 
