@@ -381,7 +381,7 @@ public class TitleSceneController implements Initializable {
       switchedOn.setValue(false);
       Thread.sleep(200);
     }
-    NetworkConfiguration.startGameServer();
+    NetworkConfiguration.startSinglePlayerServer();
     Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();

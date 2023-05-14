@@ -146,6 +146,9 @@ public class SettingsUi extends BorderPane {
     });
   }
 
+  /**
+   * Handles the action when the "Continue Game" button is clicked. Hides the SettingsUi.
+   */
   public void handleContinueButton() {
     settingPopup.hide();
   }
