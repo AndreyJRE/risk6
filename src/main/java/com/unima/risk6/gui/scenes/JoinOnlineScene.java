@@ -5,9 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The JoinOnlineScene class represents the scene where users can join an online game.
- * It implements the InitializableScene interface and utilizes the JoinOnlineSceneController
- * for managing the UI elements and actions within the scene.
+ * The JoinOnlineScene class represents the scene where users can join an online game. It implements
+ * the InitializableScene interface and utilizes the JoinOnlineSceneController for managing the UI
+ * elements and actions within the scene.
  *
  * @author fisommer
  */

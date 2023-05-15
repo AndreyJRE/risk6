@@ -44,10 +44,6 @@ public class CountryJsonObject {
     return adjacentCountries;
   }
 
-  public void setAdjacentCountries(CountryName[] adjacentCountries) {
-    this.adjacentCountries = adjacentCountries;
-  }
-
   public ContinentName getContinent() {
     return continent;
   }

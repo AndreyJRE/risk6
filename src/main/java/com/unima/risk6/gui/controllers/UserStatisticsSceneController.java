@@ -35,10 +35,10 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 /**
- * The UserStatisticsSceneController manages the user statistics scene in the UI.
- * It handles the initialization and display of user-specific statistics and profile information,
- * such as hours played, ranking, number of countries lost and won.
- * This class also manages the transition back to the user option scene.
+ * The UserStatisticsSceneController manages the user statistics scene in the UI. It handles the
+ * initialization and display of user-specific statistics and profile information, such as hours
+ * played, ranking, number of countries lost and won. This class also manages the transition back to
+ * the user option scene.
  *
  * @author fisommer
  * @author astoyano
@@ -72,8 +72,8 @@ public class UserStatisticsSceneController {
   }
 
   /**
-   * Initializes the scene with the current user's statistics and relevant UI components.
-   * Sets the background image and initializes the UI elements for displaying statistics.
+   * Initializes the scene with the current user's statistics and relevant UI components. Sets the
+   * background image and initializes the UI elements for displaying statistics.
    */
 
   public void init() {
@@ -107,8 +107,8 @@ public class UserStatisticsSceneController {
   }
 
   /**
-   * Initializes the UI elements for the scene, including the back arrow,
-   * user name, and statistical data display components.
+   * Initializes the UI elements for the scene, including the back arrow, user name, and statistical
+   * data display components.
    */
 
   private void initElements() {
@@ -145,8 +145,8 @@ public class UserStatisticsSceneController {
   }
 
   /**
-   * Initializes the GridPane for displaying statistical data.
-   * Retrieves data from the GameStatisticService and updates the UI components accordingly.
+   * Initializes the GridPane for displaying statistical data. Retrieves data from the
+   * GameStatisticService and updates the UI components accordingly.
    */
 
   private void initGridPane() {
@@ -197,8 +197,8 @@ public class UserStatisticsSceneController {
   }
 
   /**
-   * Initializes the StackPane for displaying the user's profile picture.
-   * The image is clipped to fit within a circular boundary.
+   * Initializes the StackPane for displaying the user's profile picture. The image is clipped to
+   * fit within a circular boundary.
    */
 
   private void initUserStackPane() {

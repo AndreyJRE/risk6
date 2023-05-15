@@ -7,7 +7,7 @@ import javafx.scene.layout.BorderPane;
 /**
  * Represents the scene where the user can change their password.
  *
- * @author: astoyano
+ * @author astoyano
  */
 public class ChangePasswordScene extends Scene implements InitializableScene {
 

@@ -5,9 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The MultiplayerLobbyScene class represents the multiplayer game lobby scene.
- * It implements the InitializableScene interface and uses the MultiplayerLobbySceneController
- * to manage the UI elements and actions within the scene.
+ * The MultiplayerLobbyScene class represents the multiplayer game lobby scene. It implements the
+ * InitializableScene interface and uses the MultiplayerLobbySceneController to manage the UI
+ * elements and actions within the scene.
  *
  * @author fisommer
  */

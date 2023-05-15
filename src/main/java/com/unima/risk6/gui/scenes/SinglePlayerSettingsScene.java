@@ -5,9 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The SinglePlayerSettingsScene class represents the scene for setting up single player games.
- * It implements the InitializableScene interface and uses the SinglePlayerSettingsSceneController
- * to manage the UI elements and actions within the scene.
+ * The SinglePlayerSettingsScene class represents the scene for setting up single player games. It
+ * implements the InitializableScene interface and uses the SinglePlayerSettingsSceneController to
+ * manage the UI elements and actions within the scene.
  *
  * @author fisommer
  * @author astoyano
@@ -19,6 +19,9 @@ public class SinglePlayerSettingsScene extends Scene implements InitializableSce
   private SinglePlayerSettingsSceneController singlePlayerSettingsSceneController;
   private boolean tutorial;
 
+  /**
+   * Constructs a new SinglePlayerLobbyScene with a BorderPane as its root.
+   */
   public SinglePlayerSettingsScene() {
     super(new BorderPane());
   }

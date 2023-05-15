@@ -246,8 +246,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
                 } else if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.CREATE_LOBBY) {
-                  Platform.runLater(() -> StyleConfiguration.handleLobbyExists(
-                      content));
+                  Platform.runLater(() -> StyleConfiguration.handleLobbyExists(content));
 
                 }
 

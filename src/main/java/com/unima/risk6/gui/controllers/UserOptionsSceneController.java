@@ -88,8 +88,7 @@ public class UserOptionsSceneController {
   public void init() {
     this.user = SessionManager.getUser();
     this.root = (BorderPane) userOptions.getRoot();
-    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"),
-        26);
+    Font.loadFont(getClass().getResourceAsStream("/com/unima/risk6/fonts/segoe_ui_bold.ttf"), 26);
     // Initialize elements
     initUserStackPane();
     initElements();
@@ -106,8 +105,7 @@ public class UserOptionsSceneController {
     Image semiTransparentImage = imageView.snapshot(parameters, null);
 
     // Use the semi-transparent image for the background
-    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true,
-        true, true);
+    BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
     BackgroundImage backgroundImage = new BackgroundImage(semiTransparentImage,
         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
         backgroundSize);
@@ -227,8 +225,7 @@ public class UserOptionsSceneController {
     Button deleteUser = createDeleteUserButton();
     // Create a VBox to hold the userNameField, userStackPane, and the labels
     VBox centerVbox = new VBox(userNameFieldContainer, userStackPane, showStatisticsButton,
-        changePasswordButton,
-        changeUserButton, deleteUser);
+        changePasswordButton, changeUserButton, deleteUser);
     centerVbox.setSpacing(10);
     centerVbox.setAlignment(Pos.CENTER);
 
