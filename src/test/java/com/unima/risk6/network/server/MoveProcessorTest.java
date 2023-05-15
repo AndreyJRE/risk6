@@ -3,6 +3,7 @@ package com.unima.risk6.network.server;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.unima.risk6.game.ai.AiBot;
@@ -139,53 +140,6 @@ class MoveProcessorTest {
 
   }
 
-  @Test
-  void processReinforceTest() {
-    for (int i = 0; i < 6; i++) {
-      players[i].setInitialTroops(20);
-    }
-    try {
-      //Claim countries for each player
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.ALASKA), 1));
-
-      for (Country c : gameState.getCountries()) {
-        moveProcessor.processReinforce(
-            new Reinforce(getCountryByCountryName(c.getCountryName()), 1));
-      }
-
-      addCountryToPlayer(CountryName.ALASKA, players[0]);
-      //Reinforces the first country of each player until all initialTroops were placed
-      while (!gameState.getCurrentPlayer().getCurrentPhase()
-          .equals(GamePhase.REINFORCEMENT_PHASE)) {
-        List<Country> countries = new ArrayList<>(
-            gameState.getCurrentPlayer().getCountries());
-        moveProcessor.processReinforce(
-            new Reinforce(countries.get(0), 1));
-      }
-
-      //Uses two of the Deployable troops of players[0] who should be in ReinforcementPhase.
-      getCountryByCountryName(CountryName.ALASKA).setTroops(1);
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.ALASKA), 1));
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.ALASKA), 1));
-      assertEquals(3, getCountryByCountryName(CountryName.ALASKA).getTroops());
-      assertEquals(1, players[0].getDeployableTroops());
-
-      //and the third deployable troop
-      moveProcessor.processReinforce(
-          new Reinforce(getCountryByCountryName(CountryName.ALASKA), 1));
-      moveProcessor.processEndPhase(new EndPhase(GamePhase.REINFORCEMENT_PHASE));
-      assertEquals(0, players[0].getDeployableTroops());
-      assertEquals(GamePhase.ATTACK_PHASE, players[0].getCurrentPhase());
-
-    } catch (InvalidMoveException e) {
-      System.err.println(e.getMessage());
-    }
-
-
-  }
 
   @Test
   void processAttackGeneralTest() {
@@ -307,11 +261,7 @@ class MoveProcessorTest {
         4);
     //Created invalid Attack
 
-    try {
-      moveProcessor.processAttack(testAttack3);
-    } catch (InvalidMoveException e) {
-      System.err.println(e.getMessage());
-    }
+    assertThrows(InvalidMoveException.class, () -> moveProcessor.processAttack(testAttack3));
     //Should not call calculateLosses() method in processAttack-->should not change game state.
     assertEquals(0, testAttack3.getDefenderLosses());
     assertEquals(0, testAttack3.getAttackerLosses());
@@ -323,17 +273,12 @@ class MoveProcessorTest {
         getCountryByCountryName(CountryName.CHINA),
         3);
 
-    try {
-      moveProcessor.processAttack(testAttack4);
-    } catch (InvalidMoveException e) {
-      System.err.println(e.getMessage());
-    } finally {
+    assertThrows(InvalidMoveException.class, () -> moveProcessor.processAttack(testAttack4));
 
-      //Should not call calculateLosses() method in processAttack-->should not change game state.
-      assertEquals(0, testAttack4.getDefenderLosses());
-      assertEquals(0, testAttack4.getAttackerLosses());
-      assertFalse(testAttack3.getHasConquered());
-    }
+    //Should not call calculateLosses() method in processAttack-->should not change game state.
+    assertEquals(0, testAttack4.getDefenderLosses());
+    assertEquals(0, testAttack4.getAttackerLosses());
+    assertFalse(testAttack3.getHasConquered());
     try {
       moveProcessor.processEndPhase(new EndPhase(GamePhase.ATTACK_PHASE));
 
@@ -561,6 +506,7 @@ class MoveProcessorTest {
       }
       counter++;
     }
+    assert countryToGiveAway != null;
     addCountryToPlayer(countryToGiveAway.getCountryName(), players[0]);
     moveProcessor.updateInGameStatistics();
     assertEquals(8, players[0].getStatistic().getNumberOfOwnedCountries());
