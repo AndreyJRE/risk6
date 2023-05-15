@@ -781,9 +781,9 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
   }
 
   /**
-   * Only for testing
+   * Only for testing.
    *
-   * @return MoveProcessor
+   * @param moveProcessor MoveProcessor to set.
    */
   public void setMoveProcessor(MoveProcessor moveProcessor) {
     this.moveProcessor = moveProcessor;
