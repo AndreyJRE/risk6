@@ -15,6 +15,6 @@ public interface ChatObserver {
    *
    * @param string The list of strings used to update the chat.
    */
-  public void updateChat(List<String> string);
+  void updateChat(List<String> string);
 
 }

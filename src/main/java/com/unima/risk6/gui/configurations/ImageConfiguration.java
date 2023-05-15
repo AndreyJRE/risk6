@@ -77,7 +77,6 @@ public class ImageConfiguration {
   /**
    * Loads the images and initializes the HashMap with the image resources.
    */
-
   public static void loadImages() {
     images = new HashMap<>();
     Image logInImage = initImage(LOG_IN_IMAGE);
@@ -150,15 +149,32 @@ public class ImageConfiguration {
 
   }
 
+  /**
+   * Returns the image with the given name. If the image is not found, null is returned.
+   *
+   * @param imageName The name of the image.
+   * @return The image with the given name.
+   */
   public static Image getImageByName(ImageName imageName) {
     return images.get(imageName);
   }
 
+
+  /**
+   * Initializes an image with the given path. If the path is null, null is returned.
+   *
+   * @param path The path of the image.
+   * @return The image with the given path.
+   */
   public static Image initImage(String path) {
-    // Load the image into an ImageView
     return new Image(Objects.requireNonNull(ImageConfiguration.class.getResource(path)).toString());
   }
 
+  /**
+   * Returns the title background video.
+   *
+   * @return The title background video.
+   */
   public static Media getTitleBackgroundVideo() {
     return titleBackgroundVideo;
   }

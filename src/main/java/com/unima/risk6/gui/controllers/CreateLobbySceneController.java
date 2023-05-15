@@ -43,8 +43,8 @@ import javafx.scene.text.Font;
 
 /**
  * This class is responsible for controlling the scene where a new game lobby is created in the UI.
- * It includes all of the necessary UI components and their associated functionalities.
- * It also creates and sends the game lobby to the server when the "Create Lobby" button is clicked.
+ * It includes all of the necessary UI components and their associated functionalities. It also
+ * creates and sends the game lobby to the server when the "Create Lobby" button is clicked.
  *
  * @author fisommer
  */
@@ -158,16 +158,9 @@ public class CreateLobbySceneController {
         backgroundSize);
     Background background = new Background(backgroundImage);
     root.setBackground(background);
-
     root.setCenter(anchorPane);
     root.setLeft(backButton);
-    //root.setTop(multiplayerSettingsContainer);
-    //root.setBottom(createLobbyContainer);
-
     BorderPane.setMargin(backButton, new Insets(10, 10, 10, 10));
-    /*BorderPane.setMargin(centerGridPane, new Insets(0, 0, 0, -60));
-    BorderPane.setMargin(createLobbyContainer, new Insets(10, 20, 20, 50));
-    BorderPane.setMargin(multiplayerSettingsContainer, new Insets(10, 20, 20, 10));*/
 
   }
 

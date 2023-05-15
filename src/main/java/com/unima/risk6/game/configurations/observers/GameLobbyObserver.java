@@ -15,6 +15,6 @@ public interface GameLobbyObserver {
    *
    * @param gameLobby The new game lobby.
    */
-  public void updateGameLobby(GameLobby gameLobby);
+  void updateGameLobby(GameLobby gameLobby);
 
 }

@@ -1076,8 +1076,15 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     sendTutorialMessage();
   }
 
+  /**
+   * Retrieves the color associated with a given player.
+   *
+   * @param player The player to find the associated color for.
+   * @return The color associated with the given player.
+   */
   public Color getColorByPlayer(Player player) {
-    return playerUis.stream().filter(p -> p.getPlayer().equals(player)).findFirst().orElse(null)
+    return playerUis.stream().filter(p -> p.getPlayer().equals(player)).findFirst()
+        .orElse(null)
         .getPlayerColor();
   }
 

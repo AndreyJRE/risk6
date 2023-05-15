@@ -20,13 +20,9 @@ public class GameState {
   private final Set<Continent> continents;
   private Player currentPlayer;
   private int numberOfHandIns;
-  //TODO change to lastMove
   private Queue<Move> lastMoves;
   private final Deck deck;
   private boolean isGameOver;
-
-  private int phaseTime;
-
   private boolean chatEnabled;
 
 

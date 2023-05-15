@@ -94,6 +94,10 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     initElements();
   }
 
+  /**
+   * Initialize the HBox containing the user statistics. This HBox is updated every time a user
+   * joins or leaves the lobby.
+   */
   private void initElements() {
     Path arrow = generateBackArrow();
 
@@ -165,10 +169,18 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   }
 
+  /**
+   * Check if the user is the owner of the lobby. If so, the play button is enabled.
+   *
+   * @return True if the user is the owner of the lobby, false otherwise.
+   */
   private boolean checkIfUserIsOwner() {
     return myUser.getUsername().equals(gameLobby.getLobbyOwner().getUsername());
   }
 
+  /**
+   * Handle quitting the game lobby.
+   */
   private void handleQuitGameLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
@@ -177,6 +189,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     }
   }
 
+  /**
+   * Initialize the HBox with the players.
+   */
   private void initHbox() {
     HBox centralhbox = new HBox();
     List<UserDto> users = gameLobby.getUsers();
@@ -208,10 +223,15 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
 
   }
 
+  /**
+   * Handle user image clicking.
+   *
+   * @param user The user that clicked the play button.
+   */
   private void userClicked(UserDto user) {
     LobbyUserStatisticScene scene =
         (LobbyUserStatisticScene) SceneConfiguration.getSceneController()
-        .getSceneBySceneName(SceneName.LOBBY_USER_STATISTIC);
+            .getSceneBySceneName(SceneName.LOBBY_USER_STATISTIC);
     if (scene == null) {
       scene = new LobbyUserStatisticScene();
       LobbyUserStatisticSceneController lobbyUserStatisticSceneController = new
@@ -224,7 +244,12 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     sceneController.activate(SceneName.LOBBY_USER_STATISTIC);
   }
 
-
+  /**
+   * Create a VBox for a player.
+   *
+   * @param userDto The user that the VBox is created for.
+   * @return The VBox for the player.
+   */
   private VBox createplayervbox(UserDto userDto) {
     StackPane userImage = createPlayerStackPane(ImageName.PLAYER_ICON, false);
     Label userName = new Label(userDto.getUsername());
@@ -256,6 +281,13 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     return removeBox;
   }
 
+  /**
+   * Create a Stack pane with image and name for a player or bot.
+   *
+   * @param imageName The image name .
+   * @param isBot     True if the player is a bot, false otherwise.
+   * @return The StackPane with image and name for a player.
+   */
   private StackPane createPlayerStackPane(ImageName imageName, boolean isBot) {
     Circle circle = new Circle();
     ImageView userImage = new ImageView(ImageConfiguration.getImageByName(imageName));
@@ -287,6 +319,11 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     return userStackPane;
   }
 
+  /**
+   * Create a plus button.
+   *
+   * @return The StackPane with the plus button.
+   */
   private StackPane createPlusStackpane() {
     ImageView plusImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLUS_ICON));
     plusImage.setFitHeight(20);
@@ -308,6 +345,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     return plusStackPane;
   }
 
+  /**
+   * Handle the plus button.
+   */
   private void handlePlusButton() {
     if (checkIfUserIsOwner()) {
       if (gameLobby.getUsers().size() + gameLobby.getBots().size() < gameLobby.getMaxPlayers()) {
@@ -321,6 +361,9 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     }
   }
 
+  /**
+   * Show bot choice dialog and send a message to a server.
+   */
   private void botAdded() {
     List<String> choices = new ArrayList<>();
     choices.add("Easy");
@@ -356,6 +399,13 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     });
   }
 
+  /**
+   * Create a VBox for a bot.
+   *
+   * @param difficultyNumber The difficulty number.
+   * @param botName          The bot name.
+   * @return The VBox for a bot.
+   */
   private VBox createbotvbox(int difficultyNumber, String botName) {
     StackPane botImage = new StackPane();
     switch (difficultyNumber) {
@@ -385,16 +435,27 @@ public class MultiplayerLobbySceneController implements GameLobbyObserver {
     return removeBox;
   }
 
+  /**
+   * Remove a bot from the game lobby.
+   *
+   * @param bot The bot name.
+   */
   public void removeBot(String bot) {
     gameLobby.getBots().remove(bot);
     LobbyConfiguration.sendRemoveBotFromLobby(gameLobby);
   }
 
+  /**
+   * Show a error dialog, if the user is not the owner of the game lobby.
+   */
   private void showMessage() {
     showErrorDialog("No admin rights",
         "You can not add players or bots as you are not the admin of the Game Lobby.");
   }
 
+  /**
+   * Handle the play button and then send a message to the server.
+   */
   private void handlePlayButton() {
     int usersSize = gameLobby.getUsers().size();
     int together = usersSize + gameLobby.getBots().size();

@@ -46,9 +46,8 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 /**
- * The SinglePlayerSettingsSceneController handles interactions within the single player
- * settings scene.
- * It manages UI components, game lobby, bot addition/removal, and scene transitions.
+ * The SinglePlayerSettingsSceneController handles interactions within the single player settings
+ * scene. It manages UI components, game lobby, bot addition/removal, and scene transitions.
  * Implements GameLobbyObserver to receive game lobby updates.
  *
  * @author fisommer
@@ -65,8 +64,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   private boolean tutorial;
 
   /**
-   * Constructs a SinglePlayerSettingsSceneController object that handles user interactions
-   * in the SinglePlayerSettingsScene.
+   * Constructs a SinglePlayerSettingsSceneController object that handles user interactions in the
+   * SinglePlayerSettingsScene.
    *
    * @param singlePlayerSettingsScene a reference to the single player settings scene
    */
@@ -78,8 +77,8 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
   }
 
   /**
-   * Initializes the single player settings scene, sets up the game lobby, user, and
-   * the UI elements.
+   * Initializes the single player settings scene, sets up the game lobby, user, and the UI
+   * elements.
    */
 
   public void init() {
@@ -94,6 +93,11 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     initElements(tutorial ? "Tutorial" : "Singleplayer");
   }
 
+  /**
+   * Initialize the lobby with the user and the bots.
+   *
+   * @param lobbyName the name of the lobby
+   */
   private void initElements(String lobbyName) {
     Path arrow = generateBackArrow();
 
@@ -151,6 +155,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
   }
 
+  /**
+   * Handle quit game lobby.
+   */
   private void handleQuitGameLobby() {
     if (StyleConfiguration.showConfirmationDialog("Leave Lobby",
         "Are you sure that you want to leave the Lobby?")) {
@@ -160,6 +167,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     }
   }
 
+  /**
+   * Initialize the HBox with the user and the bots.
+   */
   private void initHbox() {
     HBox centralhbox = new HBox();
     VBox userVbox = createPlayerVbox(myUser);
@@ -191,6 +201,12 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     root.setCenter(centralhbox);
   }
 
+  /**
+   * Creates a VBox for a player.
+   *
+   * @param userDto the user
+   * @return the VBox
+   */
   private VBox createPlayerVbox(UserDto userDto) {
     StackPane userImage = createPlayerStackPane(ImageName.PLAYER_ICON, false);
     Label userName = new Label(userDto.getUsername());
@@ -212,6 +228,13 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     return removeBox;
   }
 
+  /**
+   * Creates a Stack pane for a player or bot.
+   *
+   * @param imageName the image name
+   * @param isBot     if the player is a bot
+   * @return the StackPane
+   */
   private StackPane createPlayerStackPane(ImageName imageName, boolean isBot) {
     Circle circle = new Circle();
     ImageView userImage = new ImageView(ImageConfiguration.getImageByName(imageName));
@@ -243,6 +266,11 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     return userStackPane;
   }
 
+  /**
+   * Creates a plus button.
+   *
+   * @return the StackPane¥
+   */
   private StackPane createPlusStackpane() {
     ImageView plusImage = new ImageView(ImageConfiguration.getImageByName(ImageName.PLUS_ICON));
     plusImage.setFitHeight(20);
@@ -264,6 +292,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     return plusStackPane;
   }
 
+  /**
+   * Handles the plus button.
+   */
   private void handlePlusButton() {
     if (gameLobby.getUsers().size() + gameLobby.getBots().size() < gameLobby.getMaxPlayers()) {
       botAdded();
@@ -273,6 +304,9 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     }
   }
 
+  /**
+   * Handles choice dialog for adding a bot.
+   */
   private void botAdded() {
     List<String> choices = new ArrayList<>();
     choices.add("Easy");
@@ -308,6 +342,13 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     });
   }
 
+  /**
+   * Creates a VBox for a bot.
+   *
+   * @param difficultyNumber the difficulty number
+   * @param botName          the bot name
+   * @return the VBox
+   */
   private VBox createBotVbox(int difficultyNumber, String botName) {
     StackPane botImage = new StackPane();
     switch (difficultyNumber) {
@@ -345,14 +386,19 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
     return removeBox;
   }
 
+  /**
+   * Removes a bot from the lobby.
+   *
+   * @param bot the bot
+   */
   public void removeBot(String bot) {
     gameLobby.getBots().remove(bot);
     LobbyConfiguration.sendRemoveBotFromLobby(gameLobby);
   }
 
   /**
-   * Handles the action of the "Play" button. Validates the number of players and
-   * initiates the game or tutorial.
+   * Handles the action of the "Play" button. Validates the number of players and initiates the game
+   * or tutorial.
    */
 
   private void handlePlayButton() {
@@ -391,7 +437,6 @@ public class SinglePlayerSettingsSceneController implements GameLobbyObserver {
    *
    * @param gameLobby the updated game lobby
    */
-
   @Override
   public void updateGameLobby(GameLobby gameLobby) {
     this.gameLobby = gameLobby;

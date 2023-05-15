@@ -53,9 +53,9 @@ import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 
 /**
- * Controller class for managing the selection of a multiplayer lobby scene.
- * This class implements ServerLobbyObserver and ChatObserver interfaces to get
- * updates about server lobbies and chat respectively.
+ * Controller class for managing the selection of a multiplayer lobby scene. This class implements
+ * ServerLobbyObserver and ChatObserver interfaces to get updates about server lobbies and chat
+ * respectively.
  *
  * @author fisommer
  * @author astoyano
@@ -108,6 +108,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     initElements();
   }
 
+  /**
+   * Init all elements for the scene.
+   */
   private void initElements() {
     Path arrow = generateBackArrow();
 
@@ -182,6 +185,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     BorderPane.setMargin(titleBox, new Insets(10, 20, 20, 10));
   }
 
+  /**
+   * Initialize a game lobbies list view.
+   */
   private void initGameLobbys() {
     lobbies = FXCollections.observableArrayList();
     lobbies.addAll(serverLobby.getGameLobbies());
@@ -222,6 +228,9 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
     });
   }
 
+  /**
+   * Initialize the split pane for the chat.
+   */
   private void initSplitPane() {
     initGameLobbys();
 

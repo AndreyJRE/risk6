@@ -111,34 +111,58 @@ public class SoundConfiguration {
 
   }
 
+  /**
+   * Plays the title sound.
+   */
   public static void playTitleSound() {
     titleSound.play();
   }
 
+  /**
+   * Plays the troops move sound.
+   */
   public static void playTroopsMoveSound() {
     troopsMoveSound.play();
   }
 
+  /**
+   * Stops the troops move sound.
+   */
   public static void stopTroopsMoveSound() {
     troopsMoveSound.stop();
   }
 
+  /**
+   * Plays the in game music.
+   */
   public static void playInGameMusic() {
     inGameMusic.play();
   }
 
+  /**
+   * Plays the turn sound.
+   */
   public static void playYourTurnSound() {
     yourTurnSound.play();
   }
 
+  /**
+   * Plays the start game sound.
+   */
   public static void playStartGameSound() {
     startGameSound.play();
   }
 
+  /**
+   * Pauses the title sound.
+   */
   public static void pauseTitleSound() {
     titleSound.pause();
   }
 
+  /**
+   * Plays the roll dice sound.
+   */
   public static void playRollDiceSound() {
     rollDiceSound.play();
   }
@@ -151,18 +175,30 @@ public class SoundConfiguration {
     SoundConfiguration.VOLUME.set(volume);
   }
 
+  /**
+   * Plays the notification sound.
+   */
   public static void playNotificationSound() {
     notificationSound.play();
   }
 
+  /**
+   * Plays the click sound.
+   */
   public static void playClickSound() {
     clickSound.play();
   }
 
+  /**
+   * Stops the in game music.
+   */
   public static void stopInGameMusic() {
     inGameMusic.stop();
   }
 
+  /**
+   * Plays the hand in sound.
+   */
   public static void playHandInSound() {
     handInSound.play();
   }

@@ -224,7 +224,11 @@ public class PlayerController {
     return handController;
   }
 
-
+  /**
+   * Returns the number of countries the player owns.
+   *
+   * @return the number of countries the player owns.
+   */
   public int getNumberOfCountries() {
     return player.getCountries().size();
   }
