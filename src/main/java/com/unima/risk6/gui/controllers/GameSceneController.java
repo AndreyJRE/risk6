@@ -450,7 +450,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       chatCounterLabel.setVisible(false);
       chatUi.show();
     });
-    chatCounterLabel = new Label("");
+    chatCounterLabel = new Label("!");
     chatCounterLabel.setStyle("-fx-background-radius: 12px;"
         + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 22px; -fx-padding: 3px");
     chatCounterLabel.setTextFill(Color.WHITE);
@@ -525,7 +525,6 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       if (chatUi.getChatPopup().isShowing()) {
         chatCounterLabel.setVisible(false);
       } else {
-        chatCounterLabel.setText(String.valueOf(messages.size() - chatUi.getLastChatUpdate()));
         chatCounterLabel.setVisible(true);
         SoundConfiguration.playNotificationSound();
       }

@@ -124,7 +124,8 @@ public class SettingsUi extends BorderPane {
           SoundConfiguration.stopInGameMusic();
           LobbyConfiguration.stopGameClient();
           Thread.sleep(250);
-          if (NetworkConfiguration.getGameServer().getHostIp().equals("127.0.0.1")) {
+          if (NetworkConfiguration.getGameServer() != null && NetworkConfiguration.getGameServer()
+              .getHostIp().equals("127.0.0.1")) {
             NetworkConfiguration.stopGameServer();
           }
           Thread.sleep(150);
