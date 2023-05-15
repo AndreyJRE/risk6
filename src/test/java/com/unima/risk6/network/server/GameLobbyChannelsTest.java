@@ -1,5 +1,7 @@
 package com.unima.risk6.network.server;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -409,6 +411,169 @@ public class GameLobbyChannelsTest {
     };
   }
 
+  public GameServerFrameHandler createGameServerFramehandler(GameLobbyChannels gameLobbyChannels) {
+    return new GameServerFrameHandler(new DefaultChannelGroup(new EventExecutor() {
+      @Override
+      public EventExecutor next() {
+        return null;
+      }
+
+      @Override
+      public EventExecutorGroup parent() {
+        return null;
+      }
+
+      @Override
+      public boolean inEventLoop() {
+        return false;
+      }
+
+      @Override
+      public boolean inEventLoop(Thread thread) {
+        return false;
+      }
+
+      @Override
+      public <V> Promise<V> newPromise() {
+        return null;
+      }
+
+      @Override
+      public <V> ProgressivePromise<V> newProgressivePromise() {
+        return null;
+      }
+
+      @Override
+      public <V> Future<V> newSucceededFuture(V result) {
+        return null;
+      }
+
+      @Override
+      public <V> Future<V> newFailedFuture(Throwable cause) {
+        return null;
+      }
+
+      @Override
+      public boolean isShuttingDown() {
+        return false;
+      }
+
+      @Override
+      public Future<?> shutdownGracefully() {
+        return null;
+      }
+
+      @Override
+      public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
+        return null;
+      }
+
+      @Override
+      public Future<?> terminationFuture() {
+        return null;
+      }
+
+      @Override
+      public void shutdown() {
+
+      }
+
+      @Override
+      public List<Runnable> shutdownNow() {
+        return null;
+      }
+
+      @Override
+      public Iterator<EventExecutor> iterator() {
+        return null;
+      }
+
+      @Override
+      public Future<?> submit(Runnable task) {
+        return null;
+      }
+
+      @Override
+      public <T> Future<T> submit(Runnable task, T result) {
+        return null;
+      }
+
+      @Override
+      public <T> Future<T> submit(Callable<T> task) {
+        return null;
+      }
+
+      @Override
+      public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+        return null;
+      }
+
+      @Override
+      public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
+        return null;
+      }
+
+      @Override
+      public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay,
+          long period, TimeUnit unit) {
+        return null;
+      }
+
+      @Override
+      public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay,
+          long delay, TimeUnit unit) {
+        return null;
+      }
+
+      @Override
+      public boolean isShutdown() {
+        return false;
+      }
+
+      @Override
+      public boolean isTerminated() {
+        return false;
+      }
+
+      @Override
+      public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
+        return false;
+      }
+
+      @Override
+      public <T> List<java.util.concurrent.Future<T>> invokeAll(
+          Collection<? extends Callable<T>> collection)
+          throws InterruptedException {
+        return null;
+      }
+
+      @Override
+      public <T> List<java.util.concurrent.Future<T>> invokeAll(
+          Collection<? extends Callable<T>> collection, long l,
+          TimeUnit timeUnit) throws InterruptedException {
+        return null;
+      }
+
+      @Override
+      public <T> T invokeAny(Collection<? extends Callable<T>> collection)
+          throws InterruptedException, ExecutionException {
+        return null;
+      }
+
+      @Override
+      public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l,
+          TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
+        return null;
+      }
+
+      @Override
+      public void execute(Runnable runnable) {
+
+      }
+    }), gameLobbyChannels);
+  }
+
+
   @BeforeEach
   void resetAndInitialize() {
     try {
@@ -441,166 +606,7 @@ public class GameLobbyChannelsTest {
     UserDto userDto = new UserDto("Name", 2, 10.5, 12, 1, 400);
     gameLobbyChannels.putUsers(userDto, channel);
     LobbyConfiguration.setServerLobby(new ServerLobby("lele", "12123"));
-    gameLobbyChannels.handleExit(channel,
-        new GameServerFrameHandler(new DefaultChannelGroup(new EventExecutor() {
-          @Override
-          public EventExecutor next() {
-            return null;
-          }
-
-          @Override
-          public EventExecutorGroup parent() {
-            return null;
-          }
-
-          @Override
-          public boolean inEventLoop() {
-            return false;
-          }
-
-          @Override
-          public boolean inEventLoop(Thread thread) {
-            return false;
-          }
-
-          @Override
-          public <V> Promise<V> newPromise() {
-            return null;
-          }
-
-          @Override
-          public <V> ProgressivePromise<V> newProgressivePromise() {
-            return null;
-          }
-
-          @Override
-          public <V> Future<V> newSucceededFuture(V result) {
-            return null;
-          }
-
-          @Override
-          public <V> Future<V> newFailedFuture(Throwable cause) {
-            return null;
-          }
-
-          @Override
-          public boolean isShuttingDown() {
-            return false;
-          }
-
-          @Override
-          public Future<?> shutdownGracefully() {
-            return null;
-          }
-
-          @Override
-          public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public Future<?> terminationFuture() {
-            return null;
-          }
-
-          @Override
-          public void shutdown() {
-
-          }
-
-          @Override
-          public List<Runnable> shutdownNow() {
-            return null;
-          }
-
-          @Override
-          public Iterator<EventExecutor> iterator() {
-            return null;
-          }
-
-          @Override
-          public Future<?> submit(Runnable task) {
-            return null;
-          }
-
-          @Override
-          public <T> Future<T> submit(Runnable task, T result) {
-            return null;
-          }
-
-          @Override
-          public <T> Future<T> submit(Callable<T> task) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay,
-              long period, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay,
-              long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public boolean isShutdown() {
-            return false;
-          }
-
-          @Override
-          public boolean isTerminated() {
-            return false;
-          }
-
-          @Override
-          public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
-            return false;
-          }
-
-          @Override
-          public <T> List<java.util.concurrent.Future<T>> invokeAll(
-              Collection<? extends Callable<T>> collection)
-              throws InterruptedException {
-            return null;
-          }
-
-          @Override
-          public <T> List<java.util.concurrent.Future<T>> invokeAll(
-              Collection<? extends Callable<T>> collection, long l,
-              TimeUnit timeUnit) throws InterruptedException {
-            return null;
-          }
-
-          @Override
-          public <T> T invokeAny(Collection<? extends Callable<T>> collection)
-              throws InterruptedException, ExecutionException {
-            return null;
-          }
-
-          @Override
-          public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l,
-              TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
-          }
-
-          @Override
-          public void execute(Runnable runnable) {
-
-          }
-        }), gameLobbyChannels));
+    gameLobbyChannels.handleExit(channel, createGameServerFramehandler(gameLobbyChannels));
     assertTrue(
         !gameLobbyChannels.containsUser(userDto) && gameLobbyChannels.getUsers().size() == 0);
   }
@@ -616,170 +622,11 @@ public class GameLobbyChannelsTest {
     GameLobby gameLobby = new GameLobby("test", 3, "lele", true, 0, userDto);
     gameLobbyChannels.createGameLobby(gameLobby, channel);
     assertTrue(gameLobbyChannels.containsUser(userDto) && gameLobbyChannels.getUsers().size() == 1);
-    assertTrue(gameLobbyChannels.gameChannels.size() == 1);
-    gameLobbyChannels.handleExit(channel,
-        new GameServerFrameHandler(new DefaultChannelGroup(new EventExecutor() {
-          @Override
-          public EventExecutor next() {
-            return null;
-          }
-
-          @Override
-          public EventExecutorGroup parent() {
-            return null;
-          }
-
-          @Override
-          public boolean inEventLoop() {
-            return false;
-          }
-
-          @Override
-          public boolean inEventLoop(Thread thread) {
-            return false;
-          }
-
-          @Override
-          public <V> Promise<V> newPromise() {
-            return null;
-          }
-
-          @Override
-          public <V> ProgressivePromise<V> newProgressivePromise() {
-            return null;
-          }
-
-          @Override
-          public <V> Future<V> newSucceededFuture(V result) {
-            return null;
-          }
-
-          @Override
-          public <V> Future<V> newFailedFuture(Throwable cause) {
-            return null;
-          }
-
-          @Override
-          public boolean isShuttingDown() {
-            return false;
-          }
-
-          @Override
-          public Future<?> shutdownGracefully() {
-            return null;
-          }
-
-          @Override
-          public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public Future<?> terminationFuture() {
-            return null;
-          }
-
-          @Override
-          public void shutdown() {
-
-          }
-
-          @Override
-          public List<Runnable> shutdownNow() {
-            return null;
-          }
-
-          @Override
-          public Iterator<EventExecutor> iterator() {
-            return null;
-          }
-
-          @Override
-          public Future<?> submit(Runnable task) {
-            return null;
-          }
-
-          @Override
-          public <T> Future<T> submit(Runnable task, T result) {
-            return null;
-          }
-
-          @Override
-          public <T> Future<T> submit(Callable<T> task) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay,
-              long period, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay,
-              long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public boolean isShutdown() {
-            return false;
-          }
-
-          @Override
-          public boolean isTerminated() {
-            return false;
-          }
-
-          @Override
-          public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
-            return false;
-          }
-
-          @Override
-          public <T> List<java.util.concurrent.Future<T>> invokeAll(
-              Collection<? extends Callable<T>> collection)
-              throws InterruptedException {
-            return null;
-          }
-
-          @Override
-          public <T> List<java.util.concurrent.Future<T>> invokeAll(
-              Collection<? extends Callable<T>> collection, long l,
-              TimeUnit timeUnit) throws InterruptedException {
-            return null;
-          }
-
-          @Override
-          public <T> T invokeAny(Collection<? extends Callable<T>> collection)
-              throws InterruptedException, ExecutionException {
-            return null;
-          }
-
-          @Override
-          public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l,
-              TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
-          }
-
-          @Override
-          public void execute(Runnable runnable) {
-
-          }
-        }), gameLobbyChannels));
+    assertEquals(1, gameLobbyChannels.gameChannels.size());
+    gameLobbyChannels.handleExit(channel, createGameServerFramehandler(gameLobbyChannels));
     assertTrue(
         !gameLobbyChannels.containsUser(userDto) && gameLobbyChannels.getUsers().size() == 0);
-    assertTrue(gameLobbyChannels.gameChannels.size() == 0);
+    assertEquals(0, gameLobbyChannels.gameChannels.size());
 
   }
 
@@ -800,173 +647,116 @@ public class GameLobbyChannelsTest {
     gameLobbyChannels.createGameLobby(gameLobby, channel);
     assertTrue(gameLobbyChannels.containsUser(userDto));
     assertTrue(gameLobbyChannels.containsUser(userDto2));
-    assertTrue(gameLobbyChannels.getUsers().size() == 2);
-    assertTrue(gameLobbyChannels.gameChannels.size() == 1);
+    assertEquals(2, gameLobbyChannels.getUsers().size());
+    assertEquals(1, gameLobbyChannels.gameChannels.size());
+    assertTrue(gameLobbyChannels.getGameLobbyByChannel(channel).getUsers().contains(userDto));
 
-    gameLobbyChannels.handleExit(channel,
-        new GameServerFrameHandler(new DefaultChannelGroup(new EventExecutor() {
-          @Override
-          public EventExecutor next() {
-            return null;
-          }
+    gameLobbyChannels.handleExit(channel, createGameServerFramehandler(gameLobbyChannels));
 
-          @Override
-          public EventExecutorGroup parent() {
-            return null;
-          }
-
-          @Override
-          public boolean inEventLoop() {
-            return false;
-          }
-
-          @Override
-          public boolean inEventLoop(Thread thread) {
-            return false;
-          }
-
-          @Override
-          public <V> Promise<V> newPromise() {
-            return null;
-          }
-
-          @Override
-          public <V> ProgressivePromise<V> newProgressivePromise() {
-            return null;
-          }
-
-          @Override
-          public <V> Future<V> newSucceededFuture(V result) {
-            return null;
-          }
-
-          @Override
-          public <V> Future<V> newFailedFuture(Throwable cause) {
-            return null;
-          }
-
-          @Override
-          public boolean isShuttingDown() {
-            return false;
-          }
-
-          @Override
-          public Future<?> shutdownGracefully() {
-            return null;
-          }
-
-          @Override
-          public Future<?> shutdownGracefully(long quietPeriod, long timeout, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public Future<?> terminationFuture() {
-            return null;
-          }
-
-          @Override
-          public void shutdown() {
-
-          }
-
-          @Override
-          public List<Runnable> shutdownNow() {
-            return null;
-          }
-
-          @Override
-          public Iterator<EventExecutor> iterator() {
-            return null;
-          }
-
-          @Override
-          public Future<?> submit(Runnable task) {
-            return null;
-          }
-
-          @Override
-          public <T> Future<T> submit(Runnable task, T result) {
-            return null;
-          }
-
-          @Override
-          public <T> Future<T> submit(Callable<T> task) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay,
-              long period, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay,
-              long delay, TimeUnit unit) {
-            return null;
-          }
-
-          @Override
-          public boolean isShutdown() {
-            return false;
-          }
-
-          @Override
-          public boolean isTerminated() {
-            return false;
-          }
-
-          @Override
-          public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
-            return false;
-          }
-
-          @Override
-          public <T> List<java.util.concurrent.Future<T>> invokeAll(
-              Collection<? extends Callable<T>> collection)
-              throws InterruptedException {
-            return null;
-          }
-
-          @Override
-          public <T> List<java.util.concurrent.Future<T>> invokeAll(
-              Collection<? extends Callable<T>> collection, long l,
-              TimeUnit timeUnit) throws InterruptedException {
-            return null;
-          }
-
-          @Override
-          public <T> T invokeAny(Collection<? extends Callable<T>> collection)
-              throws InterruptedException, ExecutionException {
-            return null;
-          }
-
-          @Override
-          public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l,
-              TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
-          }
-
-          @Override
-          public void execute(Runnable runnable) {
-
-          }
-        }), gameLobbyChannels));
     assertTrue(
         !gameLobbyChannels.containsUser(userDto) && gameLobbyChannels.containsUser(userDto2)
             && gameLobbyChannels.getUsers().size() == 1);
-    assertTrue(gameLobbyChannels.gameChannels.size() == 0);
+    assertEquals(0, gameLobbyChannels.gameChannels.size());
+
+  }
+
+  @Test
+  void twoUsersJoinGameLobbyAndThenLeave() {
+    GameLobbyChannels gameLobbyChannels = new GameLobbyChannels();
+
+    Channel channel = createChannel("123");
+    UserDto userDto = new UserDto("Name", 2, 10.5, 12, 1, 400);
+    gameLobbyChannels.putUsers(userDto, channel);
+
+    Channel channel2 = createChannel("456");
+    UserDto userDto2 = new UserDto("Name2", 2, 10.5, 12, 1, 400);
+    gameLobbyChannels.putUsers(userDto2, channel2);
+    LobbyConfiguration.setServerLobby(new ServerLobby("lele", "12123"));
+
+    GameLobby gameLobby = new GameLobby("test", 3, "lele", true, 0, userDto);
+    gameLobbyChannels.createGameLobby(gameLobby, channel);
+    gameLobbyChannels.addUserToGameLobby(gameLobby, channel2);
+
+    assertTrue(gameLobbyChannels.containsUser(userDto));
+    assertTrue(gameLobbyChannels.containsUser(userDto2));
+    assertEquals(2, gameLobbyChannels.getUsers().size());
+    assertEquals(1, gameLobbyChannels.gameChannels.size());
+    assertTrue(gameLobbyChannels.getGameLobbyByChannel(channel).getUsers().contains(userDto));
+    assertTrue(gameLobbyChannels.getGameLobbyByChannel(channel).getUsers().contains(userDto2));
+
+    gameLobbyChannels.handleExit(channel, createGameServerFramehandler(gameLobbyChannels));
+    gameLobbyChannels.handleExit(channel2, createGameServerFramehandler(gameLobbyChannels));
+
+    assertFalse(gameLobbyChannels.containsUser(userDto));
+    assertFalse(gameLobbyChannels.containsUser(userDto2));
+    assertEquals(0, gameLobbyChannels.getUsers().size());
+    assertEquals(0, gameLobbyChannels.gameChannels.size());
+
+  }
+
+  @Test
+  void joinAndLeaveGameWithOneBot() {
+    Channel channel = createChannel("123");
+    GameLobbyChannels gameLobbyChannels = new GameLobbyChannels();
+    UserDto userDto = new UserDto("Name", 2, 10.5, 12, 1, 400);
+    gameLobbyChannels.putUsers(userDto, channel);
+    LobbyConfiguration.setServerLobby(new ServerLobby("lele", "12123"));
+
+    GameLobby gameLobby = new GameLobby("test", 3, "lele", true, 0, userDto);
+    GameServerFrameHandler gsh = createGameServerFramehandler(gameLobbyChannels);
+
+    gameLobbyChannels.createGameLobby(gameLobby, channel);
+    gameLobby.getBots().add("MediumBot #1");
+    gameLobbyChannels.createMoveProcessor(channel);
+    gsh.setMoveProcessor(gameLobbyChannels.getMoveProcessor(channel));
+    gsh.processStartGame(gameLobby);
+    assertTrue(gameLobbyChannels.containsUser(userDto) && gameLobbyChannels.getUsers().size() == 1);
+    assertEquals(1, gameLobbyChannels.gameChannels.size());
+    gameLobbyChannels.handleExit(channel, gsh);
+    assertTrue(
+        !gameLobbyChannels.containsUser(userDto) && gameLobbyChannels.getUsers().size() == 0);
+    assertEquals(0, gameLobbyChannels.gameChannels.size());
+    assertEquals(0, gameLobbyChannels.moveProcessors.size());
+
+  }
+
+  @Test
+  void joinAndLeaveGameWithOneBotAndTwoPlayersOnePlayerLeaves() {
+    GameLobbyChannels gameLobbyChannels = new GameLobbyChannels();
+
+    Channel channel = createChannel("123");
+    UserDto userDto = new UserDto("Name", 2, 10.5, 12, 1, 400);
+    gameLobbyChannels.putUsers(userDto, channel);
+
+    Channel channel2 = createChannel("456");
+    UserDto userDto2 = new UserDto("Name2", 2, 10.5, 12, 1, 400);
+    gameLobbyChannels.putUsers(userDto2, channel2);
+    LobbyConfiguration.setServerLobby(new ServerLobby("lele", "12123"));
+    GameServerFrameHandler gsh = createGameServerFramehandler(gameLobbyChannels);
+
+    GameLobby gameLobby = new GameLobby("test", 3, "lele", true, 0, userDto);
+    gameLobbyChannels.createGameLobby(gameLobby, channel);
+    gameLobbyChannels.addUserToGameLobby(gameLobby, channel2);
+    gameLobby.getBots().add("MediumBot #1");
+
+    gameLobbyChannels.createMoveProcessor(channel);
+    gsh.setMoveProcessor(gameLobbyChannels.getMoveProcessor(channel));
+    gsh.processStartGame(gameLobby);
+
+    assertTrue(gameLobbyChannels.containsUser(userDto));
+    assertTrue(gameLobbyChannels.containsUser(userDto2));
+    assertEquals(2, gameLobbyChannels.getUsers().size());
+    assertEquals(1, gameLobbyChannels.gameChannels.size());
+    assertTrue(gameLobbyChannels.getGameLobbyByChannel(channel).getUsers().contains(userDto));
+    assertTrue(gameLobbyChannels.getGameLobbyByChannel(channel).getUsers().contains(userDto2));
+
+    gameLobbyChannels.handleExit(channel, gsh);
+    assertFalse(gameLobbyChannels.containsUser(userDto));
+    assertTrue(gameLobbyChannels.containsUser(userDto2));
+    assertEquals(1, gameLobbyChannels.getUsers().size());
+    assertEquals(1, gameLobbyChannels.gameChannels.size());
+    assertEquals(1, gameLobbyChannels.moveProcessors.size());
+    assertEquals(1, gameLobbyChannels.getGameLobbyByChannel(channel2).getUsers().size());
 
   }
 

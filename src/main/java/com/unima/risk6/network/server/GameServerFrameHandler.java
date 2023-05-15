@@ -55,6 +55,7 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
   protected static ChannelGroup channels;
   private final GameLobbyChannels gameLobbyChannels;
+
   private MoveProcessor moveProcessor;
 
   /**
@@ -777,6 +778,15 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
       sendGamestate(channelGroup);
       moveProcessor.clearLastMoves();
     }
+  }
+
+  /**
+   * Only for testing
+   *
+   * @return MoveProcessor
+   */
+  public void setMoveProcessor(MoveProcessor moveProcessor) {
+    this.moveProcessor = moveProcessor;
   }
 
 
