@@ -219,7 +219,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
                 LobbyConfiguration.setGameLobby(gameLobby);
                 if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.SELECT_LOBBY) {
-                  System.out.println("----------------- ");
                   Platform.runLater(SceneConfiguration::joinMultiplayerLobbyScene);
                 }
               }
@@ -266,9 +265,9 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
       }
 
     } else if (frame instanceof PongWebSocketFrame) {
-      System.out.println("Received pong from Server");
+      LOGGER.debug("Received pong from Server");
     } else if (frame instanceof CloseWebSocketFrame) {
-      System.out.println("Received closing from Server");
+      LOGGER.debug("Received closing from Server");
       ch.close();
     }
   }

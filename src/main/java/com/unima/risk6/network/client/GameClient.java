@@ -116,8 +116,7 @@ public final class GameClient implements Runnable {
         group.shutdownGracefully();
       }
     } catch (Exception e) {
-      //TODO Logger
-      System.out.println(e);
+      LOGGER.debug(e.toString());
     }
   }
 

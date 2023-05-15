@@ -69,7 +69,6 @@ public class SerializationTest {
 
     Player p1 = gamestate.getCurrentPlayer();
     Player p2 = m2.getContent().getCurrentPlayer();
-    System.out.println("P1: " + p1.getUser() + " P2: " + p2.getUser());
     assertEquals(p1, p2);
 
   }
@@ -83,8 +82,6 @@ public class SerializationTest {
         .add(oldGamestate.getCountries().stream().findFirst().orElseThrow());
     StandardMessage<GameState> message = new StandardMessage<>(oldGamestate);
     String json = Serializer.serialize(message);
-    System.out.println(json);
-
     GameState newGamestate = GameConfiguration.configureGame(new ArrayList<>(),
         new ArrayList<>());
     @SuppressWarnings("unchecked")
@@ -93,7 +90,6 @@ public class SerializationTest {
     Player p1 = oldGamestate.getCurrentPlayer();
     GameState g2 = m2.getContent();
     Player p2 = g2.getCurrentPlayer();
-    System.out.println("P1: " + p1.getUser() + " P2: " + p2.getUser());
     //g2 is the same as newGamestate
     Country country = g2.getCurrentPlayer().getCountries().stream().findFirst().orElseThrow();
     assertSame(country, g2.getCountries().stream()
@@ -111,7 +107,6 @@ public class SerializationTest {
 
     Attack a = new Attack(c1, c2, 69);
     StandardMessage<Attack> message = new StandardMessage<>(a);
-    System.out.println("Attack Serialization:\n" + Serializer.serialize(message));
     assertEquals(
         "{\"statusCode\":-1,\"content\":{\"attackingCountry\":\"ALASKA\",\"defendingCountry\":\"ICELAND\",\"troopNumber\":69,\"attackerLosses\":0,\"defenderLosses\":0,\"attackDiceResult\":[],\"defendDiceResult\":[],\"hasConquered\":false},\"contentType\":\"ATTACK\"}",
         Serializer.serialize(message));
@@ -127,7 +122,6 @@ public class SerializationTest {
 
     Fortify a = new Fortify(c1, c2, 69);
     StandardMessage<Fortify> message = new StandardMessage<>(a);
-    System.out.println("Fortify Serialization:\n" + Serializer.serialize(message));
     assertEquals(
         "{\"statusCode\":-1,\"content\":{\"outgoing\":\"ALASKA\",\"incoming\":\"ICELAND\",\"troopsToMove\":69},\"contentType\":\"FORTIFY\"}",
         Serializer.serialize(message));
@@ -140,7 +134,6 @@ public class SerializationTest {
 
     Reinforce a = new Reinforce(c1, 69);
     StandardMessage<Reinforce> message = new StandardMessage<>(a);
-    System.out.println("Reinforce Serialization:\n" + Serializer.serialize(message));
     assertEquals(
         "{\"statusCode\":-1,\"content\":{\"country\":\"ALASKA\",\"toAdd\":69},\"contentType\":\"REINFORCE\"}",
         Serializer.serialize(message));
@@ -174,10 +167,6 @@ public class SerializationTest {
     GameState g2 = m2.getContent();
     String message1 = Serializer.serialize(message);
     String message2 = Serializer.serialize(new StandardMessage<>(g2));
-    System.out.println("GameState Serialization:\n" + message1);
-    System.out.println("GameState Serialization:\n" + message2);
-    System.out.println(message1.replaceAll(".hashCode..\\d*?,", ""));
-
     //Failed ohne regex wegen Hashcode
     assertEquals(message1.replaceAll(".hashCode..\\d*?,", ""),
         message2.replaceAll(".hashCode..\\d*?,", ""));
@@ -189,7 +178,6 @@ public class SerializationTest {
     hashMap.put("lel", 1);
     hashMap.put("lol", 2);
     StandardMessage<HashMap<String, Integer>> message = new StandardMessage<>(hashMap);
-    System.out.println(Serializer.serialize(message));
     @SuppressWarnings("unchecked")
     HashMap<String, Integer> hashMap2 = (HashMap<String, Integer>) Deserializer.deserialize(Serializer.serialize(message)).getContent();
     assertEquals(hashMap.get("lel"), hashMap2.get("lel"));

@@ -83,7 +83,7 @@ public class GameLobbyChannels {
    */
   void removeUserFromGameLobby(Channel channel,
       GameServerFrameHandler gameServerFrameHandler, boolean isDead) {
-    System.out.println(channel.id() + " left");
+    LOGGER.debug(channel.id() + " left");
     UserDto deadUser = getUserByChannel(channel);
     //leave gameChannel
     GameLobby gameLobby = gameChannels.keySet().stream()
@@ -152,7 +152,7 @@ public class GameLobbyChannels {
    * @param channel   the channel associated with the user.
    */
   void addUserToGameLobby(GameLobby gameLobby, Channel channel) {
-    System.out.println(channel.id() + " added to gamelobby");
+    LOGGER.debug(channel.id() + " added to gamelobby");
     channels.remove(channel);
     if (!gameLobby.getUsers().contains(users.inverse().get(channel))) {
       gameLobby.getUsers()
@@ -200,7 +200,7 @@ public class GameLobbyChannels {
    */
   boolean containsUser(UserDto userDto) {
     LOGGER.debug("Searching for user " + userDto.getUsername());
-    users.keySet().stream().forEach(x -> System.out.println(x.getUsername()));
+    users.keySet().stream().forEach(x -> LOGGER.debug("Found: " + x.getUsername()));
     return users.keySet().stream().anyMatch(x -> x.equals(userDto));
   }
 
@@ -285,8 +285,7 @@ public class GameLobbyChannels {
         + NetworkConfiguration.getServerLobby().getGameLobbies().size() + " Users in Serverlobby: "
         + NetworkConfiguration.getServerLobby().getUsers().size());
 
-    System.out.println(gameChannels.size());
-    System.out.println(getUserByChannel(channel).getUsername() + " left");
+    LOGGER.info(getUserByChannel(channel).getUsername() + " left");
 
     if (gameChannels.keySet().stream()
         .anyMatch(x -> x.getUsers().contains(getUserByChannel(channel)))) {
@@ -337,17 +336,11 @@ public class GameLobbyChannels {
           LOGGER.debug("A player left");
           replaceUser(gameState, gameLobby, getUserByChannel(channel).getUsername(), "medium");
         }
-      } else {
-        //In Gamelobby
-        System.out.println("In Gamelobby");
-
-
       }
       removeUserFromGameLobby(channel, gsh, true);
       removeUserFromServerLobby(channel);
       gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
     } else {
-      System.out.println("else");
       removeUserFromServerLobby(channel);
       gsh.sendUpdatedServerLobby(NetworkConfiguration.getServerLobby());
     }
