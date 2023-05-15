@@ -276,8 +276,4 @@ public class ChatUi extends BorderPane implements ChatObserver {
   public int getLastChatUpdate() {
     return lastChatUpdate;
   }
-
-  public void setLastChatUpdate(int lastChatUpdate) {
-    this.lastChatUpdate = lastChatUpdate;
-  }
 }

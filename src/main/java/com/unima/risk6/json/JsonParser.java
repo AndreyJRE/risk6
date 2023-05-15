@@ -21,8 +21,7 @@ public class JsonParser {
    */
   public static <T> T parseJsonFile(InputStreamReader jsonFile, Class<T> clazz) {
     Gson gson = new GsonBuilder().create();
-    return gson.fromJson(jsonFile,
-        clazz);
+    return gson.fromJson(jsonFile, clazz);
   }
 
 }

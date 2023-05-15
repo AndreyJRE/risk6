@@ -191,9 +191,9 @@ public class Attack extends Move {
   }
 
   /**
-   * Returns wether the attack conquers the defending country.
+   * Returns whether the attack conquers the defending country.
    *
-   * @return wether the attack conquers the defending country
+   * @return whether the attack conquers the defending country
    */
   public boolean getHasConquered() {
 

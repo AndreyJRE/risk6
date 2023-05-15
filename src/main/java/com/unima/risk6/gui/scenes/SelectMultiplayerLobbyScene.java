@@ -16,6 +16,9 @@ public class SelectMultiplayerLobbyScene extends Scene implements InitializableS
 
   private SelectMultiplayerLobbySceneController selectMultiplayerLobbySceneController;
 
+  /**
+   * Constructs a new SelectMultiplayerLobbyScene with a BorderPane as its root.
+   */
   public SelectMultiplayerLobbyScene() {
     super(new BorderPane());
   }

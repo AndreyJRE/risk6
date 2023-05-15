@@ -5,8 +5,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The UserStatisticsScene class represents the scene for user statistics in the application.
- * It extends the JavaFX Scene class and implements InitializableScene interface.
+ * The UserStatisticsScene class represents the scene for user statistics in the application. It
+ * extends the JavaFX Scene class and implements InitializableScene interface.
  *
  * @author fisommer
  */
@@ -15,6 +15,9 @@ public class UserStatisticsScene extends Scene implements InitializableScene {
 
   private UserStatisticsSceneController userStatisticsSceneController;
 
+  /**
+   * Constructs a new UserStatisticsScene with a BorderPane as its root.
+   */
   public UserStatisticsScene() {
     super(new BorderPane());
   }

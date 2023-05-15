@@ -116,6 +116,9 @@ public class PlayerUi extends Group {
     getChildren().addAll(rectangle, ellipse, iconsPane, playerNameStack);
   }
 
+  /**
+   * Updates the amount of troops of the player.
+   */
   public void updateAmountOfTroops() {
     this.amountOfTroops.setText(Integer.toString(player.getStatistic().getNumberOfTroops()));
   }

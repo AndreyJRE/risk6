@@ -169,7 +169,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             LOGGER.debug("Client got a order message ");
             GameConfiguration.setDiceRolls(hashMap2);
 
-            //TODO
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {
@@ -246,8 +245,7 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
 
                 } else if (SceneConfiguration.getSceneController().getCurrentSceneName()
                     == SceneName.CREATE_LOBBY) {
-                  Platform.runLater(() -> StyleConfiguration.handleLobbyExists(
-                      content));
+                  Platform.runLater(() -> StyleConfiguration.handleLobbyExists(content));
 
                 }
 

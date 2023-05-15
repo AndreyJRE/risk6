@@ -6,10 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The LobbyUserStatisticScene class represents the scene where users can view game statistics
- * for a specific user in the game lobby. It implements the InitializableScene interface and
- * utilizes the LobbyUserStatisticSceneController for managing the UI elements and actions within
- * the scene.
+ * The LobbyUserStatisticScene class represents the scene where users can view game statistics for a
+ * specific user in the game lobby. It implements the InitializableScene interface and utilizes the
+ * LobbyUserStatisticSceneController for managing the UI elements and actions within the scene.
  *
  * @author fisommer
  */

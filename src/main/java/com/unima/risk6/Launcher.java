@@ -6,7 +6,6 @@ package com.unima.risk6;
  *
  * @author astoyano
  */
-
 public class Launcher {
 
   public static void main(String[] args) {

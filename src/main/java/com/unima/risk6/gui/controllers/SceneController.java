@@ -139,6 +139,12 @@ public class SceneController {
     }
   }
 
+  /**
+   * Returns the scene with the specified name.
+   *
+   * @param sceneName the name of the scene to retrieve
+   * @return the scene with the specified name
+   */
   public Scene getSceneBySceneName(SceneName sceneName) {
     return scenes.get(sceneName);
   }

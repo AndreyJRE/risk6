@@ -99,7 +99,6 @@ public class AttackTypeAdapter implements JsonSerializer<Attack>, JsonDeserializ
             .equals(jsonObject.get("defendingCountry").getAsString()))
         .findFirst().get();
     int troopNumber = jsonObject.get("troopNumber").getAsInt();
-    //TODO
     Attack attack = new Attack(attackingCountry, defendingCountry, troopNumber);
     attack.setAttackerLosses(jsonObject.get("attackerLosses").getAsInt());
     attack.setDefenderLosses(jsonObject.get("defenderLosses").getAsInt());

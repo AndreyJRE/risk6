@@ -6,6 +6,8 @@ import java.util.List;
 /**
  * Game lobby model. Contains all the information about a game lobby. A game lobby is a lobby where
  * players can join to play a game.
+ *
+ * @author astoyano
  */
 public class GameLobby {
 

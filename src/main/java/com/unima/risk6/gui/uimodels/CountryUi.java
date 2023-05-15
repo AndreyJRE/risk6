@@ -27,7 +27,6 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -40,7 +39,6 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -414,7 +412,8 @@ public class CountryUi extends Group {
 
     Circle leftCircle = new Circle(25);
     Image leftImage = new Image(
-        Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/minusIcon.png"))
+        Objects.requireNonNull(getClass()
+                .getResource("/com/unima/risk6/pictures/minusIcon.png"))
             .toString());
     leftCircle.setFill(new ImagePattern(leftImage));
     leftCircle.setOnMouseClicked(minusEvent -> {
@@ -426,7 +425,8 @@ public class CountryUi extends Group {
 
     Circle rightCircle = new Circle(25);
     Image rightImage = new Image(
-        Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/plusIcon.png"))
+        Objects.requireNonNull(getClass()
+                .getResource("/com/unima/risk6/pictures/plusIcon.png"))
             .toString());
     rightCircle.setFill(new ImagePattern(rightImage));
     rightCircle.setOnMouseClicked(plusEvent -> {
@@ -436,60 +436,58 @@ public class CountryUi extends Group {
       }
     });
 
-    moveTroopsPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-      @Override
-      public void handle(KeyEvent event) {
-        switch (event.getCode()) {
-          case LEFT:
-            if (amountOfTroops.get() > 1) {
-              amountOfTroops.getAndDecrement();
-              chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
-            }
-            break;
-          case RIGHT:
-            if (amountOfTroops.get() < troopBound) {
-              amountOfTroops.getAndIncrement();
-              chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
-            }
-            break;
-          case ENTER:
-            popUp.hide();
-            PlayerController playerController = GameSceneController.getPlayerController();
-            if (gamePhase == FORTIFY_PHASE) {
-              playerController.sendFortify(country, adjacentCountryUi.getCountry(),
-                  amountOfTroops.get());
+    moveTroopsPane.setOnKeyPressed(event -> {
+      switch (event.getCode()) {
+        case LEFT -> {
+          if (amountOfTroops.get() > 1) {
+            amountOfTroops.getAndDecrement();
+            chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+          }
+        }
+        case RIGHT -> {
+          if (amountOfTroops.get() < troopBound) {
+            amountOfTroops.getAndIncrement();
+            chatLabel.setText("Amount of Troops: " + amountOfTroops.get());
+          }
+        }
+        case ENTER -> {
+          popUp.hide();
+          PlayerController playerController = GameSceneController.getPlayerController();
+          if (gamePhase == FORTIFY_PHASE) {
+            playerController.sendFortify(country, adjacentCountryUi.getCountry(),
+                amountOfTroops.get());
 
-              if (playerController.getPlayer().getCurrentPhase() == FORTIFY_PHASE) {
-                playerController.sendEndPhase(gamePhase);
-                removeArrowsAndAdjacentCountries();
-              }
-
-            } else if (gamePhase == ATTACK_PHASE) {
-              playerController.sendAttack(country, adjacentCountryUi.getCountry(),
-                  amountOfTroops.get());
+            if (playerController.getPlayer().getCurrentPhase() == FORTIFY_PHASE) {
+              playerController.sendEndPhase(gamePhase);
               removeArrowsAndAdjacentCountries();
-            } else if (gamePhase == REINFORCEMENT_PHASE) {
-              playerController.sendReinforce(country, amountOfTroops.get());
-              try {
-                Thread.sleep(100);
-              } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-              if (playerController.getPlayer().getDeployableTroops() == 0
-                  && !playerController.getHandController().holdsExchangeable()) {
-                playerController.sendEndPhase(gamePhase);
-              }
             }
-            break;
-          default:
-            break;
+
+          } else if (gamePhase == ATTACK_PHASE) {
+            playerController.sendAttack(country, adjacentCountryUi.getCountry(),
+                amountOfTroops.get());
+            removeArrowsAndAdjacentCountries();
+          } else if (gamePhase == REINFORCEMENT_PHASE) {
+            playerController.sendReinforce(country, amountOfTroops.get());
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+            if (playerController.getPlayer().getDeployableTroops() == 0
+                && !playerController.getHandController().holdsExchangeable()) {
+              playerController.sendEndPhase(gamePhase);
+            }
+          }
+        }
+        default -> {
         }
       }
     });
 
     Circle confirmCircle = new Circle(25);
     Image confirmImage = new Image(
-        Objects.requireNonNull(getClass().getResource("/com/unima/risk6/pictures/confirmIcon.png"))
+        Objects.requireNonNull(getClass()
+                .getResource("/com/unima/risk6/pictures/confirmIcon.png"))
             .toString());
     confirmCircle.setFill(new ImagePattern(confirmImage));
     confirmCircle.setOnMouseClicked(confirmEvent -> {
@@ -547,7 +545,7 @@ public class CountryUi extends Group {
     popUp.setX(centerX - popupWidth / 2);
     popUp.setY(centerY - popupHeight / 2);
     popUp.show(gamePane.getScene().getWindow());
-    Platform.runLater(() -> moveTroopsPane.requestFocus());
+    Platform.runLater(moveTroopsPane::requestFocus);
   }
 
   /**

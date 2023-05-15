@@ -85,8 +85,7 @@ public final class GameClient implements Runnable {
                 new DefaultHttpHeaders()));
 
         Bootstrap b = new Bootstrap();
-        b.group(group)
-            .channel(NioSocketChannel.class)
+        b.group(group).channel(NioSocketChannel.class)
             .handler(new ChannelInitializer<SocketChannel>() {
               @Override
               protected void initChannel(SocketChannel ch) throws Exception {

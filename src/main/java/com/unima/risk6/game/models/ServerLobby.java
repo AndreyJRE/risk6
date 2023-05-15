@@ -5,6 +5,8 @@ import java.util.List;
 
 /**
  * Server lobby model. Contains all the information about a server lobby.
+ *
+ * @author astoyano
  */
 public class ServerLobby {
 

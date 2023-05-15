@@ -5,9 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The GameOverScene class represents the end-of-game scene, displayed when the game is over.
- * It implements the InitializableScene interface and utilizes the GameOverSceneController
- * for managing the UI elements and actions within the scene.
+ * The GameOverScene class represents the end-of-game scene, displayed when the game is over. It
+ * implements the InitializableScene interface and utilizes the GameOverSceneController for managing
+ * the UI elements and actions within the scene.
  *
  * @author fisommer
  */

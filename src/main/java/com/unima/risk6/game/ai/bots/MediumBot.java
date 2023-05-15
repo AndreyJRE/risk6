@@ -151,7 +151,6 @@ public class MediumBot extends GreedyBot implements AiBot {
       List<Country> sortedCountryList) {
     List<Reinforce> listReinforce = new ArrayList<>();
     for (Country country : sortedCountryList) {
-      // TODO: remove check for diff > 0 and just fix maps earlier?
       if (this.reinforceTroopsCopy > 0 && ownedCountryDiffs.get(country) > 0) {
         int amountDeployed = Math.min(this.reinforceTroopsCopy, ownedCountryDiffs.get(country));
         listReinforce.add(new Reinforce(country, amountDeployed));

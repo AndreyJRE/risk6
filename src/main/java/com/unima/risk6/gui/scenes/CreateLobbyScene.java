@@ -5,9 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 
 /**
- * The CreateLobbyScene class represents the scene where a new game lobby is created.
- * It implements the InitializableScene interface and uses CreateLobbySceneController
- * for managing the UI elements and actions within the scene.
+ * The CreateLobbyScene class represents the scene where a new game lobby is created. It implements
+ * the InitializableScene interface and uses CreateLobbySceneController for managing the UI elements
+ * and actions within the scene.
  *
  * @author fisommer
  */

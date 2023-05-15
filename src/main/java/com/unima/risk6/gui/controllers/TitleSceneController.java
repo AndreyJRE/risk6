@@ -256,6 +256,12 @@ public class TitleSceneController implements Initializable {
     animation.play();
   }
 
+  /**
+   * Toggles the buttons for single-player and tutorial depending on if Host Game is enabled or
+   * not.
+   *
+   * @param isOn if Host Game is toggled.
+   */
   private void toggleLocalButtons(boolean isOn) {
     if (!isOn) {
       singlePlayerButton.setOpacity(1);
@@ -381,7 +387,7 @@ public class TitleSceneController implements Initializable {
       switchedOn.setValue(false);
       Thread.sleep(200);
     }
-    NetworkConfiguration.startGameServer();
+    NetworkConfiguration.startSinglePlayerServer();
     Thread.sleep(200);
     LobbyConfiguration.configureGameClient("127.0.0.1");
     LobbyConfiguration.startGameClient();

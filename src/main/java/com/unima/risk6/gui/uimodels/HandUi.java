@@ -123,6 +123,11 @@ public class HandUi extends BorderPane {
     popup.show(gameRoot.getScene().getWindow());
   }
 
+  /**
+   * Initialize a listener for the hand of cards.
+   *
+   * @param cardUi The card UI to initialize the listener for.
+   */
   private void initMouseListenerCard(CardUi cardUi) {
     cardUi.setOnMouseEntered(event -> {
       cardUi.setCursor(Cursor.HAND);
@@ -144,6 +149,9 @@ public class HandUi extends BorderPane {
     });
   }
 
+  /**
+   * Handles hand in button.
+   */
   private void handleHandInButton() {
     cardBox.getChildren().removeAll(selectedCardsUi);
     cardUis.removeAll(selectedCardsUi);
@@ -157,6 +165,9 @@ public class HandUi extends BorderPane {
 
   }
 
+  /**
+   * Handles select exchangeable button.
+   */
   private void handleSelectExchangeableButton() {
     PlayerController playerController = GameSceneController.getPlayerController();
     playerController.getHandController().selectExchangeableCards();
@@ -170,6 +181,9 @@ public class HandUi extends BorderPane {
     checkAmountOfSelectedCards();
   }
 
+  /**
+   * Checks the amount of selected cards.
+   */
   private void checkAmountOfSelectedCards() {
     HBox newBottomBox = new HBox();
     newBottomBox.setAlignment(Pos.CENTER);
