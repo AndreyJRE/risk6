@@ -234,7 +234,6 @@ public class SelectMultiplayerLobbySceneController implements ServerLobbyObserve
   private void initSplitPane() {
     initGameLobbys();
 
-    //TODO: Implement Chat Server Integration
     chatArea = new TextArea();
     chatArea.setEditable(false);
     chatArea.setWrapText(true);

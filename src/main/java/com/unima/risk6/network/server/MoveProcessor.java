@@ -77,7 +77,6 @@ public class MoveProcessor {
             .filter(n -> !n.hasPlayer()).collect(Collectors.toSet()).size();
 
         //Check if there are still neutral countries to reinforce
-        //TODO removed for testing
         if (numberOfNeutralCountries > 0) {
           if (!countryToReinforce.hasPlayer()) {
             playerController.addCountry(countryToReinforce);

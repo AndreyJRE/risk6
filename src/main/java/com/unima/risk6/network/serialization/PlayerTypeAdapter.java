@@ -155,7 +155,6 @@ public class PlayerTypeAdapter implements JsonSerializer<Player>, JsonDeserializ
         LOGGER.debug("PlayerType should be Player, EasyBot, MediumBot or Hardbot");
         break;
     }
-    //TODO REFERENZEN Überprüfen
     player.setHand(hand);
     //if the player owns a whole continent the references for the countries in a continent and the
     //for the countries should be the same

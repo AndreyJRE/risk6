@@ -521,7 +521,6 @@ public class GameServerFrameHandler extends SimpleChannelInboundHandler<WebSocke
    * @param gameLobby the game lobby to start the game in.
    */
   public void processStartGame(GameLobby gameLobby) {
-    //TODO Bots should not start the game
     List<String> usersList = gameLobby.getUsers().stream().map(UserDto::getUsername).toList();
     GameState gameState = GameConfiguration.configureGame(usersList,
         gameLobby.getBots().stream().map(x -> {

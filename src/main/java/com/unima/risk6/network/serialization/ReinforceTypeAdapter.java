@@ -80,7 +80,6 @@ public class ReinforceTypeAdapter implements JsonSerializer<Reinforce>,
   public Reinforce deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
-    //TODO referencen tesetn
     Country country = gameState.getCountries().stream()
         .filter(x -> x.getCountryName().toString().equals(jsonObject.get("country").getAsString()))
         .findFirst()

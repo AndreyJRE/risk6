@@ -169,7 +169,6 @@ public class GameClientHandler extends SimpleChannelInboundHandler<Object> {
             LOGGER.debug("Client got a order message ");
             GameConfiguration.setDiceRolls(hashMap2);
 
-            //TODO
           }
           case "CONNECTION" -> {
             switch (json.get("connectionActions").getAsString()) {

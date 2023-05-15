@@ -77,7 +77,6 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
   public Fortify deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject jsonObject = json.getAsJsonObject();
-    //TODO referenzen testen
     Country incoming = gameState.getCountries().stream()
         .filter(x -> x.getCountryName().toString().equals(jsonObject.get("incoming").getAsString()))
         .findFirst()
@@ -86,8 +85,6 @@ public class FortifyTypeAdapter implements JsonSerializer<Fortify>, JsonDeserial
         .filter(x -> x.getCountryName().toString().equals(jsonObject.get("outgoing").getAsString()))
         .findFirst()
         .get();
-    //Country outgoing = context.deserialize(jsonObject.get("outgoing"), Country.class);
-    //Country incoming = context.deserialize(jsonObject.get("incoming"), Country.class);
     int troopsToMove = jsonObject.get("troopsToMove").getAsInt();
     return new Fortify(outgoing, incoming, troopsToMove);
   }

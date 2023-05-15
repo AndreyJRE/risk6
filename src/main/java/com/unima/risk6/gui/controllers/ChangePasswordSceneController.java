@@ -174,7 +174,6 @@ public class ChangePasswordSceneController {
       }
     };
     confirmButton.setOnAction(event -> {
-      //TODO implement password change in database
       User user = SessionManager.getUser();
       user.setPassword(newPasswordField.getText());
       try {
