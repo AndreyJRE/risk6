@@ -1,6 +1,7 @@
 package com.unima.risk6.network.server;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.unima.risk6.game.configurations.LobbyConfiguration;
 import com.unima.risk6.game.models.GameLobby;
@@ -417,7 +418,7 @@ public class GameLobbyChannelsTest {
           .removeAll(NetworkConfiguration.getServerLobby().getUsers());
       NetworkConfiguration.startGameServer();
     } catch (Exception e) {
-      System.out.println(e);
+      fail("Should not have thrown any exception");
     }
 
     gameClient = GameClientFactory.createGameClient("127.0.0.1");
@@ -427,7 +428,6 @@ public class GameLobbyChannelsTest {
   @Test
   void joinServerLobby() {
     Channel channel = createChannel("123");
-    System.out.println("ChannelID" + channel.id());
     GameLobbyChannels gameLobbyChannels = new GameLobbyChannels();
     UserDto userDto = new UserDto("Name", 2, 10.5, 12, 1, 400);
     gameLobbyChannels.putUsers(userDto, channel);

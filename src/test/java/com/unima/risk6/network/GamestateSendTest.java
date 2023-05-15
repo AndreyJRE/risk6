@@ -1,6 +1,8 @@
 package com.unima.risk6.network;
 
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.unima.risk6.game.configurations.GameConfiguration;
 import com.unima.risk6.game.logic.Fortify;
 import com.unima.risk6.game.logic.Reinforce;
@@ -40,7 +42,7 @@ public class GamestateSendTest {
       gameClient = GameClientFactory.createGameClient("ws://localhost:42069/game");
       gameServer = new GameServer();
     } catch (Exception e) {
-      System.out.println(e.toString());
+      fail("Should not have thrown any exception");
     }
 
   }
@@ -69,7 +71,7 @@ public class GamestateSendTest {
       Thread.sleep(10000);
       //assertEquals("{\"statusCode\":200,\"content\":\"tetest\"}", Serializer.serialize(new StandardMessage("tetest", 200)));
     } catch (Exception e) {
-      System.out.println(e.toString());
+      fail("Should not have thrown any exception");
     }
   }
 }

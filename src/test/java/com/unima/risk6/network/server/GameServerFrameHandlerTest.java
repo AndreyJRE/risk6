@@ -26,7 +26,6 @@ class GameServerFrameHandlerTest {
 
   private static GameController gameController;
   private static GameState gameState;
-  private static GameConfiguration gameConfiguration;
   private static Player[] players;
   private static ArrayList<String> playerList;
   private static DeckController deckController;
@@ -101,14 +100,18 @@ class GameServerFrameHandlerTest {
     players[3].setInitialTroops(20);
     players[4].setInitialTroops(20);
     players[5].setInitialTroops(20);
+    /*
     System.out.println(players[0].getCurrentPhase());
     System.out.println(players[1].getCurrentPhase());
     System.out.println(players[2].getCurrentPhase());
     System.out.println(players[3].getCurrentPhase());
     System.out.println(players[4].getCurrentPhase());
     System.out.println(players[5].getCurrentPhase());
+
+     */
     moveProcessor.processReinforce(
         new Reinforce(getCountryByCountryName(CountryName.ALASKA), 100));
+    /*
     System.out.println(getCountryByCountryName(CountryName.ALASKA));
 
     System.out.println(players[0].getDeployableTroops());
@@ -120,10 +123,10 @@ class GameServerFrameHandlerTest {
     System.out.println(players[3].getCurrentPhase());
     System.out.println(players[4].getCurrentPhase());
     System.out.println(players[5].getCurrentPhase());
+     */
 
     moveProcessor.processReinforce(
         new Reinforce(getCountryByCountryName(CountryName.CHINA), 1));
-    System.out.println(getCountryByCountryName(CountryName.CHINA));
 
   }
 

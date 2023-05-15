@@ -18,14 +18,12 @@ public class ManualServerClientTest {
       client.start();
       Thread.sleep(2000);
       BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-      //gameClient.sendMessage("testest");
       while (true) {
         String msg = console.readLine();
         if (msg == null) {
           break;
         } else {
           System.out.println(msg);
-          //gameClient.sendMessage(msg);
           Thread.sleep(1000);
         }
         Thread.sleep(100);
