@@ -325,6 +325,7 @@ public class GameLobbyChannels {
           if (gameState.getActivePlayers().stream().allMatch(n -> n instanceof AiBot)) {
             gameState.setGameOver(true);
             gameState.getActivePlayers().forEach(n -> n.setCurrentPhase(NOT_ACTIVE));
+            moveProcessors.inverse().remove(getChannelGroupByChannel(channel));
           } else {
             processBotMove(mediumBot, channelGroup, gsh, moveProcessor);
           }
