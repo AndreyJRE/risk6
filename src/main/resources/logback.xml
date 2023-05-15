@@ -26,7 +26,7 @@
   </appender>
 
   <!-- Define loggers -->
-  <logger additivity="false" level="DEBUG" name="com.unima.risk6">
+  <logger additivity="false" level="INFO" name="com.unima.risk6">
     <appender-ref ref="STDOUT"/>
     <appender-ref ref="FILE"/>
   </logger>
