@@ -6,7 +6,7 @@
 
   <groupId>com.unima</groupId>
   <artifactId>risk6</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.9_BETA</version>
   <name>risk6</name>
 
   <properties>

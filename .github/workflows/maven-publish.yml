@@ -5,7 +5,7 @@ name: Maven Package
 
 on:
   push:
-    branches: [releases]
+    branches: [release]
 
 jobs:
   build:
@@ -29,9 +29,13 @@ jobs:
       run: mvn package
 
     - name: version
-      run: echo "::set-output name=version::$(mvn -q \ -Dexec.executable=echo \ -Dexec.args='${project.version}' \ --non-recursive \ exec:exec)"
+      run: echo "::set-output name=version::$(mvn -q -D exec.executable=echo -D exec.args='${project.version}' --non-recursive exec:exec)"
+
       id: version
-    
+      
+    - name: ls
+      run: ls
+      
     - name: create_release
       uses: actions/create-release@v1
       id: create_release
@@ -42,12 +46,12 @@ jobs:
         tag_name: ${{ github.ref }}
         body_path: CHANGELOG.md
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.pat }}
 
     - name: upload linux artifact
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.pat }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: shade/risk6.jar
