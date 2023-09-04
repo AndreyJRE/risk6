@@ -12,11 +12,14 @@ import com.unima.risk6.gui.controllers.enums.SceneName;
 import com.unima.risk6.gui.scenes.LogInScene;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -55,6 +58,8 @@ public class RisikoMain extends Application {
     } else {
       sceneController.activate(SceneName.LOGIN);
     }
+
+    stage.getIcons().add(new Image(Objects.requireNonNull(RisikoMain.class.getResourceAsStream("pictures/logo.png"))));
     stage.setTitle("RISK");
     stage.show();
   }

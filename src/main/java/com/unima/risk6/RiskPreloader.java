@@ -6,6 +6,7 @@ import javafx.application.Preloader;
 import javafx.application.Preloader.StateChangeNotification.Type;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -35,6 +36,7 @@ public class RiskPreloader extends Preloader {
   @Override
   public void start(Stage stage) throws Exception {
     this.preloaderStage = stage;
+    preloaderStage.getIcons().add(new Image(Objects.requireNonNull(RisikoMain.class.getResourceAsStream("pictures/logo.png"))));
     preloaderStage.setScene(scene);
     preloaderStage.initStyle(StageStyle.UNDECORATED);
     preloaderStage.show();
