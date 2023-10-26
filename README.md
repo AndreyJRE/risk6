@@ -61,12 +61,14 @@ If your output doesnt have the number 17 in it, follow the instructions below to
 - Debian/Ubuntu and Derivates: ```sudo apt install openjdk-17-jdk && sudo update-alternatives --config java```
 - Fedora: ```sudo dnf install java-17-openjdk && sudo alternatives --config java```
 
+You may also need to install ffmpeg or deprecated version of ffmpeg. Visit the troubleshooting section for more information.
+
 ### Mac
 
-Download the OpenJDK-installer for your architecture [here](https://adoptium.net/de/temurin/releases/?package=any&os=mac) and install it. __Ensure that you download the aarch64 installer if you're using an apple silicon mac!__
+Download the OpenJDK-installer for your architecture [here](https://adoptium.net/de/temurin/releases/?package=any&os=mac&version=17) and install it. __Ensure that you download the aarch64 installer if you're using an apple silicon mac!__
 
 ### Windows
-Download the OpenJDK-installer for your architecture [here](https://adoptium.net/de/temurin/releases/?package=any&os=windows) and install it.
+Download the OpenJDK-installer for your architecture [here](https://adoptium.net/de/temurin/releases/?package=any&os=windows&version=17) and install it.
 
 ## Install the Game
 1. Download the current release [here](https://github.com/iaxon/risk6/releases/latest).
@@ -76,9 +78,36 @@ Download the OpenJDK-installer for your architecture [here](https://adoptium.net
 
 # FAQ
 
-Q: _I get a write screen on Windows 11, how to fix this?_
+Q: _I get a white screen on Windows 11, how to fix this?_
 
 A: Unfortunately, there are a few issues when loading resources with JavaFX on Windows 11. We are currently working on a fix. As a workaround until then, you can click on the (in this case, invisible) buttons to trigger the game to load a new screen. If you're unsure about the button locations, one approach is to try different points.
 
+# Troubleshooting
+If you get this error when executing in a shell:
+```
+01:24:33.491 [Thread-2] INFO  c.u.r.d.c.DatabaseConfiguration - Database connection was established
+01:24:33.496 [Thread-2] INFO  c.u.r.d.c.DatabaseConfiguration - Database services were configured and database is ready to use
+Exception in Application start method
+Exception in thread "main" java.lang.RuntimeException: Exception in Application start method
+	at com.sun.javafx.application.LauncherImpl.launchApplication1(LauncherImpl.java:901)
+	at com.sun.javafx.application.LauncherImpl.lambda$launchApplication$2(LauncherImpl.java:196)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.lang.NullPointerException: Cannot invoke "java.util.HashMap.get(Object)" because "com.unima.risk6.gui.configurations.ImageConfiguration.images" is null
+	at com.unima.risk6.gui.configurations.ImageConfiguration.getImageByName(ImageConfiguration.java:159)
+	at com.unima.risk6.gui.controllers.LoginSceneController.init(LoginSceneController.java:91)
+	at com.unima.risk6.gui.scenes.LogInScene.init(LogInScene.java:34)
+	at com.unima.risk6.gui.controllers.SceneController.activate(SceneController.java:64)
+	at com.unima.risk6.RisikoMain.start(RisikoMain.java:59)
+	at com.sun.javafx.application.LauncherImpl.lambda$launchApplication1$9(LauncherImpl.java:847)
+	at com.sun.javafx.application.PlatformImpl.lambda$runAndWait$12(PlatformImpl.java:484)
+	at com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:457)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:456)
+	at com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:96)
+	at com.sun.glass.ui.gtk.GtkApplication._runLoop(Native Method)
+	at com.sun.glass.ui.gtk.GtkApplication.lambda$runLoop$11(GtkApplication.java:316)
+	... 1 more
+```
+Try to install legacy versions of ffmpeg. If you use arch you can try to install ffmpeg-compat-57 from the aur.
 
 <sup><sub>Used ressources:<a href="https://www.flaticon.com/free-icons/board-game" title="board game icons">Board game icons created by Freepik - Flaticon</a></sub></sup>
