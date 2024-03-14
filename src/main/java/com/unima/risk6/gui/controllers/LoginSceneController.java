@@ -88,7 +88,7 @@ public class LoginSceneController {
     root.getChildren().addAll(selectUser, usersPagination, createButton);
     root.setAlignment(Pos.CENTER);
     root.setSpacing(75);
-    Image originalImage = ImageConfiguration.getImageByName(ImageName.LOGIN_BACKGROUND);
+    Image originalImage = ImageConfiguration.getImageByName(ImageName.STATISTICS_BACKGROUND);
     javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(originalImage);
 
     // Set the opacity
