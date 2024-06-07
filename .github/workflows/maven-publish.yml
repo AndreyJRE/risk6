@@ -1,0 +1,73 @@
+# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+
+name: Maven Package
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+    - name: Build with Maven
+      run: mvn package
+
+    - name: version
+      run: echo "::set-output name=version::$(mvn -q -D exec.executable=echo -D exec.args='${project.version}' --non-recursive exec:exec)"
+
+      id: version
+      
+    - name: ls
+      run: ls
+      
+    - name: create_release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: true
+        prerelease: false
+        release_name: ${{ steps.version.outputs.version }}
+        tag_name: ${{ github.ref }}
+        body_path: CHANGELOG.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.pat }}
+
+    - name: upload linux artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.pat }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: shade/risk6.jar
+        asset_name: risk6.jar
+        asset_content_type: application/java-archive
+
+    #- name: Upload a Build Artifact
+     # uses: actions/upload-artifact@v3.1.2
+      #with:
+       # # Artifact name
+        #name: risk6.jar
+        #path: shade/risk6.jar
+        # The desired behavior if no files are found using the provided path.
+        
+      #  if-no-files-found: warn
+        # optional, default is warn
+        # Duration after which artifact will expire in days. 0 means using default retention. Minimum 1 day. Maximum 90 days unless changed from the repository settings page.
+    
+     #   retention-days: 5

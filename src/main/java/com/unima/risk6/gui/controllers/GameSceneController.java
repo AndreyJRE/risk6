@@ -28,6 +28,7 @@ import com.unima.risk6.gui.configurations.ImageConfiguration;
 import com.unima.risk6.gui.configurations.SceneConfiguration;
 import com.unima.risk6.gui.configurations.SoundConfiguration;
 import com.unima.risk6.gui.configurations.StyleConfiguration;
+import com.unima.risk6.gui.controllers.enums.Colors;
 import com.unima.risk6.gui.controllers.enums.ImageName;
 import com.unima.risk6.gui.scenes.GameScene;
 import com.unima.risk6.gui.uimodels.ActivePlayerUi;
@@ -66,16 +67,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Arc;
@@ -152,7 +144,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     this.chatUi = new ChatUi(gameScene);
     this.handUi = new HandUi(gameScene, countriesUis);
     Hand hand = gameState.getActivePlayers().stream()
-        .filter(player -> player.equals(myPlayerUi.getPlayer())).findFirst().get().getHand();
+            .filter(player -> player.equals(myPlayerUi.getPlayer())).findFirst().get().getHand();
     this.handUi.setHand(hand);
     GameConfiguration.addObserver(this);
     LobbyConfiguration.addChatObserver(this);
@@ -172,9 +164,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private void initializeGameScene() {
     Image waterImage = ImageConfiguration.getImageByName(ImageName.WATER_GIF);
     BackgroundImage backgroundImage = new BackgroundImage(waterImage, BackgroundRepeat.REPEAT,
-        BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+            BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
-    root.setBackground(new Background(backgroundImage));
+    root.setBackground(new Background(new BackgroundFill(Colors.WATER.getColor(), new CornerRadii(0), new Insets(0))));
     StackPane playerPane = initializePlayersPane();
     root.setLeft(playerPane);
     StackPane countriesPane = initializeCountriesPane();
@@ -222,11 +214,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       double imageHeight = image.getHeight();
       for (int i = 0; i < diceUis.size(); i++) {
         double angle = Math.toRadians(
-            semicircle.getStartAngle() + i * semicircle.getLength() / (numImages));
+                semicircle.getStartAngle() + i * semicircle.getLength() / (numImages));
         double x =
-            semicircle.getCenterX() + semicircle.getRadiusX() * Math.cos(angle) - imageWidth / 2;
+                semicircle.getCenterX() + semicircle.getRadiusX() * Math.cos(angle) - imageWidth / 2;
         double y =
-            semicircle.getCenterY() + semicircle.getRadiusY() * Math.sin(angle) - imageHeight / 2;
+                semicircle.getCenterY() + semicircle.getRadiusY() * Math.sin(angle) - imageHeight / 2;
         DiceUi currentDice = diceUis.get(i);
         currentDice.setLayoutX(x);
         currentDice.setLayoutY(y);
@@ -249,9 +241,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       StackPane stackPane = initializePlayersPane();
       activePlayerUi.changeActivePlayerUi(getCurrentPlayerUi());
       nextPhaseButton.setVisible(
-          checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
-              != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
-              != GamePhase.CLAIM_PHASE));
+              checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
+                      != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
+                      != GamePhase.CLAIM_PHASE));
       root.setLeft(stackPane);
     });
 
@@ -324,12 +316,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       countryUi.initMouseListener();
 
       Point2D correctedCoordinates = CountryUi.correctEllipsePlacement(countryUi.getCountry(),
-          ellipseX, ellipseY);
+              ellipseX, ellipseY);
       ellipseX = correctedCoordinates.getX();
       ellipseY = correctedCoordinates.getY();
 
       Label countryName = new Label(
-          countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
+              countryUi.getCountry().getCountryName().name().replaceAll("_", " "));
 
       double finalEllipseY;
       double finalEllipseX;
@@ -371,8 +363,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
       Platform.runLater(() -> {
         countryName.setStyle(
-            "-fx-background-radius: 15px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
-                + "bold;-fx-font-size: 12px; -fx-padding: 2px;");
+                "-fx-background-radius: 15px;-fx-background-color: rgba(0,0,0,0.50);-fx-font-weight: "
+                        + "bold;-fx-font-size: 12px; -fx-padding: 2px;");
         countryName.setTextFill(Color.WHITE);
         countryName.setLayoutX(finalEllipseX - (countryName.getLayoutBounds().getWidth() / 2));
         countryName.setLayoutY(finalEllipseY + 10);
@@ -406,12 +398,12 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     playersVbox.setMaxWidth(100);
 
     PlayerColor[] possibleColors = {PlayerColor.RED, PlayerColor.BLUE, PlayerColor.PURPLE,
-        PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
+            PlayerColor.YELLOW, PlayerColor.GREEN, PlayerColor.ORANGE};
     int colorIndex = 0;
     playerUis = new LinkedList<>();
     for (Player player : gameState.getActivePlayers()) {
       PlayerUi playerUi = new PlayerUi(player, possibleColors[colorIndex].getColor(), 35, 35, 120,
-          45);
+              45);
       playerUis.offer(playerUi);
       if (playerUi.getPlayer().getUser().equals(GameConfiguration.getMyGameUser().getUsername())) {
         myPlayerUi = playerUi;
@@ -440,7 +432,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   private StackPane initializeBottomPane() {
     Button chatButton = new Button();
     ImageView chatIcon = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/chatIcon.png").toString()));
+            new Image(getClass().getResource("/com/unima/risk6/pictures/chatIcon.png").toString()));
     chatIcon.setFitWidth(40);
     chatIcon.setFitHeight(40);
     chatButton.setGraphic(chatIcon);
@@ -452,7 +444,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     });
     chatCounterLabel = new Label("!");
     chatCounterLabel.setStyle("-fx-background-radius: 12px;"
-        + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 22px; -fx-padding: 3px");
+            + "-fx-background-color: rgba(255,165,0,0.71); -fx-font-size: 22px; -fx-padding: 3px");
     chatCounterLabel.setTextFill(Color.WHITE);
     chatButton.setVisible(gameState.isChatEnabled());
     chatCounterLabel.setVisible(false);
@@ -460,7 +452,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     activePlayerUi.controlDeployableTroops();
     nextPhaseButton = new Button();
     ImageView rightArrowIcon = new ImageView(new Image(
-        getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
+            getClass().getResource("/com/unima/risk6/pictures/rightArrowIcon.png").toString()));
     rightArrowIcon.setFitWidth(50);
     rightArrowIcon.setFitHeight(50);
     nextPhaseButton.setGraphic(rightArrowIcon);
@@ -471,11 +463,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       Player currentPlayer = myPlayerUi.getPlayer();
       GamePhase currentPhase = currentPlayer.getCurrentPhase();
       if ((currentPlayer.getDeployableTroops() > 0 || playerController.getHandController()
-          .mustExchange()) && currentPlayer.getCurrentPhase()
-          .equals(GamePhase.REINFORCEMENT_PHASE)) {
+              .mustExchange()) && currentPlayer.getCurrentPhase()
+              .equals(GamePhase.REINFORCEMENT_PHASE)) {
         StyleConfiguration.showErrorDialog("Can't end phase yet!",
-            "You either still have troops to deploy or must exchange cards in your hand. "
-                + "Deploy them all before ending the phase.");
+                "You either still have troops to deploy or must exchange cards in your hand. "
+                        + "Deploy them all before ending the phase.");
       } else {
         playerController.sendEndPhase(currentPhase);
       }
@@ -486,7 +478,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
     cardsButton = new Button();
     ImageView cardsGroup = new ImageView(
-        new Image(getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
+            new Image(getClass().getResource("/com/unima/risk6/pictures/cardsGroup.png").toString()));
     cardsGroup.setFitWidth(150);
     cardsGroup.setFitHeight(80);
     cardsButton.setGraphic(cardsGroup);
@@ -499,7 +491,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
 
     StackPane bottomPane = new StackPane();
     bottomPane.getChildren()
-        .addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton, chatCounterLabel);
+            .addAll(cardsButton, activePlayerUi, nextPhaseButton, chatButton, chatCounterLabel);
     bottomPane.setAlignment(Pos.CENTER);
     StackPane.setMargin(nextPhaseButton, new Insets(0, 0, 5, 525));
     StackPane.setAlignment(cardsButton, Pos.CENTER_LEFT);
@@ -550,7 +542,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       alert.setTitle("Warning: Exiting Game");
       alert.setHeaderText("Are you sure you want to to leave the game?");
       alert.setContentText(
-          "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
+              "If you leave, you cannot rejoin the game! Your place will be replaced " + "by a bot.");
       ButtonType buttonYes = new ButtonType("Yes, exit game");
       ButtonType buttonNo = new ButtonType("No, continue playing");
       alert.getButtonTypes().setAll(buttonYes, buttonNo);
@@ -559,8 +551,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
           if (GameConfiguration.getCurrentGameStatistic() != null) {
             Statistic statistic = playerController.getPlayer().getStatistic();
             GameConfiguration.updateGameStatistic(false, statistic.getTroopsLost(),
-                statistic.getCountriesWon(), statistic.getTroopsGained(),
-                statistic.getCountriesLost());
+                    statistic.getCountriesWon(), statistic.getTroopsGained(),
+                    statistic.getCountriesLost());
           }
           sceneController.close();
         }
@@ -712,9 +704,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     double popupWidth = statisticPane.getPrefWidth();
     double popupHeight = statisticPane.getPrefHeight();
     statisticPopup.setX(
-        (gameScene.getWindow().getX() + gameScene.getWindow().getWidth() / 2) - popupWidth / 2);
+            (gameScene.getWindow().getX() + gameScene.getWindow().getWidth() / 2) - popupWidth / 2);
     statisticPopup.setY(
-        (gameScene.getWindow().getY() + gameScene.getWindow().getHeight() / 2) - popupHeight / 2);
+            (gameScene.getWindow().getY() + gameScene.getWindow().getHeight() / 2) - popupHeight / 2);
     statisticPopup.show(gameScene.getWindow());
     isStatisticsShowing = true;
   }
@@ -760,9 +752,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
     if (gameState.isGameOver() && GameConfiguration.getCurrentGameStatistic() != null) {
       Statistic statistic = playerController.getPlayer().getStatistic();
       GameConfiguration.updateGameStatistic(
-          gameState.getActivePlayers().contains(playerController.getPlayer()),
-          statistic.getTroopsLost(), statistic.getCountriesWon(), statistic.getTroopsGained(),
-          statistic.getCountriesLost());
+              gameState.getActivePlayers().contains(playerController.getPlayer()),
+              statistic.getTroopsLost(), statistic.getCountriesWon(), statistic.getTroopsGained(),
+              statistic.getCountriesLost());
       GameConfiguration.setCurrentGameStatistic(null);
     }
   }
@@ -772,7 +764,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
    */
   private void updateActivePlayerTroops() {
     if (activePlayerUi.getPlayerUi().getPlayer().getCurrentPhase()
-        == GamePhase.REINFORCEMENT_PHASE) {
+            == GamePhase.REINFORCEMENT_PHASE) {
       activePlayerUi.updateActivePlayerTroops();
     }
   }
@@ -790,10 +782,10 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       }
     }));
     countriesUis.forEach(countryUi -> countryUi.getAdjacentCountryUis().forEach(
-        adjacentCountryUi -> adjacentCountryUi.setCountry(countriesUis.stream().filter(
-                countryUi1 -> countryUi1.getCountry().getCountryName()
-                    .equals(adjacentCountryUi.getCountry().getCountryName())).findFirst().get()
-            .getCountry())));
+            adjacentCountryUi -> adjacentCountryUi.setCountry(countriesUis.stream().filter(
+                            countryUi1 -> countryUi1.getCountry().getCountryName()
+                                    .equals(adjacentCountryUi.getCountry().getCountryName())).findFirst().get()
+                    .getCountry())));
     handUi.setHand(myPlayerUi.getPlayer().getHand());
   }
 
@@ -836,11 +828,11 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       CountryUi countryUiFrom = getCountryUiByCountry(fortify.getOutgoing());
       CountryUi countryUiTo = getCountryUiByCountry(fortify.getIncoming());
       Point2D clickPosInScene = countryUiFrom.localToScene(
-          countryUiFrom.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-          countryUiFrom.getTroopsCounterUi().getEllipseCounter().getCenterY());
+              countryUiFrom.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+              countryUiFrom.getTroopsCounterUi().getEllipseCounter().getCenterY());
       Point2D clickPosInSceneToCountry = countryUiTo.localToScene(
-          countryUiTo.getTroopsCounterUi().getEllipseCounter().getCenterX(),
-          countryUiTo.getTroopsCounterUi().getEllipseCounter().getCenterY());
+              countryUiTo.getTroopsCounterUi().getEllipseCounter().getCenterX(),
+              countryUiTo.getTroopsCounterUi().getEllipseCounter().getCenterY());
       Point2D clickPosInGroup = countryUiFrom.sceneToLocal(clickPosInScene);
       Point2D clickPosInGroupToCountry = countryUiTo.sceneToLocal(clickPosInSceneToCountry);
       double startX = clickPosInGroup.getX() + i * offsetX;
@@ -963,9 +955,9 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
       }
     }
     nextPhaseButton.setVisible(
-        checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
-            != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
-            != GamePhase.CLAIM_PHASE));
+            checkIfCurrentPlayerIsMe() && (myPlayerUi.getPlayer().getCurrentPhase()
+                    != GamePhase.NOT_ACTIVE) && (myPlayerUi.getPlayer().getCurrentPhase()
+                    != GamePhase.CLAIM_PHASE));
   }
 
   /**
@@ -973,8 +965,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
    */
   private void sendTutorialMessage() {
     if (tutorialMessageCounter == 0 || tutorialMessageCounter == 1 || tutorialMessageCounter == 4
-        || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
-        || tutorialMessageCounter == 11 || tutorialMessageCounter == 12) {
+            || tutorialMessageCounter == 9 || tutorialMessageCounter == 10
+            || tutorialMessageCounter == 11 || tutorialMessageCounter == 12) {
       LobbyConfiguration.setLastChatMessage(tutorial.getNextMessage());
     }
     if (tutorialMessageCounter == 12) {
@@ -1017,7 +1009,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
    */
   public boolean checkIfCurrentPlayerIsMe() {
     return gameState.getCurrentPlayer().getUser()
-        .equals(GameConfiguration.getMyGameUser().getUsername());
+            .equals(GameConfiguration.getMyGameUser().getUsername());
   }
 
 
@@ -1029,7 +1021,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
    */
   public CountryUi getCountryUiByCountry(Country country) {
     return countriesUis.stream().filter(countryUi -> countryUi.getCountry().equals(country))
-        .findFirst().get();
+            .findFirst().get();
   }
 
   public void updateActivePlayerUi() {
@@ -1045,7 +1037,7 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
   public PlayerUi getCurrentPlayerUi() {
     Player currentPlayer = gameState.getCurrentPlayer();
     return playerUis.stream().filter(playerUi -> currentPlayer.equals(playerUi.getPlayer()))
-        .findFirst().get();
+            .findFirst().get();
   }
 
   /**
@@ -1083,8 +1075,8 @@ public class GameSceneController implements GameStateObserver, ChatObserver {
    */
   public Color getColorByPlayer(Player player) {
     return playerUis.stream().filter(p -> p.getPlayer().equals(player)).findFirst()
-        .orElse(null)
-        .getPlayerColor();
+            .orElse(null)
+            .getPlayerColor();
   }
 
   public static PlayerUi getMyPlayerUi() {
