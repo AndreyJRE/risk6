@@ -11,7 +11,7 @@ public enum Colors {
   COUNTRY_BACKGROUND(Color.rgb(249, 236, 195)), COUNTRY_BACKGROUND_DARKEN(
       Color.rgb(243, 217, 134)), //COUNTRY_STROKE(Color.rgb(254, 251, 244)),
   COUNTRY_STROKE(Color.rgb(0, 7, 45)),
-  WATER(Color.rgb(149, 115, 97)),
+  WATER(Color.rgb(0, 151, 198)),
   TEXT(Color.rgb(0, 7, 45));
   private final Color color;
 
