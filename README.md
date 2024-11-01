@@ -100,7 +100,7 @@ install it.
 
 ## Install the Game
 
-1. Download the current release [here](https://github.com/iaxon/risk6/releases/latest).
+1. Download the current release [here](https://github.com/AndreyJRE/risk6/releases).
 2. Once downloaded, you need to double-click on 'risk6.jar' to start the game. If this doesn't work,
    open your terminal, ensure that you are in the same folder, and type ```java -jar risk6.jar```
    for further information.
