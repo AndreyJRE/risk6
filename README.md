@@ -108,6 +108,15 @@ install it.
    protocols in your firewall.
 4. Have fun :D
 
+## Documentation
+
+1. If you want to know more about the game structure and how it was designed, you can find the developer manual
+   [here](docs/DeveloperManual.pdf).
+
+2. For additional information of the game and its features, you can find the user manual [here](docs/UserManual.pdf).
+
 <sup><sub>Used
 ressources:<a href="https://www.flaticon.com/free-icons/board-game" title="board game icons">Board
 game icons created by Freepik - Flaticon</a></sub></sup>
+
+
