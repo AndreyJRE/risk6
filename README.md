@@ -95,7 +95,7 @@ install it. __Ensure that you download the aarch64 installer if you're using an 
 ### Windows
 
 Download the OpenJDK-installer for your
-architecture [here](https://adoptium.net/de/temurin/releases/?package=any&os=windows&version=17) and
+architecture [here](https://www.azul.com/downloads/?version=java-17-lts&os=windows&package=jdk#zulu) and
 install it.
 
 ## Install the Game
